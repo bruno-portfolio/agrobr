@@ -16,6 +16,8 @@ import pandas as pd
 BASE = "https://mapas.florestal.gov.br/server/rest/services"
 CNFP = f"{BASE}/Hosted/CNFP_v19_03_retificado_17072025/FeatureServer/9"
 CONCESSOES = f"{BASE}/Hosted/unidades_concessoes_florestais/FeatureServer/0"
+IFN_PONTOS = f"{BASE}/DadosAbertos-IFN/dataset_ifn_tb_pontos_lote/FeatureServer/0"
+IFN_LOTES = f"{BASE}/DadosAbertos-IFN/dataset_ifn_tb_lote/FeatureServer/23"
 EDICOES_CONHECIDAS = {
     "Hosted/CNFP_2024",
     "Hosted/cnfp_v2_2024",
@@ -63,18 +65,21 @@ def nulo(valor: Any) -> Any:
     return valor.item() if hasattr(valor, "item") else valor
 
 
-def oficiais(cliente: httpx.Client, camada: str, geometria: bool = False) -> list[dict[str, Any]]:
-    resposta = cliente.get(consulta(camada, where="1=1", returnIdsOnly="true", f="json"))
+def oficiais(
+    cliente: httpx.Client, camada: str, geometria: bool = False, *, where: str = "1=1"
+) -> list[dict[str, Any]]:
+    resposta = cliente.get(consulta(camada, where=where, returnIdsOnly="true", f="json"))
     resposta.raise_for_status()
     dados = resposta.json()
     oid, ids = dados["objectIdFieldName"], sorted(dados["objectIds"])
     feicoes: list[dict[str, Any]] = []
     for i in range(0, len(ids), PAGINA):
         fim = ids[min(i + PAGINA, len(ids)) - 1]
+        faixa = f"{oid} >= {ids[i]} AND {oid} <= {fim}"
         resposta = cliente.get(
             consulta(
                 camada,
-                where=f"{oid} >= {ids[i]} AND {oid} <= {fim}",
+                where=faixa if where == "1=1" else f"({where}) AND {faixa}",
                 outFields="*",
                 returnGeometry=str(geometria).lower(),
                 outSR=4326,
@@ -118,6 +123,54 @@ def comparar(
         "linhas": len(publicado),
         "celulas": len(publicado) * (len(campos) + 1),
         "anos_publicados": int(publicado["ano_criacao"].notna().sum()),
+    }
+
+
+def comparar_ifn(
+    publicado: pd.DataFrame,
+    pontos: list[dict[str, Any]],
+    lotes: list[dict[str, Any]],
+) -> dict[str, Any]:
+    problemas: list[str] = []
+    cadastro = {f["attributes"]["co_lote"]: f["attributes"]["no_lote"] for f in lotes}
+    if len(cadastro) != len(lotes):
+        problemas.append("códigos duplicados no cadastro de lotes")
+    esperados = {f["attributes"]["co_pontos_lote"]: f["attributes"] for f in pontos}
+    if len(esperados) != len(pontos):
+        problemas.append("IDs duplicados na fonte IFN")
+    ids = [nulo(valor) for valor in publicado["id"]]
+    if len(ids) != len(set(ids)):
+        problemas.append("IDs IFN duplicados na saída")
+    if set(ids) != set(esperados):
+        problemas.append("IDs IFN diferem da fonte")
+    campos = {
+        "codigo_lote": "co_lote",
+        "conglomerado": "no_conglomerado",
+        "uf": "no_uf",
+        "municipio": "no_municipio",
+        "bioma": "no_bioma",
+        "ciclo": "nu_ciclo_execucao",
+    }
+    divergentes = 0
+    for registro in publicado.to_dict("records"):
+        ponto = esperados.get(nulo(registro["id"]))
+        if ponto is None:
+            continue
+        code = ponto["co_lote"]
+        if code is not None and code not in cadastro:
+            problemas.append(f"lote {code} ausente no cadastro oficial")
+        esperado = {coluna: ponto[campo] for coluna, campo in campos.items()}
+        esperado["lote"] = cadastro.get(code)
+        divergentes += {coluna: nulo(registro[coluna]) for coluna in esperado} != esperado
+    if divergentes:
+        problemas.append(f"{divergentes} linhas IFN divergentes")
+    if not pontos:
+        problemas.append("recorte IFN/DF sem pontos publicados")
+    return {
+        "status": "ok" if not problemas else "mismatch",
+        "problems": problemas,
+        "linhas": len(publicado),
+        "celulas": len(publicado) * 8,
     }
 
 
@@ -207,12 +260,28 @@ def run(saida: Path) -> int:
         resultados["concessoes_geo"] = comparar_geometria(
             publicados["concessoes_geo"], oficiais(cliente, CONCESSOES, geometria=True)
         )
-    ifn = publicados["ifn"]
-    resultados["ifn"] = (
-        {"status": "indisponivel", "problems": [str(ifn)[:200]]}
-        if isinstance(ifn, Exception)
-        else {"status": "ok" if len(ifn) else "mismatch", "problems": [], "linhas": len(ifn)}
-    )
+        ifn = publicados["ifn"]
+        if isinstance(ifn, Exception):
+            resultados["ifn"] = {"status": "indisponivel", "problems": [str(ifn)[:200]]}
+        else:
+            pontos = oficiais(cliente, IFN_PONTOS, where="no_uf='DF'")
+            codes = sorted(
+                {
+                    f["attributes"]["co_lote"]
+                    for f in pontos
+                    if f["attributes"]["co_lote"] is not None
+                }
+            )
+            lotes = (
+                oficiais(
+                    cliente,
+                    IFN_LOTES,
+                    where=f"co_lote IN ({','.join(map(str, codes))})",
+                )
+                if codes
+                else []
+            )
+            resultados["ifn"] = comparar_ifn(ifn, pontos, lotes)
     for nome, check in resultados.items():
         print(nome, check["status"], check["problems"][:3], flush=True)
     relatorio = {
@@ -220,7 +289,8 @@ def run(saida: Path) -> int:
         "scope": (
             "CNFP e concessões inteiros: saída pública do agrobr × leitura independente por faixas de fid "
             "(orderByFields, sem geometria), com a regra do ano de criação; geometria do CNFP/DF e das "
-            "concessões × anéis ESRI; edições do CNFP publicadas no ArcGIS; IFN"
+            "concessões × anéis ESRI; edições do CNFP publicadas no ArcGIS; IFN/DF: IDs, "
+            "atributos e nomes de lote por junção independente em co_lote"
         ),
         "checks": resultados,
     }

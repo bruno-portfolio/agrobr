@@ -367,3 +367,22 @@ async def test_sonda_com_chave_so_leva_a_chave_na_origem(monkeypatch, destino, c
         (destino, chave_no_destino),
     ]
     assert resultado.status == CheckStatus.OK
+
+
+@pytest.mark.parametrize(
+    "corpo,status",
+    [
+        ('{"count":68}', CheckStatus.OK),
+        ('{"error":{"code":500,"message":"Service not started"}}', CheckStatus.FAILED),
+    ],
+)
+async def test_sfb_health_distingue_contagem_de_erro_http_200(corpo, status):
+    config = HEALTH_REGISTRY[Fonte.SFB]
+    response = httpx.Response(200, text=corpo, request=httpx.Request("GET", config.url))
+    mock_client = AsyncMock()
+    mock_client.get.return_value = response
+    with patch("httpx.AsyncClient") as mock_cls:
+        mock_cls.return_value.__aenter__ = AsyncMock(return_value=mock_client)
+        mock_cls.return_value.__aexit__ = AsyncMock(return_value=None)
+        result = await _check_http(config)
+    assert result.status == status

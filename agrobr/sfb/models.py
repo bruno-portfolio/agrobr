@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from pydantic import BaseModel, ConfigDict
+
 from agrobr.constants import URLS, Fonte
 from agrobr.utils.geo import LayerConfig
 
@@ -142,7 +144,7 @@ CATEGORIAS_CNFP: frozenset[str] = frozenset(
     }
 )
 
-SCHEMA_VERSIONS: dict[str, str] = {"cnfp": "1.1"}
+SCHEMA_VERSIONS: dict[str, str] = {"cnfp": "1.1", "ifn_conglomerados": "1.1"}
 
 _CNFP_CAMPOS = "fid,nome,uf,bioma,categoria,tipo,governo,classe,area_ha,anocriacao,municipio"
 
@@ -195,13 +197,16 @@ LAYERS: dict[str, LayerConfig] = {
         "required_cols": {"nome_uc"},
     },
     "ifn_conglomerados": {
-        "service_path": "DadosAbertos-IFN/Conglomerado/FeatureServer/0",
+        "service_path": "DadosAbertos-IFN/dataset_ifn_tb_pontos_lote/FeatureServer/0",
+        "oid_field": "co_pontos_lote",
         "max_record_count": 2000,
-        "fields": "co_pontos_lote,co_lote,no_lote,no_conglomerado,no_uf,no_municipio,no_bioma",
+        "fields": (
+            "co_pontos_lote,co_lote,no_conglomerado,no_uf,no_municipio,no_bioma,nu_ciclo_execucao"
+        ),
         "rename_map": {
             "co_pontos_lote": "id",
             "co_lote": "codigo_lote",
-            "no_lote": "lote",
+            "nu_ciclo_execucao": "ciclo",
             "no_conglomerado": "conglomerado",
             "no_uf": "uf",
             "no_municipio": "municipio",
@@ -215,7 +220,39 @@ LAYERS: dict[str, LayerConfig] = {
             "uf",
             "municipio",
             "bioma",
+            "ciclo",
         ],
         "required_cols": {"no_uf"},
     },
 }
+
+
+IFN_LOTES: LayerConfig = {
+    "service_path": "DadosAbertos-IFN/dataset_ifn_tb_lote/FeatureServer/23",
+    "max_record_count": 2000,
+    "oid_field": "co_lote",
+    "fields": "co_lote,no_lote",
+    "rename_map": {"co_lote": "codigo_lote", "no_lote": "lote"},
+    "colunas_saida": ["codigo_lote", "lote"],
+    "required_cols": {"co_lote", "no_lote"},
+}
+IFN_LOTES_POR_CONSULTA = 100
+
+
+class IfnPonto(BaseModel):
+    model_config = ConfigDict(strict=True)
+
+    co_pontos_lote: int
+    co_lote: int | None
+    no_conglomerado: str | None
+    no_uf: str | None
+    no_municipio: str | None
+    no_bioma: str | None
+    nu_ciclo_execucao: str | None
+
+
+class IfnLote(BaseModel):
+    model_config = ConfigDict(strict=True)
+
+    co_lote: int
+    no_lote: str | None

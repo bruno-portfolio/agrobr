@@ -162,6 +162,7 @@ def _build_registry() -> dict[Fonte, SourceHealthConfig]:
         Fonte.SFB: {
             "url": geo.build_arcgis_query_url(
                 f"{sfb_models.SFB_BASE}/{sfb_models.LAYERS['ifn_conglomerados']['service_path']}",
+                where="no_uf='DF'",
                 return_count_only=True,
                 f="json",
             ),

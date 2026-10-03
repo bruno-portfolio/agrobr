@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import hashlib
+import json
 import time
 from typing import TYPE_CHECKING, Literal, cast, overload
 
@@ -62,6 +63,8 @@ def _build_where(
         clauses.append(f"{field}='{_escape_filter_value(uf)}'")
     if bioma:
         field = fields.get("bioma", "bioma")
+        if layer_key == "ifn_conglomerados":
+            field = f"UPPER({field})"
         clauses.append(f"{field}='{_escape_filter_value(bioma.upper())}'")
     if categoria:
         field = fields.get("categoria", "categoria")
@@ -84,11 +87,20 @@ async def _fetch_and_parse_tabular(
     logger.info(f"sfb_{layer_key}", uf=uf, bbox=bbox)
 
     t0 = time.monotonic()
-    pages, source_url = await client.fetch_layer(layer_key, where=where, bbox=bbox, f="json")
+    ifn = None
+    if layer_key == "ifn_conglomerados":
+        ifn = await client.fetch_ifn(where=where, bbox=bbox, f="json")
+        pages, source_url = ifn.pontos, ifn.source_url
+    else:
+        pages, source_url = await client.fetch_layer(layer_key, where=where, bbox=bbox, f="json")
     fetch_ms = int((time.monotonic() - t0) * 1000)
 
     t1 = time.monotonic()
-    df = parser.parse_layer_tabular(pages, layer_key=layer_key)
+    df = (
+        parser.parse_ifn(pages, ifn.lotes)
+        if ifn is not None
+        else parser.parse_layer_tabular(pages, layer_key=layer_key)
+    )
     parse_ms = int((time.monotonic() - t1) * 1000)
 
     meta = build_source_meta(
@@ -105,6 +117,8 @@ async def _fetch_and_parse_tabular(
         raw_content_hash=hashlib.sha256(pages[0]).hexdigest() if len(pages) == 1 else None,
         raw_content_size=len(pages[0]) if len(pages) == 1 else 0,
     )
+    if ifn is not None:
+        _ifn_provenance(meta, ifn)
     return finalize_result(
         df,
         meta,
@@ -129,11 +143,21 @@ async def _fetch_and_parse_geo(
     logger.info(f"sfb_{layer_key}_geo", uf=uf, bbox=bbox)
 
     t0 = time.monotonic()
-    pages, source_url = await client.fetch_layer(layer_key, where=where, bbox=bbox, f="geojson")
+    ifn = None
+    if layer_key == "ifn_conglomerados":
+        ifn = await client.fetch_ifn(where=where, bbox=bbox, f="geojson")
+        pages, source_url = ifn.pontos, ifn.source_url
+    else:
+        pages, source_url = await client.fetch_layer(layer_key, where=where, bbox=bbox, f="geojson")
     fetch_ms = int((time.monotonic() - t0) * 1000)
 
     t1 = time.monotonic()
-    gdf = cast("gpd.GeoDataFrame", parser.parse_layer_geojson(pages, layer_key=layer_key))
+    gdf = cast(
+        "gpd.GeoDataFrame",
+        parser.parse_ifn(pages, ifn.lotes, geometria=True)
+        if ifn is not None
+        else parser.parse_layer_geojson(pages, layer_key=layer_key),
+    )
     parse_ms = int((time.monotonic() - t1) * 1000)
 
     if return_meta:
@@ -151,6 +175,8 @@ async def _fetch_and_parse_geo(
             raw_content_hash=hashlib.sha256(pages[0]).hexdigest() if len(pages) == 1 else None,
             raw_content_size=len(pages[0]) if len(pages) == 1 else 0,
         )
+        if ifn is not None:
+            _ifn_provenance(meta, ifn)
         return gdf, meta
     return gdf
 
@@ -537,3 +563,22 @@ async def ifn_conglomerados_geo(
         bbox=bbox,
         return_meta=return_meta,
     )
+
+
+def _ifn_provenance(meta: MetaInfo, download: client.IfnDownload) -> None:
+    manifest = json.dumps(
+        download.resources,
+        sort_keys=True,
+        ensure_ascii=False,
+        separators=(",", ":"),
+    ).encode("utf-8")
+    meta.raw_content_hash = hashlib.sha256(manifest).hexdigest()
+    meta.raw_content_size = len(manifest)
+    meta.source_details = {
+        "hash_kind": "resource_manifest_sha256",
+        "manifest_encoding": "canonical_json_utf8",
+        "manifest_fields": ["resources"],
+        "manifest_root": "resources",
+        "resources": download.resources,
+        "resource_bytes": sum(resource["bytes"] for resource in download.resources),
+    }

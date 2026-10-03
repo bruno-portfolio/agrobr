@@ -17,7 +17,7 @@
 |-------|----------|-----------|---------|
 | `cnfp` | 20,829 polygons (2026-09-23) | Polygon | uf, bioma, categoria, bbox |
 | `concessoes` | 8 polygons | Polygon | uf, bbox |
-| `ifn_conglomerados` | ~14.5K points (not verified: service down) | Point | uf, bioma, bbox |
+| `ifn_conglomerados` | 68 points in DF (2026-10-02; national total not verified) | Point | uf, bioma, bbox |
 
 ## Access via ArcGIS REST
 
@@ -26,8 +26,8 @@
 | Base URL | `https://mapas.florestal.gov.br/server/rest/services` |
 | CNFP Service | `Hosted/CNFP_v19_03_retificado_17072025/FeatureServer/9` |
 | Concessoes Service | `Hosted/unidades_concessoes_florestais/FeatureServer/0` |
-| IFN Service | `DadosAbertos-IFN/Conglomerado/FeatureServer/0` |
-| Pagination | Keyset on CNFP and concessions (`fid > last`, `orderByFields=fid`), 2,000 features per page; offset on IFN |
+| IFN Service | `DadosAbertos-IFN/dataset_ifn_tb_pontos_lote/FeatureServer/0` |
+| Pagination | Keyset on CNFP and concessions (`fid > last`, `orderByFields=fid`), 2,000 features per page; IFN by `co_pontos_lote` and its auxiliary layer by `co_lote` |
 | Throttle | 2s delay after 5 pages |
 
 ## Usage Example
@@ -105,13 +105,19 @@ asyncio.run(main())
 |--------|------|-------------|
 | id | int | Record ID |
 | codigo_lote | int | Lot code |
-| lote | str | Lot |
+| lote | nullable str | Published name from the auxiliary layer, joined on `co_lote` |
 | conglomerado | str | Conglomerate |
 | uf | str | State (abbreviation) |
 | municipio | str | Municipality |
 | bioma | str | Biome |
+| ciclo | nullable str | Source text from `nu_ciclo_execucao` |
 
 ## Specifics
+
+- **IFN, schema 1.1**: retains the seven previous columns and adds nullable text `ciclo`. `lote` comes from `DadosAbertos-IFN/dataset_ifn_tb_lote/FeatureServer/23`, queried without geometry for referenced codes only, in groups of at most 100. The many-to-one join preserves point order and row count. An unmatched code, duplicate code in the auxiliary layer or missing field raises `ParseError`; an auxiliary request failure does not return a partial table. A code or lot name published as null remains null and is recorded in `MetaInfo.validation_warnings`.
+- **IFN provenance**: `source_details.resources` lists data pages for points and lots, each with `role`, query URL, `sha256` and `bytes`. Count responses are excluded. `raw_content_hash` is the SHA-256 of this list serialized as UTF-8 JSON with sorted keys, no spaces and Unicode characters preserved (`sort_keys=True`, `separators=(",", ":")`, `ensure_ascii=False`); `raw_content_size` measures this manifest. `source_details.hash_kind` is `resource_manifest_sha256`, and `source_details.resource_bytes` sums the original bodies. An empty selection has the list `[]` and does not query the auxiliary layer.
+- **Reconstructing the IFN digest**: `source_details.manifest_encoding="canonical_json_utf8"` and `manifest_fields=["resources"]` identify the serialization and its source. `manifest_root="resources"` indicates that the serialized content is the list in `source_details.resources` itself, without wrapping it in an object. UTF-8 encoding preserves Unicode, sorts keys and uses compact separators, as specified above.
+- **IFN biome filter**: uses `UPPER(no_bioma)`; returned text retains the published case, such as `Cerrado` in DF. The geo variant requests EPSG:4326; the points' native CRS is EPSG:4674. Health checks the DF point count without certifying the join; reconciliation checks IDs, attributes and lot names against an independent reading.
 
 - **CNFP service name**: includes the rectification date in the path (`CNFP_v19_03_retificado_17072025`)
 - **Keyset pagination**: on CNFP and concessions, pages follow increasing `fid` (`fid > last` with `orderByFields=fid`). If the pages add up to fewer features than the official count, the query raises `SourceUnavailableError` stating how many are missing, instead of returning a partial result. An HTML response (maintenance or a WAF block, even with status 200) also becomes `SourceUnavailableError`
@@ -126,9 +132,8 @@ Identifiers, codes and years use nullable `Int64`; areas use `float64`. Text use
 
 ## Limitations
 
-- On September 2, 2026 and again on September 23, 2026, `ifn_conglomerados()` and `ifn_conglomerados_geo()` were
-  unavailable because the IFN ArcGIS service reported `MapServer not started`. Until the
-  service is restored, these calls raise `SourceUnavailableError`.
+- IFN uses the active point and lot layers following this migration. The DF capture from October 2, 2026 contains 68 points in lot `DF-01`. Historical goldens from the former service contain only unavailability errors: historical ID or population correspondence has not been established.
+- Points and lots are current publications queried separately; the join does not promise a transactional snapshot across both layers.
 - Data reflects the current state of the SFB ArcGIS Server
 - Forest concessions have few records (~8 polygons)
 - 2s throttle after 5 pages to avoid overloading the server

@@ -2160,6 +2160,10 @@ pin the agrobr version.
   accepted.
 - `defensivos`: the cache format moves to 2; the first query downloads again.
 - SICAR, `resumo(uf)` without a municipality: the count is of published features, and versions of the same `cod_imovel` count separately; `MetaInfo` carries `source_details["sicar"]["unidade"] = "feicoes_publicadas"` and a warning in `validation_warnings`. To count properties, use the municipality summary.
+- SFB, IFN: `sfb.ifn_conglomerados` and its `_geo` read the active IFN layers (the `Conglomerado` service went offline and both
+  functions failed); `lote` comes from a join with the lot registry on `co_lote` (an orphan or duplicate code raises
+  `ParseError`), and a `ciclo` column is added (nullable text, IFN schema 1.1): adjust positional selections. The `bioma` filter
+  no longer returns empty because of letter case. Per-page provenance is on the [source page](../sources/sfb.md).
 
 ## 98. B3: `oi_historico` is renamed `posicoes_abertas_historico`
 

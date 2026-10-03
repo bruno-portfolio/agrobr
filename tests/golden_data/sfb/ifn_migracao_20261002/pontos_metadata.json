@@ -1,0 +1,311 @@
+{
+ "currentVersion": 11.5,
+ "cimVersion": "3.5.0",
+ "id": 0,
+ "name": "tb_pontos_lote",
+ "type": "Feature Layer",
+ "parentLayer": null,
+ "defaultVisibility": true,
+ "minScale": 0,
+ "maxScale": 0,
+ "canScaleSymbols": false,
+ "geometryType": "esriGeometryPoint",
+ "description": "dbmapview.usr_alcamenes.tb_pontos_lote",
+ "copyrightText": "",
+ "editFieldsInfo": null,
+ "ownershipBasedAccessControlForFeatures": null,
+ "syncCanReturnChanges": false,
+ "relationships": [],
+ "isDataVersioned": false,
+ "isDataArchived": false,
+ "infoInEstimates": [
+  "count"
+ ],
+ "isDataBranchVersioned": false,
+ "isDataReplicaTracked": false,
+ "isCoGoEnabled": false,
+ "supportsRollbackOnFailureParameter": true,
+ "archivingInfo": {
+  "supportsQueryWithHistoricMoment": false,
+  "startArchivingMoment": -1
+ },
+ "supportsStatistics": true,
+ "supportsExceedsLimitStatistics": true,
+ "supportsAdvancedQueries": true,
+ "supportsValidateSQL": true,
+ "supportsCoordinatesQuantization": true,
+ "supportsQuantizationEditMode": true,
+ "supportsCalculate": true,
+ "supportsASyncCalculate": true,
+ "supportsDatumTransformation": true,
+ "advancedQueryCapabilities": {
+  "supportsPagination": true,
+  "supportsQueryWithDistance": true,
+  "supportsReturningQueryExtent": true,
+  "supportsStatistics": true,
+  "supportsPercentileStatistics": true,
+  "supportsHavingClause": true,
+  "supportsOrderBy": true,
+  "supportsDistinct": true,
+  "supportsCountDistinct": true,
+  "supportsAdvancedQueryRelated": true,
+  "supportsQueryRelatedPagination": true,
+  "supportsCurrentUserQueries": true,
+  "supportsFullTextSearch": true,
+  "fullTextSearchCapabilities": {
+   "supportsSearchOperator": true,
+   "supportsOperator": false,
+   "supportsSqlExpressionInFullText": true
+  },
+  "fullTextSearchableFields": [],
+  "supportsQueryWithResultType": true,
+  "supportsReturningGeometryCentroid": false,
+  "supportsReturningGeometryEnvelope": false,
+  "supportsSqlExpression": true,
+  "supportsQueryWithDatumTransformation": true,
+  "supportsLod": false,
+  "supportsQueryWithLodSR": false,
+  "supportsQueryAnalytic": true,
+  "supportsQueryWithCacheHint": false
+ },
+ "advancedQueryAnalyticCapabilities": {
+  "supportsLinearRegression": true,
+  "supportsAsync": true,
+  "supportsPercentileAnalytic": false
+ },
+ "advancedEditingCapabilities": {
+  "supportedSqlFormatsInCalculate": [
+   "standard"
+  ],
+  "supportsAsyncApplyEdits": true,
+  "supportsApplyEditsbyUploadID": true,
+  "supportedApplyEditsUploadIDFormats": "JSON,PBF"
+ },
+ "hasMetadata": true,
+ "extent": {
+  "xmin": -73.61999999999995,
+  "ymin": -33.65999999999997,
+  "xmax": -32.433749999999975,
+  "ymax": 4.32000000000005,
+  "spatialReference": {
+   "wkid": 4674,
+   "latestWkid": 4674,
+   "xyTolerance": 8.983152841195215E-9,
+   "zTolerance": 0.001,
+   "mTolerance": 0.001,
+   "falseX": -400,
+   "falseY": -400,
+   "xyUnits": 9.999999999999999E8,
+   "falseZ": -100000,
+   "zUnits": 10000,
+   "falseM": -100000,
+   "mUnits": 10000
+  }
+ },
+ "spatialReference": {
+  "wkid": 4674,
+  "latestWkid": 4674,
+  "xyTolerance": 8.983152841195215E-9,
+  "zTolerance": 0.001,
+  "mTolerance": 0.001,
+  "falseX": -400,
+  "falseY": -400,
+  "xyUnits": 9.999999999999999E8,
+  "falseZ": -100000,
+  "zUnits": 10000,
+  "falseM": -100000,
+  "mUnits": 10000
+ },
+ "sourceSpatialReference": {
+  "wkid": 4674,
+  "latestWkid": 4674,
+  "xyTolerance": 8.983152841195215E-9,
+  "zTolerance": 0.001,
+  "mTolerance": 0.001,
+  "falseX": -400,
+  "falseY": -400,
+  "xyUnits": 9.999999999999999E8,
+  "falseZ": -100000,
+  "zUnits": 10000,
+  "falseM": -100000,
+  "mUnits": 10000
+ },
+ "drawingInfo": {
+  "renderer": {
+   "type": "simple",
+   "symbol": {
+    "type": "esriSMS",
+    "style": "esriSMSCircle",
+    "color": [
+     125,
+     58,
+     150,
+     255
+    ],
+    "size": 4,
+    "angle": 0,
+    "xoffset": 0,
+    "yoffset": 0,
+    "outline": {
+     "color": [
+      0,
+      0,
+      0,
+      255
+     ],
+     "width": 0.7
+    }
+   }
+  },
+  "scaleSymbols": true,
+  "transparency": 0,
+  "labelingInfo": null
+ },
+ "hasM": false,
+ "hasZ": false,
+ "allowGeometryUpdates": true,
+ "allowTrueCurvesUpdates": false,
+ "onlyAllowTrueCurveUpdatesByTrueCurveClients": false,
+ "hasAttachments": false,
+ "supportsApplyEditsWithGlobalIds": false,
+ "htmlPopupType": "esriServerHTMLPopupTypeAsHTMLText",
+ "objectIdField": "co_pontos_lote",
+ "globalIdField": "",
+ "displayField": "no_conglomerado",
+ "typeIdField": "",
+ "subtypeField": "",
+ "fields": [
+  {
+   "name": "co_pontos_lote",
+   "type": "esriFieldTypeOID",
+   "alias": "co_pontos_lote",
+   "domain": null,
+   "editable": false,
+   "nullable": false,
+   "defaultValue": null,
+   "modelName": "co_pontos_lote"
+  },
+  {
+   "name": "no_conglomerado",
+   "type": "esriFieldTypeString",
+   "alias": "no_conglomerado",
+   "domain": null,
+   "editable": true,
+   "nullable": false,
+   "length": 20,
+   "defaultValue": null,
+   "modelName": "no_conglomerado"
+  },
+  {
+   "name": "nu_ciclo_execucao",
+   "type": "esriFieldTypeString",
+   "alias": "nu_ciclo_execucao",
+   "domain": null,
+   "editable": true,
+   "nullable": false,
+   "length": 10,
+   "defaultValue": null,
+   "modelName": "nu_ciclo_execucao"
+  },
+  {
+   "name": "co_lote",
+   "type": "esriFieldTypeInteger",
+   "alias": "co_lote",
+   "domain": null,
+   "editable": true,
+   "nullable": false,
+   "defaultValue": null,
+   "modelName": "co_lote"
+  },
+  {
+   "name": "no_uf",
+   "type": "esriFieldTypeString",
+   "alias": "no_uf",
+   "domain": null,
+   "editable": true,
+   "nullable": true,
+   "length": 2,
+   "defaultValue": null,
+   "modelName": "no_uf"
+  },
+  {
+   "name": "no_municipio",
+   "type": "esriFieldTypeString",
+   "alias": "no_municipio",
+   "domain": null,
+   "editable": true,
+   "nullable": true,
+   "length": 200,
+   "defaultValue": null,
+   "modelName": "no_municipio"
+  },
+  {
+   "name": "no_bioma",
+   "type": "esriFieldTypeString",
+   "alias": "no_bioma",
+   "domain": null,
+   "editable": true,
+   "nullable": true,
+   "length": 14,
+   "defaultValue": null,
+   "modelName": "no_bioma"
+  }
+ ],
+ "geometryField": {
+  "name": "vl_geo_espacial",
+  "type": "esriFieldTypeGeometry",
+  "alias": "vl_geo_espacial",
+  "domain": null,
+  "editable": true,
+  "nullable": false,
+  "defaultValue": null,
+  "modelName": "vl_geo_espacial"
+ },
+ "datesInUnknownTimezone": false,
+ "dateFieldsTimeReference": {
+  "timeZone": "UTC",
+  "timeZoneIANA": "Etc/UTC",
+  "respectsDaylightSaving": false
+ },
+ "preferredTimeReference": null,
+ "types": [],
+ "templates": [
+  {
+   "name": "tb_pontos_lote",
+   "description": "",
+   "prototype": {
+    "attributes": {
+     "no_municipio": null,
+     "no_bioma": null,
+     "no_conglomerado": " ",
+     "nu_ciclo_execucao": " ",
+     "co_lote": 0,
+     "no_uf": null
+    }
+   },
+   "drawingTool": "esriFeatureEditToolPoint"
+  }
+ ],
+ "maxRecordCount": 2000,
+ "supportedQueryFormats": "JSON, geoJSON, PBF",
+ "supportedExportFormats": "sqlite,filegdb,shapefile,csv,geojson",
+ "capabilities": "Query",
+ "supportedSpatialRelationships": [
+  "esriSpatialRelIntersects",
+  "esriSpatialRelContains",
+  "esriSpatialRelCrosses",
+  "esriSpatialRelEnvelopeIntersects",
+  "esriSpatialRelIndexIntersects",
+  "esriSpatialRelOverlaps",
+  "esriSpatialRelTouches",
+  "esriSpatialRelWithin",
+  "esriSpatialRelRelation"
+ ],
+ "supportsAppend": true,
+ "supportedAppendFormats": "FILEGDB,PBF",
+ "standardMaxRecordCount": 32000,
+ "tileMaxRecordCount": 8000,
+ "standardMaxRecordCountNoGeometry": 32000,
+ "maxRecordCountFactor": 1,
+ "serviceItemId": "f575d66e0dde4f8eb7a5ca89eaf2de18"
+}

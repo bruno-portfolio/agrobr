@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import httpx
+
 from agrobr.constants import Fonte
 from agrobr.health.registry import (
     HEALTH_REGISTRY,
@@ -32,3 +34,15 @@ class TestSourceDatasetMap:
     def test_lista_devolvida_e_copia(self):
         get_affected_datasets(Fonte.INMET).append("alterado")
         assert get_affected_datasets(Fonte.INMET) == ["clima"]
+
+
+def test_sfb_consulta_pontos_ifn_ativos_no_df():
+    url = httpx.URL(HEALTH_REGISTRY[Fonte.SFB].url)
+    assert url.path.endswith("/DadosAbertos-IFN/dataset_ifn_tb_pontos_lote/FeatureServer/0/query")
+    assert dict(url.params) == {
+        "where": "no_uf='DF'",
+        "outFields": "*",
+        "outSR": "4326",
+        "f": "json",
+        "returnCountOnly": "true",
+    }

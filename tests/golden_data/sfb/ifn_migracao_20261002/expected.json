@@ -1,0 +1,18 @@
+{
+  "records": 68,
+  "first": {
+    "id": 5454,
+    "codigo_lote": 29,
+    "lote": "DF-01",
+    "conglomerado": "1",
+    "uf": "DF",
+    "municipio": "Brasília",
+    "bioma": "Cerrado",
+    "ciclo": "1"
+  },
+  "last_id": 5521,
+  "geometry_5454": [
+    -48.17386999999996,
+    -15.540849999512321
+  ]
+}

@@ -17,7 +17,7 @@
 |-------|----------|-----------|---------|
 | `cnfp` | 20.829 polígonos (23/09/2026) | Polygon | uf, bioma, categoria, bbox |
 | `concessoes` | 8 polígonos | Polygon | uf, bbox |
-| `ifn_conglomerados` | ~14,5 mil pontos (não conferido: serviço fora do ar) | Point | uf, bioma, bbox |
+| `ifn_conglomerados` | 68 pontos no DF (02/10/2026; total nacional não conferido) | Point | uf, bioma, bbox |
 
 ## Acesso via ArcGIS REST
 
@@ -26,8 +26,8 @@
 | Base URL | `https://mapas.florestal.gov.br/server/rest/services` |
 | CNFP Service | `Hosted/CNFP_v19_03_retificado_17072025/FeatureServer/9` |
 | Concessoes Service | `Hosted/unidades_concessoes_florestais/FeatureServer/0` |
-| IFN Service | `DadosAbertos-IFN/Conglomerado/FeatureServer/0` |
-| Paginação | Por chave no CNFP e nas concessões (`fid > último`, `orderByFields=fid`), 2.000 feições por página; offset no IFN |
+| IFN Service | `DadosAbertos-IFN/dataset_ifn_tb_pontos_lote/FeatureServer/0` |
+| Paginação | Por chave no CNFP e nas concessões (`fid > último`, `orderByFields=fid`), 2.000 feições por página; IFN por `co_pontos_lote` e cadastro auxiliar por `co_lote` |
 | Throttle | 2s delay apos 5 paginas |
 
 ## Exemplo de Uso
@@ -105,13 +105,19 @@ asyncio.run(main())
 |--------|------|-----------|
 | id | int | ID do registro |
 | codigo_lote | int | Codigo do lote |
-| lote | str | Lote |
+| lote | str, anulável | Nome publicado no cadastro auxiliar, por junção em `co_lote` |
 | conglomerado | str | Conglomerado |
 | uf | str | UF (sigla) |
 | municipio | str | Municipio |
 | bioma | str | Bioma |
+| ciclo | str, anulável | Texto de `nu_ciclo_execucao` publicado pela fonte |
 
 ## Particularidades
+
+- **IFN, schema 1.1**: preserva as sete colunas anteriores e acrescenta `ciclo` como texto anulável. `lote` vem de `DadosAbertos-IFN/dataset_ifn_tb_lote/FeatureServer/23`, consultado sem geometria, somente para os códigos referenciados, em grupos de até 100. A junção muitos para um preserva a ordem e o número de pontos. Código sem correspondente, código duplicado no cadastro ou campo ausente levanta `ParseError`; falha na consulta auxiliar não devolve uma tabela parcial. Código ou nome de lote publicado como nulo permanece nulo e é registrado em `MetaInfo.validation_warnings`.
+- **Proveniência do IFN**: `source_details.resources` lista as páginas de dados dos pontos e dos lotes, cada uma com `role`, URL de consulta, `sha256` e `bytes`. As respostas de contagem não integram essa lista. `raw_content_hash` é o SHA-256 da lista serializada como JSON UTF-8 com chaves ordenadas, sem espaços e com caracteres Unicode preservados (`sort_keys=True`, `separators=(",", ":")`, `ensure_ascii=False`); `raw_content_size` mede esse manifesto. `source_details.hash_kind` é `resource_manifest_sha256`, e `source_details.resource_bytes` soma os corpos originais. O recorte vazio tem a lista `[]` e não consulta o cadastro.
+- **Reconstrução do digest IFN**: `source_details.manifest_encoding="canonical_json_utf8"` e `manifest_fields=["resources"]` identificam a serialização e sua origem. `manifest_root="resources"` indica que o conteúdo serializado é diretamente a lista em `source_details.resources`, sem envolvê-la em um objeto. A codificação UTF-8 preserva Unicode, ordena chaves e usa separadores compactos, conforme os parâmetros descritos acima.
+- **Filtro de bioma no IFN**: usa `UPPER(no_bioma)`; o texto devolvido preserva a caixa publicada, como `Cerrado` no DF. A variante geo pede EPSG:4326; o CRS nativo dos pontos é EPSG:4674. O health consulta a contagem de pontos do DF, sem certificar a junção; a reconciliação confere IDs, atributos e nomes de lote por leitura independente.
 
 - **CNFP service name**: inclui data de retificacao no path (`CNFP_v19_03_retificado_17072025`)
 - **Paginação por chave**: no CNFP e nas concessões, as páginas seguem `fid` crescente (`fid > último` com `orderByFields=fid`). Se somarem menos feições que a contagem oficial, a consulta levanta `SourceUnavailableError` dizendo quantas faltam, em vez de devolver resultado parcial. Resposta HTML (manutenção ou bloqueio de WAF, mesmo com status 200) também vira `SourceUnavailableError`
@@ -126,9 +132,8 @@ Identificadores, códigos e anos usam `Int64` anulável; áreas usam `float64`. 
 
 ## Limitacoes
 
-- Em 02/09/2026 e de novo em 23/09/2026, `ifn_conglomerados()` e `ifn_conglomerados_geo()` estão indisponíveis
-  porque o serviço ArcGIS IFN informa `MapServer not started`. Enquanto o servico nao for
-  restaurado, essas chamadas levantam `SourceUnavailableError`.
+- O IFN usa as camadas ativas de pontos e lotes desde esta migração. No DF, a captura de 02/10/2026 contém 68 pontos do lote `DF-01`. Os goldens históricos do serviço antigo contêm apenas erro de indisponibilidade: não há correspondência histórica comprovada de IDs ou de população.
+- Pontos e lotes são publicações correntes consultadas separadamente; a junção não promete um snapshot transacional entre as duas camadas.
 - Dados refletem o estado atual do ArcGIS Server do SFB
 - Concessoes florestais tem poucos registros (~8 poligonos)
 - Throttle de 2s apos 5 paginas para nao sobrecarregar o servidor

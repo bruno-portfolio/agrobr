@@ -1,0 +1,92 @@
+{
+  "source": "sfb",
+  "selection": "DF",
+  "captured_date": "2026-10-02",
+  "resources": [
+    {
+      "file": "pontos_metadata.json",
+      "inicio": "2026-10-02T21:53:59.537522+00:00",
+      "fim": "2026-10-02T21:53:59.566369+00:00",
+      "url_solicitada": "https://smapas.florestal.gov.br/server/rest/services/DadosAbertos-IFN/dataset_ifn_tb_pontos_lote/FeatureServer/0?f=pjson",
+      "url": "https://smapas.florestal.gov.br/server/rest/services/DadosAbertos-IFN/dataset_ifn_tb_pontos_lote/FeatureServer/0?f=pjson",
+      "status": 200,
+      "headers": {
+        "date": "Fri, 02 Oct 2026 21:54:05 GMT",
+        "etag": "\"04ab6e963cf1c1ece3e3593533f696f91807b31903865cbbd5410034d41ef0a7\"",
+        "content-type": "text/plain;charset=UTF-8"
+      },
+      "bytes": 7471,
+      "sha256": "b52601e92a4404f4554ec54a4c1364a55098249eb4607825e31162b489e7382d"
+    },
+    {
+      "file": "lotes_metadata.json",
+      "inicio": "2026-10-02T21:53:58.409410+00:00",
+      "fim": "2026-10-02T21:53:58.514555+00:00",
+      "url_solicitada": "https://smapas.florestal.gov.br/server/rest/services/DadosAbertos-IFN/dataset_ifn_tb_lote/FeatureServer/23?f=pjson",
+      "url": "https://smapas.florestal.gov.br/server/rest/services/DadosAbertos-IFN/dataset_ifn_tb_lote/FeatureServer/23?f=pjson",
+      "status": 200,
+      "headers": {
+        "date": "Fri, 02 Oct 2026 21:54:04 GMT",
+        "etag": "\"917893874e1f7405a7f3527c3f48a06a92d1827cf12a5cc92e668137ad8ad49f\"",
+        "content-type": "text/plain;charset=UTF-8"
+      },
+      "bytes": 7994,
+      "sha256": "c5670334c65c158317155b484ce09ad29470d62ca460046e580848c5224e6f99"
+    },
+    {
+      "file": "pontos_df_count.json",
+      "inicio": "2026-10-02T21:54:27.371668+00:00",
+      "fim": "2026-10-02T21:54:27.423062+00:00",
+      "url_solicitada": "https://smapas.florestal.gov.br/server/rest/services/DadosAbertos-IFN/dataset_ifn_tb_pontos_lote/FeatureServer/0/query?f=json&where=no_uf%3D%27DF%27&returnCountOnly=true",
+      "url": "https://smapas.florestal.gov.br/server/rest/services/DadosAbertos-IFN/dataset_ifn_tb_pontos_lote/FeatureServer/0/query?f=json&where=no_uf%3D%27DF%27&returnCountOnly=true",
+      "status": 200,
+      "headers": {
+        "date": "Fri, 02 Oct 2026 21:54:33 GMT",
+        "etag": "\"b927e904adc07ad6f0b8a5c7e7d68922f65ed1841a9fd5a64e019b32c90401c9\"",
+        "content-type": "application/json;charset=UTF-8"
+      },
+      "bytes": 12,
+      "sha256": "b927e904adc07ad6f0b8a5c7e7d68922f65ed1841a9fd5a64e019b32c90401c9"
+    },
+    {
+      "file": "ponto_5454_geo.json",
+      "inicio": "2026-10-02T21:56:00.024596+00:00",
+      "fim": "2026-10-02T21:56:00.071913+00:00",
+      "url_solicitada": "https://smapas.florestal.gov.br/server/rest/services/DadosAbertos-IFN/dataset_ifn_tb_pontos_lote/FeatureServer/0/query?f=geojson&where=no_uf%3D%27DF%27+AND+co_pontos_lote%3D5454&outFields=%2A&returnGeometry=true&outSR=4326&resultRecordCount=1",
+      "url": "https://smapas.florestal.gov.br/server/rest/services/DadosAbertos-IFN/dataset_ifn_tb_pontos_lote/FeatureServer/0/query?f=geojson&where=no_uf%3D%27DF%27+AND+co_pontos_lote%3D5454&outFields=%2A&returnGeometry=true&outSR=4326&resultRecordCount=1",
+      "status": 200,
+      "headers": {
+        "date": "Fri, 02 Oct 2026 21:56:05 GMT",
+        "etag": "\"27e745ae1defd95d015ba59daa0f97fa578651a386583b6ee90036e9cb207f59\"",
+        "content-type": "application/geo+json;charset=UTF-8"
+      },
+      "bytes": 311,
+      "sha256": "27e745ae1defd95d015ba59daa0f97fa578651a386583b6ee90036e9cb207f59"
+    },
+    {
+      "file": "lotes_df.json",
+      "inicio": "2026-10-02T21:56:43.916521+00:00",
+      "fim": "2026-10-02T21:56:44.042191+00:00",
+      "url_solicitada": "https://smapas.florestal.gov.br/server/rest/services/DadosAbertos-IFN/dataset_ifn_tb_lote/FeatureServer/23/query?f=json&where=co_lote+IN+%2829%29&outFields=%2A&returnGeometry=false&resultRecordCount=5",
+      "url": "https://smapas.florestal.gov.br/server/rest/services/DadosAbertos-IFN/dataset_ifn_tb_lote/FeatureServer/23/query?f=json&where=co_lote+IN+%2829%29&outFields=%2A&returnGeometry=false&resultRecordCount=5",
+      "status": 200,
+      "headers": {
+        "date": "Fri, 02 Oct 2026 21:56:49 GMT",
+        "etag": "\"4791f9f40a798cb5f45fdd91a272457db80fdb88fabfc72dd352187e3fcd3df7\"",
+        "content-type": "application/json;charset=UTF-8"
+      },
+      "bytes": 1027,
+      "sha256": "4791f9f40a798cb5f45fdd91a272457db80fdb88fabfc72dd352187e3fcd3df7"
+    },
+    {
+      "file": "pontos_df_tab.json",
+      "inicio_date": "2026-10-02T23:27:09.0794873Z",
+      "inicio": "2026-10-02T23:27:09.230657+00:00",
+      "fim": "2026-10-02T23:27:09.898918+00:00",
+      "url": "https://mapas.florestal.gov.br/server/rest/services/DadosAbertos-IFN/dataset_ifn_tb_pontos_lote/FeatureServer/0/query?where=no_uf%3D%27DF%27&outFields=co_pontos_lote%2Cco_lote%2Cno_conglomerado%2Cno_uf%2Cno_municipio%2Cno_bioma%2Cnu_ciclo_execucao&outSR=4326&f=json&returnGeometry=false&orderByFields=co_pontos_lote&resultRecordCount=68",
+      "status": 200,
+      "bytes": 11620,
+      "sha256": "d8b03ac230cd6f80a4c6074e67f52fa70275a6a2521966ffcbb08207b60575a5"
+    }
+  ]
+}

@@ -1,21 +1,24 @@
 from __future__ import annotations
 
+import json
 import re
 import warnings
 from typing import Any
 
 import pandas as pd
+from pydantic import ValidationError
 
 from agrobr import _log
 from agrobr.exceptions import ParseError
 from agrobr.utils.geo import parse_arcgis_geojson, parse_arcgis_tabular
 from agrobr.utils.result import ATRIBUTO_AVISOS
 
+from . import models
 from .models import LAYERS
 
 logger = _log.get_logger(__name__)
 
-PARSER_VERSION = 3
+PARSER_VERSION = 4
 
 _NUMERIC_COLS = frozenset({"area_ha", "codigo_lote"})
 _ANO = re.compile(r"(?<!\d)\d{4}(?!\d)")
@@ -101,3 +104,67 @@ def parse_layer_geojson(pages: list[bytes], *, layer_key: str) -> Any:
             texto=_mantem_texto(layer_key),
         )
     )
+
+
+def ifn_atributos(page: bytes, *, lotes: bool = False) -> list[dict[str, Any]]:
+    try:
+        document = json.loads(page)
+        if not isinstance(document, dict) or not isinstance(document.get("features"), list):
+            raise ValueError("esperado objeto com lista de features")
+        model = models.IfnLote if lotes else models.IfnPonto
+        rows = []
+        for feature in document["features"]:
+            if not isinstance(feature, dict):
+                raise ValueError("feição sem atributos")
+            attributes = feature.get("properties", feature.get("attributes"))
+            rows.append(model.model_validate(attributes).model_dump())
+        return rows
+    except (ValueError, TypeError, UnicodeDecodeError, ValidationError) as exc:
+        raise ParseError(source="sfb", parser_version=PARSER_VERSION, reason=str(exc)) from exc
+
+
+def parse_ifn(pontos: list[bytes], lotes: list[bytes], *, geometria: bool = False) -> Any:
+    for page in pontos:
+        ifn_atributos(page)
+    parse = parse_layer_geojson if geometria else parse_layer_tabular
+    df = parse(pontos, layer_key="ifn_conglomerados")
+    cadastro: dict[int, str | None] = {}
+    for page in lotes:
+        for row in ifn_atributos(page, lotes=True):
+            code = row["co_lote"]
+            if code in cadastro:
+                raise ParseError(
+                    source="sfb",
+                    parser_version=PARSER_VERSION,
+                    reason=f"Código de lote duplicado no cadastro IFN: {code}",
+                )
+            cadastro[code] = row["no_lote"]
+    codes = {int(code) for code in df["codigo_lote"].dropna()}
+    if missing := codes - cadastro.keys():
+        raise ParseError(
+            source="sfb",
+            parser_version=PARSER_VERSION,
+            reason=f"Lotes IFN sem correspondente no cadastro: {sorted(missing)}",
+        )
+    if extra := cadastro.keys() - codes:
+        raise ParseError(
+            source="sfb",
+            parser_version=PARSER_VERSION,
+            reason=f"Lotes IFN não solicitados no cadastro: {sorted(extra)}",
+        )
+    if df["id"].duplicated().any():
+        raise ParseError(
+            source="sfb",
+            parser_version=PARSER_VERSION,
+            reason="IDs IFN duplicados",
+        )
+    df["lote"] = df["codigo_lote"].map(cadastro)
+    null_codes = int(df["codigo_lote"].isna().sum())
+    null_names = int((df["codigo_lote"].notna() & df["lote"].isna()).sum())
+    if null_codes or null_names:
+        df.attrs.setdefault(ATRIBUTO_AVISOS, []).append(
+            f"IFN: {null_codes} pontos com código de lote nulo e "
+            f"{null_names} pontos com nome de lote nulo publicado no cadastro."
+        )
+    columns = models.LAYERS["ifn_conglomerados"]["colunas_saida"]
+    return _normalizar_tipos(df[columns + (["geometry"] if geometria else [])])

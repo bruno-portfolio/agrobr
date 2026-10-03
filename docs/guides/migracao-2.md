@@ -2135,6 +2135,10 @@ o `normalize`, o `agrobr.sync` e os comandos da CLI. A lista nominal está na [p
   ano seguinte deixa de ser aceito.
 - `defensivos`: o formato do cache sobe para 2; a primeira consulta baixa de novo.
 - SICAR, `resumo(uf)` sem município: a contagem é de feições publicadas, e versões do mesmo `cod_imovel` contam separado; o `MetaInfo` traz `source_details["sicar"]["unidade"] = "feicoes_publicadas"` e um aviso em `validation_warnings`. Para contar imóveis, use o resumo por município.
+- SFB, IFN: `sfb.ifn_conglomerados` e o `_geo` leem as camadas ativas do IFN (o serviço `Conglomerado` saiu do ar e as duas
+  funções falhavam); `lote` vem pela junção com o cadastro de lotes em `co_lote` (código órfão ou duplicado levanta `ParseError`),
+  e entra a coluna `ciclo` (texto anulável, schema IFN 1.1): ajuste seleção por posição. O filtro de `bioma` deixa de voltar vazio
+  por diferença de caixa. A proveniência por página está na [página da fonte](../sources/sfb.md).
 
 ## 98. B3: `oi_historico` passa a se chamar `posicoes_abertas_historico`
 
