@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import hashlib
+import json
 import time
 from typing import TYPE_CHECKING, Any, Literal, cast, overload
 
@@ -9,7 +10,6 @@ import pandas as pd
 from agrobr import _log
 from agrobr.exceptions import InvalidParameterError
 from agrobr.models import MetaInfo
-from agrobr.normalize import regions
 from agrobr.utils.geo import validate_bbox
 from agrobr.utils.result import (
     DataFrameResult,
@@ -65,6 +65,49 @@ def _build_where(*, uf: str | None = None) -> str:
     return f"NM_ESTADO='{estado}'"
 
 
+def _compor_hash_paginas(
+    meta: MetaInfo,
+    pages: list[bytes],
+    *,
+    layer_key: str,
+    where: str,
+    bbox: tuple[float, float, float, float] | None,
+    max_registros: int | None,
+    f: str,
+) -> None:
+    if len(pages) <= 1:
+        return
+    query = {
+        "fonte": "ana",
+        "recurso": layer_key,
+        "where": where,
+        "bbox": list(bbox) if bbox is not None else None,
+        "max_registros": max_registros,
+        "formato": f,
+    }
+    resources = [
+        {"pagina": numero, "sha256": hashlib.sha256(page).hexdigest(), "bytes": len(page)}
+        for numero, page in enumerate(pages, 1)
+    ]
+    manifesto = json.dumps(
+        {"query": query, "resources": resources},
+        ensure_ascii=False,
+        sort_keys=True,
+        separators=(",", ":"),
+        allow_nan=False,
+    ).encode("utf-8")
+    meta.raw_content_hash = hashlib.sha256(manifesto).hexdigest()
+    meta.raw_content_size = len(manifesto)
+    meta.source_details = {
+        "hash_kind": "resource_manifest_sha256",
+        "manifest_encoding": "canonical_json_utf8",
+        "manifest_fields": ["query", "resources"],
+        "query": query,
+        "resources": resources,
+        "resource_bytes": sum(len(page) for page in pages),
+    }
+
+
 async def _fetch_and_parse_tabular(
     layer_key: str,
     *,
@@ -103,6 +146,15 @@ async def _fetch_and_parse_tabular(
         selected_source=f"ana_{layer_key}",
         raw_content_hash=hashlib.sha256(pages[0]).hexdigest() if len(pages) == 1 else None,
         raw_content_size=len(pages[0]) if len(pages) == 1 else 0,
+    )
+    _compor_hash_paginas(
+        meta,
+        pages,
+        layer_key=layer_key,
+        where=where,
+        bbox=bbox,
+        max_registros=max_registros,
+        f="json",
     )
     return finalize_result(
         df,
@@ -153,6 +205,15 @@ async def _fetch_and_parse_geo(
             selected_source=f"ana_{layer_key}_geo",
             raw_content_hash=hashlib.sha256(pages[0]).hexdigest() if len(pages) == 1 else None,
             raw_content_size=len(pages[0]) if len(pages) == 1 else 0,
+        )
+        _compor_hash_paginas(
+            meta,
+            pages,
+            layer_key=layer_key,
+            where=where,
+            bbox=bbox,
+            max_registros=max_registros,
+            f="geojson",
         )
         return gdf, meta
     return gdf
@@ -642,13 +703,7 @@ def _recorte_massas(
         raise InvalidParameterError(
             "massas_dagua exige uf ou bbox: o Brasil inteiro tem 240 mil polígonos (cerca de 1 GB)"
         )
-    if uf is None:
-        return "1=1", bbox
-    nome = regions.uf_para_nome(uf).upper()
-    return (
-        f"(nmufe = '{nome}' OR nmufe LIKE '{nome}, %' OR nmufe LIKE '%, {nome}' "
-        f"OR nmufe LIKE '%, {nome}, %')"
-    ), bbox
+    return client.massas_where(uf), bbox
 
 
 async def _fetch_massas(
@@ -685,6 +740,15 @@ async def _fetch_massas(
         selected_source=fonte,
         raw_content_hash=hashlib.sha256(pages[0]).hexdigest() if len(pages) == 1 else None,
         raw_content_size=len(pages[0]) if len(pages) == 1 else 0,
+    )
+    _compor_hash_paginas(
+        meta,
+        pages,
+        layer_key="massas_dagua",
+        where=where,
+        bbox=bbox,
+        max_registros=max_registros,
+        f=formato,
     )
     return df, meta
 

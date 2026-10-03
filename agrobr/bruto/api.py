@@ -230,6 +230,9 @@ class Coleta:
             "bruto", f"{self.plano.fonte}/{self.plano.recurso}: {mensagem}"
         )
 
+    def divergencia(self, mensagem: str) -> ParseError:
+        return self._divergencia(mensagem)
+
     def _divergencia(self, mensagem: str) -> ParseError:
         self.divergente = True
         return ParseError(self.plano.fonte, 1, mensagem)

@@ -10,6 +10,7 @@ from agrobr.http import responses
 from agrobr.http.retry import retry_on_status
 from agrobr.http.settings import get_timeout
 from agrobr.http.user_agents import UserAgentRotator
+from agrobr.normalize import regions
 from agrobr.utils.geo import (
     build_arcgis_query_url,
     fetch_arcgis_count,
@@ -25,6 +26,16 @@ _FID = MASSAS_DAGUA["oid_field"]
 _PAGINA = MASSAS_DAGUA["max_record_count"]
 _PAUSA_APOS_PAGINA = 5
 _PAUSA_SEGUNDOS = 2.0
+
+
+def massas_where(uf: str | None) -> str:
+    if uf is None:
+        return "1=1"
+    nome = regions.uf_para_nome(uf).upper()
+    return (
+        f"(nmufe = '{nome}' OR nmufe LIKE '{nome}, %' OR nmufe LIKE '%, {nome}' "
+        f"OR nmufe LIKE '%, {nome}, %')"
+    )
 
 
 async def fetch_layer(

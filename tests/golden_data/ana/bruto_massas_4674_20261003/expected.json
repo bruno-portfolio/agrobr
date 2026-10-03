@@ -1,0 +1,20 @@
+{
+  "count": 1,
+  "ids": [
+    114424
+  ],
+  "wkid": 4674,
+  "attributes": {
+    "FID": 114424,
+    "gid": 60225,
+    "esp_cd": 64114,
+    "nmoriginal": "Barragem 048/2016",
+    "nuvolumhm3": 0.12,
+    "nmufe": "DISTRITO FEDERAL"
+  },
+  "primeiro_vertice": [
+    -47.4645346,
+    -15.988843899999999
+  ],
+  "vertices_primeiro_anel": 29
+}

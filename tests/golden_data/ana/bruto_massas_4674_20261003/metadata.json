@@ -1,0 +1,115 @@
+{
+  "uf": "DF",
+  "bbox": [
+    -47.466,
+    -15.993,
+    -47.462,
+    -15.988
+  ],
+  "bbox_crs": "EPSG:4674",
+  "requests": [
+    {
+      "arquivo": "contagem.json",
+      "url": "https://www.snirh.gov.br/arcgis/rest/services/SPR/Massa_dagua/MapServer/0/query?where=%28nmufe+%3D+%27DISTRITO+FEDERAL%27+OR+nmufe+LIKE+%27DISTRITO+FEDERAL%2C+%25%27+OR+nmufe+LIKE+%27%25%2C+DISTRITO+FEDERAL%27+OR+nmufe+LIKE+%27%25%2C+DISTRITO+FEDERAL%2C+%25%27%29&outFields=%2A&outSR=4674&f=json&geometry=-47.466%2C-15.993%2C-47.462%2C-15.988&geometryType=esriGeometryEnvelope&inSR=4674&spatialRel=esriSpatialRelIntersects&returnGeometry=true&returnCountOnly=true",
+      "parametros": {
+        "where": "(nmufe = 'DISTRITO FEDERAL' OR nmufe LIKE 'DISTRITO FEDERAL, %' OR nmufe LIKE '%, DISTRITO FEDERAL' OR nmufe LIKE '%, DISTRITO FEDERAL, %')",
+        "outFields": "*",
+        "outSR": "4674",
+        "f": "json",
+        "geometry": "-47.466,-15.993,-47.462,-15.988",
+        "geometryType": "esriGeometryEnvelope",
+        "inSR": "4674",
+        "spatialRel": "esriSpatialRelIntersects",
+        "returnGeometry": "true",
+        "returnCountOnly": "true"
+      },
+      "http_status": 200,
+      "inicio": "2026-10-03T13:56:33.652668+00:00",
+      "fim": "2026-10-03T13:56:47.580436+00:00",
+      "bytes": 11,
+      "sha256": "6aea6dfe6561984cdc5c54ead84d47d2cf29e48253ae282aef237404adad4661",
+      "cabecalhos": {
+        "date": "Sat, 03 Oct 2026 13:56:50 GMT",
+        "content-type": "application/json; charset=UTF-8",
+        "etag": "\"W31XQMuDynoirBm4_1701949992\""
+      }
+    },
+    {
+      "arquivo": "ids.json",
+      "url": "https://www.snirh.gov.br/arcgis/rest/services/SPR/Massa_dagua/MapServer/0/query?where=%28nmufe+%3D+%27DISTRITO+FEDERAL%27+OR+nmufe+LIKE+%27DISTRITO+FEDERAL%2C+%25%27+OR+nmufe+LIKE+%27%25%2C+DISTRITO+FEDERAL%27+OR+nmufe+LIKE+%27%25%2C+DISTRITO+FEDERAL%2C+%25%27%29&outFields=%2A&outSR=4674&f=json&geometry=-47.466%2C-15.993%2C-47.462%2C-15.988&geometryType=esriGeometryEnvelope&inSR=4674&spatialRel=esriSpatialRelIntersects&returnGeometry=true&returnIdsOnly=true",
+      "parametros": {
+        "where": "(nmufe = 'DISTRITO FEDERAL' OR nmufe LIKE 'DISTRITO FEDERAL, %' OR nmufe LIKE '%, DISTRITO FEDERAL' OR nmufe LIKE '%, DISTRITO FEDERAL, %')",
+        "outFields": "*",
+        "outSR": "4674",
+        "f": "json",
+        "geometry": "-47.466,-15.993,-47.462,-15.988",
+        "geometryType": "esriGeometryEnvelope",
+        "inSR": "4674",
+        "spatialRel": "esriSpatialRelIntersects",
+        "returnGeometry": "true",
+        "returnIdsOnly": "true"
+      },
+      "http_status": 200,
+      "inicio": "2026-10-03T13:56:49.590275+00:00",
+      "fim": "2026-10-03T13:56:50.897064+00:00",
+      "bytes": 48,
+      "sha256": "9db97dd9e8a14326b96e71c1ffd685da7fd5f5199c06cbd77230a6ff20184459",
+      "cabecalhos": {
+        "date": "Sat, 03 Oct 2026 13:56:53 GMT",
+        "content-type": "application/json; charset=UTF-8",
+        "etag": "\"W31XQMuDynoirBm4_1701949992\""
+      }
+    },
+    {
+      "arquivo": "pagina.json",
+      "url": "https://www.snirh.gov.br/arcgis/rest/services/SPR/Massa_dagua/MapServer/0/query?where=%28%28nmufe+%3D+%27DISTRITO+FEDERAL%27+OR+nmufe+LIKE+%27DISTRITO+FEDERAL%2C+%25%27+OR+nmufe+LIKE+%27%25%2C+DISTRITO+FEDERAL%27+OR+nmufe+LIKE+%27%25%2C+DISTRITO+FEDERAL%2C+%25%27%29%29+AND+FID+%3E%3D+114424+AND+FID+%3C%3D+114424&outFields=%2A&outSR=4674&f=json&geometry=-47.466%2C-15.993%2C-47.462%2C-15.988&geometryType=esriGeometryEnvelope&inSR=4674&spatialRel=esriSpatialRelIntersects&returnGeometry=true",
+      "parametros": {
+        "where": "((nmufe = 'DISTRITO FEDERAL' OR nmufe LIKE 'DISTRITO FEDERAL, %' OR nmufe LIKE '%, DISTRITO FEDERAL' OR nmufe LIKE '%, DISTRITO FEDERAL, %')) AND FID >= 114424 AND FID <= 114424",
+        "outFields": "*",
+        "outSR": "4674",
+        "f": "json",
+        "geometry": "-47.466,-15.993,-47.462,-15.988",
+        "geometryType": "esriGeometryEnvelope",
+        "inSR": "4674",
+        "spatialRel": "esriSpatialRelIntersects",
+        "returnGeometry": "true"
+      },
+      "http_status": 200,
+      "inicio": "2026-10-03T13:56:52.905852+00:00",
+      "fim": "2026-10-03T13:56:52.975295+00:00",
+      "bytes": 9211,
+      "sha256": "9afb7ec2d577900eac33d0f09ff7a23a75a333ab3e2e32e01e5ec9402cd4efe7",
+      "cabecalhos": {
+        "date": "Sat, 03 Oct 2026 13:56:55 GMT",
+        "content-type": "application/json; charset=UTF-8",
+        "etag": "\"W31XQMuDynoirBm4_1701949992\""
+      }
+    },
+    {
+      "arquivo": "contagem.json",
+      "url": "https://www.snirh.gov.br/arcgis/rest/services/SPR/Massa_dagua/MapServer/0/query?where=%28nmufe+%3D+%27DISTRITO+FEDERAL%27+OR+nmufe+LIKE+%27DISTRITO+FEDERAL%2C+%25%27+OR+nmufe+LIKE+%27%25%2C+DISTRITO+FEDERAL%27+OR+nmufe+LIKE+%27%25%2C+DISTRITO+FEDERAL%2C+%25%27%29&outFields=%2A&outSR=4674&f=json&geometry=-47.466%2C-15.993%2C-47.462%2C-15.988&geometryType=esriGeometryEnvelope&inSR=4674&spatialRel=esriSpatialRelIntersects&returnGeometry=true&returnCountOnly=true",
+      "parametros": {
+        "where": "(nmufe = 'DISTRITO FEDERAL' OR nmufe LIKE 'DISTRITO FEDERAL, %' OR nmufe LIKE '%, DISTRITO FEDERAL' OR nmufe LIKE '%, DISTRITO FEDERAL, %')",
+        "outFields": "*",
+        "outSR": "4674",
+        "f": "json",
+        "geometry": "-47.466,-15.993,-47.462,-15.988",
+        "geometryType": "esriGeometryEnvelope",
+        "inSR": "4674",
+        "spatialRel": "esriSpatialRelIntersects",
+        "returnGeometry": "true",
+        "returnCountOnly": "true"
+      },
+      "http_status": 200,
+      "inicio": "2026-10-03T13:56:54.989192+00:00",
+      "fim": "2026-10-03T13:56:56.331996+00:00",
+      "bytes": 11,
+      "sha256": "6aea6dfe6561984cdc5c54ead84d47d2cf29e48253ae282aef237404adad4661",
+      "cabecalhos": {
+        "date": "Sat, 03 Oct 2026 13:56:58 GMT",
+        "content-type": "application/json; charset=UTF-8",
+        "etag": "\"W31XQMuDynoirBm4_1701949992\""
+      }
+    }
+  ]
+}

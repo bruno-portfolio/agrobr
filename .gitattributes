@@ -138,3 +138,8 @@ tests/golden_data/ibge/censo_agro_efetivo_sample/response.csv -text
 tests/golden_data/conab_ceasa/precos_sample/ceasas_response.json -text
 tests/golden_data/conab_ceasa/precos_sample/precos_response.json -text
 tests/golden_data/sfb/ifn_migracao_20261002/*.json -text
+tests/golden_data/ana/bruto_massas_4674_20261003/*.json -text
+tests/golden_data/cnuc/bruto_ucs_4674_20261003/** -text
+tests/golden_data/ibge/bruto_malha_4674_20261003/** -text
+tests/golden_data/ibge/bruto_urbana_4674_20261003/** -text
+tests/golden_data/sicar/bruto_imoveis_4674_20261003/** -text

@@ -4,6 +4,7 @@ from typing import Literal, Protocol
 
 import httpx
 
+from agrobr import exceptions
 from agrobr.bruto import models
 
 
@@ -30,6 +31,8 @@ class ContextoBruto(Protocol):
     ) -> None: ...
 
     def conferir_prazo(self) -> None: ...
+
+    def divergencia(self, mensagem: str) -> exceptions.ParseError: ...
 
 
 class AdaptadorBruto(Protocol):
