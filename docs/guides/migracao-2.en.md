@@ -77,7 +77,7 @@ In order of risk. Each line points to the section with the details.
 24. HTTP error statuses raise `SourceUnavailableError`, not `httpx.HTTPStatusError`: change the `except`
    ([§75](#75-http-error-statuses-sourceunavailableerror-not-httpxhttpstatuserror)).
 25. An unknown or misspelled argument, which 1.1.0 silently dropped, raises before the network: `TypeError` in the 77
-    functions that lost `**kwargs`, and `TypeError` or `InvalidParameterError` in the 32 that keep it: fix the name
+    functions that lost `**kwargs`, and `TypeError` or `InvalidParameterError` in the 33 that keep it: fix the name
     ([§78](#78-argument-outside-the-signature-raises-typeerror)).
 26. An impossible argument (unknown state, inverted period) raises `InvalidParameterError` before the network, where 1.1.0
     returned empty data or a source error; in 2.0, the rule applies to every source
@@ -1630,15 +1630,15 @@ input still accepts "2023/24", "2023/2024" and "2024". To convert what was saved
 
 ## 78. Argument outside the signature raises `TypeError`
 
-In 1.1.0, the 109 public functions below accepted `**kwargs`: an unknown or misspelled argument was silently dropped, or passed on to
+In 1.1.0, the 110 public functions below accepted `**kwargs`: an unknown or misspelled argument was silently dropped, or passed on to
 the fetcher, which read only the keys it knew. The cut came out wider than requested, without an error:
 `ibama.embargos(municipio="X")` returned the whole of Brazil, and so did `datasets.progresso_safra("soja", uf="MT")`. In
 2.0, 77 of them get an explicit signature, and an argument outside it raises `TypeError` before the network; the other
-32 keep `**kwargs` and reject the unknown name.
+33 keep `**kwargs` and reject the unknown name.
 
 - **Datasets (32):** `abate_trimestral`, `balanco`, `cadastro_rural`, `censo_agropecuario`, `censo_agropecuario_historico`, `censo_agropecuario_legado`, `censo_agropecuario_municipal_1985`, `clima`, `comercio_internacional`, `condicao_lavouras`, `credito_rural`, `embarques_anec`, `estimativa_safra`, `exportacao`, `extrativismo_vegetal`, `fertilizante`, `futuros_agricolas`, `importacao`, `leite_industrial`, `movimentacao_portuaria`, `oferta_demanda_global`, `pecuaria_municipal`, `pib_agro`, `posicionamento_fundos`, `preco_atacado`, `producao_anual`, `progresso_safra`, `queimadas`, `seguro_rural`, `serie_historica_safra`, `silvicultura`, `uso_do_solo`.
 - **Source functions (45):** `abiove.exportacao`, `acervo_fundiario.assentamentos`, `acervo_fundiario.assentamentos_geo`, `acervo_fundiario.sigef`, `acervo_fundiario.sigef_geo`, `acervo_fundiario.snci`, `acervo_fundiario.snci_geo`, `alt.sicar.imoveis`, `alt.sicar.imoveis_geo`, `alt.sicar.resumo`, `ana.demanda_irrigacao`, `ana.demanda_irrigacao_geo`, `ana.disponibilidade_hidrica`, `ana.disponibilidade_hidrica_geo`, `ana.hidrografia`, `ana.hidrografia_geo`, `ana.pivos_irrigacao`, `ana.pivos_irrigacao_geo`, `anda.entregas`, `b3.ajustes`, `b3.historico`, `b3.posicoes_abertas`, `b3.posicoes_abertas_historico`, `conab.ceasa_precos`, `conab.progresso_safra`, `deral.condicao_lavouras`, `ibama.embargos`, `ibama.embargos_geo`, `icmbio.ucs_geo`, `imea.cotacoes`, `inmet.clima_uf`, `inmet.estacao`, `inmet.historico`, `mapbiomas_alerta.alertas`, `mapbiomas_alerta.alertas_geo`, `queimadas.focos`, `queimadas.focos_geo`, `rio_verde.ensaio_soja`, `sfb.cnfp`, `sfb.cnfp_geo`, `sfb.concessoes`, `sfb.concessoes_geo`, `sfb.ifn_conglomerados`, `sfb.ifn_conglomerados_geo`, `usda.psd`.
-- **Functions that keep `**kwargs` (32):** in 1.1.0 they also dropped an unknown name; in 2.0 they reject it before the network. `TypeError`: `anec.comparacao_anual`, `anec.destinos`, `anec.embarques`, `anec.embarques_mensais`, `desmatamento.prodes`, `prodes_geo`, `deter`, `deter_geo`, `embrapa_solos.perfis`, `perfis_geo`, `mapa_solos`, `mapa_solos_geo`, `funai.terras_indigenas`, `terras_indigenas_geo`, `icmbio.ucs`, `incra.quilombolas`, `quilombolas_geo` and the `desmatamento` and `zoneamento_agricola` datasets. `InvalidParameterError`: `comtrade.comercio`, `comtrade.trade_mirror`, `defensivos.formulados`, `autorizacoes`, `tecnicos`, `lista_suja.empregadores`, `mapbiomas.cobertura`, `mapbiomas.transicao`, `nasa_power.clima_ponto`, `clima_uf`, `rnc.registradas`, `protegidas` and `zarc.zoneamento`.
+- **Functions that keep `**kwargs` (33):** in 1.1.0 they also dropped an unknown name; in 2.0 they reject it before the network. `TypeError`: `anec.comparacao_anual`, `anec.destinos`, `anec.embarques`, `anec.embarques_mensais`, `desmatamento.prodes`, `prodes_geo`, `deter`, `deter_geo`, `embrapa_solos.perfis`, `perfis_geo`, `mapa_solos`, `mapa_solos_geo`, `funai.terras_indigenas`, `terras_indigenas_geo`, `icmbio.ucs`, `incra.quilombolas`, `quilombolas_geo` and the `custo_producao`, `desmatamento` and `zoneamento_agricola` datasets. `InvalidParameterError`: `comtrade.comercio`, `comtrade.trade_mirror`, `defensivos.formulados`, `autorizacoes`, `tecnicos`, `lista_suja.empregadores`, `mapbiomas.cobertura`, `mapbiomas.transicao`, `nasa_power.clima_ponto`, `clima_uf`, `rnc.registradas`, `protegidas` and `zarc.zoneamento`.
 - **Arguments that only reached the fallback:** `datasets.exportacao(mes=...)` went to ABIOVE (section 39), and
   `datasets.producao_anual(safra=...)` to CONAB. In 2.0, both raise `TypeError`. Use `abiove.exportacao(ano, mes=...)` or
   filter the result's `mes`, and `conab.safras(produto, safra=...)` or `producao_anual`'s `ano`.
