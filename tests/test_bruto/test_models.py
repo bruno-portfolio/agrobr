@@ -158,6 +158,24 @@ def test_limite_omitido_no_manifesto_e_recusado(arquivo_ok, campo):
         models.RecursoBruto.model_validate_json(json.dumps(arquivo_ok))
 
 
+@pytest.mark.parametrize(
+    ("formato", "trecho"),
+    [("csv", "arquivo fora do layout"), ("geojson", "modo arquivo exige formato zip ou csv")],
+)
+def test_formato_do_arquivo_segue_o_layout_original(arquivo_ok, formato, trecho):
+    arquivo_ok["formato"] = formato
+
+    with pytest.raises(ValidationError, match=trecho):
+        models.RecursoBruto.model_validate_json(json.dumps(arquivo_ok))
+
+
+def test_paginado_nao_usa_formato_de_arquivo(ok):
+    ok["formato"] = "csv"
+
+    with pytest.raises(ValidationError, match="modo paginado não usa formato de arquivo"):
+        models.RecursoBruto.model_validate_json(json.dumps(ok))
+
+
 def test_contagem_do_controle_diferente_da_cobertura_e_recusada(ok):
     ok["controles"][0]["valor_declarado"] += 1
 

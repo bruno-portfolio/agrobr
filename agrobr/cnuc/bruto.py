@@ -1,11 +1,13 @@
 from __future__ import annotations
 
+import json
 from typing import Any, Literal
 
 import httpx
 from lxml import etree
 
-from agrobr.bruto import models, protocols
+from agrobr.bruto import arquivo, models, protocols
+from agrobr.constants import URLS, Fonte
 from agrobr.exceptions import ParseError
 from agrobr.http.user_agents import UserAgentRotator
 
@@ -14,6 +16,8 @@ from .models import GEOM_COLUMN, MAPSERVER, NS_MS, NS_WFS, TYPENAME
 
 CRS_NATIVO = "EPSG:4674"
 CAMPO = "cd_cnuc"
+EDICAO_CADASTRO = 202607
+URL_CADASTRO = URLS[Fonte.CNUC]["cadastro_csv"]
 _URN = "urn:ogc:def:crs:EPSG::"
 
 
@@ -194,4 +198,27 @@ class AdaptadorCnuc:
         return models.ConclusaoBruta(status="ok")
 
 
+async def conferir_catalogo(contexto: protocols.ContextoBruto, http: httpx.AsyncClient) -> None:
+    """O CKAN do MMA tem de publicar a edição (``CNUC_AAAA_MM``, CSV) na URL fixada no agrobr, e só nela."""
+    nome = f"CNUC_{EDICAO_CADASTRO // 100}_{EDICAO_CADASTRO % 100:02d}"
+    catalogo = URLS[Fonte.CNUC]["ckan_package"]
+    corpo = await contexto.consultar(http, catalogo)
+    try:
+        urls = [
+            recurso["url"]
+            for recurso in json.loads(corpo)["result"]["resources"]
+            if recurso["name"] == nome and str(recurso["format"]).upper() == "CSV"
+        ]
+    except (ValueError, KeyError, TypeError) as exc:
+        raise _erro(f"catálogo {catalogo} ilegível ({type(exc).__name__}: {exc})") from exc
+    if urls != [URL_CADASTRO]:
+        raise _erro(
+            f"o catálogo {catalogo} publica {nome} (CSV) em {urls}, não em {URL_CADASTRO}: "
+            "edição republicada ou retirada; atualize o agrobr"
+        )
+
+
 adaptador = AdaptadorCnuc()
+cadastro = arquivo.AdaptadorArquivo(
+    URL_CADASTRO, EDICAO_CADASTRO, arquivo.conferir_csv("Código UC"), conferir_catalogo
+)

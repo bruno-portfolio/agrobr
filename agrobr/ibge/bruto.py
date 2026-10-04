@@ -6,7 +6,8 @@ from typing import Any, Literal
 import httpx
 from lxml import etree
 
-from agrobr.bruto import models, protocols
+from agrobr.bruto import arquivo, models, protocols
+from agrobr.constants import URLS, Fonte
 from agrobr.exceptions import ParseError
 from agrobr.http.user_agents import UserAgentRotator
 
@@ -225,3 +226,9 @@ class AdaptadorMalhas:
 
 
 adaptador = AdaptadorMalhas()
+malha_municipal_zip = arquivo.AdaptadorArquivo(
+    URLS[Fonte.IBGE]["zip_malha_municipal"], malhas.MALHA_MUNICIPAL.edicao, arquivo.conferir_zip
+)
+areas_urbanizadas_zip = arquivo.AdaptadorArquivo(
+    URLS[Fonte.IBGE]["zip_areas_urbanizadas"], malhas.AREAS_URBANIZADAS.edicao, arquivo.conferir_zip
+)

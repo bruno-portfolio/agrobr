@@ -202,6 +202,7 @@ class Coleta:
         self.relogio = transport.Relogio()
         self.coleta_id = uuid.uuid4().hex
         self.prefixo = f"{plano.fonte}/{plano.recurso}/{plano.nome}/{self.coleta_id}"
+        self.original = f"{self.prefixo}/original.{plano.formato}"
         self.inicio = self.relogio.agora()
         self.paginas: list[models.PaginaBruta] = []
         self.controles: list[models.ControleBruto] = []
@@ -249,7 +250,7 @@ class Coleta:
         teto = self.limites.max_bytes_pagina
         if arquivo:
             teto = min(self.limites.max_bytes_recurso, constants.BRUTO_TETO_ARQUIVO_BYTES)
-            temporario = storage.caminho(self.raiz, f"{self.prefixo}/original.zip.part")
+            temporario = storage.caminho(self.raiz, f"{self.original}.part")
             temporario.parent.mkdir(parents=True, exist_ok=True)
         self._falha = (None, pedido.url)
         resposta = await transport.baixar(
@@ -278,6 +279,31 @@ class Coleta:
             url=resposta.url_solicitada,
             last_error=f"HTTP {resposta.http_status} em {pedido.papel}",
         )
+
+    async def consultar(self, http: httpx.AsyncClient, url: str) -> bytes:
+        """GET auxiliar (o catálogo que confirma a edição): conta no orçamento, no prazo e nas tentativas da coleta,
+        com o teto de ``max_bytes_pagina``, e não vira artefato nem entra no manifesto."""
+        self.conferir_prazo()
+        pedido = models.PedidoHTTP(
+            url=url, parametros={}, papel="catalogo", numero=1, formato="json"
+        )
+        self._falha = (None, url)
+        resposta = await transport.baixar(
+            http,
+            pedido,
+            fonte=self.plano.fonte,
+            orcamento=self.orcamento,
+            relogio=self.relogio,
+            teto=self.limites.max_bytes_pagina,
+        )
+        if resposta.http_status != 200 or resposta.corpo is None:
+            self._falha = (resposta.http_status, resposta.url_solicitada)
+            raise SourceUnavailableError(
+                source=self.plano.fonte,
+                url=resposta.url_solicitada,
+                last_error=f"HTTP {resposta.http_status} no catálogo",
+            )
+        return resposta.corpo
 
     def _despejar_pendente(self) -> None:
         pendente, self._pendente = self._pendente, None
@@ -456,7 +482,7 @@ class Coleta:
             or resposta.tamanho is None
         ):
             raise self._violacao("registro de arquivo sem resposta 200 completa ou repetido")
-        relativo = f"{self.prefixo}/original.zip"
+        relativo = self.original
         armazenado = storage.publicar_arquivo(self.raiz, relativo, resposta.temporario)
         if armazenado != resposta.tamanho:
             raise self._violacao(
@@ -712,7 +738,7 @@ class Coleta:
         mensagem = (getattr(exc, "last_error", "") or str(exc) or type(exc).__name__).strip()
         try:
             self._despejar_pendente()
-            storage.caminho(self.raiz, f"{self.prefixo}/original.zip.part").unlink(missing_ok=True)
+            storage.caminho(self.raiz, f"{self.original}.part").unlink(missing_ok=True)
             erro = models.ErroBruto(
                 tipo=tipo,
                 mensagem=mensagem,

@@ -6,7 +6,7 @@ through `agrobr.sync.bruto.coletar`. It does not require the `geo` extra.
 
 The public `manifesto.jsonl` contract is **1.0.0**, independent of the library version
 and table contracts. It describes acquisition, not the schema of attributes published
-by a source. Original formats are ZIP, Esri JSON, GML and GeoJSON.
+by a source. Original formats are ZIP, CSV, Esri JSON, GML and GeoJSON.
 
 ## API and resources
 
@@ -46,6 +46,10 @@ names. `bbox_crs` accepts only `EPSG:4674` and `EPSG:4326`.
 | `acervo_fundiario` | `snci_publico` | UF required; bbox is not accepted | `zip` |
 | `acervo_fundiario` | `snci_privado` | UF required; bbox is not accepted | `zip` |
 | `acervo_fundiario` | `snci_brasil` | UF required; that state's Brasil file | `zip` |
+| `cnuc` | `cadastro` | Brazil; UF and bbox are not accepted | `csv` |
+| `ibama` | `termos_embargo` | Brazil; UF and bbox are not accepted | `csv` |
+| `ibge` | `malha_municipal_zip` | Brazil; UF and bbox are not accepted | `zip` |
+| `ibge` | `areas_urbanizadas_zip` | Brazil; UF and bbox are not accepted | `zip` |
 | `sicar` | `imoveis` | UF required; bbox optional | `geojson` / `feature.id` |
 
 UF accepts a state abbreviation, normalized to uppercase. Combining UF and bbox means
@@ -62,10 +66,10 @@ are rejected case-insensitively. Names differing only in case collide on every p
 The name does not apply a filter.
 
 `tamanho_pagina=None` resolves to **100** for paginated queries. An explicit value must
-be an integer from 1 to 1,000, never a boolean. For ZIP, it must be `None`. It divides
+be an integer from 1 to 1,000, never a boolean. For files (ZIP or CSV), it must be `None`. It divides
 the acquisition; it does not limit the total feature count. `compactar=True` applies
 gzip to pages and controls, with `mtime=0` and no original filename in the header;
-ZIP receives no additional compression. `compactar=False` preserves the same bodies
+files (ZIP or CSV) receive no additional compression. `compactar=False` preserves the same bodies
 without gzip.
 
 Municipal boundaries use layer `CGMAT:qg_2025_030_munic`, edition 2025; urbanized areas
@@ -83,6 +87,27 @@ not by `cod_imovel`. Because SICAR publishes no sortable identifier, pages use
 `dat_criacao`) strictly increases across the whole collection: two versions with the same `dat_criacao`, a pair
 out of order or a date in another format fail the query. An `ok` proves the order of the features received in
 that collection, not that the pair is unique across the whole database.
+
+The four national files (`cnuc`/`cadastro`, `ibama`/`termos_embargo`, `ibge`/`malha_municipal_zip` and
+`ibge`/`areas_urbanizadas_zip`) come in a single GET with no selection: UF and bbox are rejected and the default
+`nome` is `brasil`. The body is stored as the source publishes it, including the CSV encoding, separator and line
+endings. Before publishing it, agrobr checks only the beginning: the ZIP signature or, for CSV, the first line with the
+columns that identify the table (`Código UC` for CNUC; `SEQ_TAD` and `NUM_TAD` for IBAMA). An error HTML page, an XLSX
+spreadsheet labeled as CSV or an empty body in HTTP 200 fail the collection with `ParseError`. The edition is in
+`selecao.edicao`: `2025` for municipal boundaries (`BR_Municipios_2025.zip`), `2022` for urbanized areas
+(`AreasUrbanizadas2022_Brasil.zip`, the same release as the WFS layer), `202607` (year and month) for the CNUC
+registry and `null` for IBAMA embargo terms, which publish no edition; the file date is in `cabecalhos`
+(`last-modified`).
+
+The CNUC registry is the CSV of the July 2026 edition in MMA's open data catalog. Before the GET, agrobr checks in the
+catalog (`package_show?id=unidadesdeconservacao`) that the `CNUC_2026_07` CSV resource points to the URL pinned in the
+library. A different URL (edition republished or withdrawn) fails the collection with `ParseError`, and an unavailable
+catalog with `SourceUnavailableError`. The catalog request counts toward the call's budget, deadline and attempts
+(capped at `max_bytes_pagina`) and is not stored in the manifest; if it fails, `erro.url` is the catalog's. A new
+registry edition ships with a new agrobr version.
+
+The IBAMA embargo terms CSV contains the names and CPF/CNPJ of the embargoed individuals and companies. It is personal
+data: store and process the file in accordance with the LGPD.
 
 The `ColetaBruta` return value has three required attributes:
 
@@ -113,6 +138,7 @@ coleta/
   ibge/malha_municipal/AL/<coleta_id>/p000001.geojson.gz
   ibge/areas_urbanizadas/area_teste/<coleta_id>/p000001.geojson.gz
   acervo_fundiario/snci_publico/AL/<coleta_id>/original.zip
+  cnuc/cadastro/brasil/<coleta_id>/original.csv
   .bruto/lock
   .bruto/<coleta_id>/checkpoint.json
   .bruto/<coleta_id>/diagnostico/
@@ -121,7 +147,8 @@ coleta/
 Every `arquivo` field contains a path relative to `destino`, using `/`, never an
 absolute path, `..` or a link/junction escaping the destination. `coleta_id` is opaque:
 do not extract a date from it. The `.gz` suffix exists only with `compressao="gzip"`.
-Controls use their body's extension, JSON or XML. Readers must use `formato` and
+Controls use their body's extension, JSON or XML; the `arquivo`-mode file is `original.zip` or
+`original.csv`, matching `formato`. Readers must use `formato` and
 `compressao` instead of guessing from extensions.
 `.bruto` is private state with no public schema; it is not a source of consumable resources.
 
@@ -162,11 +189,11 @@ Integers do not accept booleans; numbers do not accept NaN or infinity.
 | `registrado_em` | UTC | Yes | Entry publication; `fim <= registrado_em` |
 | `url_solicitada` | HTTPS URL string | Yes | File URL; for pagination, endpoint URL without query string |
 | `url` | HTTPS URL string | Yes | Final file GET URL; for paginated queries, the same logical URL as `url_solicitada` |
-| `parametros` | string → string object | Yes | `{"outFields":"*","outSR":"4674"}`; every logical parameter, excluding pagination; `{}` for ZIP |
+| `parametros` | string → string object | Yes | `{"outFields":"*","outSR":"4674"}`; every logical parameter, excluding pagination; `{}` for files |
 | `selecao` | Selection object | Yes | Selection and publication, defined below |
 | `opcoes` | Options object | Yes | Effective options and limits for this attempt |
 | `modo` | enum | Yes | `"arquivo"` or `"paginado"` |
-| `formato` | enum | Yes | `"zip"`, `"esri_json"`, `"gml"` or `"geojson"` |
+| `formato` | enum | Yes | `"zip"`, `"csv"`, `"esri_json"`, `"gml"` or `"geojson"`; `zip` and `csv` only for files |
 | `crs` | string or null | Yes | `"EPSG:4674"` when verified; `null` when unverified |
 | `crs_evidencia` | CRSEvidence object or null | Yes | `null` exactly when `crs=null` |
 | `http_status` | integer 100–599 or null | Yes | Last file GET, e.g. `200` or `404`; `null` for paginated queries or no response |
@@ -175,7 +202,7 @@ Integers do not accept booleans; numbers do not accept NaN or infinity.
 | `arquivo` | path string or null | Yes | `"acervo_fundiario/snci_publico/AL/exemplo-001/original.zip"` |
 | `sha256` | hash or null | Yes | Complete file hash; `null` for paginated queries or no valid file |
 | `bytes` | integer >= 0 or null | Yes | `11900`; original size, not a feature count |
-| `bytes_armazenados` | integer >= 0 or null | Yes | Equals `bytes` for ZIP without additional compression |
+| `bytes_armazenados` | integer >= 0 or null | Yes | Equals `bytes` for files (ZIP or CSV), without additional compression |
 | `compressao` | enum | Yes | `"nenhuma"` for files and at the paginated entry root; gzip is recorded on each artifact |
 | `cabecalhos` | string → string object | Yes | Headers of the last file GET, including 404; `{}` for paginated queries |
 | `paginas` | list of Page | Yes | `[]` for files and zero-feature paginated selections |
@@ -217,8 +244,8 @@ query string. A page's `parametros` records its original request, including when
 | `selecao.uf` | string or null | Yes | `"AL"` |
 | `selecao.bbox` | list of four numbers or null | Yes | `[-48.1,-16.1,-47.9,-15.9]` |
 | `selecao.bbox_crs` | enum or null | Yes | `"EPSG:4674"`, `"EPSG:4326"`; `null` without bbox |
-| `selecao.camada` | string or null | Yes | `"CGMAT:qg_2025_030_munic"`; `null` for ZIP |
-| `selecao.edicao` | integer or null | Yes | `2025`; `null` when no edition is identified by the source |
+| `selecao.camada` | string or null | Yes | `"CGMAT:qg_2025_030_munic"`; `null` for files |
+| `selecao.edicao` | integer or null | Yes | `2025`, or `202607` (year and month) for the CNUC registry; `null` when no edition is identified by the source |
 | `selecao.natureza` | enum or null | Yes | `"publico"`, `"privado"`; `null` for SNCI Brasil and other sources |
 | `opcoes.tamanho_pagina` | integer 1–1000 or null | Yes | `100`; `null` for files |
 | `opcoes.compactar` | boolean | Yes | `true`; effective `false` for files |
@@ -333,7 +360,7 @@ Therefore `snapshot_transacional=false` remains mandatory.
 | Original file GET returns 404 | `ausente_na_fonte`, `erro.tipo="HTTP404"`; returns normally |
 | 404 in a page or control | `erro`; raises `SourceUnavailableError` |
 | 403, timeout, network failure, 429/5xx after attempts | `erro`; raises `SourceUnavailableError` |
-| OGC/ArcGIS error inside HTTP 200, invalid envelope or divergent coverage | `erro`; raises `ParseError` |
+| OGC/ArcGIS error inside HTTP 200, invalid envelope, HTTP 200 file in another format or divergent coverage | `erro`; raises `ParseError` |
 | Budget exceeded | `erro` if acquisition started; raises `ResourceLimitError` |
 | Invalid argument, selection, destination, key collision or write version | `InvalidParameterError` before network access and without changing the manifest |
 | Invalid existing-entry integrity or manifest invariant | `ContractViolationError`; preserves the previous manifest |
@@ -357,14 +384,14 @@ Integers must be positive and the deadline positive and finite; booleans are rej
 
 | Field | Type | Default and example | Application |
 |---|---|---|---|
-| `max_bytes_recurso` | int | `4294967296` (4 GiB) | Separate encoded and decoded HTTP byte counters, both limited, including controls, pages, file and failed attempts |
-| `max_bytes_pagina` | int | `8388608` (8 MiB) | Each page/control, for both counters; does not limit the original ZIP to 8 MiB |
+| `max_bytes_recurso` | int | `4294967296` (4 GiB) | Separate encoded and decoded HTTP byte counters, both limited, including controls, pages, file, the CNUC catalog request and failed attempts |
+| `max_bytes_pagina` | int | `8388608` (8 MiB) | Each page/control, for both counters; does not limit the original file to 8 MiB |
 | `max_paginas` | int | `10000` | Logical data pages; controls are excluded; attempts count toward bytes and deadline |
 | `max_ids` | int | `500000` | Declared total and retained IDs; also limits ANA's ID list before pagination |
 | `max_bytes_ids` | int | `67108864` (64 MiB) | Accounted memory of ID structures, including keys and containers; only the bounded page being processed is additional |
 | `max_segundos` | number | `3600.0` | Monotonic operation deadline, including local verification, network, waits and publication |
 
-The effective ZIP limit is the smaller of `max_bytes_recurso` and 4 GiB. Limits are
+The effective file (ZIP or CSV) limit is the smaller of `max_bytes_recurso` and 4 GiB. Limits are
 enforced during streaming, including HTTP expansion, before retaining blocks beyond the
 budget. The ID budget is not a limit on total process RSS. Local gzip is read incrementally
 on resumption, limited by declared size and page/resource ceilings.
@@ -372,7 +399,7 @@ ZIP members, if read, go through agrobr's expansion helpers and their limits.
 
 The manifest has a **64 MiB** read/write limit, checked before publication.
 Limits do not truncate selections or discard pages to manufacture success. For a larger
-resource, reduce the selection or configure appropriate limits; the maximum ZIP limit
+resource, reduce the selection or configure appropriate limits; the maximum file limit
 still applies. Budgets apply per call, not cumulatively to the destination: old-attempt
 evidence and compression overhead also occupy disk space. If a limit prevents publishing
 even an error entry, the previous manifest is preserved and `ResourceLimitError` propagates.
@@ -395,7 +422,7 @@ operating-system call at the exact deadline.
    evidence is not silently replaced. A limit too low for verification raises
    `ResourceLimitError`, also without changing the entry.
 5. An error, absence, checkpoint or `.part` restarts the **whole resource**, with a new
-   `coleta_id`. ZIP restarts at byte zero and paginated queries at the first page, with
+   `coleta_id`. Files restart at byte zero and paginated queries at the first page, with
    new controls. The new entry replaces the previous one only when the attempt ends.
    Previous artifacts remain separate; they are neither merged nor automatically deleted.
 
@@ -431,6 +458,10 @@ async def main() -> None:
         ("acervo_fundiario", "snci_publico", {"uf": "AL"}),
         ("acervo_fundiario", "snci_privado", {"uf": "AL"}),
         ("acervo_fundiario", "snci_brasil", {"uf": "AL"}),
+        ("cnuc", "cadastro", {}),
+        ("ibama", "termos_embargo", {}),
+        ("ibge", "malha_municipal_zip", {}),
+        ("ibge", "areas_urbanizadas_zip", {}),
     ]
     for fonte, recurso, selecao in pedidos:
         resultado = await bruto.coletar(
@@ -470,7 +501,7 @@ The following examples are **illustrative and synthetic**: they are not observed
 goldens, current counts or hashes of official files. Endpoints and request profiles follow
 the adapters; body values, totals, timestamps, IDs and hashes only illustrate the contract.
 Each block contains one complete JSON line with no omitted fields.
-The nine lines can form a manifest. Their hashes are computed from synthetic example bodies,
+The ten lines can form a manifest. Their hashes are computed from synthetic example bodies,
 not from official files. The usage example above performs real requests and will produce
 different counts, hashes and timestamps.
 
@@ -526,6 +557,12 @@ different counts, hashes and timestamps.
 
 ```json
 {"agrobr_version":"2.0.0","arquivo":"acervo_fundiario/snci_brasil/AL/exemplo-acervo_fundiario-snci_brasil/original.zip","avisos":[],"bytes":1180,"bytes_armazenados":1180,"cabecalhos":{"content-length":"1180","content-type":"application/x-zip-compressed","etag":"\"exemplo-snci_brasil\"","last-modified":"Fri, 02 Oct 2026 20:00:00 GMT"},"cobertura":{"campo_id":null,"completa":true,"controles":[],"estado":"nao_aplicavel","ids_distintos":null,"ids_repetidos":null,"recebidas":null,"snapshot_transacional":false,"total_antes":null,"total_depois":null},"coleta_id":"exemplo-acervo_fundiario-snci_brasil","compressao":"nenhuma","consulta_id":"e808c06ffe8258cc91b2093abe6522022ceb697c3d1285db4cb76e157398129f","controles":[],"crs":null,"crs_evidencia":null,"erro":null,"feicoes":null,"fim":"2026-10-02T20:00:09Z","fonte":"acervo_fundiario","formato":"zip","http_fim":"2026-10-02T20:00:08Z","http_inicio":"2026-10-02T20:00:01Z","http_status":200,"inicio":"2026-10-02T20:00:00Z","modo":"arquivo","nome":"AL","opcoes":{"compactar":false,"limites":{"max_bytes_ids":67108864,"max_bytes_pagina":8388608,"max_bytes_recurso":4294967296,"max_ids":500000,"max_paginas":10000,"max_segundos":3600.0},"tamanho_pagina":null},"paginas":[],"parametros":{},"recurso":"snci_brasil","registrado_em":"2026-10-02T20:00:10Z","schema_version":"1.0.0","selecao":{"bbox":null,"bbox_crs":null,"camada":null,"edicao":null,"natureza":null,"uf":"AL"},"sha256":"2427aab938541297a1d359016d1e5c90180ad1879af9e7d0a870417f318f5124","status":"ok","tipo":"recurso","url":"https://certificacao.incra.gov.br/csv_shp/zip/Im%C3%B3vel%20certificado%20SNCI%20Brasil_AL.zip","url_solicitada":"https://certificacao.incra.gov.br/csv_shp/zip/Im%C3%B3vel%20certificado%20SNCI%20Brasil_AL.zip"}
+```
+
+### cnuc / cadastro
+
+```json
+{"agrobr_version":"2.0.0","arquivo":"cnuc/cadastro/brasil/exemplo-cnuc-cadastro/original.csv","avisos":[],"bytes":70,"bytes_armazenados":70,"cabecalhos":{"content-type":"text/csv","etag":"\"exemplo-cnuc-cadastro\"","last-modified":"Fri, 02 Oct 2026 20:00:00 GMT"},"cobertura":{"campo_id":null,"completa":true,"controles":[],"estado":"nao_aplicavel","ids_distintos":null,"ids_repetidos":null,"recebidas":null,"snapshot_transacional":false,"total_antes":null,"total_depois":null},"coleta_id":"exemplo-cnuc-cadastro","compressao":"nenhuma","consulta_id":"45ae513cfc8f1b6abac604d10e862c323fb575b76025ee67774268263f8e4e75","controles":[],"crs":null,"crs_evidencia":null,"erro":null,"feicoes":null,"fim":"2026-10-02T20:00:09Z","fonte":"cnuc","formato":"csv","http_fim":"2026-10-02T20:00:08Z","http_inicio":"2026-10-02T20:00:01Z","http_status":200,"inicio":"2026-10-02T20:00:00Z","modo":"arquivo","nome":"brasil","opcoes":{"compactar":false,"limites":{"max_bytes_ids":67108864,"max_bytes_pagina":8388608,"max_bytes_recurso":4294967296,"max_ids":500000,"max_paginas":10000,"max_segundos":3600.0},"tamanho_pagina":null},"paginas":[],"parametros":{},"recurso":"cadastro","registrado_em":"2026-10-02T20:00:10Z","schema_version":"1.0.0","selecao":{"bbox":null,"bbox_crs":null,"camada":null,"edicao":202607,"natureza":null,"uf":null},"sha256":"7413cd5659ddc0c54b8dc6fbcad667ba52bcc197fa83da49509a8a98c257f6ff","status":"ok","tipo":"recurso","url":"https://dados.mma.gov.br/dataset/44b6dc8a-dc82-4a84-8d95-1b0da7c85dac/resource/72dd3d2d-3cca-4b97-b382-a1c90531e379/download/cnuc_2026_07.csv","url_solicitada":"https://dados.mma.gov.br/dataset/44b6dc8a-dc82-4a84-8d95-1b0da7c85dac/resource/72dd3d2d-3cca-4b97-b382-a1c90531e379/download/cnuc_2026_07.csv"}
 ```
 
 

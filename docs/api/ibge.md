@@ -708,9 +708,10 @@ async def malha_municipal_geo(
   `municipio`, não, porque não são municípios.
 - **Limites:** o tabular traz a camada inteira (1,4 MB). O `_geo` aceita até 900 municípios por consulta: MG, a maior UF, tem
   853 (74 MB de GeoJSON, ~17 s em 01/10/2026). Acima do teto, `ResourceLimitError` antes do download; refine com `uf`,
-  `municipio`, `bbox` ou `max_registros`. Para o Brasil inteiro em arquivo, use o ZIP da malha no
-  [geoftp do IBGE](https://geoftp.ibge.gov.br/organizacao_do_territorio/malhas_territoriais/malhas_municipais/municipio_2025/)
-  (`Brasil/BR_Municipios_2025.zip`, 237 MB, ou `UFs/<UF>/<UF>_Municipios_2025.zip`).
+  `municipio`, `bbox` ou `max_registros`. Para o Brasil inteiro em arquivo, a [coleta bruta](bruto.md) guarda o ZIP
+  nacional da malha (`Brasil/BR_Municipios_2025.zip`, 237 MB) como o IBGE publica, com o manifesto:
+  `bruto.coletar("ibge", "malha_municipal_zip", destino=...)`. Os ZIPs por UF (`UFs/<UF>/<UF>_Municipios_2025.zip`)
+  estão no [geoftp do IBGE](https://geoftp.ibge.gov.br/organizacao_do_territorio/malhas_territoriais/malhas_municipais/municipio_2025/).
 - **Páginas originais do WFS:** para guardá-las como o IBGE publica, no CRS nativo (`EPSG:4674`) e com o manifesto,
   use a [coleta bruta](bruto.md): `bruto.coletar("ibge", "malha_municipal", ...)` ou `"areas_urbanizadas"`.
 - `max_registros` corta no servidor, na ordem de `cd_mun`; com ele, `coverage["truncated"]` fica `True` quando a seleção é

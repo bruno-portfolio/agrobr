@@ -108,3 +108,14 @@ SIRGAS 2000 → WGS 84 transformation is a null transformation).
 - Geometry present in part of the records (embargoes without a polygon are left out of the geo)
 - The whole file (~208 MB) is downloaded and filters are local; the 1-hour cache avoids repeating the download
 - License: see [Licenses](../licenses.md#ibama)
+
+## Raw collection
+
+`agrobr.bruto.coletar("ibama", "termos_embargo", ...)` stores the whole embargo terms CSV (~209 MB) as IBAMA
+publishes it, with no cache and without reading the columns; `embargos()` and `embargos_geo()` keep the 1-hour cache.
+IBAMA publishes no edition: `selecao.edicao` is `null`, and the file date is in `cabecalhos` (`last-modified`). State
+and bbox are refused.
+
+**Personal data:** the file contains the names and CPF/CNPJ of the embargoed individuals and companies, columns the
+table functions do not read. Whoever stores the raw file stores personal data and must process it in accordance with
+the LGPD. See the [raw collection API](../api/bruto.md) and the [manifest contract](../contracts/bruto.md).

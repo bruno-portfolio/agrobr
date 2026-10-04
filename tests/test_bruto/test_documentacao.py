@@ -35,10 +35,10 @@ def test_contrato_pt_e_en_documentam_os_mesmos_campos_e_todos_os_do_manifesto():
     assert {f"cobertura.{campo}" for campo in models.Cobertura.model_fields} <= set(pt)
 
 
-def test_os_nove_exemplos_sao_iguais_nas_duas_linguas_e_validos_no_modelo():
+def test_os_dez_exemplos_sao_iguais_nas_duas_linguas_e_validos_no_modelo():
     pt, en = (_exemplos(caminho) for caminho in CONTRATOS)
 
-    assert pt == en and len(pt) == 9
+    assert pt == en and len(pt) == 10
     for linha in pt:
         assert models.RecursoBruto.model_validate_json(linha).linha() == linha
 

@@ -710,9 +710,10 @@ async def malha_municipal_geo(
   the whole mesh; not by `municipio`, because they are not municipalities.
 - **Limits:** the tabular call returns the whole layer (1.4 MB). `_geo` accepts up to 900 municipalities per query: MG, the
   largest state, has 853 (74 MB of GeoJSON, ~17 s on 2026-10-01). Above the cap, `ResourceLimitError` before the download;
-  narrow with `uf`, `municipio`, `bbox` or `max_registros`. For the whole country as a file, use the mesh ZIP on the
-  [IBGE geoftp](https://geoftp.ibge.gov.br/organizacao_do_territorio/malhas_territoriais/malhas_municipais/municipio_2025/)
-  (`Brasil/BR_Municipios_2025.zip`, 237 MB, or `UFs/<UF>/<UF>_Municipios_2025.zip`).
+  narrow with `uf`, `municipio`, `bbox` or `max_registros`. For the whole country as a file, [raw collection](bruto.md)
+  stores the national mesh ZIP (`Brasil/BR_Municipios_2025.zip`, 237 MB) as IBGE publishes it, with the manifest:
+  `bruto.coletar("ibge", "malha_municipal_zip", destino=...)`. The per-state ZIPs (`UFs/<UF>/<UF>_Municipios_2025.zip`)
+  are on the [IBGE geoftp](https://geoftp.ibge.gov.br/organizacao_do_territorio/malhas_territoriais/malhas_municipais/municipio_2025/).
 - **Original WFS pages:** to store them as IBGE publishes them, in the native CRS (`EPSG:4674`) and with the
   manifest, use [raw collection](bruto.md): `bruto.coletar("ibge", "malha_municipal", ...)` or `"areas_urbanizadas"`.
 - `max_registros` cuts on the server, in `cd_mun` order; with it, `coverage["truncated"]` is `True` when the selection is

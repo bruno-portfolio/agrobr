@@ -10,7 +10,7 @@ from agrobr.exceptions import InvalidParameterError, UnknownNameError
 
 @dataclass(frozen=True)
 class RecursoRegistrado:
-    """Regra de seleção de um recurso; o adaptador fica em ``modulo`` e só é importado ao coletar (sem ciclo com a fonte)."""
+    """Regra de seleção de um recurso; o adaptador é o ``atributo`` de ``modulo``, importado só ao coletar (sem ciclo com a fonte)."""
 
     fonte: str
     recurso: str
@@ -22,6 +22,7 @@ class RecursoRegistrado:
     bbox: Literal["opcional", "recusada"]
     exige_recorte: bool
     habilitado: bool
+    atributo: str = "adaptador"
 
 
 def _acervo(recurso: str) -> RecursoRegistrado:
@@ -36,6 +37,24 @@ def _acervo(recurso: str) -> RecursoRegistrado:
         "recusada",
         False,
         True,
+    )
+
+
+def _arquivo_nacional(
+    fonte: str, recurso: str, formato: models.FormatoArquivo, atributo: str
+) -> RecursoRegistrado:
+    return RecursoRegistrado(
+        fonte,
+        recurso,
+        f"agrobr.{fonte}.bruto",
+        "arquivo",
+        formato,
+        None,
+        "recusada",
+        "recusada",
+        False,
+        True,
+        atributo,
     )
 
 
@@ -95,6 +114,10 @@ RECURSOS: dict[tuple[str, str], RecursoRegistrado] = {
         _acervo("snci_publico"),
         _acervo("snci_privado"),
         _acervo("snci_brasil"),
+        _arquivo_nacional("cnuc", "cadastro", "csv", "cadastro"),
+        _arquivo_nacional("ibama", "termos_embargo", "csv", "adaptador"),
+        _arquivo_nacional("ibge", "malha_municipal_zip", "zip", "malha_municipal_zip"),
+        _arquivo_nacional("ibge", "areas_urbanizadas_zip", "zip", "areas_urbanizadas_zip"),
         RecursoRegistrado(
             "sicar",
             "imoveis",
@@ -130,4 +153,4 @@ def recurso(fonte: object, nome_recurso: object) -> RecursoRegistrado:
 
 def adaptador(registrado: RecursoRegistrado) -> protocols.AdaptadorBruto:
     modulo = importlib.import_module(registrado.modulo)
-    return cast("protocols.AdaptadorBruto", modulo.adaptador)
+    return cast("protocols.AdaptadorBruto", getattr(modulo, registrado.atributo))

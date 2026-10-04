@@ -108,3 +108,14 @@ transformação SIRGAS 2000 → WGS 84 da EPSG é nula).
 - Geometria presente em parte dos registros (embargos sem poligono ficam fora do geo)
 - O arquivo inteiro (~208 MB) é baixado, e os filtros são locais; o cache de 1 hora evita repetir o download
 - Licença: ver [Licenças](../licenses.md#ibama)
+
+## Coleta bruta
+
+`agrobr.bruto.coletar("ibama", "termos_embargo", ...)` guarda o CSV de termos de embargo inteiro (~209 MB) como o
+IBAMA publica, sem cache nem leitura das colunas; `embargos()` e `embargos_geo()` seguem com o cache de 1 hora. O IBAMA
+não publica edição: `selecao.edicao` fica `null`, e a data do arquivo está em `cabecalhos` (`last-modified`). UF e bbox
+são recusadas.
+
+**Dado pessoal:** o arquivo traz nome e CPF/CNPJ das pessoas físicas e jurídicas embargadas, colunas que as funções de
+tabela não leem. Quem guarda o arquivo bruto guarda dado pessoal e deve tratá-lo conforme a LGPD. Veja a
+[API da coleta bruta](../api/bruto.md) e o [contrato do manifesto](../contracts/bruto.md).

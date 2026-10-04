@@ -216,6 +216,8 @@ URLS = {
         "base": "https://cnuc.mma.gov.br",
         "mapserver": "https://cnuc-mapserv.mma.gov.br/cgi-bin/mapserv",
         "dados_abertos": "https://dados.mma.gov.br/dataset/unidadesdeconservacao",
+        "ckan_package": "https://dados.mma.gov.br/api/3/action/package_show?id=unidadesdeconservacao",
+        "cadastro_csv": "https://dados.mma.gov.br/dataset/44b6dc8a-dc82-4a84-8d95-1b0da7c85dac/resource/72dd3d2d-3cca-4b97-b382-a1c90531e379/download/cnuc_2026_07.csv",
     },
     Fonte.COMEXSTAT: {
         "base": "https://comexstat.mdic.gov.br",
@@ -251,6 +253,8 @@ URLS = {
         "ftp_censo_agro_1996": "https://ftp.ibge.gov.br/Censo_Agropecuario/Censo_Agropecuario_1995_96",
         "wfs_malha_municipal": "https://geoservicos.ibge.gov.br/geoserverIBGE/wfs",
         "wfs_areas_urbanizadas": "https://geoservicos.ibge.gov.br/geoserverCGEO/wfs",
+        "zip_malha_municipal": "https://geoftp.ibge.gov.br/organizacao_do_territorio/malhas_territoriais/malhas_municipais/municipio_2025/Brasil/BR_Municipios_2025.zip",
+        "zip_areas_urbanizadas": "https://geoftp.ibge.gov.br/organizacao_do_territorio/tipologias_do_territorio/areas_urbanizadas_do_brasil/2022/Shapefile/AreasUrbanizadas2022_Brasil.zip",
     },
     Fonte.LISTA_SUJA: {
         "base": "https://www.gov.br/trabalho-e-emprego",

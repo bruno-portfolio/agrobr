@@ -22,7 +22,7 @@ def test_todo_recurso_ligado_tem_o_adaptador_da_fonte(monkeypatch):
     for registrado in registry.RECURSOS.values():
         adaptador = registry.adaptador(registrado)
         assert callable(adaptador.planejar) and callable(adaptador.adquirir)
-    assert len(registry.RECURSOS) == 10 and ("funai", "terras_indigenas") not in registry.RECURSOS
+    assert len(registry.RECURSOS) == 14 and ("funai", "terras_indigenas") not in registry.RECURSOS
     chave = ("sicar", "imoveis")
     monkeypatch.setitem(
         registry.RECURSOS, chave, dataclasses.replace(registry.RECURSOS[chave], habilitado=False)

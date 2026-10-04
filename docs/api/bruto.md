@@ -21,15 +21,15 @@ Versão síncrona: `agrobr.sync.bruto.coletar(...)`, com os mesmos argumentos.
 
 | Parâmetro | Tipo | Obrigatório | Descrição |
 |---|---|---|---|
-| fonte | str | Sim | Fonte da tabela de recursos (`ana`, `cnuc`, `ibge`, `acervo_fundiario`, `sicar`) |
+| fonte | str | Sim | Fonte da tabela de recursos (`ana`, `cnuc`, `ibama`, `ibge`, `acervo_fundiario`, `sicar`) |
 | recurso | str | Sim | Recurso da fonte, exatamente como na tabela |
 | destino | str \| PathLike | Sim | Pasta da coleta; recebe o `manifesto.jsonl` e os arquivos |
 | nome | str | Não | Identifica a seleção no manifesto; padrão: a UF, ou `brasil` sem recorte. Obrigatório com bbox |
 | uf | str | Depende | Sigla da UF; obrigatória, opcional ou recusada conforme o recurso |
-| bbox | tuple[float, float, float, float] | Não | `(minx, miny, maxx, maxy)` em longitude/latitude; recusada nos ZIPs do Acervo |
+| bbox | tuple[float, float, float, float] | Não | `(minx, miny, maxx, maxy)` em longitude/latitude; recusada nos recursos de arquivo (ZIP e CSV) |
 | bbox_crs | `"EPSG:4674"` \| `"EPSG:4326"` | Não | CRS da bbox; padrão `EPSG:4674` |
-| tamanho_pagina | int | Não | Feições por página nos recursos paginados, de 1 a 1.000; padrão 100; `None` nos ZIPs |
-| compactar | bool | Não | Gzip local das páginas e controles; padrão `True`; o ZIP é guardado como veio |
+| tamanho_pagina | int | Não | Feições por página nos recursos paginados, de 1 a 1.000; padrão 100; `None` nos recursos de arquivo |
+| compactar | bool | Não | Gzip local das páginas e controles; padrão `True`; o arquivo (ZIP ou CSV) é guardado como veio |
 | retomar | bool | Não | Reaproveita a entrada `ok` da mesma consulta depois de conferir os hashes; padrão `False` |
 | limites | `bruto.LimitesBrutos` | Não | Orçamento da chamada; padrão `LimitesBrutos()` |
 
@@ -44,6 +44,9 @@ Versão síncrona: `agrobr.sync.bruto.coletar(...)`, com os mesmos argumentos.
 | `acervo_fundiario` | `sigef_publico`, `sigef_privado` | UF obrigatória | `zip` |
 | `acervo_fundiario` | `snci_publico`, `snci_privado`, `snci_brasil` | UF obrigatória | `zip` |
 | `sicar` | `imoveis` | UF obrigatória; bbox opcional | `geojson` / `feature.id` |
+| `cnuc` | `cadastro` | Brasil; UF e bbox recusadas; edição `202607` conferida no catálogo do MMA | `csv` |
+| `ibama` | `termos_embargo` | Brasil; UF e bbox recusadas; traz dado pessoal (nome e CPF/CNPJ) | `csv` |
+| `ibge` | `malha_municipal_zip`, `areas_urbanizadas_zip` | Brasil; UF e bbox recusadas | `zip` |
 
 ### Retorno
 
@@ -54,7 +57,7 @@ do manifesto) e `reutilizado` (`True` só quando `retomar=True` reaproveitou uma
 
 | Campo | Padrão | Aplicação |
 |---|---|---|
-| max_bytes_recurso | 4 GiB | Bytes do recurso inteiro; o ZIP tem teto de 4 GiB |
+| max_bytes_recurso | 4 GiB | Bytes do recurso inteiro; o arquivo tem teto de 4 GiB |
 | max_bytes_pagina | 8 MiB | Cada página ou controle |
 | max_paginas | 10.000 | Páginas por coleta |
 | max_ids | 500.000 | IDs retidos para a conferência |
@@ -66,12 +69,13 @@ do manifesto) e `reutilizado` (`True` só quando `retomar=True` reaproveitou uma
 | Situação | Resultado |
 |---|---|
 | Argumento, seleção, destino ou nome inválidos | `InvalidParameterError`, antes da rede e sem mudar o manifesto |
-| 404 no arquivo de um ZIP | Retorna com `status="ausente_na_fonte"`; a próxima retomada tenta de novo |
+| 404 no arquivo (ZIP ou CSV) | Retorna com `status="ausente_na_fonte"`; a próxima retomada tenta de novo |
 | Falha HTTP ou de rede depois das tentativas | `SourceUnavailableError`, com a entrada `erro` no manifesto |
-| Envelope inválido, erro OGC em HTTP 200 ou cobertura divergente | `ParseError`, com a entrada `erro` |
+| Envelope inválido, erro OGC em HTTP 200, arquivo 200 fora do formato ou cobertura divergente | `ParseError`, com a entrada `erro` |
 | Limite excedido | `ResourceLimitError` |
 | Manifesto existente inconsistente | `ContractViolationError`; o manifesto anterior fica intacto |
 
-A coleta não tem retorno parcial de sucesso: `ok` exige a cobertura inteira conferida (contagens antes e depois,
-IDs, CRS e a ordem da paginação). Veja o [contrato](../contracts/bruto.md) para a regra de cada recurso e o
+A coleta não tem retorno parcial de sucesso: nos recursos paginados, `ok` exige a cobertura inteira conferida
+(contagens antes e depois, IDs, CRS e a ordem da paginação); nos de arquivo, o corpo inteiro recebido e o início
+conferido (assinatura do ZIP ou cabeçalho do CSV). Veja o [contrato](../contracts/bruto.md) para a regra de cada recurso e o
 exemplo completo em `examples/bruto.py`.

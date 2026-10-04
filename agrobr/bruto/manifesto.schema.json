@@ -890,6 +890,7 @@
     "formato": {
       "enum": [
         "zip",
+        "csv",
         "esri_json",
         "gml",
         "geojson"

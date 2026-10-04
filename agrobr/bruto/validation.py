@@ -53,7 +53,7 @@ def pedido(
         raise InvalidParameterError(f"bruto: {alvo} exige uf ou bbox")
     arquivo = registrado.modo == "arquivo"
     if arquivo and tamanho_pagina is not None:
-        raise InvalidParameterError(f"bruto: tamanho_pagina não se aplica a {alvo} (arquivo ZIP)")
+        raise InvalidParameterError(f"bruto: tamanho_pagina não se aplica a {alvo} (arquivo)")
     return models.PedidoBruto(
         fonte=registrado.fonte,
         recurso=registrado.recurso,

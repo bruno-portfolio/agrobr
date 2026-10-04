@@ -7,7 +7,7 @@ from collections.abc import Callable
 from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path, PurePosixPath
-from typing import Annotated, Literal
+from typing import Annotated, Literal, get_args
 
 from pydantic import (
     AfterValidator,
@@ -40,10 +40,11 @@ CABECALHOS_PERMITIDOS = frozenset(
 )
 
 Modo = Literal["arquivo", "paginado"]
-Formato = Literal["zip", "esri_json", "gml", "geojson"]
+Formato = Literal["zip", "csv", "esri_json", "gml", "geojson"]
+FormatoArquivo = Literal["zip", "csv"]
 FormatoPagina = Literal["esri_json", "gml", "geojson"]
 FormatoControle = Literal["json", "xml"]
-Papel = Literal["arquivo", "pagina", "contagem_antes", "contagem_depois", "ids", "crs"]
+Papel = Literal["arquivo", "pagina", "contagem_antes", "contagem_depois", "ids", "crs", "catalogo"]
 PapelControle = Literal["contagem_antes", "contagem_depois", "ids", "crs"]
 CrsBbox = Literal["EPSG:4674", "EPSG:4326"]
 Status = Literal["ok", "erro", "ausente_na_fonte"]
@@ -523,7 +524,7 @@ def invariantes(e: RecursoBruto) -> list[str]:
 
 
 def _invariantes_arquivo(e: RecursoBruto, exigir: Callable[[bool, str], None]) -> None:
-    exigir(e.formato == "zip", "modo arquivo exige formato zip")
+    exigir(e.formato in get_args(FormatoArquivo), "modo arquivo exige formato zip ou csv")
     exigir(e.parametros == {}, "modo arquivo tem parametros {}")
     exigir(e.paginas == [] and e.controles == [], "modo arquivo não tem páginas nem controles")
     exigir(e.opcoes.tamanho_pagina is None, "modo arquivo tem opcoes.tamanho_pagina null")
@@ -550,12 +551,12 @@ def _invariantes_arquivo(e: RecursoBruto, exigir: Callable[[bool, str], None]) -
         )
     if e.arquivo is not None:
         exigir(
-            e.arquivo == f"{e.fonte}/{e.recurso}/{e.nome}/{e.coleta_id}/original.zip",
+            e.arquivo == f"{e.fonte}/{e.recurso}/{e.nome}/{e.coleta_id}/original.{e.formato}",
             "arquivo fora do layout",
         )
         exigir(
             e.bytes == e.bytes_armazenados,
-            "ZIP sem compactação adicional: bytes_armazenados = bytes",
+            "arquivo sem compactação adicional: bytes_armazenados = bytes",
         )
     if e.status == "ok":
         exigir(
@@ -565,7 +566,7 @@ def _invariantes_arquivo(e: RecursoBruto, exigir: Callable[[bool, str], None]) -
 
 
 def _invariantes_paginado(e: RecursoBruto, exigir: Callable[[bool, str], None]) -> None:
-    exigir(e.formato != "zip", "modo paginado não usa formato zip")
+    exigir(e.formato in get_args(FormatoPagina), "modo paginado não usa formato de arquivo")
     exigir(e.arquivo is None, "modo paginado não tem arquivo concatenado")
     exigir(
         (e.http_status, e.http_inicio, e.http_fim) == (None, None, None) and e.cabecalhos == {},
