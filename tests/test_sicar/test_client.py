@@ -15,6 +15,8 @@ from agrobr.alt.sicar.models import PAGE_SIZE, WFS_BASE
 from agrobr.exceptions import ParseError
 from tests.helpers import collect_failures
 
+from .test_api import geo_capture
+
 CQL_MUNICIPIO = "municipio ILIKE '%Cabrobó%'"
 
 
@@ -201,6 +203,30 @@ async def test_geo_sem_limite_pausa_depois_da_quinta_pagina(monkeypatch: pytest.
 
     assert lotes == [1] * paginas
     assert pausas == [client.THROTTLE_DELAY, client.THROTTLE_DELAY]
+
+
+def _sem_total(corpo: bytes) -> bytes:
+    documento = json.loads(corpo)
+    documento.pop("numberMatched")
+    return json.dumps(documento).encode()
+
+
+@pytest.mark.parametrize(
+    ("pedido", "preparar", "levanta"),
+    [(4, bytes, True), (3, bytes, False), (4, _sem_total, False)],
+    ids=["curta_com_total", "completa", "curta_sem_total"],
+)
+async def test_pagina_unica_confere_as_feicoes_contra_o_total_publicado(
+    monkeypatch: pytest.MonkeyPatch, pedido: int, preparar: Callable[[bytes], bytes], levanta: bool
+):
+    corpo = preparar(geo_capture("df_geo_srs4326_count3.json"))
+    monkeypatch.setattr(client, "fetch_wfs", AsyncMock(return_value=corpo))
+    if levanta:
+        with pytest.raises(ParseError, match="3 unicas x 4 anunciadas"):
+            await client.fetch_imoveis_geo("DF", max_features=pedido)
+    else:
+        pages, _url = await client.fetch_imoveis_geo("DF", max_features=pedido)
+        assert pages == [corpo]
 
 
 async def test_sessoes_do_sicar_usam_tls_e_timeout_proprios(monkeypatch: pytest.MonkeyPatch):

@@ -115,7 +115,7 @@ Objeto `Indicador` com:
 - `produto`: Nome do produto
 - `fonte`: Fonte dos dados
 
-Sem rede e sem indicador no cache recente, levanta `SourceUnavailableError`, com `attempted_sources` (até a 1.1.0, `ParseError`). Com `offline=True` e sem indicador no cache, o mesmo erro, com o motivo "offline sem dado no cache".
+Sem rede e sem indicador no cache recente, levanta `SourceUnavailableError`, com `attempted_sources` (até a 1.1.0, `ParseError`). Com `offline=True` e sem indicador no cache, o mesmo erro, com o motivo "offline sem dado no cache". Se a busca falhar e houver indicador no cache, `ultimo()` devolve o do cache e emite `StaleDataWarning`; com `offline=True`, não avisa.
 
 **Exemplo:**
 

@@ -72,6 +72,15 @@ async def test_frango_de_1996_no_brasil_recusado_antes_da_rede(periodo, monkeypa
     assert pedidos == []
 
 
+async def test_espelho_recusa_o_frango_de_1996_na_perna_do_brasil_antes_da_rede(monkeypatch):
+    pedidos = _servidor(monkeypatch, [])
+    with levanta_exatamente(
+        InvalidParameterError, r"carne_frango em 1996: o Brasil reportou na H0"
+    ):
+        await comtrade.trade_mirror("carne_frango", reporter="US", partner="BR", periodo=1996)
+    assert pedidos == []
+
+
 async def test_codigos_da_dica_trazem_o_frango_publicado_em_1996(monkeypatch):
     linhas = json.loads((GOLDEN / "frango_h0_br_1996.json").read_bytes())["data"]
     _servidor(monkeypatch, linhas)

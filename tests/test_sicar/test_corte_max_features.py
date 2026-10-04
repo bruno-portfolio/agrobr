@@ -77,8 +77,8 @@ async def test_corte_em_max_features_avisa_e_marca_o_meta(monkeypatch, pagina, t
 @pytest.mark.parametrize(
     ("nome", "consulta", "max_features"),
     [
-        ("df_geo_srs4326_count3.json", DF, 4),
-        ("df_geo_srs4326_count3.json", DF, None),
+        ("ms_5007901_geo.json", MS, 7),
+        ("ms_5007901_geo.json", MS, None),
         ("ms_5007901_geo.json", MS, 6),
     ],
     ids=["abaixo_do_limite", "sem_limite", "total_igual_ao_limite"],

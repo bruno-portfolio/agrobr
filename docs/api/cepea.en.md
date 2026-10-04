@@ -116,7 +116,7 @@ An `Indicador` object with:
 - `produto`: Product name
 - `fonte`: Data source
 
-With no network and no indicator in the recent cache, it raises `SourceUnavailableError`, with `attempted_sources` (up to 1.1.0, `ParseError`). With `offline=True` and no indicator in the cache, the same error, with the reason "offline sem dado no cache".
+With no network and no indicator in the recent cache, it raises `SourceUnavailableError`, with `attempted_sources` (up to 1.1.0, `ParseError`). With `offline=True` and no indicator in the cache, the same error, with the reason "offline sem dado no cache". If the fetch fails and the cache holds an indicator, `ultimo()` returns the cached one and emits `StaleDataWarning`; with `offline=True`, it does not warn.
 
 **Example:**
 

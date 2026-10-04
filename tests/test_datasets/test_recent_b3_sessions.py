@@ -57,6 +57,17 @@ async def test_recent_all_exceptions_propagates_last_cause():
 
 
 @pytest.mark.asyncio
+async def test_recent_error_in_window_wins_over_unpublished_day():
+    empty = contracts.get_contract("posicoes_abertas").empty_frame()
+    errors = [ParseError(source="b3", reason=f"layout {n}", parser_version=1) for n in range(4)]
+    source = AsyncMock(side_effect=[(empty, mock_source_meta()), *errors])
+    with pytest.raises(ParseError) as caught:
+        await _fetch_pregao_recente(source, contrato="boi")
+    assert caught.value is errors[-1]
+    assert source.await_count == 5
+
+
+@pytest.mark.asyncio
 async def test_explicit_empty_date_does_not_search_another_session():
     empty = contracts.get_contract("posicoes_abertas").empty_frame()
     source = AsyncMock(return_value=(empty, mock_source_meta()))

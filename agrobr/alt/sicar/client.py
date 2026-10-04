@@ -193,6 +193,23 @@ def _conferir_varredura(unicas: int, anunciadas: int) -> None:
         )
 
 
+def _ler_pagina(content: bytes) -> models.SicarFeatureCollection:
+    try:
+        return models.SicarFeatureCollection.model_validate_json(content)
+    except pydantic.ValidationError as exc:
+        raise ParseError(
+            source="sicar",
+            parser_version=models.PARSER_VERSION,
+            reason=f"Pagina JSON invalida: {exc}",
+        ) from exc
+
+
+def _conferir_pagina_unica(content: bytes, max_features: int) -> None:
+    collection = _ler_pagina(content)
+    if isinstance(collection.numberMatched, int):
+        _conferir_varredura(len(collection.features), min(collection.numberMatched, max_features))
+
+
 def _validate_tabular_page(
     content: bytes,
     total: int,
@@ -200,14 +217,7 @@ def _validate_tabular_page(
     *,
     validation_warnings: list[str] | None = None,
 ) -> int:
-    try:
-        collection = models.SicarFeatureCollection.model_validate_json(content)
-    except pydantic.ValidationError as exc:
-        raise ParseError(
-            source="sicar",
-            parser_version=models.PARSER_VERSION,
-            reason=f"Pagina JSON invalida: {exc}",
-        ) from exc
+    collection = _ler_pagina(content)
     if isinstance(collection.numberMatched, int) and collection.numberMatched != total:
         message = (
             f"Contagem mudou de {total} para {collection.numberMatched} durante a paginacao; "
@@ -248,6 +258,7 @@ async def stream_imoveis_geo(
         )
         async with make_session() as http:
             content = await fetch_wfs(url, source="sicar", timeout=TIMEOUT, client=http)
+        _conferir_pagina_unica(content, max_features)
         logger.info("sicar_imoveis_geojson", source="sicar", size=len(content), uf=uf)
         yield [content], url
         return

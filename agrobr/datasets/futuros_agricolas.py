@@ -48,10 +48,10 @@ async def _fetch_pregao_recente(
         except (SourceUnavailableError, ParseError) as e:
             logger.debug("b3_pregao_indisponivel", data=dia, error=str(e))
             last_error = e
-    if empty_result is not None:
-        return empty_result
     if last_error is not None:
         raise last_error
+    if empty_result is not None:
+        return empty_result
     raise SourceUnavailableError(source="b3", last_error="Nenhum pregão disponível na janela")
 
 

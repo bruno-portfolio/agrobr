@@ -839,6 +839,7 @@ async def ultimo(produto: str, praca: str | None = None, offline: bool = False) 
         indicadores = _dicts_to_indicadores(cached_data)
 
     erro_de_rede: Exception | None = None
+    busca_falhou = False
     if not offline:
         freshness = (
             (fim.replace(day=1) - timedelta(days=32)).replace(day=1)
@@ -860,6 +861,7 @@ async def ultimo(produto: str, praca: str | None = None, offline: bool = False) 
 
             except (httpx.HTTPError, SourceUnavailableError, ParseError, OSError) as e:
                 logger.warning("source_fetch_failed", produto=produto, error=str(e))
+                busca_falhou = True
                 if not isinstance(e, ParseError):
                     erro_de_rede = e
 
@@ -888,6 +890,13 @@ async def ultimo(produto: str, praca: str | None = None, offline: bool = False) 
             reason=f"No indicators found for {produto}",
         )
 
+    if busca_falhou:
+        warnings.warn(
+            f"Fresh fetch failed or returned no data for '{produto}'. "
+            f"Using stale cache ({len(indicadores)} records).",
+            StaleDataWarning,
+            stacklevel=2,
+        )
     indicadores = _select_indicadores(indicadores)
     indicadores.sort(key=lambda x: x.data, reverse=True)
     return indicadores[0]

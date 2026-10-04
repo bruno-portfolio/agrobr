@@ -268,6 +268,7 @@ async def trade_mirror(
         period=",".join(selection.periods),
         freq=selection.freq,
     )
+    models.validate_hs_periods(produto, inverse.periods, inverse.reporter)
     started = time.monotonic()
     exports, export_meta = await _acquire(
         selection, api_key=api_key, require_complete=require_complete

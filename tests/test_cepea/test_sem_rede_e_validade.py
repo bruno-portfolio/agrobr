@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import copy
+import warnings
 from collections.abc import Iterator
 from datetime import date, datetime, timedelta
 from decimal import Decimal
@@ -15,7 +16,7 @@ from agrobr import constants
 from agrobr.cache import duckdb_store, policies
 from agrobr.cepea import api
 from agrobr.datasets.preco_diario import PrecoDiarioDataset
-from agrobr.exceptions import SourceUnavailableError
+from agrobr.exceptions import SourceUnavailableError, StaleDataWarning
 from agrobr.models import Indicador
 from tests.helpers import levanta_exatamente
 
@@ -78,6 +79,27 @@ async def test_ultimo_sem_rede_e_sem_cache_levanta():
     with levanta_exatamente(SourceUnavailableError) as erro:
         await api.ultimo("soja")
     assert erro.value.attempted_sources == ["cepea", "noticias_agricolas", "cache"]
+
+
+@pytest.mark.usefixtures("rede_recusada")
+async def test_ultimo_com_busca_que_falhou_avisa_que_serve_o_cache(
+    cache: duckdb_store.DuckDBStore, monkeypatch: pytest.MonkeyPatch
+):
+    monkeypatch.setattr(api, "_today", lambda: TERCA)
+    antigo = _indicador(TERCA - timedelta(days=10))
+    cache.indicadores_upsert(api._indicadores_to_dicts([antigo]))
+    with pytest.warns(
+        StaleDataWarning,
+        match=r"Fresh fetch failed or returned no data for 'soja'\. Using stale cache \(1 records\)",
+    ):
+        servido = await api.ultimo("soja")
+    assert servido.data == antigo.data
+
+    with warnings.catch_warnings(record=True) as avisos:
+        warnings.simplefilter("always")
+        offline = await api.ultimo("soja", offline=True)
+    assert offline.data == antigo.data
+    assert not [aviso for aviso in avisos if issubclass(aviso.category, StaleDataWarning)]
 
 
 @pytest.mark.usefixtures("cache")
