@@ -504,6 +504,16 @@ def _load_cached(article: ANECArticle) -> tuple[bytes, datetime] | None:
         logger.warning("anec_cache_meta_invalid", path=str(meta_path), error=str(exc))
         return None
 
+    if meta.get("pdf_url") != article.pdf_url or meta.get("cuid", article.cuid) != article.cuid:
+        logger.debug(
+            "anec_cache_outro_artigo",
+            cached_url=meta.get("pdf_url"),
+            remote_url=article.pdf_url,
+            cached_cuid=meta.get("cuid"),
+            remote_cuid=article.cuid,
+        )
+        return None
+
     if cached_updated < article.media_updated_at:
         logger.debug(
             "anec_cache_stale",

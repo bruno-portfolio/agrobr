@@ -230,6 +230,8 @@ class TestSha256Mismatch:
         client._cached_meta_path(2026, 24).write_text(
             json.dumps(
                 {
+                    "cuid": article.cuid,
+                    "pdf_url": article.pdf_url,
                     "media_updated_at": article.media_updated_at.isoformat(),
                     "fetched_at": article.media_updated_at.isoformat(),
                 }
