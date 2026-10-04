@@ -72,7 +72,9 @@ async def test_confianca_baixa_avisa_por_aquisicao_e_nao_inventa_aviso_no_cache(
                 force_refresh=True,
                 return_meta=True,
             )
-        assert meta.validation_warnings == [str(aviso.message) for aviso in avisos]
+        assert meta.validation_warnings == [
+            str(aviso.message) for aviso in avisos if issubclass(aviso.category, UserWarning)
+        ]
         assert frame["valor"].tolist() == [161.65]
         assert frame["unidade"].tolist() == ["BRL/sc60kg"]
     assert download.await_count == 2
