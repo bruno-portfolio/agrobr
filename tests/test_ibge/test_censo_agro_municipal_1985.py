@@ -15,6 +15,9 @@ from agrobr.exceptions import InvalidParameterError, ParseError
 from agrobr.ibge import censo_municipal_1985 as censo
 
 GOLDEN = Path(__file__).resolve().parents[1] / "golden_data" / "censo_1985_municipal"
+REGISTRO_CENSO_AGRO_1985 = (
+    "https://biblioteca.ibge.gov.br/index.php/biblioteca-catalogo?view=detalhes&id=747"
+)
 
 
 async def test_parametros_invalidos_recusam_antes_de_ler_o_pacote(monkeypatch):
@@ -90,7 +93,7 @@ async def test_consulta_de_varios_volumes_usa_o_hash_da_lista_de_pdfs():
     assert df["volume"].nunique() > 1
     volumes = meta.source_details["volumes"]
     assert {v["volume"] for v in volumes} == set(df["volume"])
-    assert meta.source_url == censo._CATALOGO_URL
+    assert meta.source_url == REGISTRO_CENSO_AGRO_1985
     assert meta.raw_content_hash not in {v["sha256"] for v in volumes}
 
 
@@ -182,3 +185,8 @@ async def test_as_polars_entrega_as_mesmas_casas():
         polars_df["valor"].drop_nulls().to_list()
         == pandas_df["valor"].dropna().astype(int).tolist()
     )
+
+
+def test_dataset_aponta_o_registro_do_censo_agropecuario_1985_na_biblioteca():
+    info = datasets.info("censo_agropecuario_municipal_1985")
+    assert info["source_url"] == REGISTRO_CENSO_AGRO_1985

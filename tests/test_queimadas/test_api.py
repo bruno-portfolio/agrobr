@@ -112,3 +112,18 @@ class TestFocosGeo:
 
         assert len(gdf) == 0
         assert isinstance(gdf, local_gpd.GeoDataFrame)
+
+    @pytest.mark.asyncio
+    async def test_meta_lista_as_colunas_do_geodataframe(self):
+        raw = _golden_csv_bytes()
+        with patch.object(
+            api.client,
+            "fetch_focos_mensal",
+            new_callable=AsyncMock,
+            return_value=(raw, "golden:queimadas/focos_sample/response.csv", raw, None),
+        ):
+            gdf, meta = await api.focos_geo(ano=2025, mes=1, return_meta=True)
+
+        assert len(gdf) > 0
+        assert meta.columns == list(gdf.columns)
+        assert meta.columns[-1] == "geometry"

@@ -328,6 +328,8 @@ async def credito_rural(
         "bcb_credito",
         aquisicao.consulta
         if odata and aquisicao.consulta
+        else "https://basedosdados.org/dataset/br-bcb-sicor"
+        if source_used == "bigquery"
         else f"{client.BASE_URL}/{client.ENDPOINT_MAP.get(finalidade.lower(), 'CusteioMunicipio')}",
         source_method,
         fetch_ms,

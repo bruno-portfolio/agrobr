@@ -310,5 +310,6 @@ async def focos_geo(
     gdf = gpd_mod.GeoDataFrame(df, geometry=geometry, crs="EPSG:4326")
 
     if return_meta:
+        meta.columns = list(gdf.columns)
         return gdf, meta
     return gdf

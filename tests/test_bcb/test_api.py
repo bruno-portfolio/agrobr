@@ -101,6 +101,7 @@ async def test_consulta_publica_agrega_o_corpo_oficial_com_meta(monkeypatch: pyt
         ["bcb_odata", "bcb_bigquery"],
         "bcb_bigquery",
     )
+    assert meta.source_url == "https://basedosdados.org/dataset/br-bcb-sicor"
     assert frame["fonte"].tolist() == ["bcb_bigquery"]
 
 

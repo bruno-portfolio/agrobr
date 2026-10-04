@@ -123,7 +123,7 @@ The dataset combines expected maize and bean crop components, converts hectares/
 - **Confidence**: `valor` only in cells confirmed by the printed sums (0 errors in the measured precision); `valor_lido` and the
   `status` for the rest, with the precision measured in the [contract](../contracts/censo_agropecuario_municipal_1985.md)
 - **Access**: local, no network
-- **Catalog URL**: https://biblioteca.ibge.gov.br/index.php/biblioteca-catalogo?view=detalhes&id=768
+- **Catalog URL**: https://biblioteca.ibge.gov.br/index.php/biblioteca-catalogo?view=detalhes&id=747
 
 ### Agricultural Census 1995/96 — Legacy Themes (FTP)
 

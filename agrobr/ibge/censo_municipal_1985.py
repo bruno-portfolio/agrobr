@@ -23,7 +23,7 @@ _DATA_DIR = Path(__file__).parent.parent / "data" / "censo_1985"
 _PACOTE = _DATA_DIR / "censo_agro_municipal_1985.parquet"
 _COBERTURA = _DATA_DIR / "cobertura.parquet"
 _MANIFESTO = _DATA_DIR / "manifesto.json"
-_CATALOGO_URL = "https://biblioteca.ibge.gov.br/index.php/biblioteca-catalogo?view=detalhes&id=768"
+_CATALOGO_URL = "https://biblioteca.ibge.gov.br/index.php/biblioteca-catalogo?view=detalhes&id=747"
 
 TABELAS_CENSO_MUNICIPAL_1985: dict[int, str] = {
     67: "propriedade_terras",

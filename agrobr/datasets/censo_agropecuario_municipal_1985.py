@@ -47,7 +47,7 @@ CENSO_AGROPECUARIO_MUNICIPAL_1985_INFO = DatasetInfo(
     contract_version="2.0",
     update_frequency="never",
     typical_latency="N/A",
-    source_url="https://biblioteca.ibge.gov.br/index.php/biblioteca-catalogo?view=detalhes&id=768",
+    source_url="https://biblioteca.ibge.gov.br/index.php/biblioteca-catalogo?view=detalhes&id=747",
     source_institution="IBGE",
     min_date="1985-01-01",
     unit="por coluna (unidade e unidade_lida)",

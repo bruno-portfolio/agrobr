@@ -124,7 +124,7 @@ O dataset agrega os componentes esperados de milho e feijão, converte hectares/
 - **Confiança**: `valor` só na casa confirmada pelas somas impressas (0 erro na precisão medida); `valor_lido` e o `status` para o
   resto, com a precisão medida no [contrato](../contracts/censo_agropecuario_municipal_1985.md)
 - **Acesso**: local, sem rede
-- **URL catalogo**: https://biblioteca.ibge.gov.br/index.php/biblioteca-catalogo?view=detalhes&id=768
+- **URL catalogo**: https://biblioteca.ibge.gov.br/index.php/biblioteca-catalogo?view=detalhes&id=747
 
 ### Censo Agropecuario 1995/96 — Temas Legados (FTP)
 
