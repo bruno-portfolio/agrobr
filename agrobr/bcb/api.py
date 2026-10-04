@@ -10,7 +10,7 @@ import pandas as pd
 
 from agrobr import _log, contracts
 from agrobr.contracts import bcb_sicor
-from agrobr.exceptions import InvalidParameterError
+from agrobr.exceptions import InvalidParameterError, ParseError
 from agrobr.models import MetaInfo
 from agrobr.normalize import dates, regions
 from agrobr.utils import time as time_utils
@@ -286,6 +286,14 @@ async def credito_rural(
     t1 = time.monotonic()
     df = parse_credito_rural(dados, finalidade=finalidade)
     df["produto"] = normalize_produto_sicor(produto)
+
+    for coluna, filtro in (("uf", uf), ("programa", programa), ("tipo_seguro", tipo_seguro)):
+        if filtro and not df.empty and coluna not in df.columns:
+            raise ParseError(
+                source="bcb",
+                parser_version=PARSER_VERSION,
+                reason=f"Corpo sem a coluna {coluna}; o filtro {coluna}={filtro!r} não pode ser aplicado",
+            )
 
     if uf and "uf" in df.columns:
         df = df[df["uf"] == uf].reset_index(drop=True)

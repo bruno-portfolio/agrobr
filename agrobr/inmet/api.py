@@ -93,6 +93,17 @@ async def estacoes(
         if col in df.columns:
             df[col] = pd.to_numeric(df[col], errors="coerce")
 
+    for coluna, nome, valor in (
+        ("situacao", "apenas_operantes", apenas_operantes),
+        ("uf", "uf", uf),
+    ):
+        if valor and coluna not in df.columns:
+            raise ParseError(
+                source="inmet",
+                parser_version=parser.PARSER_VERSION,
+                reason=f"Catálogo sem a coluna {coluna}; o filtro {nome}={valor!r} não pode ser aplicado",
+            )
+
     if apenas_operantes and "situacao" in df.columns:
         df = df[df["situacao"] == "Operante"]
 

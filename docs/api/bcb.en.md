@@ -57,6 +57,8 @@ DataFrame with columns:
 
 `programa` uses the current name from the official table for every crop year: `0152` is published as PROIRRIGA even before 07/2021, when the code was Moderinfra (the official description records the change on 2021-07-01).
 
+**Absence is not zero.** A `uf`, `programa` or `tipo_seguro` filter on a source body without the matching column raises `ParseError` instead of returning the total of all.
+
 **Crop year in progress.** The crop year containing today (July to June) is still receiving contracts, and its total changes until the crop year ends. When the result includes it, `credito_rural` warns in `validation_warnings` and `UserWarning` and records in `source_details` the crop year (`safra_em_curso`) and the issuance months covered (`meses_cobertos`, `"YYYY-MM"`).
 
 **Record by record (`agregacao="registro"`).** Returns the records of the `*RegiaoUFProduto` entities after the `uf`, `programa` and `tipo_seguro` filters, without aggregation: the cut that the default 1.1.0 call returned. There are 23 columns, the 11 above plus `ano_emissao`, `mes_emissao`, `regiao`, `cd_sub_programa`, `cd_fonte_recurso`, `fonte_recurso`, `cd_tipo_seguro`, `tipo_seguro`, `cd_modalidade`, `modalidade`, `cd_atividade` and `atividade`, in the [bcb.credito_rural_registro](../contracts/bcb_credito_rural_registro.en.md) 1.0 contract, with that contract's `MetaInfo`. Funding source, modality and activity names come from the description in BCB's domain tables, and a code outside the table gets a null name. Summed by crop year, state, product and purpose, it equals `agregacao="uf"`.

@@ -57,6 +57,8 @@ DataFrame com colunas:
 
 `programa` usa o nome vigente da tabela oficial em todas as safras: o `0152` sai como PROIRRIGA também antes de 07/2021, quando o código era o Moderinfra (a descrição oficial registra a troca em 01/07/2021).
 
+**Ausência não é zero.** Filtro `uf`, `programa` ou `tipo_seguro` com o corpo da fonte sem a coluna correspondente levanta `ParseError`, em vez de devolver o total de todos.
+
 **Safra em curso.** A safra que contém a data de hoje (julho a junho) ainda recebe contratos, e o total dela muda até o fim da safra. Quando o resultado a traz, o `credito_rural` avisa em `validation_warnings` e em `UserWarning` e registra em `source_details` a safra (`safra_em_curso`) e os meses de emissão cobertos (`meses_cobertos`, `"AAAA-MM"`).
 
 **Registro a registro (`agregacao="registro"`).** Devolve os registros das entidades `*RegiaoUFProduto` depois dos filtros de `uf`, `programa` e `tipo_seguro`, sem agregar: o recorte que a chamada padrão da 1.1.0 devolvia. São 23 colunas, as 11 acima e mais `ano_emissao`, `mes_emissao`, `regiao`, `cd_sub_programa`, `cd_fonte_recurso`, `fonte_recurso`, `cd_tipo_seguro`, `tipo_seguro`, `cd_modalidade`, `modalidade`, `cd_atividade` e `atividade`, no contrato [bcb.credito_rural_registro](../contracts/bcb_credito_rural_registro.md) 1.0, com o `MetaInfo` desse contrato. Os nomes de fonte de recursos, modalidade e atividade saem da descrição das tabelas de domínio do BCB, e o código fora da tabela fica com nome nulo. Somado por safra, UF, produto e finalidade, é igual à `agregacao="uf"`.

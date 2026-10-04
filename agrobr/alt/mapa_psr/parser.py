@@ -361,6 +361,12 @@ def _filter_sinistros(df: pd.DataFrame, evento: str | None) -> pd.DataFrame:
             parser_version=PARSER_VERSION,
             reason="Coluna valor_indenizacao obrigatória para identificar sinistros",
         )
+    if evento and "evento" not in df.columns:
+        raise ParseError(
+            source="mapa_psr",
+            parser_version=PARSER_VERSION,
+            reason=f"Arquivo sem a coluna de evento; o filtro evento={evento!r} não pode ser aplicado",
+        )
     df = df[df["valor_indenizacao"].fillna(0) > 0]
 
     if "evento" in df.columns:

@@ -12,8 +12,8 @@ import pytest
 
 from agrobr import contracts, datasets
 from agrobr.bcb import api, client, models
-from agrobr.exceptions import InvalidParameterError
-from tests.helpers import collect_failures, levanta_exatamente
+from agrobr.exceptions import InvalidParameterError, ParseError
+from tests.helpers import collect_failures, levanta_exatamente, sem_excecao
 
 ORACULO = Path(__file__).parents[1] / "golden_data/bcb/oraculo_20260923"
 ORACULO_MANIFEST = json.loads((ORACULO / "manifest.json").read_text(encoding="utf-8"))
@@ -130,6 +130,31 @@ async def test_filtros_locais_de_uf_programa_e_seguro(monkeypatch: pytest.Monkey
     assert proagro["valor"].tolist() == [
         pytest.approx(soma([r for r in registros if r["cdTipoSeguro"] == "1"]))
     ]
+
+
+@pytest.mark.parametrize(
+    ("campo", "filtro", "valor"),
+    [
+        ("nomeUF", "uf", "MT"),
+        ("cdPrograma", "programa", "Pronamp"),
+        ("cdTipoSeguro", "tipo_seguro", "Proagro tradicional"),
+    ],
+)
+async def test_filtro_sem_a_dimensao_no_corpo_levanta(
+    monkeypatch: pytest.MonkeyPatch, campo: str, filtro: str, valor: str
+):
+    registros = json.loads(R9_SICOR.read_bytes())["value"]
+    sem_dimensao = [{k: v for k, v in r.items() if k != campo} for r in registros]
+    monkeypatch.setattr(
+        api.client,
+        "fetch_credito_rural_with_fallback",
+        AsyncMock(return_value=(sem_dimensao, "odata")),
+    )
+    with levanta_exatamente(ParseError, f"o filtro {filtro}="):
+        await api.credito_rural("soja", safra="2024/25", **{filtro: valor})
+    with sem_excecao():
+        frame = await api.credito_rural("soja", safra="2024/25")
+    assert frame["valor"].tolist() == [pytest.approx(soma(registros))]
 
 
 async def test_recusas_antes_da_fonte(monkeypatch: pytest.MonkeyPatch):

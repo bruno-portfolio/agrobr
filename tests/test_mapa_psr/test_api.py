@@ -7,6 +7,7 @@ from unittest.mock import patch
 import pytest
 
 from agrobr.alt.mapa_psr import api, parser
+from agrobr.exceptions import ParseError
 from agrobr.models import MetaInfo
 from tests.helpers import binary_stream
 
@@ -99,6 +100,18 @@ class TestSinistros:
         df = await api.sinistros(evento="seca")
         assert len(df) >= 1
         assert all("seca" in e for e in df["evento"])
+
+    @pytest.mark.asyncio
+    @patch.object(api.client, "open_periodo")
+    async def test_evento_sem_a_coluna_na_fonte_levanta(self, mock_fetch):
+        linhas = [linha.split(";") for linha in _make_csv_bytes().decode().split("\n")]
+        fora = linhas[0].index("EVENTO_PREPONDERANTE")
+        csv = "\n".join(";".join(c for i, c in enumerate(lin) if i != fora) for lin in linhas)
+        mock_fetch.side_effect = lambda _: binary_stream(csv.encode())
+        with pytest.raises(ParseError, match="evento"):
+            await api.sinistros(evento="granizo")
+        df = await api.sinistros()
+        assert sorted(df["nr_apolice"]) == ["AP001", "AP003"]
 
 
 class TestApolices:

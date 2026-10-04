@@ -1,7 +1,9 @@
 """Testes para a API pública INMET."""
 
+import json
 import re
 import warnings
+from pathlib import Path
 from unittest.mock import AsyncMock, patch
 
 import pandas as pd
@@ -9,6 +11,10 @@ import pytest
 
 from agrobr.exceptions import InvalidParameterError, ParseError, SourceUnavailableError
 from agrobr.inmet import api
+
+ESTACOES_T = (
+    Path(__file__).resolve().parents[1] / "golden_data/inmet/estacoes_20260924/estacoes_T.json"
+)
 
 
 def _mock_obs(
@@ -219,6 +225,33 @@ class TestEstacoesEntrada:
             pytest.raises(ParseError, match="Catálogo de estações do INMET vazio"),
         ):
             await api.estacoes()
+
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize(
+        ("campo", "filtro", "sem_filtro", "esperado"),
+        [
+            ("SG_ESTADO", "o filtro uf='SP'", {}, lambda r: r["CD_SITUACAO"] == "Operante"),
+            (
+                "CD_SITUACAO",
+                "o filtro apenas_operantes=True",
+                {"uf": "SP", "apenas_operantes": False},
+                lambda r: r["SG_ESTADO"] == "SP",
+            ),
+        ],
+        ids=["sem_uf", "sem_situacao"],
+    )
+    async def test_filtro_sem_a_coluna_no_catalogo_levanta(
+        self, campo, filtro, sem_filtro, esperado
+    ):
+        oficial = json.loads(ESTACOES_T.read_bytes())
+        sem_coluna = [{k: v for k, v in r.items() if k != campo} for r in oficial]
+        with patch.object(
+            api.client, "fetch_estacoes", new_callable=AsyncMock, return_value=sem_coluna
+        ):
+            with pytest.raises(ParseError, match=re.escape(filtro)):
+                await api.estacoes(uf="SP")
+            df = await api.estacoes(**sem_filtro)
+        assert sorted(df["codigo"]) == sorted(r["CD_ESTACAO"] for r in oficial if esperado(r))
 
     @pytest.mark.asyncio
     @pytest.mark.parametrize(
