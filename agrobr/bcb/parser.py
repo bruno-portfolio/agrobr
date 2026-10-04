@@ -8,6 +8,7 @@ import pandas as pd
 from agrobr import _log, contracts
 from agrobr.contracts import bcb_sicor
 from agrobr.exceptions import ParseError
+from agrobr.utils.result import ATRIBUTO_AVISOS
 from agrobr.utils.warnings import warn_once
 
 logger = _log.get_logger(__name__)
@@ -189,7 +190,22 @@ def parse_credito_rural_total(
 
 
 def _soma_preservando_nulos(values: pd.Series) -> Any:
-    return values.sum(min_count=1)
+    return values.sum(min_count=len(values))
+
+
+def _avisos_de_parte_nula(df: pd.DataFrame, group_cols: list[str]) -> list[str]:
+    avisos = []
+    for medida in ("valor", "area_financiada", "qtd_contratos"):
+        if medida not in df.columns:
+            continue
+        nulos = df[medida].isna().groupby([df[c] for c in group_cols], dropna=False)
+        mistos = int((nulos.any() & ~nulos.all()).sum())
+        if mistos:
+            avisos.append(
+                f"credito_rural: {medida} sai nulo em {mistos} grupo(s) com registro sem o valor; "
+                "a soma das partes conhecidas não é o total"
+            )
+    return avisos
 
 
 def agregar_por_uf(df: pd.DataFrame) -> pd.DataFrame:
@@ -212,8 +228,11 @@ def agregar_por_uf(df: pd.DataFrame) -> pd.DataFrame:
         return df
 
     result = df.groupby(group_cols, as_index=False, dropna=False).agg(agg_dict)
-
-    return result.sort_values(group_cols).reset_index(drop=True)
+    result = result.sort_values(group_cols).reset_index(drop=True)
+    avisos = _avisos_de_parte_nula(df, group_cols)
+    if avisos:
+        result.attrs[ATRIBUTO_AVISOS] = avisos
+    return result
 
 
 def agregar_por_programa(df: pd.DataFrame) -> pd.DataFrame:
@@ -240,5 +259,8 @@ def agregar_por_programa(df: pd.DataFrame) -> pd.DataFrame:
         return df
 
     result = df.groupby(group_cols, as_index=False, dropna=False).agg(agg_dict)
-
-    return result.sort_values(group_cols).reset_index(drop=True)
+    result = result.sort_values(group_cols).reset_index(drop=True)
+    avisos = _avisos_de_parte_nula(df, group_cols)
+    if avisos:
+        result.attrs[ATRIBUTO_AVISOS] = avisos
+    return result

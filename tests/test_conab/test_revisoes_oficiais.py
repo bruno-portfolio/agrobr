@@ -813,7 +813,61 @@ async def test_brasil_total_pela_serie_avisa_partes_que_nao_fecham_com_o_total(
     with warnings.catch_warnings(record=True) as avisos:
         warnings.simplefilter("always")
         await api.brasil_total(safra="2015/16")
-    assert [str(a.message) for a in avisos if "brasil_total de" in str(a.message)] == []
+    assert [str(a.message) for a in avisos if "brasil_total de" in str(a.message)] == [
+        "CONAB: no brasil_total de 2015/16 (série histórica), subtotal de verão: fora da soma, "
+        "ainda não levantados: GERGELIM (a série começa em 2018/19)"
+    ]
+
+
+@pytest.mark.parametrize("safra", ["2018/19", "2017/18", "1975/76"])
+async def test_brasil_total_pela_serie_nao_soma_ausencia_como_zero(
+    monkeypatch: pytest.MonkeyPatch, safra: str
+):
+    _servir(monkeypatch)
+    with warnings.catch_warnings(record=True) as avisos:
+        warnings.simplefilter("always")
+        frame, meta = await api.brasil_total(safra=safra, return_meta=True)
+
+    prefixo = f"CONAB: no brasil_total de {safra} (série histórica), subtotal de verão: "
+    emitidos = [str(a.message) for a in avisos if str(a.message).startswith(prefixo)]
+    assert [aviso for aviso in meta.validation_warnings if aviso.startswith(prefixo)] == emitidos
+    verao = [
+        rotulo for rotulo, _, _, secao in constants.CONAB_BRASIL_TOTAL_SERIES if secao == "verao"
+    ]
+    produtos = frame[~frame["rotulo"].isin(["SUBTOTAL", "BRASIL (2)"])]
+    partes = produtos[produtos["rotulo"].isin(verao) & produtos["grupo"].isna()]
+    inverno = produtos[produtos["grupo"] == constants.CONAB_INVERNO]
+    subtotal, subtotal_inverno, brasil = frame[
+        frame["rotulo"].isin(["SUBTOTAL", "BRASIL (2)"])
+    ].to_dict("records")
+    for campo in ("area_plantada", "producao"):
+        assert subtotal_inverno[campo] == pytest.approx(float(inverno[campo].sum()))
+
+    if safra == "1975/76":
+        assert emitidos[0].startswith(f"{prefixo}fora da soma, ainda não levantados: ")
+        assert "SOJA (a série começa em 1976/77)" in emitidos[0]
+        assert "GERGELIM (a série começa em 2018/19)" in emitidos[0]
+        assert emitidos[1:] == [f"{prefixo}nulo, e o BRASIL também (nenhuma cultura levantada)"]
+        assert partes[["area_plantada", "producao"]].isna().all().all()
+        assert subtotal_inverno["area_plantada"] == pytest.approx(142.5)
+        for linha in (subtotal, brasil):
+            assert pd.isna(linha["area_plantada"]) and pd.isna(linha["producao"])
+            assert pd.isna(linha["produtividade"])
+        return
+
+    if safra == "2017/18":
+        assert emitidos == [
+            f"{prefixo}fora da soma, ainda não levantados: GERGELIM (a série começa em 2018/19)"
+        ]
+        gergelim = partes[partes["rotulo"] == "GERGELIM"]
+        assert gergelim[["area_plantada", "producao"]].isna().all().all()
+        partes = partes[partes["rotulo"] != "GERGELIM"]
+    else:
+        assert emitidos == []
+    assert partes[["area_plantada", "producao"]].notna().all().all()
+    for campo in ("area_plantada", "producao"):
+        assert subtotal[campo] == pytest.approx(float(partes[campo].sum()))
+        assert brasil[campo] == pytest.approx(subtotal[campo] + subtotal_inverno[campo])
 
 
 async def test_serie_com_brasil_ambiguo_nao_confere_a_soma_das_ufs(

@@ -368,19 +368,52 @@ def _linha_total(
     }
 
 
+def _soma(linhas: list[dict[str, Any]], campo: str) -> Decimal | None:
+    valores = [linha[campo] for linha in linhas]
+    if not valores or None in valores:
+        return None
+    return sum(valores, Decimal(0))
+
+
 def _subtotal(
     rotulo: str, grupo: str | None, safra: str, linhas: list[dict[str, Any]]
 ) -> dict[str, Any]:
-    area = sum(
-        (linha["area_plantada"] for linha in linhas if linha["area_plantada"] is not None),
-        Decimal(0),
-    )
-    producao = sum(
-        (linha["producao"] for linha in linhas if linha["producao"] is not None), Decimal(0)
-    )
-    return _linha_total(
-        rotulo, grupo, safra, area, producao * 1000 / area if area else None, producao
-    )
+    area = _soma(linhas, "area_plantada")
+    producao = _soma(linhas, "producao")
+    produtividade = producao * 1000 / area if area and producao is not None else None
+    return _linha_total(rotulo, grupo, safra, area, produtividade, producao)
+
+
+def _fim_do_periodo(periodo: str) -> int:
+    return safra_para_anos(periodo)[1] if "/" in periodo else int(periodo)
+
+
+def _serie_comeca_depois(raw: bytes, produto: str, safra: str) -> str | None:
+    periodos = {periodo for periodo, _ in serie_parser.linhas_brasil(raw, produto)}
+    if not periodos:
+        return None
+    primeiro = min(periodos, key=_fim_do_periodo)
+    return primeiro if _fim_do_periodo(primeiro) > safra_para_anos(safra)[1] else None
+
+
+def _avisos_da_soma(
+    safra: str, fora: dict[str, list[str]], linhas: dict[str | None, list[dict[str, Any]]]
+) -> list[str]:
+    avisos = []
+    for secao, nome in (("verao", "verão"), ("inverno", "inverno")):
+        prefixo = f"CONAB: no brasil_total de {safra} (série histórica), subtotal de {nome}: "
+        if fora[secao]:
+            avisos.append(f"{prefixo}fora da soma, ainda não levantados: {', '.join(fora[secao])}")
+        sem = [
+            linha["produto"]
+            for linha in linhas[secao]
+            if linha["area_plantada"] is None or linha["producao"] is None
+        ]
+        if sem:
+            avisos.append(f"{prefixo}nulo, e o BRASIL também (sem a safra: {', '.join(sem)})")
+        elif not linhas[secao]:
+            avisos.append(f"{prefixo}nulo, e o BRASIL também (nenhuma cultura levantada)")
+    return avisos
 
 
 def _avisar_partes_incoerentes(linhas: list[dict[str, Any]], safra: str) -> None:
@@ -429,6 +462,7 @@ async def _brasil_total_das_series(safra: str) -> tuple[pd.DataFrame, MetaInfo] 
 
     t1 = time.monotonic()
     linhas: dict[str | None, list[dict[str, Any]]] = {"verao": [], "inverno": []}
+    fora: dict[str, list[str]] = {"verao": [], "inverno": []}
     blocos: dict[bool, list[dict[str, Any]]] = {False: [], True: []}
     for rotulo, grupo, produto, secao in constants.CONAB_BRASIL_TOTAL_SERIES:
         _, raw, _ = series[serie_client.get_xls_url(produto)]
@@ -446,8 +480,14 @@ async def _brasil_total_das_series(safra: str) -> tuple[pd.DataFrame, MetaInfo] 
             decimais.get("producao_mil_ton"),
         )
         blocos[grupo == constants.CONAB_INVERNO].append(linha)
-        if secao is not None:
+        if secao is None:
+            continue
+        completa = linha["area_plantada"] is not None and linha["producao"] is not None
+        primeiro = None if completa else _serie_comeca_depois(raw, produto, safra)
+        if primeiro is None:
             linhas[secao].append(linha)
+        else:
+            fora[secao].append(f"{rotulo} (a série começa em {primeiro})")
     _avisar_partes_incoerentes([*blocos[False], *blocos[True]], safra)
     conferencia = None
     if ultima is not None:
@@ -498,6 +538,9 @@ async def _brasil_total_das_series(safra: str) -> tuple[pd.DataFrame, MetaInfo] 
             }
         },
     )
+    for aviso in _avisos_da_soma(safra, fora, linhas):
+        meta.validation_warnings.append(aviso)
+        warn_once(f"conab_soma_parcial:{aviso}", aviso)
     return df, meta
 
 

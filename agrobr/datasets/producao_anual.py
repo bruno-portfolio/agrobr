@@ -14,7 +14,7 @@ from agrobr.models import MetaInfo
 from agrobr.normalize import regions
 from agrobr.normalize.dates import anos_para_safra, safra_para_anos
 from agrobr.normalize.regions import uf_para_nome
-from agrobr.utils.result import DataFrame, DataFrameResult
+from agrobr.utils.result import ATRIBUTO_AVISOS, DataFrame, DataFrameResult
 from agrobr.utils.time import hoje
 from agrobr.utils.validation import validate_uf
 
@@ -55,8 +55,20 @@ async def _fetch_ibge_pam(produto: str, **kwargs: Any) -> tuple[pd.DataFrame, Me
 
 
 def _aggregate_conab_brasil(df: pd.DataFrame, produto: str) -> pd.DataFrame:
-    area_plantada = df["area_plantada"].sum(min_count=1)
-    producao = df["producao"].sum(min_count=1)
+    sem_cultura = df["area_plantada"].isna() & df["producao"].eq(0)
+    medidas = {
+        "area_plantada": df["area_plantada"].mask(sem_cultura, 0.0),
+        "producao": df["producao"],
+    }
+    avisos = [
+        f"producao_anual: {medida} do Brasil (CONAB) sai nula: sem o valor em "
+        f"{', '.join(df.loc[valores.isna(), 'localidade'])}; "
+        "a soma das UFs conhecidas não é o total"
+        for medida, valores in medidas.items()
+        if valores.isna().any()
+    ]
+    area_plantada = medidas["area_plantada"].sum(min_count=len(df))
+    producao = medidas["producao"].sum(min_count=len(df))
     rendimento = (
         producao * 1000 / area_plantada
         if pd.notna(producao) and pd.notna(area_plantada) and area_plantada
@@ -78,7 +90,10 @@ def _aggregate_conab_brasil(df: pd.DataFrame, produto: str) -> pd.DataFrame:
             }
         ]
     )
-    return tipar_resultado(result, "producao_anual", _PRODUCAO_ANUAL_COLS)
+    result = tipar_resultado(result, "producao_anual", _PRODUCAO_ANUAL_COLS)
+    if avisos:
+        result.attrs[ATRIBUTO_AVISOS] = avisos
+    return result
 
 
 def _normalize_conab(df: pd.DataFrame, produto: str, nivel: str) -> pd.DataFrame:
@@ -140,6 +155,8 @@ async def _fetch_conab(produto: str, **kwargs: Any) -> tuple[pd.DataFrame, MetaI
 
     df, meta = _unpack_result(result)
     df = _normalize_conab(df, produto, nivel)
+    if meta is not None:
+        meta.validation_warnings.extend(df.attrs.get(ATRIBUTO_AVISOS, []))
     if df.empty:
         raise SourceUnavailableError(
             source="conab",

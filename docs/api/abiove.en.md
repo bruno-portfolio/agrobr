@@ -38,7 +38,7 @@ async def exportacao(
 
 **Returns:**
 
-DataFrame with columns: `ano`, `mes`, `produto`, `volume_ton`, `receita_usd_mil`
+DataFrame with columns: `ano`, `mes`, `produto`, `volume_ton`, `receita_usd_mil`. A blank volume or revenue in the workbook is null, not 0; in the monthly total, volume and revenue are null when any product lacks the value; when the same group has both known and missing values, `MetaInfo.validation_warnings` records a warning.
 
 **Example:**
 

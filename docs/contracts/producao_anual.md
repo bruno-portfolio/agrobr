@@ -15,7 +15,7 @@ Se o IBGE estiver indisponível, listas de anos não acionam uma chamada inváli
 
 No fallback CONAB, o ano civil corresponde ao segundo ano da safra:
 `ano=2023` consulta a safra `2022/23`. A fonte fornece dados estaduais; o nível
-`brasil` é calculado pela soma das UFs e o nível `municipio` não possui fallback.
+`brasil` é calculado pela soma das UFs e o nível `municipio` não possui fallback. Na soma, UF com área em branco e produção 0 (sem a cultura) entra como 0; outra UF sem área ou produção deixa o total do Brasil nulo, com aviso que a nomeia, e o rendimento só sai com área e produção completas.
 Como o boletim não publica área colhida, `area_colhida` fica nula nesse fallback.
 
 O fallback usa o boletim de grãos e atende `soja`, `milho`, `arroz`, `feijao`,

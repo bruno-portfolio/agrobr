@@ -15,7 +15,7 @@ If IBGE is unavailable, year lists do not trigger an invalid CONAB request: that
 
 For the CONAB fallback, the calendar year is the second year of the crop season:
 `ano=2023` queries crop season `2022/23`. CONAB provides state-level data; the
-`brasil` level is computed by summing states and `municipio` has no fallback.
+`brasil` level is computed by summing states and `municipio` has no fallback. In the sum, a state with blank area and production 0 (crop not grown) counts as 0; any other state without area or production makes the Brazil total null, with a warning naming it, and yield is only computed with complete area and production.
 Because the bulletin does not publish harvested area, `area_colhida` is null in this fallback.
 
 The fallback uses the grain bulletin and covers `soja`, `milho`, `arroz`,

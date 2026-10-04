@@ -157,6 +157,32 @@ async def test_filtro_sem_a_dimensao_no_corpo_levanta(
     assert frame["valor"].tolist() == [pytest.approx(soma(registros))]
 
 
+@pytest.mark.parametrize("agregacao", ["uf", "programa"])
+async def test_grupo_com_registro_sem_valor_sai_nulo_com_aviso(
+    monkeypatch: pytest.MonkeyPatch, agregacao: str
+):
+    registros = json.loads(R9_SICOR.read_bytes())["value"]
+    sem_valor = [dict(r) for r in registros]
+    sem_valor[0]["VlCusteio"] = None
+    programa = sem_valor[0]["cdPrograma"]
+    monkeypatch.setattr(
+        api.client,
+        "fetch_credito_rural_with_fallback",
+        AsyncMock(return_value=(sem_valor, "odata")),
+    )
+    frame, meta = await api.credito_rural(
+        "soja", safra="2024/25", agregacao=agregacao, return_meta=True
+    )
+    afetado = frame["cd_programa"].eq(programa) if agregacao == "programa" else frame["uf"].eq("MT")
+    assert frame.loc[afetado, "valor"].isna().all()
+    assert frame.loc[~afetado, "valor"].notna().all()
+    assert frame["qtd_contratos"].notna().all()
+    assert [aviso for aviso in meta.validation_warnings if "valor sai nulo" in aviso] == [
+        "credito_rural: valor sai nulo em 1 grupo(s) com registro sem o valor; "
+        "a soma das partes conhecidas não é o total"
+    ]
+
+
 async def test_recusas_antes_da_fonte(monkeypatch: pytest.MonkeyPatch):
     fetch = AsyncMock()
     monkeypatch.setattr(api.client, "fetch_credito_rural_with_fallback", fetch)

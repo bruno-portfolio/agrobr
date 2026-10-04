@@ -11,6 +11,7 @@ import pandas as pd
 import pytest
 
 from agrobr import constants
+from agrobr.conab.parsers.v1 import ConabParserV1
 from agrobr.contracts import validate_dataset
 from agrobr.datasets.deterministic import deterministic
 from agrobr.datasets.producao_anual import (
@@ -182,6 +183,37 @@ class TestProducaoAnualFallback:
             uf=None,
             return_meta=True,
         )
+
+    @pytest.mark.asyncio
+    async def test_conab_brasil_uf_sem_a_cultura_entra_como_zero_e_parte_ausente_anula(self):
+        boletim = (
+            Path(__file__).parents[1] / "golden_data/reconciliacao_r3_20260918/c3c31afbe3e52d92.xls"
+        )
+        linhas = ConabParserV1().parse_safra_produto(BytesIO(boletim.read_bytes()), "milho_3")
+        publicado = pd.DataFrame([s.model_dump() for s in linhas if s.safra == "2018/19" and s.uf])
+        sem_cultura = publicado["area_plantada"].isna() & publicado["producao"].eq(0)
+        assert sem_cultura.sum() == 22
+
+        meta = mock_source_meta()
+        with patch("agrobr.conab.safras", new_callable=AsyncMock, return_value=(publicado, meta)):
+            df, meta_saida = await _fetch_conab("milho_3", ano=2019, nivel="brasil")
+        assert df.iloc[0]["area_plantada"] == pytest.approx(511_000.0)
+        assert df.iloc[0]["producao"] == pytest.approx(1_218_700.0)
+        assert df.iloc[0]["rendimento"] == pytest.approx(1_218_700 * 1000 / 511_000)
+        assert not [a for a in meta_saida.validation_warnings if a.startswith("producao_anual:")]
+
+        misto = publicado[~sem_cultura].copy()
+        misto.loc[misto["uf"] == "BA", "area_plantada"] = None
+        with patch(
+            "agrobr.conab.safras", new_callable=AsyncMock, return_value=(misto, mock_source_meta())
+        ):
+            df, meta_saida = await _fetch_conab("milho_3", ano=2019, nivel="brasil")
+        assert pd.isna(df.iloc[0]["area_plantada"]) and pd.isna(df.iloc[0]["rendimento"])
+        assert df.iloc[0]["producao"] == pytest.approx(1_218_700.0)
+        assert [a for a in meta_saida.validation_warnings if a.startswith("producao_anual:")] == [
+            "producao_anual: area_plantada do Brasil (CONAB) sai nula: sem o valor em Bahia; "
+            "a soma das UFs conhecidas não é o total"
+        ]
 
 
 class TestProducaoAnualFetchFunctions:

@@ -138,7 +138,7 @@ class TestParseCarga:
     def test_teu_conversion(self):
         df = parse_carga(CARGA_TXT)
 
-        assert df["TEU"].dtype in (int, "int64", "int32")
+        assert str(df["TEU"].dtype) == "Int64"
         assert df.iloc[3]["TEU"] == 2
 
     def test_handles_missing_peso_column(self):

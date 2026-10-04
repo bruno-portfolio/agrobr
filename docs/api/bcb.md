@@ -57,7 +57,7 @@ DataFrame com colunas:
 
 `programa` usa o nome vigente da tabela oficial em todas as safras: o `0152` sai como PROIRRIGA também antes de 07/2021, quando o código era o Moderinfra (a descrição oficial registra a troca em 01/07/2021).
 
-**Ausência não é zero.** Filtro `uf`, `programa` ou `tipo_seguro` com o corpo da fonte sem a coluna correspondente levanta `ParseError`, em vez de devolver o total de todos.
+**Ausência não é zero.** Filtro `uf`, `programa` ou `tipo_seguro` com o corpo da fonte sem a coluna correspondente levanta `ParseError`, em vez de devolver o total de todos. Na agregação por UF ou por programa, `valor`, `area_financiada` e `qtd_contratos` saem nulos no grupo em que algum registro não traz o valor; quando o mesmo grupo tem valores conhecidos e ausentes, `MetaInfo.validation_warnings` registra o aviso.
 
 **Safra em curso.** A safra que contém a data de hoje (julho a junho) ainda recebe contratos, e o total dela muda até o fim da safra. Quando o resultado a traz, o `credito_rural` avisa em `validation_warnings` e em `UserWarning` e registra em `source_details` a safra (`safra_em_curso`) e os meses de emissão cobertos (`meses_cobertos`, `"AAAA-MM"`).
 

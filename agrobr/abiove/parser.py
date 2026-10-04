@@ -10,6 +10,7 @@ from agrobr.exceptions import ParseError
 from agrobr.normalize.dates import month_to_number
 from agrobr.normalize.numeric import safe_float
 from agrobr.utils.io import open_excel_safe
+from agrobr.utils.result import ATRIBUTO_AVISOS
 
 from .models import normalize_produto
 
@@ -153,7 +154,7 @@ def _parse_meses_rows(
                 "ano": ano or 0,
                 "mes": month,
                 "produto": produto,
-                "volume_ton": 0.0,
+                "volume_ton": None,
                 "receita_usd_mil": None,
             }
             for col_idx, tipo in data_cols.items():
@@ -164,7 +165,7 @@ def _parse_meses_rows(
                     rec["volume_ton"] = value * (1000 if tipo == "volume_mil_t" else 1)
                 elif tipo == "receita":
                     rec["receita_usd_mil"] = value
-            if rec["volume_ton"] != 0.0 or rec["receita_usd_mil"] is not None:
+            if rec["volume_ton"] is not None or rec["receita_usd_mil"] is not None:
                 records.append(rec)
 
     return records
@@ -303,17 +304,29 @@ def _pick_latest_year_col(
     return years.get(ano) if ano is not None else years[max(years)]
 
 
+def _soma_completa(valores: pd.Series) -> Any:
+    return valores.sum(min_count=len(valores))
+
+
 def agregar_mensal(df: pd.DataFrame) -> pd.DataFrame:
     if df.empty:
         return df
 
     group_cols = ["ano", "mes"]
-    agg_cols: dict[str, str] = {"volume_ton": "sum"}
-
-    if "receita_usd_mil" in df.columns and df["receita_usd_mil"].notna().any():
-        agg_cols["receita_usd_mil"] = "sum"
-
-    result = df.groupby(group_cols, as_index=False).agg(agg_cols)
+    medidas = [c for c in ("volume_ton", "receita_usd_mil") if c in df.columns]
+    grupos = df.groupby(group_cols)[medidas]
+    result = grupos.agg(_soma_completa).reset_index()
     result["produto"] = "total"
+    result = result.sort_values(group_cols).reset_index(drop=True)
 
-    return result.sort_values(group_cols).reset_index(drop=True)
+    nulos = df[medidas].isna().groupby([df[c] for c in group_cols])
+    mistos = (nulos.any() & ~nulos.all()).sum()
+    avisos = [
+        f"abiove: {medida} sai nulo em {int(mistos[medida])} mês(es) com produto sem o valor; "
+        "a soma das partes conhecidas não é o total"
+        for medida in medidas
+        if mistos[medida]
+    ]
+    if avisos:
+        result.attrs[ATRIBUTO_AVISOS] = avisos
+    return result

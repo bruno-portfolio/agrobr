@@ -57,7 +57,7 @@ DataFrame with columns:
 
 `programa` uses the current name from the official table for every crop year: `0152` is published as PROIRRIGA even before 07/2021, when the code was Moderinfra (the official description records the change on 2021-07-01).
 
-**Absence is not zero.** A `uf`, `programa` or `tipo_seguro` filter on a source body without the matching column raises `ParseError` instead of returning the total of all.
+**Absence is not zero.** A `uf`, `programa` or `tipo_seguro` filter on a source body without the matching column raises `ParseError` instead of returning the total of all. In the aggregation by state or by program, `valor`, `area_financiada` and `qtd_contratos` are null in a group where any record lacks the value; when the same group has both known and missing values, `MetaInfo.validation_warnings` records a warning.
 
 **Crop year in progress.** The crop year containing today (July to June) is still receiving contracts, and its total changes until the crop year ends. When the result includes it, `credito_rural` warns in `validation_warnings` and `UserWarning` and records in `source_details` the crop year (`safra_em_curso`) and the issuance months covered (`meses_cobertos`, `"YYYY-MM"`).
 

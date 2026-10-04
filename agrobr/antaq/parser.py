@@ -101,7 +101,7 @@ def parse_carga(content: str) -> pd.DataFrame:
         )
 
     if "TEU" in df.columns:
-        df["TEU"] = pd.to_numeric(df["TEU"], errors="coerce").fillna(0).astype(int)
+        df["TEU"] = pd.to_numeric(df["TEU"], errors="coerce").astype("Int64")
 
     logger.info("antaq_parse_carga", rows=len(df))
     return df

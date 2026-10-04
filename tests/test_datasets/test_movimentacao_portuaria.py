@@ -6,6 +6,7 @@ from unittest.mock import AsyncMock
 import pandas as pd
 import pytest
 
+from agrobr import antaq
 from agrobr.antaq import client
 from agrobr.datasets.movimentacao_portuaria import (
     MovimentacaoPortuariaDataset,
@@ -161,3 +162,31 @@ async def test_movimentacao_portuaria_carga_sem_coluna_da_chave_levanta_parse_er
             monkeypatch.setattr(client, f"extract_{nome}", lambda *_, t=textos[nome]: t)
         with levanta_exatamente(ParseError, match="Sentido"):
             await movimentacao_portuaria(ano=2024, tipo_navegacao="cabotagem")
+
+
+async def test_teu_vazio_na_fonte_fica_nulo_ate_a_soma_do_dataset():
+    base = Path(__file__).parents[1] / "golden_data" / "antaq" / "movimentacao_sample"
+    textos = {
+        nome: (base / f"{nome}.txt").read_text(encoding="utf-8")
+        for nome in ("atracacao", "carga", "mercadoria")
+    }
+    carga = pd.read_csv(io.StringIO(textos["carga"]), sep=";", dtype=str, keep_default_na=False)
+    assert set(carga["TEU"]) == {"0"}
+    alvo = carga.loc[0, "CDMercadoria"]
+    carga.loc[0, "TEU"] = ""
+    textos["carga"] = carga.to_csv(sep=";", index=False)
+    with isolated_dataset_case("teu_vazio") as monkeypatch:
+        monkeypatch.setattr(client, "fetch_ano_zip", AsyncMock(return_value=b"ano"))
+        monkeypatch.setattr(client, "fetch_mercadoria_zip", AsyncMock(return_value=b"merc"))
+        for nome in textos:
+            monkeypatch.setattr(client, f"extract_{nome}", lambda *_, t=textos[nome]: t)
+        direto = await antaq.movimentacao(ano=2024)
+        agrupado = await movimentacao_portuaria(ano=2024)
+
+    da_mercadoria = direto["cd_mercadoria"].astype(str).eq(str(alvo))
+    assert sorted(direto.loc[da_mercadoria, "teu"].isna()) == [False, True]
+    assert direto.loc[direto["teu"].notna(), "teu"].eq(0).all()
+    grupo = agrupado["cd_mercadoria"].astype(str).eq(str(alvo))
+    assert agrupado.loc[grupo, "teu"].isna().all()
+    assert agrupado.loc[~grupo, "teu"].eq(0).all()
+    assert str(direto["teu"].dtype) == str(agrupado["teu"].dtype) == "Int64"

@@ -38,7 +38,7 @@ async def exportacao(
 
 **Retorno:**
 
-DataFrame com colunas: `ano`, `mes`, `produto`, `volume_ton`, `receita_usd_mil`
+DataFrame com colunas: `ano`, `mes`, `produto`, `volume_ton`, `receita_usd_mil`. Volume ou receita em branco na planilha saem nulos, não 0; no total mensal, volume e receita saem nulos quando falta o valor de algum produto; quando o mesmo grupo tem valores conhecidos e ausentes, `MetaInfo.validation_warnings` registra o aviso.
 
 **Exemplo:**
 
