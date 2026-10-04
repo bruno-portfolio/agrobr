@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
+from unittest.mock import AsyncMock
 
 import pandas as pd
 import pytest
@@ -79,3 +80,45 @@ async def test_dia_sem_nenhum_valor_valido_fica_fora_da_cobertura(monkeypatch, t
     assert janeiro["precip_acum_mm"] == pytest.approx(
         esperado["precip_acum_mm"] - chuva_do_dia, abs=1e-9
     )
+
+
+def _fevereiro_sem_valor() -> dict:
+    oficial = json.loads(
+        (GOLDEN / MANIFESTO["corpos"]["partial"]["arquivo"]).read_text(encoding="utf-8")
+    )
+    for valores in oficial["properties"]["parameter"].values():
+        for dia in valores:
+            if dia.startswith("202502"):
+                valores[dia] = oficial["header"]["fill_value"]
+    return oficial
+
+
+@pytest.mark.parametrize("consulta", ["ponto", "uf"])
+async def test_mensal_em_polars_mantem_datas_e_dias_inteiros(monkeypatch, consulta):
+    polars = pytest.importorskip("polars")
+    monkeypatch.setattr(
+        "agrobr.nasa_power.client.fetch_daily", AsyncMock(return_value=_fevereiro_sem_valor())
+    )
+
+    async def consultar(**kwargs):
+        if consulta == "uf":
+            return await nasa_power.clima_uf("DF", 2025, **kwargs)
+        return await nasa_power.clima_ponto(
+            -15.79, -47.88, "2025-01-15", "2025-02-05", agregacao="mensal", **kwargs
+        )
+
+    with sem_excecao():
+        esperado = await consultar()
+        frame = await consultar(as_polars=True)
+    assert frame.columns == list(esperado.columns)
+    for coluna in ("mes", "data_inicio", "data_fim"):
+        assert frame.schema[coluna] == polars.Datetime("ns")
+        assert frame[coluna].to_list() == [
+            None if pd.isna(valor) else valor.to_pydatetime() for valor in esperado[coluna]
+        ]
+    assert frame.schema["dias"] == polars.Int64
+    assert frame["dias"].to_list() == esperado["dias"].tolist() == [17, 0]
+    assert ("uf" in frame.columns) == (consulta == "uf")
+    if consulta == "uf":
+        assert frame.schema["uf"] == polars.Utf8
+    assert frame.schema["precip_acum_mm"] == polars.Float64

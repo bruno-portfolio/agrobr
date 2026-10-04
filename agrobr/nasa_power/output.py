@@ -34,14 +34,18 @@ def finalize(
     if polars is not None:
         series = []
         for column in frame:
-            if column in {"data", "mes"}:
-                values = [value.to_pydatetime() for value in frame[column]]
+            coluna = frame[column]
+            if pd.api.types.is_datetime64_any_dtype(coluna):
+                values = [None if pd.isna(value) else value.to_pydatetime() for value in coluna]
                 dtype = polars.Datetime("ns")
-            elif column == "uf":
-                values = frame[column].tolist()
+            elif pd.api.types.is_integer_dtype(coluna):
+                values = [None if pd.isna(value) else int(value) for value in coluna]
+                dtype = polars.Int64
+            elif pd.api.types.is_string_dtype(coluna):
+                values = [None if pd.isna(value) else str(value) for value in coluna]
                 dtype = polars.Utf8
             else:
-                values = [None if pd.isna(value) else float(value) for value in frame[column]]
+                values = [None if pd.isna(value) else float(value) for value in coluna]
                 dtype = polars.Float64
             series.append(polars.Series(column, values, dtype=dtype))
         result = polars.DataFrame(series)
