@@ -448,6 +448,11 @@ The Slack and Discord webhook URL is the credential itself. When the application
 replaces it with `[REDACTED]` in the `HTTP Request` line of the alert delivery. The error message for a non-JSON response
 also masks agrobr's credentials, whether from the environment or passed as an argument.
 
+Delivery to Slack and Discord retries up to 3 times on 429, 5xx or a network error, waiting for `Retry-After` capped at
+10 s (1 s without the header). A 5xx after the server delivered the message duplicates it: a duplicate is better than
+losing the threshold alert, which does not repeat on the next run. A remaining failure goes to the `alert_send_failed`
+log with the channel (`slack`, `discord` or `email`).
+
 ### Alert Levels
 
 | Level | Trigger | Channels |

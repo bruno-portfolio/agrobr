@@ -4,6 +4,7 @@ import asyncio
 import html
 import json
 import logging
+import math
 from contextvars import ContextVar
 from datetime import datetime
 from enum import StrEnum
@@ -90,12 +91,43 @@ class _MascararWebhook(logging.Filter):
 logging.getLogger("httpx").addFilter(_MascararWebhook())
 
 
+def _transitoria(erro: httpx.HTTPError) -> bool:
+    if isinstance(erro, httpx.HTTPStatusError):
+        status = erro.response.status_code
+        return status == 429 or status >= 500
+    return isinstance(erro, httpx.TransportError)
+
+
+def _espera(erro: httpx.HTTPError) -> float:
+    if isinstance(erro, httpx.HTTPStatusError):
+        try:
+            pedida = float(erro.response.headers["Retry-After"])
+        except (KeyError, ValueError):
+            pass
+        else:
+            if math.isfinite(pedida):
+                return min(max(pedida, 0.0), constants.ALERT_RETRY_AFTER_MAX_SECONDS)
+    return constants.ALERT_RETRY_DELAY_SECONDS
+
+
 async def _post_webhook(webhook: str, payload: dict[str, Any]) -> None:
+    """POST com até ``ALERT_WEBHOOK_ATTEMPTS`` tentativas em 429, 5xx ou erro de transporte.
+
+    A espera segue o ``Retry-After`` até ``ALERT_RETRY_AFTER_MAX_SECONDS``. Um 5xx depois de o servidor entregar a
+    mensagem a duplica: duplicar é melhor que perder o alerta de limiar, que não se repete na execução seguinte.
+    """
     marca = _WEBHOOK_EM_ENVIO.set(webhook)
     try:
         async with httpx.AsyncClient() as client:
-            response = await client.post(webhook, json=payload, timeout=10.0)
-            response.raise_for_status()
+            for tentativa in range(1, constants.ALERT_WEBHOOK_ATTEMPTS + 1):
+                try:
+                    response = await client.post(webhook, json=payload, timeout=10.0)
+                    response.raise_for_status()
+                    return
+                except httpx.HTTPError as erro:
+                    if tentativa == constants.ALERT_WEBHOOK_ATTEMPTS or not _transitoria(erro):
+                        raise
+                    await asyncio.sleep(_espera(erro))
     finally:
         _WEBHOOK_EM_ENVIO.reset(marca)
 
@@ -128,11 +160,14 @@ async def send_alert(
         return
 
     tasks = []
+    canais: list[str] = []
 
     if settings.slack_webhook:
+        canais.append("slack")
         tasks.append(_send_slack(settings.slack_webhook, level, title, details, source))
 
     if settings.discord_webhook:
+        canais.append("discord")
         tasks.append(
             _send_discord(
                 settings.discord_webhook,
@@ -150,16 +185,17 @@ async def send_alert(
         )
 
     if settings.sendgrid_api_key and settings.email_to:
+        canais.append("email")
         tasks.append(_send_email(settings, level, title, details, source))
 
     if tasks:
         results = await asyncio.gather(*tasks, return_exceptions=True)
-        for i, result in enumerate(results):
+        for canal, result in zip(canais, results, strict=True):
             if isinstance(result, Exception):
                 detail = type(result).__name__
                 if isinstance(result, httpx.HTTPStatusError):
                     detail = f"{detail}: HTTP {result.response.status_code}"
-                logger.error("alert_send_failed", channel=i, error=detail)
+                logger.error("alert_send_failed", channel=canal, error=detail)
     else:
         logger.warning("no_alert_channels_configured", title=title)
 

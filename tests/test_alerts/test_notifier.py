@@ -9,8 +9,10 @@ from unittest.mock import AsyncMock, patch
 import httpx
 import pytest
 
+from agrobr import constants
 from agrobr.alerts.notifier import (
     AlertLevel,
+    _post_webhook,
     _send_discord,
     _send_email,
     _send_slack,
@@ -23,6 +25,7 @@ from tests.helpers import (
     make_alert_settings,
     make_mock_async_client,
     make_mock_response,
+    make_sleep_tracker,
 )
 
 
@@ -412,7 +415,7 @@ async def test_discord_recuperacao_fica_verde_e_mostra_detalhes():
 )
 async def test_url_do_webhook_nao_aparece_no_log_do_httpx(caplog, enviar, webhook):
     real = httpx.AsyncClient
-    transporte = httpx.MockTransport(lambda request: httpx.Response(500, request=request))
+    transporte = httpx.MockTransport(lambda request: httpx.Response(400, request=request))
     caplog.set_level(logging.INFO, logger="httpx")
     with (
         patch("agrobr.alerts.notifier.httpx.AsyncClient", lambda: real(transport=transporte)),
@@ -436,3 +439,73 @@ async def test_level_invalido_e_recusado_antes_de_ler_a_configuracao():
     ):
         await send_alert("urgente", "t", {})
     settings.assert_not_called()
+
+
+_CLIENTE_REAL = httpx.AsyncClient
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    ("respostas", "esperas", "erro"),
+    [
+        ([(429, {"Retry-After": "2"}), (503, {}), (200, {})], [2.0, "atraso"], None),
+        ([(429, {"Retry-After": "3600"}), (200, {})], ["teto"], None),
+        ([(429, {"Retry-After": "nan"}), (200, {})], ["atraso"], None),
+        ([(404, {}), (200, {})], [], httpx.HTTPStatusError),
+        ([(500, {}), (502, {}), (503, {}), (200, {})], ["atraso", "atraso"], httpx.HTTPStatusError),
+        ([httpx.ConnectError("caiu"), (200, {})], ["atraso"], None),
+    ],
+)
+async def test_webhook_repete_so_falha_transitoria_com_teto_de_espera(respostas, esperas, erro):
+    pendentes = list(respostas)
+    pedidos: list[httpx.Request] = []
+
+    def responder(request: httpx.Request) -> httpx.Response:
+        pedidos.append(request)
+        resposta = pendentes.pop(0)
+        if isinstance(resposta, Exception):
+            raise resposta
+        status, cabecalhos = resposta
+        return httpx.Response(status, headers=cabecalhos, request=request)
+
+    def cliente(*args, **kwargs):
+        return _CLIENTE_REAL(*args, transport=httpx.MockTransport(responder), **kwargs)
+
+    esperadas = [
+        {
+            "atraso": constants.ALERT_RETRY_DELAY_SECONDS,
+            "teto": constants.ALERT_RETRY_AFTER_MAX_SECONDS,
+        }.get(espera, espera)
+        for espera in esperas
+    ]
+    dormidas, dormir = make_sleep_tracker()
+    with (
+        patch("agrobr.alerts.notifier.httpx.AsyncClient", side_effect=cliente),
+        patch("agrobr.alerts.notifier.asyncio.sleep", side_effect=dormir),
+    ):
+        if erro is None:
+            await _post_webhook("https://hooks.slack.com/x", {"text": "t"})
+        else:
+            with pytest.raises(erro):
+                await _post_webhook("https://hooks.slack.com/x", {"text": "t"})
+
+    assert dormidas == esperadas
+    assert len(pedidos) == len(esperadas) + 1
+
+
+@pytest.mark.asyncio
+async def test_falha_de_canal_registra_o_nome_do_canal():
+    settings = make_alert_settings(discord_webhook="https://discord.com/api/webhooks/x")
+    with (
+        patch("agrobr.alerts.notifier.constants.AlertSettings", return_value=settings),
+        patch(
+            "agrobr.alerts.notifier._send_discord",
+            new_callable=AsyncMock,
+            side_effect=RuntimeError("rede"),
+        ),
+        capturar_logs() as registros,
+    ):
+        await send_alert(AlertLevel.WARNING, "Teste", {})
+
+    erros = [(r["event"], r["channel"]) for r in registros if r["log_level"] == "error"]
+    assert erros == [("alert_send_failed", "discord")]

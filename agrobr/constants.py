@@ -835,6 +835,11 @@ class AlertSettings(BaseSettings):
     model_config = SettingsConfigDict(env_prefix="AGROBR_ALERT_")
 
 
+ALERT_WEBHOOK_ATTEMPTS = 3
+ALERT_RETRY_DELAY_SECONDS = 1.0
+ALERT_RETRY_AFTER_MAX_SECONDS = 10.0
+
+
 _CEPEA_ENDPOINTS: tuple[str, ...] = (
     "https://www.cepea.org.br",
     "https://cepea.org.br",
