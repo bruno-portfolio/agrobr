@@ -41,40 +41,6 @@ async def _fetch_cepea(produto: str, **kwargs: Any) -> tuple[pd.DataFrame, MetaI
     return _unpack_result(cast(tuple[pd.DataFrame, MetaInfo], raw))
 
 
-async def _fetch_cache(produto: str, **kwargs: Any) -> tuple[pd.DataFrame, MetaInfo]:
-    from agrobr.cache.duckdb_store import get_store
-    from agrobr.cepea import api as cepea_api
-
-    store = get_store()
-    inicio, fim = cepea_api._normalize_dates(kwargs.get("inicio"), kwargs.get("fim"))
-    indicadores = store.indicadores_query(
-        produto=produto,
-        inicio=datetime.combine(inicio, datetime.min.time()),
-        fim=datetime.combine(fim, datetime.max.time()),
-        praca=kwargs.get("praca"),
-    )
-
-    if not indicadores:
-        raise SourceUnavailableError(source="cache", last_error=f"No cached data for {produto}")
-
-    registros = cepea_api._dicts_to_indicadores(indicadores)
-    df = cepea_api._to_dataframe(registros)
-
-    meta = MetaInfo(
-        source="cache",
-        source_url="",
-        source_method="duckdb",
-        fetched_at=max(registro.parsed_at for registro in registros),
-        fetch_timestamp=max(registro.parsed_at for registro in registros),
-        from_cache=True,
-        attempted_sources=["cache"],
-        selected_source="cache",
-        data_sources=sorted(df["fonte"].unique().tolist()),
-    )
-    cepea_api._registrar_versoes(meta, cepea_api._select_indicadores(registros))
-    return df, meta
-
-
 PRECO_DIARIO_INFO = DatasetInfo(
     name="preco_diario",
     description="Preço diário spot de commodities agrícolas brasileiras",
@@ -84,12 +50,6 @@ PRECO_DIARIO_INFO = DatasetInfo(
             priority=1,
             fetch_fn=_fetch_cepea,
             description="CEPEA/ESALQ via Notícias Agrícolas",
-        ),
-        DatasetSource(
-            name="cache",
-            priority=99,
-            fetch_fn=_fetch_cache,
-            description="Cache local DuckDB",
         ),
     ],
     products=["soja", "milho", "boi", "bezerro", "cafe", "cafe_robusta", "trigo", "algodao"],

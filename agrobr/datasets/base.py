@@ -199,34 +199,29 @@ def _with_output_format(
 
     @functools.wraps(fetch)
     async def wrapped(self: BaseDataset, *args: Any, **kwargs: Any) -> result_utils.DataFrameResult:
-        options = dict(kwargs)
-        if not native:
-            options["as_polars"] = kwargs.pop("as_polars", False)
+        as_polars = False if native else kwargs.pop("as_polars", False)
         bound = signature.bind(self, *args, **kwargs)
         if "produto" in bound.arguments:
             bound.arguments["produto"] = self._produto_do_dataset(bound.arguments["produto"])
-        if native:
-            result = await fetch(*bound.args, **bound.kwargs)
-            bound.apply_defaults()
-            options = dict(bound.arguments)
-            for position, (name, parameter) in enumerate(signature.parameters.items()):
-                if position == 0 or parameter.kind is inspect.Parameter.VAR_POSITIONAL:
-                    options.pop(name, None)
-                elif parameter.kind is inspect.Parameter.VAR_KEYWORD:
-                    options.update(options.pop(name, {}))
-            result = _no_contrato(result, self._contract_name(**options))
-        else:
-            result = _no_contrato(
-                await fetch(*bound.args, **bound.kwargs), self._contract_name(**options)
+        result = await fetch(*bound.args, **bound.kwargs)
+        bound.apply_defaults()
+        options = dict(bound.arguments)
+        for position, (name, parameter) in enumerate(signature.parameters.items()):
+            if position == 0 or parameter.kind is inspect.Parameter.VAR_POSITIONAL:
+                options.pop(name, None)
+            elif parameter.kind is inspect.Parameter.VAR_KEYWORD:
+                options.update(options.pop(name, {}))
+        if not native:
+            options["as_polars"] = as_polars
+        result = _no_contrato(result, self._contract_name(**options))
+        if not native and as_polars:
+            frame, meta = _unpack_result(result)
+            result = result_utils.finalize_result(
+                cast("pd.DataFrame", frame),
+                meta,
+                as_polars=True,
+                return_meta=isinstance(result, tuple),
             )
-            if options["as_polars"]:
-                frame, meta = _unpack_result(result)
-                result = result_utils.finalize_result(
-                    cast("pd.DataFrame", frame),
-                    meta,
-                    as_polars=True,
-                    return_meta=isinstance(result, tuple),
-                )
         if not options["as_polars"]:
             frame, meta = _unpack_result(result)
             em_ns = result_utils.datas_em_ns(cast("pd.DataFrame", frame))

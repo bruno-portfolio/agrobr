@@ -46,7 +46,7 @@ The two [cultivar datasets](../api/cultivares.en.md) reuse the new `rnc_registra
 | [composicao_defensivos](./composicao_defensivos.en.md) | Components and concentrations by family and registration — `agrofit_composicao` v1.0 | Agrofit/MAPA |
 | [defensivos_formulados](./defensivos_formulados.en.md) | Formulated products by registration — `agrofit_formulados` v1.1 | Agrofit/MAPA |
 | [defensivos_tecnicos](./defensivos_tecnicos.en.md) | Technical products by registration — `agrofit_tecnicos` v1.1 | Agrofit/MAPA |
-| [preco_diario](./preco_diario.md) | Daily spot prices | CEPEA → cache |
+| [preco_diario](./preco_diario.md) | Daily spot prices | CEPEA |
 | [producao_anual](./producao_anual.md) | Consolidated annual output | IBGE PAM → CONAB |
 | [empregadores_lista_suja](./empregadores_lista_suja.en.md) | Current MTE employer registry — `lista_suja_empregadores` v2.0 | MTE / Lista Suja |
 | [estimativa_safra](./estimativa_safra.md) | Estimates v3.1 by CONAB survey or LSPA month | CONAB → IBGE LSPA; explicit selection |
@@ -135,7 +135,7 @@ datasets.list_products("preco_diario")
 
 # Dataset info
 datasets.info("preco_diario")
-# {'name': 'preco_diario', 'sources': ['cepea', 'cache'], ...}
+# {'name': 'preco_diario', 'sources': ['cepea'], ...}
 
 # Text sheet of one dataset and of all of them
 print(datasets.describe("preco_diario"))
@@ -159,7 +159,7 @@ one of the mode used.
 Automatic fallback applies to datasets with configured alternative sources, respecting query selection and coverage. Single-source datasets, including all four Agrofit datasets, have no fallback to another institution:
 
 ```
-preco_diario: CEPEA → local cache
+preco_diario: CEPEA → Notícias Agrícolas → DuckDB cache (inside cepea.indicador)
 producao_anual: IBGE PAM → CONAB
 estimativa_safra: CONAB → IBGE LSPA
 balanco: CONAB
@@ -214,7 +214,8 @@ Agrícolas fallback comes out `nc`) or, without them, the selected source's. It 
     `fetched_at`;
   - several bodies: the most recent acquisition among them, equal to
     `fetched_at`;
-  - records from CEPEA's DuckDB cache: null (see below).
+  - records from CEPEA's DuckDB cache: the time of the original collection,
+    equal to `fetched_at` (see below).
 - With several bodies (pages, years, periods, or queries), `raw_content_hash`
   is null and `raw_content_size` is zero. INMET (`resources`), PSR (`corpos`),
   IBGE (`consultas`, on SIDRA), and the CONAB series (`publicacao.series`) list
@@ -224,9 +225,10 @@ Agrícolas fallback comes out `nc`) or, without them, the selected source's. It 
   catalog that names the indicators is in `indicadores_url`,
   `indicadores_sha256`, and `indicadores_bytes`.
 - Data that CEPEA reads from the DuckDB cache (`source` equal to `cache` or
-  `cache_fallback`) comes with a null `raw_content_hash`, a zero
-  `raw_content_size`, and a null `fetch_timestamp`, because the cache stores
-  records, not the body. `fetched_at` is the time of the original collection.
+  `cache_fallback`) comes with a null `raw_content_hash` and a zero
+  `raw_content_size`, because the cache stores records, not the body.
+  `fetched_at` and `fetch_timestamp` are the time of the original collection,
+  the most recent among the returned records.
 - When `source_details` has `hash_kind` or `raw_content_hash_kind` equal to
   `resource_manifest_sha256` (BCB, Comtrade, Embrapa Solos, FUNAI, PRODES/DETER,
   INCRA, and SICAR), `raw_content_hash` is the SHA-256 of the query manifest, not

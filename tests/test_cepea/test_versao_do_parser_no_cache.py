@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import copy
 import json
 from collections.abc import Iterator
 from datetime import date
@@ -66,13 +65,6 @@ def cepea_fora_do_ar(monkeypatch: pytest.MonkeyPatch) -> list[str]:
     return hosts
 
 
-def cache_direto() -> PrecoDiarioDataset:
-    dataset = PrecoDiarioDataset()
-    dataset.info = copy.deepcopy(dataset.info)
-    dataset.info.sources[0].enabled = False
-    return dataset
-
-
 async def test_cache_preenchido_pelo_noticias_agricolas_informa_a_versao_gravada(
     store: duckdb_store.DuckDBStore, monkeypatch: pytest.MonkeyPatch
 ):
@@ -102,9 +94,11 @@ async def test_cache_preenchido_pelo_noticias_agricolas_informa_a_versao_gravada
 
     with sem_excecao():
         _, misto = await api.indicador("soja", **JANELA, offline=True, return_meta=True)
-        _, direto = await cache_direto().fetch("soja", **JANELA, return_meta=True)
-        _, dia = await cache_direto().fetch(
-            "soja", inicio=ultimo_dia, fim=ultimo_dia, return_meta=True
+        _, direto = await PrecoDiarioDataset().fetch(
+            "soja", **JANELA, offline=True, return_meta=True
+        )
+        _, dia = await PrecoDiarioDataset().fetch(
+            "soja", inicio=ultimo_dia, fim=ultimo_dia, offline=True, return_meta=True
         )
     assert (misto.parser_version, misto.source_details.get("parser_versions")) == (NA, versoes)
     assert (direto.selected_source, direto.parser_version) == ("cache", NA)

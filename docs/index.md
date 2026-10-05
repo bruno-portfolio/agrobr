@@ -105,7 +105,7 @@ Infraestrutura Python para dados agrícolas brasileiros com **camada semântica*
 | `pib_agro` | PIB agropecuário por setor e trimestre | IBGE SIDRA |
 | `posicionamento_fundos` | Posicionamento de fundos por categoria de trader (COT) | CFTC |
 | `preco_atacado` | Preços de atacado hortifrúti em CEASAs | CONAB CEASA/PROHORT |
-| `preco_diario` | Preços diários spot | CEPEA → cache |
+| `preco_diario` | Preços diários spot | CEPEA |
 | `producao_anual` | Produção anual consolidada | IBGE PAM → CONAB |
 | `progresso_safra` | Progresso semanal semeadura/colheita | CONAB |
 | `queimadas` | Focos de calor por satélite (6 biomas) | INPE |

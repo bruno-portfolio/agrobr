@@ -6,8 +6,7 @@ Preço diário spot de commodities agrícolas brasileiras.
 
 | Prioridade | Fonte | Descrição |
 |------------|-------|-----------|
-| 1 | CEPEA/ESALQ | Coleta direta, com Notícias Agrícolas como fallback |
-| 2 | Cache local | DuckDB; devolve as mesmas colunas e tipos da coleta CEPEA |
+| 1 | CEPEA/ESALQ | Coleta direta, com Notícias Agrícolas como fallback e o cache DuckDB quando as duas falham |
 
 ## Produtos
 
@@ -61,7 +60,7 @@ em ordem alfabética; isso não transforma uma série regional em média naciona
 Para obter todas as praças, use `cepea.indicador()`.
 
 `data_sources` contém somente as fontes das linhas selecionadas. A coluna
-`valor` segue `float64` também no fallback direto ao DuckDB. Com sanity,
+`valor` segue `float64` também no cache DuckDB. Com sanity,
 use `json.loads(df.loc[indice, "anomalies"])` para ler marcadores não nulos.
 
 ## Exemplo

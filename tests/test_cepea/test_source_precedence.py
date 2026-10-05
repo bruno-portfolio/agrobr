@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import copy
 import json
 from collections.abc import Iterator
 from datetime import date, timedelta
@@ -175,11 +174,9 @@ async def test_dataset_cache_direto_aplica_precedencia_e_proveniencia(
     store.indicadores_upsert(
         api._indicadores_to_dicts([record(latest, 145, "noticias_agricolas"), record(latest, 150)])
     )
-    dataset = PrecoDiarioDataset()
-    dataset.info = copy.deepcopy(dataset.info)
-    dataset.info.sources[0].enabled = False
-
-    frame, meta = await dataset.fetch("soja", inicio=latest, fim=latest, return_meta=True)
+    frame, meta = await PrecoDiarioDataset().fetch(
+        "soja", inicio=latest, fim=latest, offline=True, return_meta=True
+    )
 
     assert frame["valor"].tolist() == [150]
     assert str(frame["valor"].dtype) == "float64"
@@ -196,11 +193,9 @@ async def test_dataset_cache_direto_respeita_a_janela(store: duckdb_store.DuckDB
         )
     )
     dataset = PrecoDiarioDataset()
-    dataset.info = copy.deepcopy(dataset.info)
-    dataset.info.sources[0].enabled = False
 
-    dia = await dataset.fetch("soja", inicio=previous, fim=previous)
-    periodo = await dataset.fetch("soja", inicio=previous, fim=latest)
+    dia = await dataset.fetch("soja", inicio=previous, fim=previous, offline=True)
+    periodo = await dataset.fetch("soja", inicio=previous, fim=latest, offline=True)
 
     assert dia["valor"].tolist() == [149]
     assert sorted(periodo["valor"].tolist()) == [149, 150]

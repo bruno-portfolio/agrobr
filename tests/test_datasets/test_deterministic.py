@@ -14,7 +14,10 @@ from tests.helpers import collect_failures, isolated_dataset_case
 
 class TestDeterministicContextManager:
     @pytest.mark.parametrize("context", [root_deterministic, datasets.deterministic])
-    @pytest.mark.parametrize("snapshot", ["invalid-date", "2025-02-30", None, []])
+    @pytest.mark.parametrize(
+        "snapshot",
+        ["invalid-date", "2025-02-30", "20241231", "2024-W01-1", "2024-12-31T00:00", None, []],
+    )
     async def test_deterministic_invalid_date_raises(self, context, snapshot):
         async with deterministic("2025-12-31"):
             with pytest.raises(exceptions.InvalidParameterError, match="AAAA-MM-DD") as caught:

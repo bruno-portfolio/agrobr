@@ -46,7 +46,7 @@ Os dois [datasets de cultivares](../api/cultivares.md) reutilizam os novos contr
 | [composicao_defensivos](./composicao_defensivos.md) | Componentes e concentrações por família e registro — `agrofit_composicao` v1.0 | Agrofit/MAPA |
 | [defensivos_formulados](./defensivos_formulados.md) | Produtos formulados por registro — `agrofit_formulados` v1.1 | Agrofit/MAPA |
 | [defensivos_tecnicos](./defensivos_tecnicos.md) | Produtos técnicos por registro — `agrofit_tecnicos` v1.1 | Agrofit/MAPA |
-| [preco_diario](./preco_diario.md) | Preços diários spot | CEPEA → cache |
+| [preco_diario](./preco_diario.md) | Preços diários spot | CEPEA |
 | [producao_anual](./producao_anual.md) | Produção anual consolidada | IBGE PAM → CONAB |
 | [empregadores_lista_suja](./empregadores_lista_suja.md) | Cadastro corrente de empregadores do MTE — `lista_suja_empregadores` v2.0 | MTE / Lista Suja |
 | [estimativa_safra](./estimativa_safra.md) | Estimativas v3.1 por levantamento CONAB ou mês LSPA | CONAB → IBGE LSPA; seleção explícita |
@@ -135,7 +135,7 @@ datasets.list_products("preco_diario")
 
 # Info de um dataset
 datasets.info("preco_diario")
-# {'name': 'preco_diario', 'sources': ['cepea', 'cache'], ...}
+# {'name': 'preco_diario', 'sources': ['cepea'], ...}
 
 # Ficha em texto de um dataset e de todos
 print(datasets.describe("preco_diario"))
@@ -159,7 +159,7 @@ modo usado.
 O fallback automático aplica-se aos datasets com fontes alternativas configuradas, respeitando a seleção e a cobertura da consulta. Datasets com fonte única, como os quatro Agrofit, não possuem fallback para outra instituição:
 
 ```
-preco_diario: CEPEA → cache local
+preco_diario: CEPEA → Notícias Agrícolas → cache DuckDB (dentro do cepea.indicador)
 producao_anual: IBGE PAM → CONAB
 estimativa_safra: CONAB → IBGE LSPA
 balanco: CONAB
@@ -213,7 +213,8 @@ o fallback da Notícias Agrícolas sai `nc`) ou, sem elas, a da fonte selecionad
     ANEC, o RNC, o ZARC e o Agrofit): a hora da aquisição original, igual ao
     `fetched_at`;
   - vários corpos: a aquisição mais recente entre eles, igual ao `fetched_at`;
-  - registros do cache DuckDB do CEPEA: nulo (ver abaixo).
+  - registros do cache DuckDB do CEPEA: a hora da coleta original, igual ao
+    `fetched_at` (ver abaixo).
 - Com vários corpos (páginas, anos, períodos ou consultas), `raw_content_hash`
   fica nulo e `raw_content_size` fica zero. O INMET (`resources`), o PSR
   (`corpos`), o IBGE (`consultas`, na SIDRA) e as séries da CONAB
@@ -223,9 +224,10 @@ o fallback da Notícias Agrícolas sai `nc`) ou, sem elas, a da fonte selecionad
   nome dos indicadores sai em `indicadores_url`, `indicadores_sha256` e
   `indicadores_bytes`.
 - O dado que o CEPEA lê do cache DuckDB (`source` igual a `cache` ou
-  `cache_fallback`) sai com `raw_content_hash` nulo, `raw_content_size` zero e
-  `fetch_timestamp` nulo, porque o cache guarda registros, não o corpo. O
-  `fetched_at` é o da coleta original.
+  `cache_fallback`) sai com `raw_content_hash` nulo e `raw_content_size` zero,
+  porque o cache guarda registros, não o corpo. O `fetched_at` e o
+  `fetch_timestamp` são a hora da coleta original, a mais recente entre os
+  registros devolvidos.
 - Quando `source_details` traz `hash_kind` ou `raw_content_hash_kind` igual a
   `resource_manifest_sha256` (BCB, Comtrade, Embrapa Solos, FUNAI, PRODES/DETER,
   INCRA e SICAR), `raw_content_hash` é o SHA-256 do manifesto das consultas, não

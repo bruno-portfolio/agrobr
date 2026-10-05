@@ -1324,8 +1324,8 @@ texto publicado de uma data descartada continua no corpo bruto da fonte. Veja [N
 ## 53. MetaInfo: `fetch_timestamp` é a hora da aquisição, também no dataset
 
 Na 1.1.0, o `fetch_timestamp` de todo dataset era a hora em que ele montava o `MetaInfo`, e não a da aquisição do dado. No
-acerto de cache, o dataset declarava uma aquisição que não houve: o `datasets.preco_diario` lido do DuckDB do CEPEA saía com
-`fetch_timestamp` preenchido, e o `datasets.clima` pelo ZIP do INMET, com a hora da chamada.
+acerto de cache, o dataset declarava uma aquisição que não houve: o `datasets.preco_diario` lido do DuckDB do CEPEA e o
+`datasets.clima` pelo ZIP do INMET saíam com a hora da chamada.
 
 Na 2.0, o `fetch_timestamp` é o horário UTC da aquisição do corpo que o topo do `MetaInfo` descreve, e o dataset repassa o
 da fonte (regra nos [contratos](../contracts/index.md#metainfo)):
@@ -1335,12 +1335,14 @@ da fonte (regra nos [contratos](../contracts/index.md#metainfo)):
   antes, essas fontes publicavam a hora da chamada;
 - vários corpos (BCB Focus, PTAX e SGS, Comtrade, PRODES/DETER, Embrapa Solos, FUNAI e INCRA): a aquisição mais recente,
   igual ao `fetched_at`; antes, a hora da montagem;
-- registros do cache DuckDB do CEPEA: nulo, na fonte e no `datasets.preco_diario`.
+- registros do cache DuckDB do CEPEA: a coleta original (o `parsed_at` mais recente das linhas devolvidas), igual ao
+  `fetched_at`, na fonte e no `datasets.preco_diario`.
 
 Quem media o frescor pelo `fetch_timestamp` do dataset passa a ler a aquisição. A hora da montagem continua em `timestamp`.
 
-O `fetched_at` da fonte `cache` do `datasets.preco_diario`, que entra quando o CEPEA falha, também passa a ser a coleta
-original dos registros; antes, era a hora da chamada.
+O `datasets.preco_diario` não tem mais a fonte `cache` (ver Changed): quando a coleta falha, o `cepea.indicador` lê o cache
+DuckDB e devolve `fetched_at` e `fetch_timestamp` com a coleta original dos registros; antes, a fonte `cache` do dataset
+publicava a hora da chamada.
 
 ## 54. B3: proveniência de `ajustes`, `historico` e `posicoes_abertas_historico`
 

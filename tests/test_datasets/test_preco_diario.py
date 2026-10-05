@@ -1,12 +1,11 @@
-from datetime import date, datetime
-from unittest.mock import AsyncMock, MagicMock, patch
+from unittest.mock import AsyncMock, patch
 
 import pandas as pd
 import pytest
 
 from agrobr.datasets.deterministic import deterministic
-from agrobr.datasets.preco_diario import PrecoDiarioDataset, _fetch_cache, _fetch_cepea
-from agrobr.exceptions import SourceUnavailableError
+from agrobr.datasets.preco_diario import PrecoDiarioDataset, _fetch_cepea
+from agrobr.exceptions import ParseError
 from tests.helpers import collect_failures, isolated_dataset_case, levanta_exatamente
 
 from .conftest import make_source, mock_source_meta
@@ -62,36 +61,15 @@ class TestPrecoDiarioFetchFunctions:
                 assert indicador.await_args_list[1].kwargs["fim"] == "2025-01-10"
                 assert all(call.kwargs["offline"] is True for call in indicador.await_args_list)
 
-    @pytest.mark.asyncio
-    async def test_fetch_cache_empty_raises(self):
-        mock_store = MagicMock()
-        mock_store.indicadores_query.return_value = []
+    async def test_layout_novo_do_cepea_chega_como_parse_error(self):
+        erro = ParseError("cepea", 1, "layout alterado")
         with (
-            patch("agrobr.cache.duckdb_store.get_store", return_value=mock_store),
-            pytest.raises(SourceUnavailableError, match="No cached data"),
+            patch("agrobr.cepea.indicador", new_callable=AsyncMock, side_effect=erro),
+            pytest.raises(ParseError) as caught,
         ):
-            await _fetch_cache("soja")
-
-    @pytest.mark.asyncio
-    async def test_fetch_cache_str_dates(self):
-        mock_store = MagicMock()
-        mock_store.indicadores_query.return_value = [
-            {
-                "data": date(2025, 1, 15),
-                "valor": 145.0,
-                "unidade": "R$/sc60kg",
-                "produto": "soja",
-                "fonte": "cepea",
-            }
-        ]
-        with patch("agrobr.cache.duckdb_store.get_store", return_value=mock_store):
-            df, meta = await _fetch_cache("soja", inicio="2025-01-01", fim="2025-01-31")
-        assert len(df) == 1
-        assert meta.selected_source == "cache"
-        assert meta.data_sources == ["cepea"]
-        call_kwargs = mock_store.indicadores_query.call_args[1]
-        assert isinstance(call_kwargs["inicio"], datetime)
-        assert isinstance(call_kwargs["fim"], datetime)
+            await PrecoDiarioDataset().fetch("soja")
+        assert caught.value.attempted_sources == ["cepea"]
+        assert caught.value.__cause__ is erro
 
 
 class TestPrecoDiarioFetch:

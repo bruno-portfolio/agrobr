@@ -2,6 +2,7 @@
 
 from collections.abc import Callable, Iterable
 from contextlib import nullcontext
+from dataclasses import replace
 from typing import Any
 from unittest.mock import AsyncMock
 
@@ -12,6 +13,7 @@ from agrobr.contracts import validate_dataset
 from agrobr.datasets import registry
 from agrobr.datasets.abate_trimestral import AbateTrimestralDataset
 from agrobr.datasets.balanco import BalancoDataset
+from agrobr.datasets.base import DatasetSource
 from agrobr.datasets.cadastro_rural import CadastroRuralDataset
 from agrobr.datasets.censo_agropecuario import CensoAgropecuarioDataset
 from agrobr.datasets.censo_agropecuario_legado import CensoAgropecuarioLegadoDataset
@@ -162,52 +164,55 @@ _VALID_DF = pd.DataFrame(
 _DUMMY_DF = pd.DataFrame()
 
 
+def _preco_com_reserva(primaria: Any, reserva: Any) -> PrecoDiarioDataset:
+    dataset = PrecoDiarioDataset()
+    dataset.info = replace(
+        dataset.info,
+        sources=[DatasetSource("cepea", 1, primaria), DatasetSource("reserva", 2, reserva)],
+    )
+    return dataset
+
+
 class TestTrySourcesErrorPaths:
     @pytest.mark.asyncio
     async def test_contract_violation_triggers_fallback(self):
-        from agrobr.datasets.preco_diario import PrecoDiarioDataset
-
-        dataset = PrecoDiarioDataset()
-        dataset.info.sources[0].fetch_fn = make_source(
-            _DUMMY_DF,
-            raises=ContractViolationError("test_dataset", "test_field", "expected X", "got Y"),
+        dataset = _preco_com_reserva(
+            make_source(
+                _DUMMY_DF,
+                raises=ContractViolationError("test_dataset", "test_field", "expected X", "got Y"),
+            ),
+            make_source(_VALID_DF),
         )
-        dataset.info.sources[1].fetch_fn = make_source(_VALID_DF)
 
-        with pytest.warns(SourceFallbackWarning, match="usando fallback 'cache'"):
+        with pytest.warns(SourceFallbackWarning, match="usando fallback 'reserva'"):
             df, meta = await dataset.fetch("soja", return_meta=True)
-        assert meta.attempted_sources == ["cepea", "cache"]
-        assert meta.selected_source == "cache"
+        assert meta.attempted_sources == ["cepea", "reserva"]
+        assert meta.selected_source == "reserva"
 
     @pytest.mark.asyncio
     async def test_source_unavailable_classified_and_falls_back(self):
-        from agrobr.datasets.preco_diario import PrecoDiarioDataset
-
-        dataset = PrecoDiarioDataset()
-        dataset.info.sources[0].fetch_fn = make_source(
-            _DUMMY_DF,
-            raises=SourceUnavailableError(source="cepea", last_error="HTTP 500 after 3 retries"),
+        dataset = _preco_com_reserva(
+            make_source(
+                _DUMMY_DF,
+                raises=SourceUnavailableError(
+                    source="cepea", last_error="HTTP 500 after 3 retries"
+                ),
+            ),
+            make_source(_VALID_DF),
         )
-        dataset.info.sources[1].fetch_fn = make_source(_VALID_DF)
 
         with pytest.warns(SourceFallbackWarning) as captured:
             df, meta = await dataset.fetch("soja", return_meta=True)
 
         assert "(unavailable:" in str(captured[0].message)
-        assert meta.attempted_sources == ["cepea", "cache"]
-        assert meta.selected_source == "cache"
+        assert meta.attempted_sources == ["cepea", "reserva"]
+        assert meta.selected_source == "reserva"
 
     @pytest.mark.asyncio
     async def test_all_fail_mixed_errors(self):
-        from agrobr.datasets.preco_diario import PrecoDiarioDataset
-
-        dataset = PrecoDiarioDataset()
-        dataset.info.sources[0].fetch_fn = make_source(
-            _DUMMY_DF,
-            raises=ContractViolationError("test", "field", "exp", "got"),
-        )
-        dataset.info.sources[1].fetch_fn = AsyncMock(
-            side_effect=SourceUnavailableError("cache", last_error="sem cache"),
+        dataset = _preco_com_reserva(
+            make_source(_DUMMY_DF, raises=ContractViolationError("test", "field", "exp", "got")),
+            AsyncMock(side_effect=SourceUnavailableError("reserva", last_error="sem reserva")),
         )
 
         with pytest.raises(SourceUnavailableError) as exc_info:
@@ -220,15 +225,10 @@ class TestTrySourcesErrorPaths:
 
     @pytest.mark.asyncio
     async def test_invalid_parameter_propagates_without_fallback(self):
-        from agrobr.datasets.preco_diario import PrecoDiarioDataset
-
-        dataset = PrecoDiarioDataset()
-        dataset.info.sources[0].fetch_fn = make_source(
-            _DUMMY_DF,
-            raises=InvalidParameterError("produto inválido"),
-        )
         fallback = make_source(_VALID_DF)
-        dataset.info.sources[1].fetch_fn = fallback
+        dataset = _preco_com_reserva(
+            make_source(_DUMMY_DF, raises=InvalidParameterError("produto inválido")), fallback
+        )
 
         with pytest.raises(InvalidParameterError, match="produto inválido"):
             await dataset.fetch("soja")

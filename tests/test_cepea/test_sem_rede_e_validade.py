@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import copy
 import warnings
 from collections.abc import Iterator
 from datetime import date, datetime, timedelta
@@ -165,11 +164,9 @@ async def test_preco_diario_pelo_cache_sem_periodo_usa_a_janela_padrao(
     cache.indicadores_upsert(api._indicadores_to_dicts([_indicador(date(2026, 9, 25))]))
     monkeypatch.setattr(api, "_today", lambda: date(2027, 10, 30))
     dataset = PrecoDiarioDataset()
-    dataset.info = copy.deepcopy(dataset.info)
-    dataset.info.sources[0].enabled = False
 
-    with levanta_exatamente(SourceUnavailableError, "cache"):
-        await dataset.fetch("soja")
-    explicito = await dataset.fetch("soja", inicio="2026-09-25", fim="2026-09-25")
+    padrao = await dataset.fetch("soja", offline=True)
+    explicito = await dataset.fetch("soja", inicio="2026-09-25", fim="2026-09-25", offline=True)
 
+    assert padrao.empty
     assert explicito["valor"].tolist() == [150]

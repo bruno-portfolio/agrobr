@@ -41,9 +41,9 @@ def test_describe_all_mostra_a_licenca_do_describe():
 def test_preco_diario_publica_a_licenca_da_noticias_agricolas_tentada_pela_cepea():
     info = datasets.info("preco_diario")
     dataset = datasets.get_dataset("preco_diario")
-    assert info["sources"] == ["cepea", "cache"]
-    assert [fonte.name for fonte in dataset.info.sources if fonte.enabled] == ["cepea", "cache"]
-    assert info["licenses"] == {"cepea": "nc", "noticias_agricolas": "zona_cinza", "cache": None}
+    assert info["sources"] == ["cepea"]
+    assert [fonte.name for fonte in dataset.info.sources if fonte.enabled] == ["cepea"]
+    assert info["licenses"] == {"cepea": "nc", "noticias_agricolas": "zona_cinza"}
     assert (
         "  License: nc (cepea), zona_cinza (noticias_agricolas)"
         in datasets.describe("preco_diario").splitlines()

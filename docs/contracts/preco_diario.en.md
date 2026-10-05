@@ -6,8 +6,7 @@ Daily spot prices of Brazilian agricultural commodities.
 
 | Priority | Source | Description |
 |----------|--------|-------------|
-| 1 | CEPEA/ESALQ | Direct collection, with Notícias Agrícolas fallback |
-| 2 | Local cache | DuckDB; returns the same columns and dtypes as the CEPEA fetch |
+| 1 | CEPEA/ESALQ | Direct collection, with Notícias Agrícolas fallback and the DuckDB cache when both fail |
 
 ## Products
 
@@ -61,7 +60,7 @@ order; this does not turn a regional series into a national average.
 Use `cepea.indicador()` to retrieve every location.
 
 `data_sources` includes only providers of selected rows. `valor` remains
-`float64`, including direct DuckDB fallback. With sanity enabled, use
+`float64`, including the DuckDB cache. With sanity enabled, use
 `json.loads(df.loc[index, "anomalies"])` to read non-null markers.
 
 ## Example

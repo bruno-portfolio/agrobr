@@ -1325,8 +1325,8 @@ unreadable date. The published text of a discarded date remains in the source's 
 ## 53. MetaInfo: `fetch_timestamp` is the acquisition time, in datasets too
 
 In 1.1.0, every dataset's `fetch_timestamp` was the time it built the `MetaInfo`, not the time the data was acquired. On a
-cache hit, the dataset claimed an acquisition that never happened: `datasets.preco_diario` read from CEPEA's DuckDB came with
-a filled `fetch_timestamp`, and `datasets.clima` from INMET's ZIP came with the call time.
+cache hit, the dataset claimed an acquisition that never happened: `datasets.preco_diario` read from CEPEA's DuckDB and
+`datasets.clima` from INMET's ZIP came with the call time.
 
 In 2.0, `fetch_timestamp` is the UTC time of the acquisition of the body the top level of `MetaInfo` describes, and datasets
 pass on the source's value (rule in [contracts](../contracts/index.md#metainfo)):
@@ -1336,13 +1336,15 @@ pass on the source's value (rule in [contracts](../contracts/index.md#metainfo))
   `fetched_at`; before, these sources published the call time;
 - several bodies (BCB Focus, PTAX, and SGS, Comtrade, PRODES/DETER, Embrapa Solos, FUNAI, and INCRA): the most recent
   acquisition, equal to `fetched_at`; before, the build time;
-- records from CEPEA's DuckDB cache: null, at the source and in `datasets.preco_diario`.
+- records from CEPEA's DuckDB cache: the original collection (the latest `parsed_at` among the returned rows), equal to
+  `fetched_at`, at the source and in `datasets.preco_diario`.
 
 Code that measured freshness by a dataset's `fetch_timestamp` now reads the acquisition. The build time remains in
 `timestamp`.
 
-The `fetched_at` of `datasets.preco_diario`'s `cache` source, used when CEPEA fails, is now also the original collection
-of the records; before, it was the call time.
+`datasets.preco_diario` no longer has a `cache` source (see Changed): when collection fails, `cepea.indicador` reads the DuckDB
+cache and returns `fetched_at` and `fetch_timestamp` with the records' original collection; before, the dataset's `cache`
+source published the call time.
 
 ## 54. B3: provenance of `ajustes`, `historico`, and `posicoes_abertas_historico`
 

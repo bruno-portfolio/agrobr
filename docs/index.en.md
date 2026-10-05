@@ -105,7 +105,7 @@ Python infrastructure for Brazilian agricultural data with a **semantic layer** 
 | `pib_agro` | Agricultural GDP by sector and quarter | IBGE SIDRA |
 | `posicionamento_fundos` | Fund positioning by trader category (COT) | CFTC |
 | `preco_atacado` | Wholesale produce prices at CEASAs | CONAB CEASA/PROHORT |
-| `preco_diario` | Daily spot prices | CEPEA → cache |
+| `preco_diario` | Daily spot prices | CEPEA |
 | `producao_anual` | Consolidated annual output | IBGE PAM → CONAB |
 | `progresso_safra` | Weekly sowing/harvest progress | CONAB |
 | `queimadas` | Satellite fire hotspots (6 biomes) | INPE |

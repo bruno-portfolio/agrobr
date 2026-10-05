@@ -10,7 +10,6 @@ import pytest
 from agrobr import abiove, comexstat, constants, datasets
 from agrobr.cache import duckdb_store
 from agrobr.cepea import api
-from agrobr.datasets.preco_diario import PrecoDiarioDataset
 from agrobr.exceptions import (
     CacheMigrationError,
     ResourceLimitError,
@@ -168,10 +167,9 @@ async def test_fallback_do_cache_publica_a_coleta_original(isolated_store, monke
                 }
             ]
         )
-    cepea = PrecoDiarioDataset.info.sources[0]
     monkeypatch.setattr(
-        cepea,
-        "fetch_fn",
+        api,
+        "_fetch_and_parse",
         AsyncMock(side_effect=SourceUnavailableError("cepea", last_error="timeout")),
     )
     with warnings.catch_warnings():

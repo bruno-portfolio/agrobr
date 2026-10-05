@@ -33,7 +33,8 @@ def is_deterministic() -> bool:
 
 def _validate_snapshot(snapshot: str) -> None:
     try:
-        date.fromisoformat(snapshot)
+        if date.fromisoformat(snapshot).isoformat() != snapshot:
+            raise ValueError(f"fora do formato AAAA-MM-DD: {snapshot!r}")
     except (TypeError, ValueError) as exc:
         raise exceptions.InvalidParameterError(
             f"snapshot inválido: {snapshot!r}. Use uma data ISO no formato AAAA-MM-DD."

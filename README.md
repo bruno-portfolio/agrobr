@@ -488,7 +488,7 @@ agrobr snapshot list
 | `pib_agro` | Agricultural GDP by sector and quarter | IBGE SIDRA |
 | `posicionamento_fundos` | Weekly trader positioning in Chicago/NY agri futures (COT) | CFTC |
 | `preco_atacado` | Wholesale produce prices at CEASA hubs | CONAB CEASA/PROHORT |
-| `preco_diario` | Daily spot prices | CEPEA → cache |
+| `preco_diario` | Daily spot prices | CEPEA |
 | `producao_anual` | Consolidated annual production | IBGE PAM → CONAB |
 | `progresso_safra` | Weekly planting/harvest progress | CONAB |
 | `queimadas` | Satellite fire hotspots (6 biomes) | INPE |

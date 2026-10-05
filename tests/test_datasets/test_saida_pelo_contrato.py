@@ -9,6 +9,7 @@ import pytest
 
 from agrobr.contracts import ColumnType, get_contract
 from agrobr.datasets.base import BaseDataset, DatasetInfo
+from agrobr.datasets.credito_rural import CreditoRuralDataset
 
 from .conftest import mock_source_meta
 
@@ -106,3 +107,31 @@ async def test_polars_da_fonte_com_date_sai_em_datetime_ns_e_na_ordem():
         _datas("queimadas"), pl.Datetime("ns")
     )
     assert frame["data"].to_list() == [dt.datetime(2024, 3, 1)]
+
+
+class _CreditoDaFonte(CreditoRuralDataset):
+    async def fetch(  # type: ignore[override]
+        self,
+        _produto: str,
+        _safra: str | None = None,
+        _finalidade: str = "custeio",
+        _uf: str | None = None,
+        agregacao: str = "uf",
+        *,
+        return_meta: bool = False,
+    ) -> Any:
+        frame = _saida_da_fonte(self._contract_name(agregacao=agregacao))
+        if return_meta:
+            return frame, replace(mock_source_meta(), columns=list(frame.columns))
+        return frame
+
+
+async def test_modo_posicional_no_caminho_nao_nativo_segue_o_contrato_do_modo():
+    posicional = await _CreditoDaFonte().fetch(
+        "soja", None, "custeio", None, "registro", return_meta=True
+    )
+    nomeado = await _CreditoDaFonte().fetch("soja", agregacao="registro", return_meta=True)
+
+    ordem = _ordem_do_contrato("bcb_credito_rural_registro")
+    assert list(posicional[0].columns) == list(nomeado[0].columns) == ordem
+    assert posicional[1].columns == nomeado[1].columns == ordem
