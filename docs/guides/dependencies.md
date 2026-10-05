@@ -77,9 +77,9 @@ Se uma dependência é útil mas não essencial, vai como **optional extra**.
 
 - Mínimo suportado: **Python 3.11**
 - Target principal: **Python 3.12**
-- Testado em CI: 3.11, 3.12, 3.13
+- Testado em CI: 3.11, 3.12, 3.13, 3.14
 
-O perfil mínimo da CI fixa as dependências core e os extras PDF, geo e Polars no Python 3.11 com `scripts/constraints-minimum.txt`, incluindo NumPy 2. Dependências atuais e instalações somente core do wheel são verificadas no Python 3.11–3.13. O SIDRA usa diretamente o cliente HTTP assíncrono existente; `sidrapy` deixa de ser necessário.
+O perfil mínimo da CI fixa as dependências core e os extras PDF, geo e Polars no Python 3.11 com `scripts/constraints-minimum.txt`, incluindo NumPy 2. Dependências atuais e instalações somente core do wheel são verificadas no Python 3.11–3.14, e o Polars atual (extra `polars`) no 3.14. O SIDRA usa diretamente o cliente HTTP assíncrono existente; `sidrapy` deixa de ser necessário.
 
 `httpcore` já é instalado transitivamente pelo HTTPX. Seu limite explícito não adiciona um componente novo de runtime: a versão 1.0.9 exige h11 0.16 ou superior e impede resolver a série antiga vulnerável. Os limites de lxml e requests também excluem avisos de segurança publicados, sem afirmar que essas vulnerabilidades foram exploradas pelo agrobr.
 

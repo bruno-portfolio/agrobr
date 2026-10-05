@@ -15,10 +15,15 @@ env:
 
 jobs:
   test:
+    name: test (${{ matrix.python-version }}${{ matrix.extras != 'dev,pdf,geo' && ', polars' || '' }})
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ["3.11", "3.12", "3.13"]
+        python-version: ["3.11", "3.12", "3.13", "3.14"]
+        extras: ["dev,pdf,geo"]
+        include:
+          - python-version: "3.14"
+            extras: "dev,pdf,geo,polars"
 
     steps:
       - uses: actions/checkout@v7
@@ -32,7 +37,7 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip setuptools wheel
-          pip install -e ".[dev,pdf,geo]"
+          pip install -e ".[${{ matrix.extras }}]"
 
       - name: Run linting
         run: |
@@ -133,7 +138,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ["3.11", "3.12", "3.13"]
+        python-version: ["3.11", "3.12", "3.13", "3.14"]
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-python@v7
