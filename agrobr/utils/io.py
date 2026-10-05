@@ -2,12 +2,15 @@ from __future__ import annotations
 
 import inspect
 import io
+import itertools
+import re
 import struct
 import zipfile
 import zlib
-from collections.abc import Callable, Coroutine
+from collections.abc import Callable, Coroutine, Iterator
 from typing import IO, Any, Literal
 from urllib.parse import urlsplit
+from xml.parsers import expat
 
 import httpx
 import pandas as pd
@@ -32,6 +35,20 @@ _DOWNLOAD_SIGNATURES = {
     "pdf": b"%PDF",
 }
 _INFLATE_CHUNK = 16 * 1024
+_XLSX_CELL_REF = re.compile(r"\s*\$?([A-Za-z]{1,7})\$?([0-9]{1,10})\s*")
+_XLSX_SHEET_MARKS = tuple(
+    "sheetData".encode(codec) for codec in ("utf-8", "utf-16-le", "utf-16-be")
+)
+_XLSX_ODD = re.compile(
+    rb'<(?:\?xml(?! version="1\.0"(?: encoding="[Uu][Tt][Ff]-8")?(?: standalone="yes")?\?>)|!DOCTYPE|!ENTITY'
+    rb'|c(?:[\t\n\r/>]| (?!r="[A-Z]{1,3}[0-9]{1,7}"))'
+    rb'|row(?:[\t\n\r/>]| (?!r="[0-9]{1,7}"))'
+    rb'|dimension(?:[\t\n\r/>]| (?!ref="[A-Z]{1,3}[0-9]{1,7}(?::[A-Z]{1,3}[0-9]{1,7})?"))'
+    rb"|[^\s<>/!?:]+:(?:c|row|dimension)[\s/>])"
+)
+_XLSX_COLUMNS = re.compile(rb'<c r="([A-Z]{1,3})[0-9]')
+_XLSX_ROWS = re.compile(rb'<(?:c r="[A-Z]{1,3}|row r=")([0-9]{1,7})"')
+_XLSX_DIMENSION = re.compile(rb'<dimension ref="([A-Z0-9:]+)"')
 
 
 def validate_download(
@@ -154,16 +171,41 @@ def read_zip_members(
     ]
 
 
-def _real_expansion(stream: IO[bytes], info: zipfile.ZipInfo, budget: int) -> int:
-    """Bytes que um leitor tira do membro; no deflate, a conta para em ``budget + 1``.
-
-    O deflate vai do cabeçalho local até o fim do stream, sem parar no tamanho comprimido nem no expandido declarados.
-    """
+def _member_start(stream: IO[bytes], info: zipfile.ZipInfo) -> int:
     stream.seek(max(info.header_offset, 0))
     signature, name_size, extra_size = struct.unpack("<4s22xHH", stream.read(30))
     if info.header_offset < 0 or signature != _DOWNLOAD_SIGNATURES["zip"]:
         raise zipfile.BadZipFile(f"o membro {info.filename} não tem cabeçalho local")
     start: int = info.header_offset + 30 + name_size + extra_size
+    return start
+
+
+def _member_chunks(stream: IO[bytes], info: zipfile.ZipInfo) -> Iterator[bytes]:
+    """O conteúdo do membro em pedaços, como ``_real_expansion`` o mede."""
+    start = _member_start(stream, info)
+    stream.seek(start)
+    if info.compress_type == zipfile.ZIP_STORED:
+        remaining = info.compress_size
+        while remaining > 0 and (chunk := stream.read(min(_INFLATE_CHUNK, remaining))):
+            remaining -= len(chunk)
+            yield chunk
+        return
+    inflater = zlib.decompressobj(-15)
+    while not inflater.eof and (chunk := stream.read(_INFLATE_CHUNK)):
+        while not inflater.eof:
+            piece = inflater.decompress(chunk, _INFLATE_CHUNK)
+            yield piece
+            chunk = inflater.unconsumed_tail
+            if not chunk and len(piece) < _INFLATE_CHUNK:
+                break
+
+
+def _real_expansion(stream: IO[bytes], info: zipfile.ZipInfo, budget: int) -> int:
+    """Bytes que um leitor tira do membro; no deflate, a conta para em ``budget + 1``.
+
+    O deflate vai do cabeçalho local até o fim do stream, sem parar no tamanho comprimido nem no expandido declarados.
+    """
+    start = _member_start(stream, info)
     if info.compress_type == zipfile.ZIP_STORED:
         return max(0, min(info.compress_size, stream.seek(0, io.SEEK_END) - start))
     stream.seek(start)
@@ -228,8 +270,173 @@ def check_zip_expansion(
         ) from exc
 
 
+def _column_number(letters: str) -> int:
+    column = 0
+    for letter in letters.upper():
+        column = column * 26 + ord(letter) - 64
+    return column
+
+
+def _xlsx_cell(ref: str) -> tuple[int, int]:
+    match = _XLSX_CELL_REF.fullmatch(ref)
+    if match is None:
+        raise ValueError(f"referência de célula ilegível: {ref[:40]!r}")
+    letters, row = match.groups()
+    return int(row), _column_number(letters)
+
+
+def _xlsx_row(ref: str) -> int:
+    """Número da linha como o openpyxl o lê, que aceita ``r`` em ponto flutuante inteiro."""
+    try:
+        return int(ref)
+    except ValueError:
+        value = float(ref)
+    if not value.is_integer():
+        raise ValueError(f"linha ilegível: {ref[:40]!r}")
+    return int(value)
+
+
+def _xlsx_declared(ref: str) -> int:
+    corners = [_xlsx_cell(corner) for corner in ref.split(":")]
+    return max(row for row, _ in corners) * max(column for _, column in corners)
+
+
+class _SheetExtent:
+    """Retângulo que o leitor monta a partir de A1: maior linha × maior coluna das células e das linhas, ou o
+    ``<dimension>`` declarado, se for maior. ``row`` e ``c`` sem ``r`` seguem o anterior, como no openpyxl e no
+    calamine."""
+
+    def __init__(self) -> None:
+        self.row = self.column = self.rows = self.columns = self.declared = 0
+
+    @property
+    def cells(self) -> int:
+        return max(self.rows * max(self.columns, 1), self.declared)
+
+    def start(self, name: str, attrs: dict[str, str]) -> None:
+        tag = name.rpartition(":")[2]
+        if tag == "c":
+            ref = attrs.get("r")
+            if ref is None:
+                row, self.column = self.row, self.column + 1
+            else:
+                row, self.column = _xlsx_cell(ref)
+            self.rows = max(self.rows, row, 1)
+            self.columns = max(self.columns, self.column)
+        elif tag == "row":
+            ref = attrs.get("r")
+            self.row = self.row + 1 if ref is None else _xlsx_row(ref)
+            self.column = 0
+            self.rows = max(self.rows, self.row)
+        elif tag == "dimension":
+            self.declared = max(self.declared, _xlsx_declared(attrs.get("ref", "")))
+
+    @staticmethod
+    def doctype(*_args: object) -> None:
+        raise ValueError("DOCTYPE em membro do XLSX")
+
+
+def _fast_cells(stream: IO[bytes], info: zipfile.ZipInfo, limit: int) -> int | None:
+    """Células do membro em que toda ``c``, ``row`` e ``dimension`` está na forma que o Excel grava, com ``r``/``ref``
+    primeiro e por extenso, em UTF-8 sem DTD; ``None`` quando aparece outra forma. Para assim que passa de ``limit``."""
+    rows = columns = declared = 0
+    carry = b""
+    for piece in itertools.chain(_member_chunks(stream, info), [None]):
+        window = carry + (piece or b"")
+        cut = -1 if piece is None else window.rfind(b"<", max(0, len(window) - 64))
+        if cut < 0:
+            cut = len(window)
+        window, carry = window[:cut], window[cut:]
+        if b"\x00" in window or _XLSX_ODD.search(window):
+            return None
+        letters = set(_XLSX_COLUMNS.findall(window))
+        columns = max(columns, *(_column_number(item.decode()) for item in letters), 0)
+        rows = max(rows, *map(int, set(_XLSX_ROWS.findall(window))), 1 if columns else 0)
+        for ref in _XLSX_DIMENSION.findall(window):
+            declared = max(declared, _xlsx_declared(ref.decode()))
+        cells = max(rows * max(columns, 1), declared)
+        if cells > limit:
+            return cells
+    return max(rows * max(columns, 1), declared)
+
+
+def _exact_cells(stream: IO[bytes], info: zipfile.ZipInfo, limit: int) -> int:
+    """Células do membro pelo expat (``_SheetExtent``). Membro que não é XML bem formado conta 0, a não ser que traga
+    ``sheetData``, por onde o calamine lê as células: aí é ilegível. O openpyxl recusa XML mal formado por conta
+    própria."""
+    extent = _SheetExtent()
+    parser = expat.ParserCreate()
+    parser.StartElementHandler = extent.start
+    parser.StartDoctypeDeclHandler = _SheetExtent.doctype
+    malformed: expat.ExpatError | None = None
+    sheet = False
+    tail = b""
+    for piece, final in itertools.chain(
+        ((piece, False) for piece in _member_chunks(stream, info)), [(b"", True)]
+    ):
+        if not sheet:
+            window = tail + piece
+            sheet = any(mark in window for mark in _XLSX_SHEET_MARKS)
+            tail = window[-32:]
+        if malformed is None:
+            try:
+                parser.Parse(piece, final)
+            except expat.ExpatError as exc:
+                malformed = exc
+        if extent.cells > limit:
+            return extent.cells
+    if malformed is not None and sheet:
+        raise ValueError(f"não é XML bem formado: {malformed}")
+    return extent.cells if malformed is None else 0
+
+
+def _check_xlsx_cells(raw: bytes, *, source: str, url: str) -> None:
+    """Recusa o XLSX em que algum membro monta mais de ``MAX_XLSX_CELLS`` células.
+
+    O calamine e o openpyxl montam a planilha densa, de A1 até a maior linha e a maior coluna: poucas células
+    espalhadas esgotam a memória sem exceção capturável. Cada membro é lido como o calamine o lê (ver
+    ``_member_chunks``), sem abrir o leitor: primeiro por ``_fast_cells``; se aparecer forma fora do padrão do Excel,
+    de novo por ``_exact_cells``. O ZIP que não é XLSX (ODS, XLSB, sem ``xl/workbook.xml``) é recusado antes: o calamine
+    o abriria como outra planilha, que a contagem não lê. Os nomes são comparados como o pandas os compara. O XLS da
+    CONAB (assinatura CFB) traz um pacote de tema ou desenho no fim, que o ``zipfile`` acha: sem ``xl/workbook.xml``, é
+    lido como XLS.
+    """
+    limit = constants.MAX_XLSX_CELLS
+    stream = io.BytesIO(raw)
+    with zipfile.ZipFile(stream) as zip_file:
+        members = zip_file.infolist()
+    nomes = {info.filename.replace("\\", "/").lower() for info in members}
+    outros = sorted(nomes & {"xl/workbook.bin", "content.xml"})
+    xls = raw.startswith(_DOWNLOAD_SIGNATURES["xls"])
+    if outros or ("xl/workbook.xml" not in nomes and not xls):
+        motivo = f"com {', '.join(outros)}" if outros else "sem xl/workbook.xml"
+        raise ResourceLimitError(
+            source,
+            f"o arquivo não é XLSX ({motivo}); o tamanho da planilha não é conhecido",
+            url=url,
+        )
+    for info in members:
+        try:
+            cells = _fast_cells(stream, info, limit)
+            if cells is None:
+                cells = _exact_cells(stream, info, limit)
+        except ValueError as exc:
+            raise ResourceLimitError(
+                source,
+                f"a planilha {info.filename} do XLSX está ilegível ({exc}); o tamanho não é conhecido",
+                url=url,
+            ) from exc
+        if cells > limit:
+            raise ResourceLimitError(
+                source,
+                f"a planilha {info.filename} do XLSX monta {cells} células, acima do teto de {limit}",
+                url=url,
+            )
+
+
 def check_xlsx_expansion(raw: bytes, *, source: str, url: str = "") -> None:
-    """Recusa, antes do leitor de planilha, o XLSX que expande além do teto da fonte (ver ``check_zip_expansion``).
+    """Recusa, antes do leitor de planilha, o XLSX que expande além do teto da fonte (ver ``check_zip_expansion``)
+    ou cuja planilha passa do teto de células (ver ``_check_xlsx_cells``).
 
     Decide pelo diretório central, não pelo início: o ``zipfile`` e o calamine abrem ZIP com dado antes do ``PK``.
     Arquivo sem diretório central segue para o leitor, que dá o erro dele.
@@ -239,6 +446,7 @@ def check_xlsx_expansion(raw: bytes, *, source: str, url: str = "") -> None:
     check_zip_expansion(
         io.BytesIO(raw), source=source, limit=_expansion_limit(source), label="XLSX", url=url
     )
+    _check_xlsx_cells(raw, source=source, url=url)
 
 
 def _extract_bytes(data: bytes | io.BytesIO) -> bytes:

@@ -7,7 +7,7 @@ import pandas as pd
 from agrobr import _log
 from agrobr.exceptions import ParseError
 from agrobr.normalize import dates
-from agrobr.utils.geo import check_geopandas
+from agrobr.utils.geo import check_geopandas, wkt_within_limits
 from agrobr.utils.io import read_csv_safe
 
 from .models import (
@@ -113,7 +113,9 @@ def parse_embargos_geo(
     df = _normalize(df, uf=uf, bbox=None, edicao=edicao)
     df = df[df[GEOM_COLUMN_CSV].notna()].reset_index(drop=True)
 
-    geoms = shapely.from_wkt(df[GEOM_COLUMN_CSV].to_numpy(dtype=object), on_invalid="ignore")
+    wkts = df[GEOM_COLUMN_CSV].to_numpy(dtype=object, copy=True)
+    wkts[~df[GEOM_COLUMN_CSV].map(wkt_within_limits).to_numpy(dtype=bool)] = None
+    geoms = shapely.from_wkt(wkts, on_invalid="ignore")
     mask = ~shapely.is_missing(geoms)
     invalid = int((~mask).sum())
     if invalid:

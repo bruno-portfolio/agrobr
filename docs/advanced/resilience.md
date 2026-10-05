@@ -182,6 +182,12 @@ e cada XLSX expande, contra um teto por fonte (`constants.MAX_EXPANDED_BYTES`), 
   teto, antes do leitor de planilha. O calamine não respeita o tamanho declarado, e o CRC é escolhido por quem gera o
   arquivo: nenhum dos dois prova quanto o XLSX expande. ZIP ilegível (inclusive nome de membro marcado como UTF-8 que não é
   UTF-8), ou com membro comprimido por outro método que não o deflate, é recusado.
+- **Planilha esparsa** (os mesmos leitores de XLSX): o calamine e o openpyxl montam a planilha densa, de A1 até a maior
+  linha e a maior coluna, e poucas células espalhadas bastam para esgotar a memória e derrubar o processo. Depois do teto
+  de bytes, `check_xlsx_expansion` mede esse retângulo em cada planilha (células, linhas e o `<dimension>` declarado), em
+  stream e sem abrir o leitor, e recusa acima de `constants.MAX_XLSX_CELLS`: 10 milhões de células, para todas as fontes.
+  A maior planilha medida, a municipal do MapBiomas, tem 4,3 milhões. Planilha que não é XML bem formado, ou que traz DTD,
+  também é recusada, porque o tamanho dela não é conhecido; pelo mesmo motivo, arquivo ZIP que não é XLSX (ODS, XLSB) também é recusado.
 - **Shapefile do Acervo Fundiário** (SIGEF, SNCI e assentamentos do INCRA): o GDAL também lê o membro até o fim do deflate,
   sem parar no tamanho declarado. Antes de o pyogrio ou o GeoPandas abrir o ZIP, `check_zip_expansion` faz a mesma conta do
   XLSX, com o teto do download (`ACERVO_MAX_DOWNLOAD_BYTES`): o INCRA publica o ZIP sem compressão, e a expansão é o
@@ -203,6 +209,12 @@ e cada XLSX expande, contra um teto por fonte (`constants.MAX_EXPANDED_BYTES`), 
 
 O custo de produção da CONAB e o histórico do INMET têm teto próprio (`CONAB_CUSTOS_MAX_EXPANDED_BYTES` e
 `INMET_HISTORICO_MAX_*`). PDF não tem teto: o pdfplumber descomprime cada stream inteiro.
+
+O WKT das geometrias do IBAMA (`embargos_geo`) e do MapBiomas Alerta (`alertas_geo`) passa por `utils.geo.wkt_within_limits`
+antes do shapely: o leitor de WKT do GEOS é recursivo, e um WKT aninhado demais estoura a pilha e derruba o processo, sem
+exceção. Com mais de 16 níveis de parênteses ou mais de 16.777.216 caracteres (`constants.MAX_WKT_DEPTH` e `MAX_WKT_CHARS`;
+o maior WKT publicado tem 3 níveis e 1,5 MB), o valor é tratado como WKT inválido: no IBAMA, a linha sai com o aviso
+`ibama_embargos_geo_wkt_invalido`; no MapBiomas Alerta, o alerta fica com geometria nula e aviso.
 
 ## Pedido fora do host da fonte
 

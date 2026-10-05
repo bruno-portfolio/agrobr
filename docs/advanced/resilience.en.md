@@ -179,6 +179,13 @@ expands against a per-source limit (`constants.MAX_EXPANDED_BYTES`), and raises 
   declared size, and the CRC is chosen by whoever builds the file: neither proves how much the XLSX expands. An unreadable
   ZIP (including a member name flagged as UTF-8 that is not UTF-8), or one with a member compressed by a method other than
   deflate, is refused.
+- **Sparse spreadsheet** (the same XLSX readers): calamine and openpyxl build the spreadsheet as a dense grid, from A1 to
+  the last row and the last column, and a few scattered cells are enough to exhaust memory and bring the process down.
+  After the byte limit, `check_xlsx_expansion` measures that rectangle in each sheet (cells, rows and the declared
+  `<dimension>`), as a stream and without opening the reader, and refuses it above `constants.MAX_XLSX_CELLS`: 10 million
+  cells, for every source. The largest sheet measured, MapBiomas' municipal one, has 4.3 million. A sheet that is not
+  well-formed XML, or that carries a DTD, is also refused, since its size is unknown; for the same reason, a ZIP file
+  that is not XLSX (ODS, XLSB) is also refused.
 - **Acervo Fundiário shapefile** (INCRA's SIGEF, SNCI and settlements): GDAL also reads the member to the end of the deflate
   stream, without stopping at the declared size. Before pyogrio or GeoPandas opens the ZIP, `check_zip_expansion` runs the
   same check as for XLSX, with the download limit (`ACERVO_MAX_DOWNLOAD_BYTES`): INCRA publishes the ZIP uncompressed, so
@@ -200,6 +207,13 @@ expands against a per-source limit (`constants.MAX_EXPANDED_BYTES`), and raises 
 
 The CONAB production cost and the INMET history have their own limit (`CONAB_CUSTOS_MAX_EXPANDED_BYTES` and
 `INMET_HISTORICO_MAX_*`). PDF has no limit: pdfplumber decompresses each stream in full.
+
+The WKT of the IBAMA (`embargos_geo`) and MapBiomas Alerta (`alertas_geo`) geometries goes through
+`utils.geo.wkt_within_limits` before shapely: GEOS's WKT reader is recursive, and an overly nested WKT overflows the stack
+and brings the process down, with no exception. With more than 16 levels of parentheses or more than 16,777,216 characters
+(`constants.MAX_WKT_DEPTH` and `MAX_WKT_CHARS`; the largest published WKT has 3 levels and 1.5 MB), the value is treated as
+invalid WKT: in IBAMA, the row is dropped with the `ibama_embargos_geo_wkt_invalido` warning; in MapBiomas Alerta, the
+alert keeps a null geometry and a warning.
 
 ## Request outside the source host
 

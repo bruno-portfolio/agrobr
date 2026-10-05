@@ -10,6 +10,7 @@ from pathlib import Path
 from typing import Any
 
 import openpyxl
+import pandas as pd
 import pytest
 
 from agrobr import constants
@@ -121,21 +122,35 @@ def _zip(membros: dict[str, bytes]) -> bytes:
     return saida.getvalue()
 
 
-def _xlsx(celula: bytes) -> bytes:
+def _com_membros(trocas: dict[str, bytes]) -> bytes:
     livro = openpyxl.Workbook()
     livro.active["A1"] = "x"
     saida = io.BytesIO()
     livro.save(saida)
     with zipfile.ZipFile(io.BytesIO(saida.getvalue())) as origem:
         membros = {info.filename: origem.read(info) for info in origem.infolist()}
-    membros["xl/worksheets/sheet1.xml"] = (
+    return _zip({**membros, **trocas})
+
+
+def _planilha(linhas: bytes, *, antes: bytes = b"") -> bytes:
+    return (
         b'<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
         b'<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">'
-        b'<sheetData><row r="1"><c r="A1" t="inlineStr"><is><t>'
-        + celula
-        + b"</t></is></c></row></sheetData></worksheet>"
+        + antes
+        + b"<sheetData>"
+        + linhas
+        + b"</sheetData></worksheet>"
     )
-    return _zip(membros)
+
+
+def _xlsx(celula: bytes) -> bytes:
+    return _com_membros(
+        {
+            "xl/worksheets/sheet1.xml": _planilha(
+                b'<row r="1"><c r="A1" t="inlineStr"><is><t>' + celula + b"</t></is></c></row>"
+            )
+        }
+    )
 
 
 def _forjar(conteudo: bytes, membro: str, declarado: int) -> bytes:
@@ -279,6 +294,179 @@ def test_xlsx_dentro_do_teto_segue_para_o_leitor():
 def test_fonte_sem_teto_proprio_usa_o_padrao():
     assert "deral" not in constants.MAX_EXPANDED_BYTES
     assert io_utils._expansion_limit("deral") == constants.MAX_EXPANDED_BYTES_DEFAULT
+
+
+ESPARSA = _planilha(
+    b'<row r="1"><c r="A1"/><c r="XFD1"/></row><row r="1048576"><c r="A1048576"/></row>'
+)
+RETANGULO_ESPARSO = 1_048_576 * 16_384
+FORMAS_ESPARSAS = {
+    "referencias": (ESPARSA, RETANGULO_ESPARSO),
+    "dimensao_declarada": (
+        _planilha(b'<row r="1"><c r="A1"/></row>', antes=b'<dimension ref="A1:XFD1048576"/>'),
+        RETANGULO_ESPARSO,
+    ),
+    "celulas_sem_r": (
+        _planilha(
+            b'<row r="1">' + b"<c/>" * 20 + b'</row><row r="1048576"><c r="A1048576"/></row>'
+        ),
+        1_048_576 * 20,
+    ),
+    "prefixo": (
+        b'<x:worksheet xmlns:x="http://schemas.openxmlformats.org/spreadsheetml/2006/main">'
+        b'<x:sheetData><x:row r="1"><x:c r="A1"/><x:c r="XFD1"/></x:row>'
+        b'<x:row r="1048576"><x:c r="A1048576"/></x:row></x:sheetData></x:worksheet>',
+        RETANGULO_ESPARSO,
+    ),
+    "linha_em_ponto_flutuante": (
+        _planilha(b'<row r="1"><c r="XFD1"/></row><row r="1048576.0"/>'),
+        RETANGULO_ESPARSO,
+    ),
+    "referencia_com_entidade": (
+        _planilha(b'<row r="1"><c r="&#88;FD1"/><c r="A1048576"/></row>'),
+        RETANGULO_ESPARSO,
+    ),
+    "utf16": (
+        ESPARSA.replace(b'encoding="UTF-8"', b'encoding="UTF-16"').decode().encode("utf-16"),
+        RETANGULO_ESPARSO,
+    ),
+}
+
+
+@pytest.mark.parametrize("forma", list(FORMAS_ESPARSAS))
+def test_xlsx_esparso_recusado_pelo_retangulo(forma):
+    planilha, celulas = FORMAS_ESPARSAS[forma]
+    xlsx = _com_membros({"xl/worksheets/sheet1.xml": planilha})
+
+    with levanta_exatamente(
+        ResourceLimitError,
+        f"sheet1.xml do XLSX monta {celulas} células, acima do teto de {constants.MAX_XLSX_CELLS}",
+    ):
+        io_utils.check_xlsx_expansion(xlsx, source="conab")
+
+    assert len(xlsx) < 16 * 1024
+
+
+ILEGIVEIS = {
+    "xml_mal_formado": (
+        _planilha(b'<row><c/></x><row r="1048576"><c r="XFD1048576"/></row>'),
+        "não é XML bem formado",
+    ),
+    "doctype": (
+        b'<!DOCTYPE worksheet [<!ENTITY e "1">]>' + _planilha(b'<row r="1"><c r="A1"/></row>'),
+        "DOCTYPE",
+    ),
+}
+
+
+@pytest.mark.parametrize("forma", list(ILEGIVEIS))
+def test_planilha_ilegivel_recusada(forma):
+    planilha, motivo = ILEGIVEIS[forma]
+    xlsx = _com_membros({"xl/worksheets/sheet1.xml": planilha})
+
+    with levanta_exatamente(ResourceLimitError, f"sheet1.xml do XLSX está ilegível [(]{motivo}"):
+        io_utils.check_xlsx_expansion(xlsx, source="conab")
+
+
+def test_membro_sem_planilha_mal_formado_segue_para_o_leitor():
+    xlsx = _com_membros(
+        {
+            "xl/media/image1.png": b"\x89PNG\r\n\x1a\n" + bytes(range(256)) * 4,
+            "xl/drawings/vmlDrawing1.vml": b"<xml><x:ClientData><x:Row>9</x:Row><br></xml>",
+        }
+    )
+
+    with sem_excecao():
+        io_utils.check_xlsx_expansion(xlsx, source="conab")
+
+
+def test_contagem_rapida_e_exata_concordam():
+    canonica = _planilha(
+        b'<row r="2"><c r="C2"/></row><row r="5" spans="2:2"><c r="B5" t="s"><v>0</v></c></row>',
+        antes=b'<dimension ref="B2:C5"/>',
+    )
+    fora_do_padrao = canonica.replace(b'<row r="5" spans="2:2">', b'<row spans="2:2" r="5">')
+    contagens = []
+    for planilha in (canonica, fora_do_padrao):
+        bruto = _zip({"xl/worksheets/sheet1.xml": planilha})
+        with zipfile.ZipFile(io.BytesIO(bruto)) as arquivo:
+            info = arquivo.getinfo("xl/worksheets/sheet1.xml")
+        contagens.append(
+            (
+                io_utils._fast_cells(io.BytesIO(bruto), info, constants.MAX_XLSX_CELLS),
+                io_utils._exact_cells(io.BytesIO(bruto), info, constants.MAX_XLSX_CELLS),
+            )
+        )
+
+    assert contagens == [(15, 15), (None, 15)]
+
+
+@pytest.mark.parametrize(
+    "leitor",
+    ["mapbiomas_xlsx", "anp_xlsx_calamine", "abiove_xlsx", "cepea_serie_xlsx", "unica_xlsx"],
+)
+def test_xlsx_esparso_recusado_antes_do_leitor(monkeypatch, leitor):
+    def proibido(*_args: Any, **_kwargs: Any) -> Any:
+        raise AssertionError("o leitor de planilha abriu o XLSX esparso")
+
+    esparso = _com_membros({"xl/worksheets/sheet1.xml": ESPARSA})
+    for modulo, nome in ((pd, "read_excel"), (pd, "ExcelFile"), (openpyxl, "load_workbook")):
+        monkeypatch.setattr(modulo, nome, proibido)
+    _fonte, _montar, ler = LEITORES[leitor]
+
+    with levanta_exatamente(ResourceLimitError, f"monta {RETANGULO_ESPARSO} células"):
+        ler(esparso)
+
+
+NAO_XLSX = {
+    "sem_workbook_xml": (
+        _zip({"xl/worksheets/sheet1.xml": _planilha(b'<row r="1"><c r="A1"/></row>')}),
+        "sem xl/workbook.xml",
+    ),
+    "content_xml": (
+        _com_membros({"content.xml": b"<office:document-content/>"}),
+        "com content.xml",
+    ),
+    "workbook_bin": (_com_membros({"XL\\Workbook.bin": b"\x00"}), "com xl/workbook.bin"),
+}
+
+
+@pytest.mark.parametrize("forma", list(NAO_XLSX))
+def test_zip_que_nao_e_xlsx_recusado_antes_do_leitor(monkeypatch, forma):
+    def proibido(*_args: Any, **_kwargs: Any) -> Any:
+        raise AssertionError("o leitor de planilha abriu o ZIP que não é XLSX")
+
+    arquivo, motivo = NAO_XLSX[forma]
+    for modulo, nome in ((pd, "read_excel"), (pd, "ExcelFile"), (openpyxl, "load_workbook")):
+        monkeypatch.setattr(modulo, nome, proibido)
+
+    for leitor in (
+        "mapbiomas_xlsx",
+        "anp_xlsx_calamine",
+        "abiove_xlsx",
+        "cepea_serie_xlsx",
+        "unica_xlsx",
+    ):
+        _fonte, _montar, ler = LEITORES[leitor]
+        with levanta_exatamente(
+            ResourceLimitError,
+            f"o arquivo não é XLSX [(]{motivo}[)]; o tamanho da planilha não é conhecido",
+        ):
+            ler(arquivo)
+
+
+def test_xls_com_pacote_embutido_segue_para_o_leitor():
+    golden = Path(__file__).resolve().parents[1] / "golden_data"
+    xls = (golden / "conab" / "serie_historica_20260917" / "cafe.xls").read_bytes()
+    assert zipfile.is_zipfile(io.BytesIO(xls))
+
+    with sem_excecao():
+        io_utils.check_xlsx_expansion(xls, source="conab_serie_historica")
+    with levanta_exatamente(ResourceLimitError, "o arquivo não é XLSX [(]com content.xml[)]"):
+        io_utils.check_xlsx_expansion(
+            xls[:8] + _com_membros({"content.xml": b"<office:document-content/>"}),
+            source="conab_serie_historica",
+        )
 
 
 def _shapefile_zip(pasta: Path, *, linhas: int = 4000) -> Path:

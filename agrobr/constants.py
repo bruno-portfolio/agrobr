@@ -876,6 +876,9 @@ MAX_EXPANDED_BYTES: dict[str, int] = {
     "conab": 64 * 1024**2,
     "conab_progresso": 64 * 1024**2,
 }
+MAX_XLSX_CELLS: int = 10_000_000
+MAX_WKT_CHARS: int = 16 * 1024**2
+MAX_WKT_DEPTH: int = 16
 
 SICAR_MAX_VERSOES_DESCARTADAS = 1_000
 SICAR_STATUS_VALIDOS: frozenset[str] = frozenset({"AT", "PE", "SU", "CA"})

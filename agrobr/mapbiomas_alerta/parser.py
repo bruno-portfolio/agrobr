@@ -7,7 +7,7 @@ import pandas as pd
 from agrobr import _log
 from agrobr.exceptions import ParseError
 from agrobr.normalize import dates
-from agrobr.utils.geo import check_geopandas
+from agrobr.utils.geo import check_geopandas, wkt_within_limits
 
 from .models import COLUNAS_SAIDA, COLUNAS_SAIDA_GEO, RENAME_MAP
 
@@ -116,7 +116,9 @@ def parse_alertas_geo(records: list[dict[str, object]]) -> Any:
     geoms: list[Any] = []
     for wkt_str in wkt_strings:
         geom = None
-        if wkt_str:
+        if wkt_str and not wkt_within_limits(wkt_str):
+            logger.warning("mapbiomas_alerta_invalid_wkt")
+        elif wkt_str:
             try:
                 geom = wkt.loads(wkt_str)
             except (GEOSException, ValueError):

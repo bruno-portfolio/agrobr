@@ -6,6 +6,7 @@ import httpx
 import numpy as np
 import pytest
 
+from agrobr.constants import MAX_WKT_CHARS, MAX_WKT_DEPTH
 from agrobr.exceptions import InvalidParameterError, ParseError, SourceUnavailableError
 from agrobr.utils.geo import (
     fetch_arcgis_count,
@@ -13,6 +14,7 @@ from agrobr.utils.geo import (
     fetch_wfs,
     parse_wfs_hits,
     validate_bbox,
+    wkt_within_limits,
 )
 from tests import helpers
 
@@ -635,3 +637,19 @@ class TestParseGeojsonBase:
                 output_cols_empty=["col1", "geometry"],
                 truncation_event="test_truncated",
             )
+
+
+def _aninhado(niveis: int) -> str:
+    return "GEOMETRYCOLLECTION (" * (niveis - 1) + "POINT (1 1)" + ")" * (niveis - 1)
+
+
+def test_wkt_within_limits():
+    multipoligono = "MULTIPOLYGON (" + ", ".join(["((0 0, 1 0, 1 1, 0 0))"] * 50) + ")"
+
+    assert wkt_within_limits(_aninhado(MAX_WKT_DEPTH))
+    assert wkt_within_limits(multipoligono)
+    assert wkt_within_limits("POLYGON ((0 0, 1 0, 1 1, 0 0)")
+    assert not wkt_within_limits(_aninhado(MAX_WKT_DEPTH + 1))
+    assert not wkt_within_limits("(" * (MAX_WKT_DEPTH + 1))
+    assert not wkt_within_limits(")(" * (MAX_WKT_DEPTH + 1))
+    assert not wkt_within_limits("POINT (1 1)" + " " * MAX_WKT_CHARS)

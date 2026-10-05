@@ -12,13 +12,15 @@ import httpx
 import pandas as pd
 
 from agrobr import _log
-from agrobr.constants import MIN_WFS_SIZE
+from agrobr.constants import MAX_WKT_CHARS, MAX_WKT_DEPTH, MIN_WFS_SIZE
 from agrobr.exceptions import InvalidParameterError, ParseError, SourceUnavailableError
 from agrobr.http import responses
 from agrobr.http.retry import retry_on_status
 from agrobr.http.user_agents import UserAgentRotator
 
 logger = _log.get_logger(__name__)
+
+_NOT_PARENTHESIS = re.compile(r"[^()]")
 
 
 class LayerConfig(TypedDict):
@@ -44,6 +46,20 @@ def check_geopandas() -> Any:
         raise ImportError(
             "geopandas is required for geo functions. Install with: pip install agrobr[geo]"
         ) from None
+
+
+def wkt_within_limits(text: str) -> bool:
+    """WKT que o GEOS lê sem estourar a pilha: até ``MAX_WKT_CHARS`` caracteres e ``MAX_WKT_DEPTH`` níveis de
+    parênteses. O leitor de WKT do GEOS é recursivo e o ``on_invalid`` não pega o estouro, que derruba o processo;
+    parênteses desbalanceados acima do teto também ficam de fora."""
+    if len(text) > MAX_WKT_CHARS:
+        return False
+    if text.count("(") <= MAX_WKT_DEPTH:
+        return True
+    parentheses = _NOT_PARENTHESIS.sub("", text)
+    for _ in range(MAX_WKT_DEPTH):
+        parentheses = parentheses.replace("()", "")
+    return not parentheses
 
 
 def check_pyogrio() -> Any:
