@@ -283,6 +283,13 @@ async def test_vinculos_public_chain_national_replay_matches_oracle(monkeypatch,
         assert observed == expected
     administrative = meta.source_details["sources"]["administrative"]["source_details"]
     assert administrative["query"]["resolved_edition"] == "2026-06-08"
+    herdados = [
+        f"{parent['selected_source']}: {aviso}"
+        for parent in meta.source_details["sources"].values()
+        for aviso in parent["validation_warnings"]
+    ]
+    assert any(aviso.startswith("incra_geoserver: ") for aviso in herdados)
+    assert meta.validation_warnings[1:] == herdados
 
 
 def test_relation_expansion_limit_prevents_partial_result():

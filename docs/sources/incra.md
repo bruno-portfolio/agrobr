@@ -167,7 +167,8 @@ As 46 colunas são as 9 da relação (`estado_vinculo`, `referencia_tipo`,
 das 22 do perímetro com prefixo `perimetro_` e das 15 do andamento com prefixo
 `administrativo_`. NUP em comum não prova identidade territorial. `max_vinculos` (padrão
 50.000) interrompe com `ResourceLimitError` se a expansão passar do teto; `max_vinculos=None` tira o
-teto de linhas, e o de memória continua. Em
+teto de linhas, e o de memória continua. O `validation_warnings` do composto traz o aviso do vínculo e, em
+seguida, os das duas fontes, com o prefixo de cada uma (`incra_geoserver: …`, `incra_andamento_pdf: …`). Em
 22/09/2026: 817 linhas, 286 vínculos exatos.
 
 ## Coleta bruta

@@ -179,6 +179,11 @@ def build_meta(
     meta.timestamp = datetime.now(UTC)
     meta.fetch_timestamp = meta.fetched_at
     meta.validation_warnings = [
-        "Referência documental comum não prova identidade territorial; não correspondência é limitada às duas aquisições, sem snapshot transacional."
+        "Referência documental comum não prova identidade territorial; não correspondência é limitada às duas aquisições, sem snapshot transacional.",
+        *(
+            f"{parent['selected_source']}: {aviso}"
+            for parent in parents.values()
+            for aviso in parent["validation_warnings"]
+        ),
     ]
     return meta
