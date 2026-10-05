@@ -97,9 +97,10 @@ def _parse_valor(valor_str: str) -> Decimal | None:
     valor_str = valor_str.replace(".", "").replace(",", ".")
 
     try:
-        return Decimal(valor_str)
+        valor = Decimal(valor_str)
     except InvalidOperation:
         return None
+    return valor if valor.is_finite() and valor > 0 else None
 
 
 def _parse_variacao(var_str: str) -> Decimal | None:
