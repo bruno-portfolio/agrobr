@@ -21,6 +21,7 @@ from agrobr.exceptions import (
     ResourceLimitError,
     SourceUnavailableError,
 )
+from agrobr.utils import tasks
 
 logger = _log.get_logger(__name__)
 
@@ -84,7 +85,9 @@ async def coletar(
         entradas = storage.ler_manifesto(raiz)
         existente = _existente(entradas, plano, consulta, retomar=bool(retomar))
         if existente is not None and existente.status == "ok":
-            _verificar_entrada(raiz, existente, pedido.limites, orcamento)
+            await tasks.to_thread_ate_o_fim(
+                _verificar_entrada, raiz, existente, pedido.limites, orcamento
+            )
             return models.ColetaBruta(
                 manifesto=raiz / storage.MANIFESTO, entrada=existente, reutilizado=True
             )

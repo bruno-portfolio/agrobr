@@ -17,7 +17,7 @@ from pydantic import ValidationError
 from agrobr import constants
 from agrobr.bruto import models
 from agrobr.exceptions import ContractViolationError, InvalidParameterError, ResourceLimitError
-from agrobr.utils.atomic import atomic_output
+from agrobr.utils.atomic import atomic_output, replace_with_retry
 
 if sys.platform == "win32":
     import msvcrt
@@ -193,13 +193,13 @@ def gravar_corpo(raiz: Path, relativo: str, corpo: bytes, *, gzip_local: bool) -
             arquivo.write(corpo)
         arquivo.flush()
         os.fsync(arquivo.fileno())
-    os.replace(parcial, alvo)
+    replace_with_retry(parcial, alvo)
     return alvo.stat().st_size
 
 
 def publicar_arquivo(raiz: Path, relativo: str, temporario: Path) -> int:
     alvo = caminho(raiz, relativo)
-    os.replace(temporario, alvo)
+    replace_with_retry(temporario, alvo)
     return alvo.stat().st_size
 
 

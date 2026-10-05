@@ -5,7 +5,9 @@ from __future__ import annotations
 import asyncio
 import importlib.metadata
 import json
+import os
 from datetime import date, datetime, timedelta
+from pathlib import Path
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pandas as pd
@@ -702,6 +704,28 @@ async def test_snapshot_cepea_exporta_a_serie_inteira_do_cache(tmp_path, monkeyp
         "2016-05-02"
     ]
     assert manifest.metadata.get("errors") is None
+
+
+async def test_create_snapshot_repete_permissao_negada_transitoria(tmp_path, monkeypatch):
+    monkeypatch.setattr("agrobr.snapshots.importlib.util.find_spec", lambda _name: object())
+    negados: list[str] = []
+    substituir = os.replace
+
+    def replace(origem, destino):
+        if Path(destino).name == "transitorio" and not negados:
+            negados.append(str(destino))
+            raise PermissionError("pasta presa pelo indexador")
+        return substituir(origem, destino)
+
+    monkeypatch.setattr(os, "replace", replace)
+    with (
+        patch("agrobr.snapshots.get_snapshots_dir", return_value=tmp_path),
+        patch("agrobr.snapshots._snapshot_cepea", side_effect=make_snapshot_source),
+    ):
+        info = await create_snapshot("transitorio", sources=["cepea"])
+
+    assert len(negados) == 1
+    assert (info.path / "manifest.json").exists()
 
 
 async def test_create_snapshot_devolve_os_erros_das_fontes_que_faltaram(tmp_path, monkeypatch):

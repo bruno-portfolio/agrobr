@@ -9,6 +9,7 @@ from agrobr.bruto import models, protocols
 from agrobr.exceptions import ParseError
 from agrobr.http.settings import get_timeout
 from agrobr.http.user_agents import UserAgentRotator
+from agrobr.utils.warnings import warn_once
 
 ASSINATURAS_ZIP = (b"PK\x03\x04", b"PK\x05\x06")
 AMOSTRA = 64 * 1024
@@ -55,13 +56,15 @@ class AdaptadorArquivo:
 
     ``conferir`` recebe os primeiros bytes do corpo 200 e devolve o motivo da recusa (``ParseError``) ou
     ``None``. ``antes`` roda antes do GET, com o contexto e a mesma sessão, como a conferência da edição no
-    catálogo (``contexto.consultar``, que conta no orçamento da coleta).
+    catálogo (``contexto.consultar``, que conta no orçamento da coleta). ``aviso`` sai uma vez por processo como
+    ``UserWarning`` e vai em ``avisos`` de cada entrada ``ok``, como o dado pessoal do arquivo.
     """
 
     url: str
     edicao: int | None
     conferir: Callable[[bytes], str | None]
     antes: Callable[[protocols.ContextoBruto, httpx.AsyncClient], Awaitable[None]] | None = None
+    aviso: str | None = None
 
     def planejar(self, pedido: models.PedidoBruto) -> models.PlanoBruto:
         return models.PlanoBruto(
@@ -111,4 +114,7 @@ class AdaptadorArquivo:
             if motivo is not None:
                 raise ParseError(plano.fonte, 1, f"{resposta.url}: resposta 200 {motivo}")
         contexto.registrar_arquivo(resposta)
-        return models.ConclusaoBruta(status="ok")
+        if self.aviso is None:
+            return models.ConclusaoBruta(status="ok")
+        warn_once(f"bruto_{plano.fonte}_{plano.recurso}", self.aviso)
+        return models.ConclusaoBruta(status="ok", avisos=(self.aviso,))

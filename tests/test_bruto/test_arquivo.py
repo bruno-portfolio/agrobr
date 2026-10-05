@@ -3,6 +3,8 @@ from __future__ import annotations
 import hashlib
 import io
 import json
+import os
+import threading
 import zipfile
 from pathlib import Path
 
@@ -11,7 +13,7 @@ import pytest
 
 from agrobr import bruto
 from agrobr.bruto import arquivo as bruto_arquivo
-from agrobr.bruto import models, registry, validation
+from agrobr.bruto import models, registry, storage, validation
 from agrobr.constants import URLS, Fonte
 from agrobr.exceptions import (
     ContractViolationError,
@@ -20,6 +22,7 @@ from agrobr.exceptions import (
     ResourceLimitError,
     SourceUnavailableError,
 )
+from agrobr.utils.warnings import warn_once_reset
 from tests.test_bruto.conftest import ZIP_SINTETICO, manifesto, resposta
 
 GOLDEN_IBAMA = (
@@ -137,7 +140,8 @@ async def test_cada_recurso_guarda_o_arquivo_nacional_como_veio(servidor, tmp_pa
     assert (entrada.bytes, entrada.bytes_armazenados) == (len(corpo), len(corpo))
     assert entrada.sha256 == hashlib.sha256(corpo).hexdigest()
     assert entrada.cabecalhos["last-modified"] == CABECALHOS["Last-Modified"]
-    assert (entrada.crs, entrada.cobertura.estado, entrada.avisos) == (None, "nao_aplicavel", [])
+    assert (entrada.crs, entrada.cobertura.estado) == (None, "nao_aplicavel")
+    assert len(entrada.avisos) == (chave == ("ibama", "termos_embargo"))
     (linha,) = (tmp_path / "manifesto.jsonl").read_text("utf-8").splitlines()
     assert models.RecursoBruto.model_validate_json(linha).linha() == linha
 
@@ -329,3 +333,75 @@ async def test_catalogo_cnuc_conta_no_orcamento_da_chamada(servidor, tmp_path):
 )
 def test_cabecalho_csv(inicio, esperado):
     assert bruto_arquivo.cabecalho_csv(inicio, ";") == esperado
+
+
+async def test_termos_de_embargo_avisam_do_dado_pessoal_no_manifesto(servidor, tmp_path):
+    url, _, _, corpo = RECURSOS[("ibama", "termos_embargo")]
+    servidor.respostas[url] = [resposta(200, corpo, CABECALHOS)]
+    warn_once_reset("bruto_ibama_termos_embargo")
+
+    with pytest.warns(UserWarning, match="CPF/CNPJ") as capturados:
+        entrada = (await bruto.coletar("ibama", "termos_embargo", destino=tmp_path)).entrada
+
+    (linha,) = (tmp_path / "manifesto.jsonl").read_text("utf-8").splitlines()
+    gravada = models.RecursoBruto.model_validate_json(linha)
+    assert gravada.avisos == entrada.avisos == [str(capturados[0].message)]
+    assert "LGPD" in gravada.avisos[0]
+
+
+MALHA = ("ibge", "malha_municipal_zip")
+
+
+async def test_arquivo_nacional_vai_ao_disco_antes_de_publicado(servidor, tmp_path, monkeypatch):
+    url, _, _, corpo = RECURSOS[MALHA]
+    servidor.respostas[url] = [resposta(200, corpo, CABECALHOS)]
+    eventos: list[str] = []
+    fsync, publicar = os.fsync, storage.publicar_arquivo
+    monkeypatch.setattr(os, "fsync", lambda fd: eventos.append("fsync") or fsync(fd))
+    monkeypatch.setattr(
+        storage, "publicar_arquivo", lambda *a: eventos.append("publicar") or publicar(*a)
+    )
+
+    await bruto.coletar(*MALHA, destino=tmp_path)
+
+    assert eventos[:2] == ["fsync", "publicar"]
+
+
+async def test_permissao_negada_transitoria_ao_publicar_repete(servidor, tmp_path, monkeypatch):
+    url, _, _, corpo = RECURSOS[MALHA]
+    servidor.respostas[url] = [resposta(200, corpo, CABECALHOS)]
+    negados: list[str] = []
+    substituir = os.replace
+
+    def replace(origem, destino):
+        if Path(destino).name.startswith("original.") and not negados:
+            negados.append(str(destino))
+            raise PermissionError("arquivo preso pelo antivírus")
+        return substituir(origem, destino)
+
+    monkeypatch.setattr(os, "replace", replace)
+
+    entrada = (await bruto.coletar(*MALHA, destino=tmp_path)).entrada
+
+    assert len(negados) == 1
+    assert entrada.status == "ok"
+    assert (tmp_path / entrada.arquivo).read_bytes() == corpo
+
+
+async def test_retomada_confere_o_hash_fora_do_loop(servidor, tmp_path, monkeypatch):
+    url, _, _, corpo = RECURSOS[MALHA]
+    servidor.respostas[url] = [resposta(200, corpo, CABECALHOS)]
+    await bruto.coletar(*MALHA, destino=tmp_path)
+    threads: list[int] = []
+    verificar = storage.verificar
+    monkeypatch.setattr(
+        storage,
+        "verificar",
+        lambda *a, **k: threads.append(threading.get_ident()) or verificar(*a, **k),
+    )
+
+    coleta = await bruto.coletar(*MALHA, destino=tmp_path, retomar=True)
+
+    assert coleta.reutilizado
+    assert len(threads) == 1
+    assert threading.get_ident() not in threads

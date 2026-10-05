@@ -17,6 +17,7 @@ import pandas as pd
 from agrobr import _log
 from agrobr.config import get_config
 from agrobr.exceptions import SnapshotError
+from agrobr.utils import atomic
 from agrobr.utils import time as time_utils
 
 if TYPE_CHECKING:
@@ -190,7 +191,7 @@ async def create_snapshot(
                 json.dump(manifest.to_dict(), stream, indent=2, ensure_ascii=False)
             if snapshot_path.exists():
                 raise ValueError(f"Snapshot '{name}' already exists")
-            staging.rename(snapshot_path)
+            atomic.replace_with_retry(staging, snapshot_path)
         except OSError as exc:
             raise SnapshotError(
                 {"snapshot": [str(exc)]},

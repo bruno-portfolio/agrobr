@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import asyncio
 import hashlib
+import os
 import time
 import zlib
 from collections.abc import Iterator
@@ -16,6 +17,7 @@ from agrobr import _log, constants
 from agrobr.bruto import models
 from agrobr.exceptions import ResourceLimitError, SourceUnavailableError
 from agrobr.http.rate_limiter import RateLimiter
+from agrobr.utils import tasks
 
 logger = _log.get_logger(__name__)
 
@@ -281,6 +283,8 @@ async def _tentativa(
                     corpo, sha256, tamanho = await _ler(
                         response, destino=destino, teto=teto, orcamento=orcamento, fonte=fonte
                     )
+                    destino.flush()
+                    await tasks.to_thread_ate_o_fim(os.fsync, destino.fileno())
             else:
                 corpo, sha256, tamanho = await _ler(
                     response,

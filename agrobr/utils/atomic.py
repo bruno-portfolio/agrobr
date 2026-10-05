@@ -24,6 +24,11 @@ def _replace_attempts(source: Path, target: Path) -> Iterator[float]:
             yield constants.ATOMIC_REPLACE_RETRY_DELAY
 
 
+def replace_with_retry(source: Path, target: Path) -> None:
+    for delay in _replace_attempts(source, target):
+        time.sleep(delay)
+
+
 @contextmanager
 def temporary_output(path: Path) -> Iterator[Path]:
     with tempfile.NamedTemporaryFile(

@@ -147,7 +147,8 @@ catalog with `SourceUnavailableError`. The catalog request counts toward the cal
 registry edition ships with a new agrobr version.
 
 The IBAMA embargo terms CSV contains the names and CPF/CNPJ of the embargoed individuals and companies. It is personal
-data: store and process the file in accordance with the LGPD.
+data: store and process the file in accordance with the LGPD. The collection warns with `UserWarning` (once per process)
+and records the same notice in the entry's `avisos`.
 
 The `ColetaBruta` return value has three required attributes:
 

@@ -144,7 +144,8 @@ ar, com `SourceUnavailableError`. A consulta ao catálogo conta no orçamento, n
 cadastro chega com versão nova do agrobr.
 
 O CSV dos termos de embargo do IBAMA traz nome e CPF/CNPJ das pessoas físicas e jurídicas embargadas. É dado pessoal:
-guarde e trate o arquivo conforme a LGPD.
+guarde e trate o arquivo conforme a LGPD. A coleta avisa com `UserWarning` (uma vez por processo) e grava o mesmo aviso
+em `avisos` da entrada.
 
 O retorno `ColetaBruta` tem três atributos obrigatórios:
 
