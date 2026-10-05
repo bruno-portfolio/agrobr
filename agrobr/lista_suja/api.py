@@ -104,7 +104,7 @@ async def empregadores(
     uf = _validate_query(uf, id_registro, formato, kwargs)
     warn_once(
         "lista_suja_pii",
-        "Lista Suja contem CPF/CNPJ — dados publicos por Lei de Acesso a Informacao.",
+        "Lista Suja contém CPF/CNPJ — dados públicos pela Lei de Acesso à Informação.",
     )
     logger.info("lista_suja_empregadores", uf=uf, id_registro=id_registro, formato=formato)
 

@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import hashlib
 from datetime import UTC
-from unittest.mock import patch
+from unittest.mock import AsyncMock, patch
 
 import pandas as pd
 import pytest
@@ -10,6 +10,7 @@ import pytest
 from agrobr import contracts, lista_suja
 from agrobr.exceptions import InvalidParameterError
 from agrobr.lista_suja import _pdf, api
+from agrobr.utils.warnings import warn_once_reset
 
 
 async def test_replay_csv_complete_pipeline_and_metadata(replay_http, publication_files):
@@ -202,3 +203,16 @@ async def test_cheio_real_vazio_e_contrato_com_os_mesmos_dtypes(replay_http):
     esperado = contracts.get_contract("lista_suja_empregadores").empty_frame()
     assert len(cheio) == 579 and vazio.empty
     assert vazio.dtypes.to_dict() == cheio.dtypes.to_dict() == esperado.dtypes.to_dict()
+
+
+async def test_aviso_de_dado_pessoal_sai_com_acento(monkeypatch):
+    warn_once_reset("lista_suja_pii")
+    monkeypatch.setattr(
+        api.client, "fetch_empregadores", AsyncMock(side_effect=RuntimeError("parar"))
+    )
+
+    with (
+        pytest.warns(UserWarning, match="contém CPF/CNPJ — dados públicos pela Lei de Acesso à"),
+        pytest.raises(RuntimeError, match="parar"),
+    ):
+        await api.empregadores()

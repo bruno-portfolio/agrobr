@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import importlib
 import re
 import unicodedata
 from datetime import UTC, datetime
@@ -159,3 +160,18 @@ def test_info_do_dataset_diz_as_licencas_de_cada_fonte():
 
     assert info["licenses"] == {"comexstat": "livre", "abiove": "zona_cinza"}
     assert "License: livre (comexstat), zona_cinza (abiove)" in datasets.describe("exportacao")
+
+
+@pytest.mark.parametrize(
+    ("pacote", "licenca", "pagina"),
+    [
+        ("lista_suja", "CC BY-ND 3.0", "lista_suja"),
+        ("desmatamento", "CC BY-SA 4.0", "desmatamento"),
+        ("mapbiomas_alerta", "CC BY-SA 3.0 BR", "mapbiomas_alerta"),
+    ],
+)
+def test_docstring_e_pagina_da_fonte_trazem_a_licenca_da_doc(pacote, licenca, pagina):
+    assert licenca in (DOCS / "licenses.md").read_text(encoding="utf-8")
+    assert licenca in importlib.import_module(f"agrobr.{pacote}").__doc__
+    for sufixo in (".md", ".en.md"):
+        assert licenca in (DOCS / "sources" / f"{pagina}{sufixo}").read_text(encoding="utf-8")

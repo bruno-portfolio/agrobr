@@ -4,7 +4,7 @@ Dados tabulares de desmatamento consolidado (PRODES, anual, nos 6 biomas) e aler
 em tempo real (DETER, diario, so Amazonia e Cerrado).
 
 Fonte: https://terrabrasilis.dpi.inpe.br
-Licenca: Dados publicos governo federal — uso livre com citacao.
+Licença: CC BY-SA 4.0 (INPE), com atribuição e CompartilhaIgual nas adaptações.
 """
 
 from agrobr.desmatamento.api import deter, deter_geo, prodes, prodes_geo

@@ -9,7 +9,7 @@
 | **Access** | Public WFS API (TerraBrasilis GeoServer) |
 | **Format** | WFS 2.0 GeoJSON (`application/json`) in both modes |
 | **Authentication** | None |
-| **License** | Federal government public data |
+| **License** | CC BY-SA 4.0 (INPE), with attribution and ShareAlike for adaptations |
 | **Time Series** | PRODES: 2000+, DETER: 2016+ (Amazonia), 2020+ (Cerrado) |
 
 ## Data Origin
