@@ -16,7 +16,13 @@ from agrobr.antaq.models import (
 from agrobr.exceptions import InvalidParameterError
 from agrobr.models import MetaInfo
 from agrobr.utils import time as time_utils
-from agrobr.utils.result import DataFrame, DataFrameResult, build_source_meta, finalize_result
+from agrobr.utils.result import (
+    DataFrame,
+    DataFrameResult,
+    build_source_meta,
+    check_polars,
+    finalize_result,
+)
 from agrobr.utils.validation import validate_uf
 
 logger = _log.get_logger(__name__)
@@ -92,6 +98,7 @@ async def movimentacao(
     for nome, valor in (("mercadoria", mercadoria), ("porto", porto)):
         if valor is not None and (not isinstance(valor, str) or not valor.strip()):
             raise InvalidParameterError(f"{nome} deve ser texto não vazio ou None")
+    check_polars(as_polars)
 
     logger.info(
         "antaq_movimentacao",

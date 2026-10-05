@@ -10,7 +10,7 @@ import pandas as pd
 from agrobr import _log
 from agrobr.exceptions import InvalidParameterError
 from agrobr.models import MetaInfo
-from agrobr.utils.geo import validate_bbox
+from agrobr.utils.geo import check_geopandas, validate_bbox
 from agrobr.utils.result import (
     DataFrameResult,
     GeoDataFrameResult,
@@ -140,6 +140,7 @@ async def _fetch_and_parse_geo(
     return_meta: bool = False,
 ) -> GeoDataFrameResult:
     where = _build_where(layer_key, uf=uf, bioma=bioma, categoria=categoria)
+    check_geopandas()
     logger.info(f"sfb_{layer_key}_geo", uf=uf, bbox=bbox)
 
     t0 = time.monotonic()

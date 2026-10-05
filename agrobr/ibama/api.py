@@ -8,11 +8,12 @@ import pandas as pd
 
 from agrobr import _log
 from agrobr.models import MetaInfo
-from agrobr.utils.geo import validate_bbox
+from agrobr.utils.geo import check_geopandas, validate_bbox
 from agrobr.utils.result import (
     DataFrameResult,
     GeoDataFrameResult,
     build_source_meta,
+    check_polars,
     finalize_result,
 )
 from agrobr.utils.validation import validate_uf
@@ -96,6 +97,7 @@ async def embargos(
     """
     uf = validate_uf(uf)
     bbox = validate_bbox(bbox)
+    check_polars(as_polars)
     logger.info("ibama_embargos", uf=uf, bbox=bbox, use_cache=use_cache)
 
     t0 = time.monotonic()
@@ -146,6 +148,7 @@ async def embargos_geo(
     """Termos de embargo do IBAMA com o polígono embargado; cache como em `embargos`."""
     uf = validate_uf(uf)
     bbox = validate_bbox(bbox)
+    check_geopandas()
     logger.info("ibama_embargos_geo", uf=uf, bbox=bbox, use_cache=use_cache)
 
     t0 = time.monotonic()

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import copy
+import importlib
 from typing import TYPE_CHECKING, Any, Literal, TypeAlias, overload
 
 import pandas as pd
@@ -66,6 +67,16 @@ def build_source_meta(
         source_details=copy.deepcopy(source_details) if source_details is not None else {},
         validation_warnings=list(df.attrs.get(ATRIBUTO_AVISOS, [])),
     )
+
+
+def check_polars(as_polars: bool) -> None:
+    if as_polars is True:
+        try:
+            importlib.import_module("polars")
+        except ImportError:
+            raise ImportError(
+                "polars é necessário para as_polars=True. Instale com: pip install agrobr[polars]"
+            ) from None
 
 
 @overload

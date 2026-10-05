@@ -18,7 +18,7 @@ from agrobr.exceptions import (
 from agrobr.models import MetaInfo
 from agrobr.normalize import municipalities
 from agrobr.utils import time as time_utils
-from agrobr.utils.result import DataFrameResult, build_source_meta, finalize_result
+from agrobr.utils.result import DataFrameResult, build_source_meta, check_polars, finalize_result
 from agrobr.utils.validation import validate_year_uf
 from agrobr.utils.warnings import warn_once
 
@@ -192,6 +192,7 @@ async def _fetch(
     if uf is not None:
         uf = uf.strip().upper()
     alvo = None if municipio is None else municipalities.resolver_municipio(municipio, uf)
+    check_polars(as_polars)
 
     effective_inicio, effective_fim = _resolve_range(ano, ano_inicio, ano_fim)
     urls, avisos = await _urls_dos_periodos(effective_inicio, effective_fim)

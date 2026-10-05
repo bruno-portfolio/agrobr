@@ -203,6 +203,9 @@ def _with_output_format(
         bound = signature.bind(self, *args, **kwargs)
         if "produto" in bound.arguments:
             bound.arguments["produto"] = self._produto_do_dataset(bound.arguments["produto"])
+        if native:
+            as_polars = bound.arguments.get("as_polars", signature.parameters["as_polars"].default)
+        result_utils.check_polars(as_polars)
         result = await fetch(*bound.args, **bound.kwargs)
         bound.apply_defaults()
         options = dict(bound.arguments)

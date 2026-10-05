@@ -13,7 +13,7 @@ from agrobr.exceptions import InvalidParameterError
 from agrobr.models import MetaInfo
 from agrobr.utils import tasks
 from agrobr.utils import time as time_utils
-from agrobr.utils.geo import validate_bbox
+from agrobr.utils.geo import check_geopandas, validate_bbox
 from agrobr.utils.result import (
     DataFrameResult,
     GeoDataFrameResult,
@@ -276,6 +276,7 @@ async def alertas_geo(
     tipo_data: TipoData = "deteccao",
     return_meta: bool = False,
 ) -> GeoDataFrameResult:
+    check_geopandas()
     coleta, source_url, fetch_ms = await _coletar(
         token,
         inicio,

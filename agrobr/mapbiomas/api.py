@@ -166,6 +166,7 @@ async def cobertura(
     nivel = "estado" if nivel == "uf" else nivel
     geocodigo = queries.geocodigo_do_municipio(nivel, municipio, uf)
     filters = {"bioma": bioma, "uf": uf, "ano": ano, "classe_id": classe_id}
+    result.check_polars(as_polars)
     logger.info("mapbiomas_cobertura", **filters, nivel=nivel, geocodigo=geocodigo)
     started = time.monotonic()
     if nivel == "municipio":

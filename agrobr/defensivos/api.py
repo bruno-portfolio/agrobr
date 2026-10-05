@@ -142,6 +142,7 @@ async def _query(
     use_cache: bool,
 ) -> result_utils.DataFrameResult:
     selected = _validate_query(kind, filters, extras, use_cache)
+    result_utils.check_polars(as_polars)
     acquired = await _load_snapshot(kind, use_cache)
     started = time.monotonic()
     frame = _filter(acquired.tables[table], selected)

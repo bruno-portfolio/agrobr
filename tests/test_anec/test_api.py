@@ -178,6 +178,7 @@ async def test_as_polars_encaminhado(monkeypatch):
     monkeypatch.setattr(api, "_fetch_and_parse", _source())
     monkeypatch.setattr(api, "finalize_result", spy("fonte"))
     monkeypatch.setattr(result, "finalize_result", spy("dataset"))
+    monkeypatch.setattr(result, "check_polars", lambda _: None)
     await api.embarques(ano=2026, as_polars=True)
     await api.embarques_mensais(ano=2026, as_polars=True)
     await datasets.embarques_mensais_anec(ano=2026, as_polars=True)

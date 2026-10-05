@@ -12,10 +12,12 @@ import pandas as pd
 from agrobr import _log, contracts
 from agrobr.exceptions import InvalidParameterError, SourceUnavailableError
 from agrobr.models import MetaInfo
+from agrobr.utils.geo import check_geopandas
 from agrobr.utils.result import (
     DataFrameResult,
     GeoDataFrameResult,
     build_source_meta,
+    check_polars,
     finalize_result,
 )
 
@@ -201,6 +203,7 @@ async def imoveis(
     )
 
     _check_atualizado_apos_uf(uf_upper, atualizado_apos)
+    check_polars(as_polars)
 
     logger.info(
         "sicar_imoveis",
@@ -324,6 +327,7 @@ async def imoveis_geo(
     )
 
     _check_atualizado_apos_uf(uf_upper, atualizado_apos)
+    check_geopandas()
 
     logger.info(
         "sicar_imoveis_geo",
@@ -411,6 +415,7 @@ async def imoveis_geo_stream(
         uf, municipio=municipio, status=status, tipo=tipo
     )
     _check_atualizado_apos_uf(uf_upper, atualizado_apos)
+    check_geopandas()
 
     cql = _build_cql_filter(
         cod_municipio=cod_municipio,

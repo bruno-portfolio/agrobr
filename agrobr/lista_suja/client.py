@@ -14,7 +14,7 @@ from agrobr.http.retry import retry_on_status
 from agrobr.http.settings import get_timeout
 from agrobr.http.user_agents import UserAgentRotator
 
-from . import discovery, models
+from . import _pdf, discovery, models
 
 logger = _log.get_logger(__name__)
 TIMEOUT = get_timeout(read=60.0)
@@ -116,6 +116,8 @@ async def _acquire(
             )
         selected = "pdf"
         fallback = {"from": "csv", "to": "pdf", "reason": "csv_not_advertised"}
+    if selected == "pdf":
+        _pdf.pdfplumber_module()
     attempts.append(f"lista_suja_{selected}")
     try:
         resource = await _fetch_http(http, publication.resources[selected])
@@ -139,6 +141,12 @@ async def _acquire(
             status = re.search(r"HTTP (\d{3})", exc.last_error)
             if status:
                 fallback["status_code"] = int(status[1])
+        try:
+            _pdf.pdfplumber_module()
+        except ImportError as erro:
+            raise ImportError(
+                f"{erro}. O CSV da Lista Suja ficou indisponível ({exc}), e a rota PDF precisa dele."
+            ) from exc
         selected = "pdf"
         attempts.append("lista_suja_pdf")
         resource = await _fetch_http(http, publication.resources["pdf"])

@@ -191,6 +191,7 @@ async def test_output_format_forwards_frame_metadata_and_flags(
     converted = object()
     finalize = Mock(return_value=converted)
     monkeypatch.setattr(base.result_utils, "finalize_result", finalize)
+    monkeypatch.setattr(base.result_utils, "check_polars", Mock())
     wrapped = base._with_output_format(fetch)
     instance = datasets.get_dataset("preco_diario")
     assert await wrapped(instance, "soja") is original

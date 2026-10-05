@@ -10,7 +10,7 @@ import pandas as pd
 from agrobr import _log
 from agrobr.exceptions import InvalidParameterError
 from agrobr.models import MetaInfo
-from agrobr.utils.geo import validate_bbox
+from agrobr.utils.geo import check_geopandas, validate_bbox
 from agrobr.utils.result import (
     DataFrameResult,
     GeoDataFrameResult,
@@ -176,6 +176,7 @@ async def _fetch_and_parse_geo(
     return_meta: bool = False,
 ) -> GeoDataFrameResult:
     where = _build_where(uf=uf)
+    check_geopandas()
     logger.info(f"ana_{layer_key}_geo", uf=uf, bbox=bbox)
 
     t0 = time.monotonic()
@@ -714,6 +715,8 @@ async def _fetch_massas(
     geo: bool,
 ) -> tuple[Any, MetaInfo]:
     where, bbox = _recorte_massas(uf, bbox)
+    if geo:
+        check_geopandas()
     formato = "geojson" if geo else "json"
     logger.info("ana_massas_dagua", uf=uf, bbox=bbox, geo=geo)
 
