@@ -4,7 +4,7 @@
 
 | Arquivos | Origem e uso |
 |---|---|
-| `hero/campo-*.webp`, `hero/og.png` | [Fotografia do Unsplash](https://images.unsplash.com/photo-1500382017468-9049fed747ef), sob a [licença Unsplash](https://unsplash.com/license). Variantes 1280/1920/2560 para o hero e imagem social 1200×630. Crédito nas duas páginas. |
+| `hero/campo-*.webp`, `hero/og.png` | [Fotografia de Helena Lopes no Pexels](https://www.pexels.com/photo/brown-field-under-white-sky-3045202/), pasto em Curvelo (MG), sob a [licença Pexels](https://www.pexels.com/license/); recorte central, sem edição. Variantes 1280/1920/2560 para o hero e imagem social 1200×630. Crédito nas duas páginas. |
 | `landing/fonts/*.woff2` | DM Sans, JetBrains Mono e Playfair Display, sob SIL Open Font License. Os três textos da licença estão na mesma pasta. Apenas o subconjunto latino é distribuído. |
 | `landing/fonts.css` | Declarações das quatro faces locais. O mesmo conteúdo é embutido em `style#landingFonts` nas duas páginas para evitar uma folha bloqueante; ao mudar as fontes, sincronizar os três locais. |
 | `vendor/three/` | Three.js **0.180.0**, módulos e addons utilizados pelo explorer. [Licença MIT](vendor/three/LICENSE). Sem resolução de versão ou CDN em runtime. |
