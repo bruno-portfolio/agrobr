@@ -1,8 +1,11 @@
 from __future__ import annotations
 
+import asyncio
 import hashlib
 import time
 from typing import Literal, overload
+
+import pandas as pd
 
 from agrobr import _log
 from agrobr.antaq import client, parser
@@ -26,6 +29,13 @@ from agrobr.utils.result import (
 from agrobr.utils.validation import validate_uf
 
 logger = _log.get_logger(__name__)
+
+
+def _parse_movimentacao(ano_zip: bytes, merc_zip: bytes, ano: int) -> pd.DataFrame:
+    atracacao = parser.parse_atracacao(client.extract_atracacao(ano_zip, ano))
+    carga = parser.parse_carga(client.extract_carga(ano_zip, ano))
+    mercadoria = parser.parse_mercadoria(client.extract_mercadoria(merc_zip))
+    return parser.join_movimentacao(atracacao, carga, mercadoria)
 
 
 @overload
@@ -118,15 +128,7 @@ async def movimentacao(
     fetch_ms = int((time.monotonic() - t0) * 1000)
 
     t1 = time.monotonic()
-    atracacao_txt = client.extract_atracacao(ano_zip, ano)
-    carga_txt = client.extract_carga(ano_zip, ano)
-    mercadoria_txt = client.extract_mercadoria(merc_zip)
-
-    df_atracacao = parser.parse_atracacao(atracacao_txt)
-    df_carga = parser.parse_carga(carga_txt)
-    df_mercadoria = parser.parse_mercadoria(mercadoria_txt)
-
-    df = parser.join_movimentacao(df_atracacao, df_carga, df_mercadoria)
+    df = await asyncio.to_thread(_parse_movimentacao, ano_zip, merc_zip, ano)
     parse_ms = int((time.monotonic() - t1) * 1000)
 
     if tipo_nav_filtro:

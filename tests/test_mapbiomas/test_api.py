@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import threading
 from pathlib import Path
 from unittest.mock import AsyncMock, patch
 
@@ -158,3 +159,20 @@ async def test_nivel_uf_e_alias_de_estado_no_mesmo_golden():
 async def test_nivel_invalido_lista_o_alias():
     with pytest.raises(InvalidParameterError, match="'estado', 'uf' ou 'municipio'"):
         await api.cobertura(nivel="pais")
+
+
+async def test_parse_municipal_roda_fora_do_loop(monkeypatch, replay_mapbiomas):
+    replay_mapbiomas()
+    threads: list[int] = []
+    original = api.municipal_parser.parse_cobertura_municipal
+    monkeypatch.setattr(
+        api.municipal_parser,
+        "parse_cobertura_municipal",
+        lambda *a, **k: threads.append(threading.get_ident()) or original(*a, **k),
+    )
+
+    frame = await api.cobertura(nivel="municipio", ano=2025, municipio="2703007")
+
+    assert len(frame) > 0
+    assert len(threads) == 1
+    assert threading.get_ident() not in threads

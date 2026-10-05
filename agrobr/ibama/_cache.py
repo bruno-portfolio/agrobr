@@ -10,7 +10,7 @@ from weakref import WeakKeyDictionary
 
 from agrobr import _log
 from agrobr.constants import CacheSettings
-from agrobr.utils import atomic
+from agrobr.utils import atomic, tasks
 from agrobr.utils.warnings import warn_once
 
 from . import client
@@ -86,8 +86,8 @@ async def obter_embargos_csv(*, use_cache: bool = True) -> Coleta:
     if not use_cache:
         return await _baixar()
     async with _LOCKS.setdefault(asyncio.get_running_loop(), asyncio.Lock()):
-        coleta = _ler(datetime.now(UTC))
+        coleta = await tasks.to_thread_ate_o_fim(_ler, datetime.now(UTC))
         if coleta is None:
             coleta = await _baixar()
-            _gravar(coleta)
+            await tasks.to_thread_ate_o_fim(_gravar, coleta)
         return coleta

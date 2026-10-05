@@ -2,7 +2,9 @@ from __future__ import annotations
 
 import asyncio
 import json
+import threading
 from datetime import UTC, datetime, timedelta
+from unittest.mock import AsyncMock
 
 import pytest
 
@@ -93,3 +95,37 @@ async def test_geo_vazio_tem_os_dtypes_do_geo_cheio(monkeypatch):
     assert not cheio.empty and vazio.empty
     assert vazio.dtypes.astype(str).to_dict() == cheio.dtypes.astype(str).to_dict()
     assert vazio.crs == cheio.crs
+
+
+async def test_cancelar_a_gravacao_nao_solta_o_lock_com_a_thread_gravando(monkeypatch):
+    loop = asyncio.get_running_loop()
+    comecou = asyncio.Event()
+    liberar = threading.Event()
+    gravando = threading.Event()
+    sobreposicoes: list[bool] = []
+
+    def gravar(_coleta):
+        if not comecou.is_set():
+            gravando.set()
+            loop.call_soon_threadsafe(comecou.set)
+            liberar.wait(5)
+            gravando.clear()
+        else:
+            sobreposicoes.append(gravando.is_set())
+
+    coleta = _cache.Coleta(b"csv", "https://exemplo/cache", datetime.now(UTC), False)
+    monkeypatch.setattr(_cache, "_ler", lambda *_: None)
+    monkeypatch.setattr(_cache, "_baixar", AsyncMock(return_value=coleta))
+    monkeypatch.setattr(_cache, "_gravar", gravar)
+
+    primeira = asyncio.create_task(_cache.obter_embargos_csv())
+    await asyncio.wait_for(comecou.wait(), 2)
+    primeira.cancel()
+    segunda = asyncio.create_task(_cache.obter_embargos_csv())
+    await asyncio.sleep(0.1)
+    liberar.set()
+
+    with pytest.raises(asyncio.CancelledError):
+        await primeira
+    assert await segunda == coleta
+    assert sobreposicoes == [False]

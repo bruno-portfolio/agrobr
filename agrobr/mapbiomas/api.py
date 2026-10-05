@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import asyncio
 import time
 from typing import Any, Literal, overload
 
@@ -177,7 +178,8 @@ async def cobertura(
     started = time.monotonic()
     details: dict[str, Any] = {}
     if nivel == "municipio":
-        frame, details = municipal_parser.parse_cobertura_municipal(
+        frame, details = await asyncio.to_thread(
+            municipal_parser.parse_cobertura_municipal,
             acquired.content,
             colecao=colecao,
             bioma=bioma,
@@ -190,7 +192,9 @@ async def cobertura(
         contract_name = "mapbiomas_cobertura_municipal"
         parser_version = municipal_parser.PARSER_VERSION
     else:
-        completo = parser.parse_cobertura_xlsx(acquired.content, colecao=colecao)
+        completo = await asyncio.to_thread(
+            parser.parse_cobertura_xlsx, acquired.content, colecao=colecao
+        )
         publicadas = {int(codigo) for codigo in completo["classe_id"].dropna().unique()}
         frame = _filtrar(completo, filters)
         contract_name = "mapbiomas_cobertura"

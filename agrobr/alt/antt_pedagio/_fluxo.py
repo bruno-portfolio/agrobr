@@ -23,6 +23,7 @@ from agrobr.exceptions import (
     SourceUnavailableError,
 )
 from agrobr.models import MetaInfo
+from agrobr.utils import tasks
 from agrobr.utils.result import DataFrameResult
 from agrobr.utils.warnings import warn_once
 
@@ -284,7 +285,8 @@ async def _traffic_frames(state: Pipeline) -> list[pd.DataFrame]:
                 raise _unavailable("Recurso adquirido com ano/frequência divergente")
             occupied = retained + state.mapping_bytes
             state.check(occupied + 2048, "parser_preallocation")
-            parsed = parser.parse_trafego_file(
+            parsed = await tasks.to_thread_ate_o_fim(
+                parser.parse_trafego_file,
                 item.file,
                 ano=item.ano,
                 frequencia=state.validated.frequencia,

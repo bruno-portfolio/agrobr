@@ -5,6 +5,7 @@ from __future__ import annotations
 import hashlib
 import io
 import re
+import threading
 import zipfile
 from unittest.mock import AsyncMock, patch
 
@@ -311,3 +312,21 @@ async def test_movimentacao_txt_sem_coluna_exigida_levanta_parse_error(arquivo, 
         levanta_exatamente(ParseError, match=re.escape(coluna)),
     ):
         await api.movimentacao(2024, tipo_navegacao="cabotagem")
+
+
+async def test_extracao_e_parse_rodam_fora_do_loop(monkeypatch):
+    threads: list[int] = []
+    for modulo, nome in ((api.client, "extract_atracacao"), (api.parser, "join_movimentacao")):
+        original = getattr(modulo, nome)
+        monkeypatch.setattr(
+            modulo,
+            nome,
+            lambda *a, _f=original, **k: threads.append(threading.get_ident()) or _f(*a, **k),
+        )
+    p1, p2 = _patch_client()
+    with p1, p2:
+        df = await api.movimentacao(2024)
+
+    assert len(df) == 4
+    assert len(threads) == 2
+    assert threading.get_ident() not in threads

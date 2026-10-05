@@ -11,6 +11,7 @@ from agrobr import _log, constants, contracts
 from agrobr.exceptions import ContractViolationError, InvalidParameterError
 from agrobr.models import MetaInfo
 from agrobr.utils import result as result_utils
+from agrobr.utils import tasks
 from agrobr.utils.time import utcnow
 
 from . import client, parser, snapshot
@@ -46,7 +47,7 @@ async def _load_snapshot(kind: str, use_cache: bool) -> snapshot.Snapshot:
     async with snapshot.acquisition_lock(kind):
         if use_cache:
             started = time.monotonic()
-            cached = snapshot.read_snapshot(kind)
+            cached = await tasks.to_thread_ate_o_fim(snapshot.read_snapshot, kind)
             if cached is not None:
                 try:
                     _validate_tables(cached.tables)
@@ -68,10 +69,10 @@ async def _load_snapshot(kind: str, use_cache: bool) -> snapshot.Snapshot:
         fetched_at = utcnow().replace(tzinfo=UTC)
         fetch_ms = int((time.monotonic() - started) * 1000)
         started = time.monotonic()
-        if kind == "formulados":
-            tables, details = parser.parse_formulados_bundle(raw)
-        else:
-            tables, details = parser.parse_tecnicos_bundle(raw)
+        parse_bundle = (
+            parser.parse_formulados_bundle if kind == "formulados" else parser.parse_tecnicos_bundle
+        )
+        tables, details = await tasks.to_thread_ate_o_fim(parse_bundle, raw)
         _validate_tables(tables)
         parse_ms = int((time.monotonic() - started) * 1000)
         raw_hash = hashlib.sha256(raw).hexdigest()
@@ -107,7 +108,7 @@ async def _load_snapshot(kind: str, use_cache: bool) -> snapshot.Snapshot:
         )
         if use_cache:
             try:
-                snapshot.write_snapshot(kind, tables, meta)
+                await tasks.to_thread_ate_o_fim(snapshot.write_snapshot, kind, tables, meta)
             except OSError as error:
                 logger.warning(
                     "defensivos_cache_write_failed", kind=kind, error=type(error).__name__

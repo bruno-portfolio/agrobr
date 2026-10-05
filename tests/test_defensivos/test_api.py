@@ -3,6 +3,7 @@ from __future__ import annotations
 import asyncio
 import hashlib
 import json
+import threading
 from pathlib import Path
 from unittest.mock import AsyncMock, Mock, patch
 
@@ -327,3 +328,25 @@ async def test_as_polars_tipa_texto_igual_com_e_sem_cache():
 
     assert cacheado.schema == fresco.schema
     assert fresco.schema["nome_cientifico"] == pl.String
+
+
+@pytest.mark.usefixtures("replay_captures")
+async def test_parse_e_snapshot_rodam_fora_do_loop(monkeypatch):
+    threads: list[int] = []
+    for modulo, nome in (
+        (api.parser, "parse_tecnicos_bundle"),
+        (snapshot, "read_snapshot"),
+        (snapshot, "write_snapshot"),
+    ):
+        original = getattr(modulo, nome)
+        monkeypatch.setattr(
+            modulo,
+            nome,
+            lambda *a, _f=original, **k: threads.append(threading.get_ident()) or _f(*a, **k),
+        )
+
+    await defensivos.tecnicos(nr_registro="00301")
+    await defensivos.tecnicos(nr_registro="00301")
+
+    assert len(threads) == 4
+    assert threading.get_ident() not in threads

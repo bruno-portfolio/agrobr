@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import asyncio
 import hashlib
 import time
 from typing import TYPE_CHECKING, Literal, overload
@@ -105,7 +106,7 @@ async def embargos(
     fetch_ms = int((time.monotonic() - t0) * 1000)
 
     t1 = time.monotonic()
-    df = parser.parse_embargos_csv(coleta.conteudo, uf=uf, bbox=bbox)
+    df = await asyncio.to_thread(parser.parse_embargos_csv, coleta.conteudo, uf=uf, bbox=bbox)
     parse_ms = int((time.monotonic() - t1) * 1000)
 
     meta = _meta(coleta, df, "httpx+csv", fetch_ms, parse_ms)
@@ -156,7 +157,7 @@ async def embargos_geo(
     fetch_ms = int((time.monotonic() - t0) * 1000)
 
     t1 = time.monotonic()
-    gdf = parser.parse_embargos_geo(coleta.conteudo, uf=uf, bbox=bbox)
+    gdf = await asyncio.to_thread(parser.parse_embargos_geo, coleta.conteudo, uf=uf, bbox=bbox)
     parse_ms = int((time.monotonic() - t1) * 1000)
 
     if return_meta:

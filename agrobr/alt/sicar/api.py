@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import asyncio
 import hashlib
 import json
 import time
@@ -249,8 +250,11 @@ async def imoveis(
     fetch_ms = int((time.monotonic() - t0) * 1000)
 
     t1 = time.monotonic()
-    df = parser.parse_imoveis_json(
-        pages, source_details=sicar_details, validation_warnings=validation_warnings
+    df = await asyncio.to_thread(
+        parser.parse_imoveis_json,
+        pages,
+        source_details=sicar_details,
+        validation_warnings=validation_warnings,
     )
     parse_ms = int((time.monotonic() - t1) * 1000)
 
@@ -361,7 +365,8 @@ async def imoveis_geo(
 
     t1 = time.monotonic()
     sicar_details: dict[str, Any] = {}
-    gdf = parser.parse_imoveis_geojson(
+    gdf = await asyncio.to_thread(
+        parser.parse_imoveis_geojson,
         pages,
         max_features=max_registros,
         source_details=sicar_details,

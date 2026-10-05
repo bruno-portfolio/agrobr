@@ -5,6 +5,7 @@ import gzip
 import hashlib
 import json
 import math
+import threading
 from collections import Counter
 from datetime import datetime
 from pathlib import Path
@@ -642,3 +643,27 @@ async def test_sondagem_de_volume_avisa_e_nao_derruba_a_consulta(monkeypatch: py
 def test_docstring_do_pacote_nao_afirma_licenca_cc_by():
     assert "CC-BY" not in sicar.__doc__
     assert "não comprovada" in sicar.__doc__
+
+
+async def test_parse_roda_fora_do_loop(monkeypatch: pytest.MonkeyPatch):
+    tabular = gzip.decompress((R11 / "sicar_df_001.json.gz").read_bytes())
+    monkeypatch.setattr(client, "fetch_imoveis", AsyncMock(return_value=([tabular], URL)))
+    monkeypatch.setattr(
+        client,
+        "fetch_imoveis_geo",
+        AsyncMock(return_value=([geo_capture("df_geo_srs4326_count3.json")], URL)),
+    )
+    threads: list[int] = []
+    for nome in ("parse_imoveis_json", "parse_imoveis_geojson"):
+        original = getattr(parser, nome)
+        monkeypatch.setattr(
+            parser,
+            nome,
+            lambda *a, _f=original, **k: threads.append(threading.get_ident()) or _f(*a, **k),
+        )
+
+    await api.imoveis("DF", municipio=5300108)
+    await api.imoveis_geo("DF", municipio=5300108, max_registros=3)
+
+    assert len(threads) == 2
+    assert threading.get_ident() not in threads
