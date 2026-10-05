@@ -164,6 +164,14 @@ async def send_alert(
         logger.warning("no_alert_channels_configured", title=title)
 
 
+def _dentro_do_bloco_de_codigo(texto: str) -> str:
+    """Texto que vai entre cercas ```` ``` ```` no mrkdwn do Slack: ``&``, ``<`` e ``>`` escapados como a doc do
+    Slack pede, e cada crase seguida de espaço de largura zero, para o texto da fonte não fechar o bloco."""
+    for caractere, entidade in (("&", "&amp;"), ("<", "&lt;"), (">", "&gt;"), ("`", "`​")):
+        texto = texto.replace(caractere, entidade)
+    return texto
+
+
 async def _send_slack(
     webhook: str,
     level: AlertLevel,
@@ -190,7 +198,7 @@ async def _send_slack(
         )
 
     if details:
-        detail_text = json.dumps(details, indent=2, default=str)[:2900]
+        detail_text = _dentro_do_bloco_de_codigo(json.dumps(details, indent=2, default=str))[:2900]
         blocks.append(
             {"type": "section", "text": {"type": "mrkdwn", "text": f"```{detail_text}```"}}
         )

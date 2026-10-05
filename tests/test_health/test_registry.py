@@ -71,3 +71,23 @@ async def test_sonda_da_funai_completa_a_cadeia_com_o_intermediario_fixado(monke
         for certificado in contexto.get_ca_certs()
     ]
     assert HEALTH_REGISTRY[Fonte.INCRA].verify is True
+
+
+async def test_sonda_do_comexstat_valida_a_cadeia_com_o_intermediario_fixado(monkeypatch):
+    recebidos = []
+    original = httpx.AsyncClient
+
+    def fabrica(**kwargs):
+        recebidos.append(kwargs["verify"])
+        return original(transport=httpx.MockTransport(lambda _: httpx.Response(200)), **kwargs)
+
+    monkeypatch.setattr(httpx, "AsyncClient", fabrica)
+    await checker._check_http(HEALTH_REGISTRY[Fonte.COMEXSTAT])
+
+    (contexto,) = recebidos
+    assert isinstance(contexto, ssl.SSLContext)
+    assert contexto.verify_mode == ssl.CERT_REQUIRED and contexto.check_hostname
+    assert "AC SERPRO AR46 OV TLS CA 2025" in [
+        dict(campo[0] for campo in certificado["subject"]).get("commonName")
+        for certificado in contexto.get_ca_certs()
+    ]

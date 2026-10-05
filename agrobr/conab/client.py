@@ -224,7 +224,8 @@ def _parse_levantamentos(html: str) -> list[dict[str, Any]]:
         url = urldefrag(urljoin(base_url, str(anchor["href"])))[0]
         parsed = urlsplit(url)
         match = pattern.search(parsed.path)
-        if parsed.scheme not in ("http", "https") or match is None:
+        sem_porta_nem_credencial = not {":", "@"} & set(parsed.netloc)
+        if parsed.scheme != "https" or not sem_porta_nem_credencial or match is None:
             continue
         hostname = parsed.hostname or ""
         if hostname != "www.gov.br" and not (

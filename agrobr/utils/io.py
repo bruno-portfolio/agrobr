@@ -5,10 +5,11 @@ import io
 import struct
 import zipfile
 import zlib
-from collections.abc import Callable
+from collections.abc import Callable, Coroutine
 from typing import IO, Any, Literal
 from urllib.parse import urlsplit
 
+import httpx
 import pandas as pd
 
 from agrobr import _log, constants
@@ -91,6 +92,18 @@ def validate_download_url(url: str, *, base_url: str, source: str) -> None:
             url=url,
             last_error="URL lida da resposta fora da origem HTTPS oficial da fonte",
         )
+
+
+def download_url_hook(
+    *, base_url: str, source: str
+) -> Callable[[httpx.Request], Coroutine[Any, Any, None]]:
+    """Gancho ``request`` do httpx que aplica ``validate_download_url`` a todo pedido, redirecionamento incluído,
+    antes do envio."""
+
+    async def conferir(request: httpx.Request) -> None:
+        validate_download_url(str(request.url), base_url=base_url, source=source)
+
+    return conferir
 
 
 def _expansion_limit(source: str) -> int:

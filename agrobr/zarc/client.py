@@ -20,6 +20,9 @@ logger = _log.get_logger(__name__)
 
 TIMEOUT = get_timeout(read=180.0)
 _FAIXA_INTEIRA = re.compile(r"bytes 0-(\d+)/(\d+)")
+_CSV_NA_ORIGEM = io_utils.download_url_hook(
+    base_url=constants.URLS[constants.Fonte.ZARC]["base"], source="zarc"
+)
 
 
 def _tamanho_publicado(headers: httpx.Headers) -> int | None:
@@ -45,6 +48,7 @@ async def _get(url: str, *, csv: bool) -> tuple[httpx.Response, acquisition.HTTP
         timeout=TIMEOUT,
         headers=UserAgentRotator.get_headers(source="zarc"),
         follow_redirects=True,
+        event_hooks={"request": [_CSV_NA_ORIGEM] if csv else []},
     ) as session:
 
         async def attempt() -> httpx.Response:

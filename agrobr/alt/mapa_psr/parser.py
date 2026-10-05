@@ -33,7 +33,7 @@ _CSV_DO_CATALOGO = re.compile(r"dados_abertos_psr_(\d{4})(?:a(\d{4}))?csv\.csv",
 def parse_catalogo(corpo: bytes) -> dict[str, str]:
     """Os CSV do pacote do PSR no CKAN do MAPA, por período (``"2025"`` ou ``"2016-2024"``).
 
-    Só entra recurso servido pelo próprio portal (https em ``dados.agricultura.gov.br``).
+    Só entra recurso servido pelo próprio portal (https em ``dados.agricultura.gov.br``, sem porta nem credencial).
     """
     try:
         pacote: Any = json.loads(corpo)
@@ -53,7 +53,7 @@ def parse_catalogo(corpo: bytes) -> dict[str, str]:
             continue
         partes = urlsplit(url)
         achado = _CSV_DO_CATALOGO.fullmatch(partes.path.rsplit("/", 1)[-1])
-        if achado and partes.scheme == "https" and partes.hostname == "dados.agricultura.gov.br":
+        if achado and partes.scheme == "https" and partes.netloc == "dados.agricultura.gov.br":
             catalogo[achado[1] if achado[2] is None else f"{achado[1]}-{achado[2]}"] = url
     return catalogo
 

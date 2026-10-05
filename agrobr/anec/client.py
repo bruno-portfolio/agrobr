@@ -384,6 +384,9 @@ async def _acquire_pdf(article: ANECArticle, *, use_cache: bool) -> Aquisicao:
             timeout=TIMEOUT,
             headers=UserAgentRotator.get_headers(source=Fonte.ANEC),
             follow_redirects=True,
+            event_hooks={
+                "request": [io_utils.download_url_hook(base_url=_BASE_URL, source="anec")]
+            },
         ) as client:
             logger.debug("anec_pdf_request", url=article.pdf_url)
             response = await retry_on_status(lambda: client.get(article.pdf_url), source="anec")

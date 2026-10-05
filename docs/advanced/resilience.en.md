@@ -182,7 +182,9 @@ expands against a per-source limit (`constants.MAX_EXPANDED_BYTES`), and raises 
 - **Acervo Fundiário shapefile** (INCRA's SIGEF, SNCI and settlements): GDAL also reads the member to the end of the deflate
   stream, without stopping at the declared size. Before pyogrio or GeoPandas opens the ZIP, `check_zip_expansion` runs the
   same check as for XLSX, with the download limit (`ACERVO_MAX_DOWNLOAD_BYTES`): INCRA publishes the ZIP uncompressed, so
-  the expansion is the size of the file itself.
+  the expansion is the size of the file itself. After the limit, only the parts of one shapefile pass (`.shp`, `.shx`,
+  `.dbf`, `.prj`, `.cpg`), and the `.shp` must carry the format's header: GDAL picks the reader by content, not by
+  extension, and the ZIP is opened through the explicit path of the `.shp`. Anything else raises `ParseError` before GDAL.
 
 | Source | Limit | Largest file published (as of 2026-09-27) |
 |---|---|---|
@@ -207,8 +209,8 @@ URL along, this closes requests to internal addresses.
 
 A URL read from the source's response is also followed only over `https`, on the source host, on the default port and without
 credentials: the PDF link on ANDA's resources page (`anda.org.br`), the bulletin PDF in ANEC's article JSON
-(`www.anec.com.br`) and the season CSV in ZARC's CKAN catalog (`dados.agricultura.gov.br`). Otherwise,
-`SourceUnavailableError` before the request: a tampered page or catalog does not make agrobr request an address inside the
+(`www.anec.com.br`) and the season CSV in ZARC's CKAN catalog (`dados.agricultura.gov.br`). The rule also applies to every redirect of the download.
+Otherwise, `SourceUnavailableError` before the request: a tampered page or catalog does not make agrobr request an address inside the
 user's network or download over `http://`.
 
 ## Source Fallback

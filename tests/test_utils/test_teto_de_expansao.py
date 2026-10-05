@@ -35,6 +35,9 @@ FORA_DO_HELPER = {
     ("conab/_custo_producao/_merged.py", "xlsx_header_merges"): (
         "roda depois do _workbook, que confere a soma declarada e a expansão real do XLSX"
     ),
+    ("acervo_fundiario/parser.py", "_shapefile"): (
+        "lê só os 4 bytes do cabeçalho do .shp, depois do check_zip_expansion"
+    ),
     ("defensivos/snapshot.py", "_read_bundle"): "cache local gravado pelo próprio agrobr",
     ("rnc/snapshot.py", "_read_bundle"): "cache local gravado pelo próprio agrobr",
 }

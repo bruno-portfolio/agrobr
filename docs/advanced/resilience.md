@@ -185,7 +185,9 @@ e cada XLSX expande, contra um teto por fonte (`constants.MAX_EXPANDED_BYTES`), 
 - **Shapefile do Acervo Fundiário** (SIGEF, SNCI e assentamentos do INCRA): o GDAL também lê o membro até o fim do deflate,
   sem parar no tamanho declarado. Antes de o pyogrio ou o GeoPandas abrir o ZIP, `check_zip_expansion` faz a mesma conta do
   XLSX, com o teto do download (`ACERVO_MAX_DOWNLOAD_BYTES`): o INCRA publica o ZIP sem compressão, e a expansão é o
-  tamanho do próprio arquivo.
+  tamanho do próprio arquivo. Depois do teto, só passam as partes de um shapefile (`.shp`, `.shx`, `.dbf`, `.prj`, `.cpg`), e o
+  `.shp` precisa do cabeçalho do formato: o GDAL escolhe o leitor pelo conteúdo, não pela extensão, e o ZIP é aberto pelo
+  caminho explícito do `.shp`. Outro conteúdo levanta `ParseError` antes do GDAL.
 
 | Fonte | Teto | Maior arquivo publicado (em 27/09/2026) |
 |---|---|---|
@@ -210,7 +212,8 @@ fecha o pedido a endereço interno.
 
 A URL lida da resposta da fonte também só é seguida com `https`, no host da fonte, na porta padrão e sem credencial: o link do
 PDF na página de recursos da ANDA (`anda.org.br`), o PDF do boletim no JSON do artigo da ANEC (`www.anec.com.br`) e o CSV da
-safra no catálogo CKAN do ZARC (`dados.agricultura.gov.br`). Fora disso, `SourceUnavailableError` antes do pedido: uma página
+safra no catálogo CKAN do ZARC (`dados.agricultura.gov.br`). A regra vale também para cada redirecionamento do download.
+Fora disso, `SourceUnavailableError` antes do pedido: uma página
 ou um catálogo adulterado não faz o agrobr pedir endereço interno da rede do usuário nem baixar por `http://`.
 
 ## Fallback de Fonte

@@ -170,6 +170,15 @@ async def test_catalog_does_not_admit_unrelated_or_non_table_links():
 
 
 @pytest.mark.parametrize(
+    ("origem", "destino"),
+    [("https://", "http://"), ("www.gov.br/", "www.gov.br:8443/"), ("https://", "https://u:p@")],
+)
+async def test_catalog_does_not_admit_plain_http_port_or_userinfo(origem: str, destino: str):
+    url = f"{_CATALOG_URL}/{_JANUARY_PATH}".replace(origem, destino)
+    assert await client.list_levantamentos(html=f'<a href="{url}">Tabela de dados</a>') == []
+
+
+@pytest.mark.parametrize(
     "next_url", [_CATALOG_URL, "https://example.com/", "https://www.gov.br/other"]
 )
 async def test_catalog_rejects_pagination_cycle_or_escape(next_url: str):

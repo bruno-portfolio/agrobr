@@ -88,6 +88,8 @@ def test_parse_catalogo_so_aceita_csv_do_portal():
     corpo = _catalogo(
         {"url": URL_2026.replace("https://", "http://").replace("2026csv", "2027csv")},
         {"url": URL_2026.replace("dados.agricultura.gov.br", "exemplo.com")},
+        {"url": URL_2026.replace(".gov.br/", ".gov.br:8443/").replace("2026csv", "2028csv")},
+        {"url": URL_2026.replace("https://", "https://u:p@").replace("2026csv", "2031csv")},
         {"url": URL_2026.replace("2026csv.csv", "2029.xlsx")},
         {"url": URL_2026.replace("2026csv", "2026a2030csv")},
         {"nome": "sem url"},

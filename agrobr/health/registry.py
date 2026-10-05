@@ -9,6 +9,7 @@ from typing import Any, Literal
 
 from agrobr.ana import models as ana_models
 from agrobr.cnuc import client as cnuc_client
+from agrobr.comexstat import _tls as comexstat_tls
 from agrobr.constants import RNC_PUBLIC_URLS, URLS, Fonte
 from agrobr.funai import _tls as funai_tls
 from agrobr.icmbio import models as icmbio_models
@@ -107,7 +108,7 @@ def _build_registry() -> dict[Fonte, SourceHealthConfig]:
         Fonte.COMEXSTAT: {
             "url": f"{URLS[Fonte.COMEXSTAT]['bulk_csv']}/EXP_{stable_year}.csv",
             "method": "HEAD",
-            "verify": False,
+            "verify": comexstat_tls.build_context(),
         },
         Fonte.CONAB: {
             "url": URLS[Fonte.CONAB]["boletim_graos"],

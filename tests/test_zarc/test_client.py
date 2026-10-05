@@ -39,7 +39,7 @@ async def test_orcamento_aborta_antes_do_resto_do_stream(monkeypatch, csv, limit
         ),
     )
     with levanta_exatamente(ResourceLimitError, match="orçamento"):
-        await client._get("https://example.test/resource", csv=csv)
+        await client._get("https://dados.agricultura.gov.br/resource", csv=csv)
     assert stream.received == 2
     assert stream.closed
 
@@ -119,12 +119,12 @@ async def test_invalid_safra_precedes_http(zarc_replay, safra):
 @pytest.mark.asyncio
 async def test_download_legacy_wrapper_preserves_bytes(zarc_replay):
     expected = zarc_replay["bodies"]["2016_2017"]
-    assert await client.download_csv("https://example.org/2016_2017.csv") == expected
+    assert await client.download_csv("https://dados.agricultura.gov.br/2016_2017.csv") == expected
 
 
 @pytest.mark.asyncio
 async def test_download_acquisition_uses_csv_hash(zarc_replay):
-    captured = await client.download_acquisition("https://example.org/perene.csv")
+    captured = await client.download_acquisition("https://dados.agricultura.gov.br/perene.csv")
     assert captured.resource.sha256 == hashlib.sha256(captured.content).hexdigest()
     assert captured.resource.size_bytes == len(captured.content)
     assert captured.resource.headers["etag"] == "replayed"
@@ -136,4 +136,4 @@ async def test_download_acquisition_uses_csv_hash(zarc_replay):
 async def test_invalid_download_is_not_a_csv(zarc_replay, body):
     zarc_replay["bodies"]["perene"] = body
     with pytest.raises(SourceUnavailableError):
-        await client.download_csv("https://example.org/perene.csv")
+        await client.download_csv("https://dados.agricultura.gov.br/perene.csv")

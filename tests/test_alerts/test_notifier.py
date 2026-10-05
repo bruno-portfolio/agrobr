@@ -365,6 +365,26 @@ async def test_slack_monta_blocos_de_fonte_e_detalhes(source, details, blocos):
 
 
 @pytest.mark.asyncio
+async def test_slack_texto_da_fonte_nao_fecha_o_bloco_de_codigo():
+    client = make_mock_async_client()
+    client.post.return_value = make_mock_response()
+    mensagem = "HTTP 503 ```\n<!channel> <https://exemplo.invalid|entre> & ```"
+    with patch("agrobr.alerts.notifier.httpx.AsyncClient", return_value=client):
+        await _send_slack(
+            "https://hooks.slack.com/test",
+            AlertLevel.CRITICAL,
+            "Falhou",
+            {"message": mensagem},
+            "conab",
+        )
+    texto = client.post.call_args.kwargs["json"]["attachments"][0]["blocks"][-1]["text"]["text"]
+    assert texto.startswith("```") and texto.endswith("```")
+    assert "```" not in texto[3:-3]
+    assert "<" not in texto and ">" not in texto
+    assert "&lt;!channel&gt;" in texto and "&amp;" in texto
+
+
+@pytest.mark.asyncio
 async def test_discord_recuperacao_fica_verde_e_mostra_detalhes():
     client = make_mock_async_client()
     client.post.return_value = make_mock_response()

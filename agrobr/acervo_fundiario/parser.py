@@ -1,6 +1,7 @@
 from __future__ import annotations
 
-from pathlib import Path
+import zipfile
+from pathlib import Path, PurePosixPath
 from typing import Any, cast
 
 import pandas as pd
@@ -37,6 +38,8 @@ from .models import (
 logger = _log.get_logger(__name__)
 
 PARSER_VERSION = 2
+_PARTES_DO_SHAPEFILE = frozenset({".shp", ".shx", ".dbf", ".prj", ".cpg"})
+_CODIGO_DO_SHP = b"\x00\x00\x27\x0a"
 
 BBox = tuple[float, float, float, float]
 
@@ -53,6 +56,42 @@ def _check_expansion(zip_path: Path) -> None:
         )
 
 
+def _shapefile(zip_path: Path) -> str:
+    """Caminho ``/vsizip/`` do único ``.shp`` do ZIP, depois do teto de expansão.
+
+    O GDAL escolhe o driver pelo conteúdo, não pela extensão: outro formato no ZIP (um VRT, até com nome ``.shp``) lê
+    arquivo local e faz pedido HTTP. Por isso só passam as partes do shapefile, sem ``..``, e o ``.shp`` precisa do
+    código de arquivo do formato no cabeçalho.
+    """
+    _check_expansion(zip_path)
+    with zipfile.ZipFile(zip_path) as archive:
+        membros = [info for info in archive.infolist() if not info.is_dir()]
+        shps = [info for info in membros if PurePosixPath(info.filename).suffix.lower() == ".shp"]
+        fora = sorted(
+            info.filename
+            for info in membros
+            if PurePosixPath(info.filename).suffix.lower() not in _PARTES_DO_SHAPEFILE
+            or "\\" in info.filename
+            or PurePosixPath(info.filename).is_absolute()
+            or ".." in PurePosixPath(info.filename).parts
+        )
+        if fora or len(shps) != 1:
+            raise ParseError(
+                source="acervo_fundiario",
+                parser_version=PARSER_VERSION,
+                reason=f"ZIP deve ter só as partes de 1 shapefile; .shp: {len(shps)}, fora: {fora}",
+            )
+        with archive.open(shps[0]) as shp:
+            cabecalho = shp.read(len(_CODIGO_DO_SHP))
+    if cabecalho != _CODIGO_DO_SHP:
+        raise ParseError(
+            source="acervo_fundiario",
+            parser_version=PARSER_VERSION,
+            reason=f"{shps[0].filename} não tem o cabeçalho de shapefile ({cabecalho!r})",
+        )
+    return f"/vsizip/{zip_path.as_posix()}/{shps[0].filename}"
+
+
 def _read_tabular(zip_path: Path, *, bbox: BBox | None = None) -> pd.DataFrame:
     """Com ``bbox``, lê com a geometria e a descarta.
 
@@ -62,16 +101,16 @@ def _read_tabular(zip_path: Path, *, bbox: BBox | None = None) -> pd.DataFrame:
     if bbox is not None:
         geo = _read_geo(zip_path, bbox=bbox)
         return pd.DataFrame(geo.drop(columns=geo.geometry.name))
-    _check_expansion(zip_path)
+    caminho = _shapefile(zip_path)
     pyogrio = check_pyogrio()
-    df = pyogrio.read_dataframe(zip_path, encoding=DBF_ENCODING, read_geometry=False)
+    df = pyogrio.read_dataframe(caminho, encoding=DBF_ENCODING, read_geometry=False)
     return cast(pd.DataFrame, df)
 
 
 def _read_geo(zip_path: Path, *, bbox: BBox | None = None) -> Any:
-    _check_expansion(zip_path)
+    caminho = _shapefile(zip_path)
     gpd = check_geopandas()
-    return gpd.read_file(zip_path, encoding=DBF_ENCODING, bbox=bbox)
+    return gpd.read_file(caminho, encoding=DBF_ENCODING, bbox=bbox)
 
 
 def _validate_required(df: pd.DataFrame, required: frozenset[str], label: str) -> None:

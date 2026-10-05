@@ -20,13 +20,15 @@ BASE_URL = URLS[Fonte.ANDA]["base"]
 ESTATISTICAS_URL = URLS[Fonte.ANDA]["estatisticas"]
 
 TIMEOUT = get_timeout(read=60.0)
+_DOWNLOAD_NA_ORIGEM = io_utils.download_url_hook(base_url=BASE_URL, source="anda")
 
 
-async def _get_with_retry(url: str) -> httpx.Response:
+async def _get_with_retry(url: str, *, so_na_origem: bool = False) -> httpx.Response:
     async with httpx.AsyncClient(
         timeout=TIMEOUT,
         follow_redirects=True,
         headers=UserAgentRotator.get_bot_headers(),
+        event_hooks={"request": [_DOWNLOAD_NA_ORIGEM] if so_na_origem else []},
     ) as client:
         response = await retry_on_status(
             lambda: client.get(url),
@@ -59,7 +61,7 @@ async def download_file(url: str) -> bytes:
     logger.debug("anda_download", url=url)
     logger.info("anda_download", source="anda")
     io_utils.validate_download_url(url, base_url=BASE_URL, source="anda")
-    response = await _get_with_retry(url)
+    response = await _get_with_retry(url, so_na_origem=True)
     content = response.content
 
     clean_url = url.lower().split("?", 1)[0]
