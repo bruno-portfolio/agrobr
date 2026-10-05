@@ -22,6 +22,7 @@ from agrobr.datasets.producao_anual import (
 )
 from agrobr.exceptions import SourceUnavailableError
 from agrobr.ibge import pam_parser
+from agrobr.utils import time as time_utils
 from tests.helpers import collect_failures, fixture_instance, isolated_dataset_case
 
 from .conftest import make_source, mock_source_meta
@@ -226,11 +227,14 @@ class TestProducaoAnualFetchFunctions:
             "levantamento": 12,
         }
 
-        with patch(
-            "agrobr.conab.client.fetch_safra_xlsx",
-            new_callable=AsyncMock,
-            return_value=(BytesIO((path / "7cd4df7946e5c57f.xlsx").read_bytes()), metadata),
-        ) as mock_fetch:
+        with (
+            patch(
+                "agrobr.conab.client.fetch_safra_xlsx",
+                new_callable=AsyncMock,
+                return_value=(BytesIO((path / "7cd4df7946e5c57f.xlsx").read_bytes()), metadata),
+            ) as mock_fetch,
+            patch("agrobr.conab.api._hoje", return_value=date(2026, 9, 18)),
+        ):
             result_df, _ = await _fetch_conab("soja", ano=2026, nivel="uf", uf="MT")
 
         assert result_df.columns.tolist() == [
@@ -329,7 +333,7 @@ async def test_fallback_conab_sem_ano_usa_o_ano_civil_anterior_de_hoje(monkeypat
     monkeypatch.setattr("agrobr.conab.client.list_levantamentos", AsyncMock(return_value=[]))
     with pytest.raises(SourceUnavailableError):
         await _fetch_conab("trigo", nivel="brasil")
-    ano = date.today().year - 1
+    ano = time_utils.hoje().year - 1
     fetch.assert_awaited_once_with(safra=f"{ano - 1}/{ano % 100:02d}", levantamento=None)
 
 

@@ -56,6 +56,7 @@ async def test_expiracao_publica_no_horario_diario(
 ):
     monkeypatch.setattr(policies, "utcnow", lambda: instant)
     monkeypatch.setattr(api, "utcnow", lambda: instant)
+    monkeypatch.setattr(api, "_today", lambda: instant.date())
     store = mock.MagicMock()
     store.indicadores_query.return_value = [
         {

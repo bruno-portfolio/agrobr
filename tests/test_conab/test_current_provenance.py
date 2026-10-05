@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+from datetime import date
 from io import BytesIO
 from pathlib import Path
 from unittest.mock import AsyncMock
@@ -12,7 +13,7 @@ import openpyxl
 import pytest
 
 from agrobr import conab
-from agrobr.conab import client
+from agrobr.conab import api, client
 from tests.helpers import conferir_corpo
 
 FIXTURE = Path(__file__).parents[1] / "golden_data/conab/safra_2025_26_agosto"
@@ -44,6 +45,7 @@ async def test_current_wheat_matches_workbook_and_reports_download_method(
     monkeypatch.setattr(client, "_fetch_http", fetch)
     monkeypatch.setattr(client, "_fetch_boletim_page_browser", page)
     monkeypatch.setattr(client, "_download_xlsx_browser", download)
+    monkeypatch.setattr(api, "_hoje", lambda: date(2026, 8, 15))
 
     frame, meta = await conab.safras("trigo", safra="2025/26", return_meta=True)
 

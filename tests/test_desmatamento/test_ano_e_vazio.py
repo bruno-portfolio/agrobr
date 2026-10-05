@@ -1,11 +1,11 @@
 from __future__ import annotations
 
 import warnings
-from datetime import date
 from unittest.mock import AsyncMock
 
 from agrobr.desmatamento import api, client
 from agrobr.exceptions import InvalidParameterError
+from agrobr.utils import time as time_utils
 from tests.helpers import (
     desmatamento_features,
     install_desmatamento_wfs,
@@ -22,7 +22,7 @@ AVISO = (
 async def test_prodes_recusa_ano_posterior_ao_corrente_antes_da_rede(monkeypatch):
     fetch = AsyncMock()
     monkeypatch.setattr(client, "fetch_acquisition", fetch)
-    ano = date.today().year + 1
+    ano = time_utils.hoje().year + 1
     with levanta_exatamente(InvalidParameterError, match=f"Ano {ano} posterior ao corrente"):
         await api.prodes(bioma="Cerrado", ano=ano)
     fetch.assert_not_awaited()
@@ -32,7 +32,7 @@ async def test_prodes_aceita_o_ano_corrente(monkeypatch):
     calls = install_desmatamento_wfs(monkeypatch, [])
     with sem_excecao(), warnings.catch_warnings():
         warnings.simplefilter("ignore")
-        frame = await api.prodes(bioma="Cerrado", ano=date.today().year)
+        frame = await api.prodes(bioma="Cerrado", ano=time_utils.hoje().year)
     assert frame.empty and calls
 
 

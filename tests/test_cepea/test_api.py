@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import warnings
-from datetime import date, datetime, timedelta
+from datetime import date, timedelta
 from decimal import Decimal
 from typing import Any
 from unittest.mock import AsyncMock, MagicMock, patch
@@ -18,6 +18,7 @@ from agrobr.exceptions import (
     StaleDataWarning,
 )
 from agrobr.models import Indicador
+from agrobr.utils import time as time_utils
 from agrobr.utils.warnings import warn_once_reset
 from tests import helpers
 
@@ -48,7 +49,7 @@ def _indicador_to_dict(ind: Indicador) -> dict:
         "fonte": ind.fonte.value,
         "metodologia": ind.metodologia,
         "variacao_percentual": None,
-        "collected_at": datetime.utcnow(),
+        "collected_at": time_utils.utcnow(),
         "parser_version": ind.parser_version,
     }
 

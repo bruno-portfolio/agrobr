@@ -23,6 +23,7 @@ from agrobr.health.checker import (
     run_checks_with_state,
 )
 from agrobr.health.registry import HEALTH_REGISTRY, SourceHealthConfig
+from agrobr.utils import time as time_utils
 
 
 class TestCheckHttp:
@@ -202,7 +203,7 @@ class TestCheckSource:
                 latency_ms=100,
                 message="ok",
                 details={},
-                timestamp=datetime.utcnow(),
+                timestamp=time_utils.utcnow(),
             )
             result = await check_source(Fonte.CONAB)
         assert result.status == CheckStatus.OK
@@ -219,7 +220,7 @@ class TestCheckSource:
                 latency_ms=200,
                 message="ok",
                 details={},
-                timestamp=datetime.utcnow(),
+                timestamp=time_utils.utcnow(),
             )
             result = await check_source(Fonte.CEPEA, deep=True)
         mock_deep.assert_called_once()
@@ -235,7 +236,7 @@ class TestRunChecksWithState:
             latency_ms=100,
             message="ok",
             details={},
-            timestamp=datetime.utcnow(),
+            timestamp=time_utils.utcnow(),
         )
 
         with (
