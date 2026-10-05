@@ -532,7 +532,7 @@ def snapshot_list(
         for s in snapshots:
             size_mb = s.size_bytes / 1024 / 1024
             typer.echo(f"  {s.name}")
-            typer.echo(f"    Criado em: {s.created_at.strftime('%Y-%m-%d %H:%M')}")
+            typer.echo(f"    Criado em: {s.created_at.strftime('%Y-%m-%d %H:%M %Z').rstrip()}")
             typer.echo(f"    Tamanho: {size_mb:.2f} MB")
             typer.echo(f"    Fontes: {', '.join(s.sources)}")
             typer.echo(f"    Arquivos: {s.file_count}")
@@ -556,11 +556,18 @@ def snapshot_create(
 
     source_list = sources.split(",") if sources else None
 
-    typer.echo(f"Criando snapshot{f' {name}' if name else ''}...")
+    typer.echo(f"Criando snapshot{f' {name}' if name else ''}...", err=True)
 
     try:
         info = asyncio.run(create_snapshot(name=name, sources=source_list))
-        typer.echo("Snapshot criado com sucesso!")
+        typer.echo(
+            "Snapshot criado sem todas as fontes."
+            if info.errors
+            else "Snapshot criado com sucesso!"
+        )
+        for fonte, mensagens in info.errors.items():
+            for mensagem in mensagens:
+                typer.echo(f"Aviso: {fonte}: {mensagem}", err=True)
         typer.echo(f"  Nome: {info.name}")
         typer.echo(f"  Caminho: {info.path}")
         typer.echo(f"  Arquivos: {info.file_count}")

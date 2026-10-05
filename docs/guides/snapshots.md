@@ -8,7 +8,7 @@ Em `clima`, o ano do contexto é o padrão do modo UF quando `ano` é omitido. O
 
 Instale uma engine Parquet: `pip install "pyarrow>=14.0.1"` (ou `fastparquet`). O extra `agrobr[polars]` já inclui o `pyarrow` com esse piso. Sem engine, a criação levanta `ImportError` antes de criar diretórios.
 
-Somente `cepea`, `conab` e `ibge` são aceitas em `sources`; outras fontes levantam `ValueError`. Se nenhuma coleta produzir arquivos, o diretório recém-criado é removido e `SnapshotError` informa os erros por fonte. A CLI encerra com código 1. Snapshots parciais são preservados, com os erros em `manifest.json`, no campo `metadata.errors`.
+Somente `cepea`, `conab` e `ibge` são aceitas em `sources`; outras fontes levantam `ValueError`. Se nenhuma coleta produzir arquivos, o diretório recém-criado é removido e `SnapshotError` informa os erros por fonte. A CLI encerra com código 1. Snapshots parciais são preservados, com os erros em `manifest.json`, no campo `metadata.errors`, e em `info.errors` (vazio quando todas as fontes entraram); a CLI imprime `Snapshot criado sem todas as fontes.` e um aviso por fonte na saída de erro.
 
 ### Programaticamente
 
@@ -34,7 +34,7 @@ print(info.name, info.path, info.file_count)
 
 | Fonte | Arquivos | Cobertura |
 |---|---|---|
-| CEPEA | `cepea/<produto>.parquet` | Um arquivo por produto disponível no cache DuckDB; a coleta usa `indicador(..., offline=True)` |
+| CEPEA | `cepea/<produto>.parquet` | Um arquivo por produto disponível no cache DuckDB, com toda a série que o cache guarda; a coleta usa `indicador(..., inicio=date.min, offline=True)` |
 | CONAB | `conab/safras.parquet`, `conab/balanco.parquet` | Safras somente de soja e balanço de oferta e demanda |
 | IBGE | `ibge/pam.parquet`, `ibge/lspa.parquet` | PAM e LSPA somente de soja |
 
@@ -156,7 +156,9 @@ agrobr snapshot delete 2025-Q4 --force
 
 ## Boas práticas
 
-- Confirme quais fontes e produtos foram gravados no `manifest.json`.
+- Confirme quais fontes e produtos foram gravados no `manifest.json`. Cada arquivo traz, além de `rows`, `columns` e
+  `sha256`, a proveniência da coleta: `source`, `selected_source`, `source_url`, `fetch_timestamp` e `parametros` (no
+  CEPEA, o `periodo` exportado). `created_at` sai em UTC, com o fuso.
 - Não trate o modo determinístico como bloqueio global de rede.
 - Use nomes descritivos, como `2025-Q4` ou `paper-submission-v2`. Os nomes reservados do Windows (`CON`, `NUL`, `COM1`…)
   e os terminados em ponto são recusados em todo sistema, para o snapshot abrir no Windows.

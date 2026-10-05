@@ -133,6 +133,7 @@ Catálogo desta versão: **54 datasets e 89 contratos registrados**. Mudanças i
 - Consultas ANA com múltiplas páginas passam a identificar todas as respostas no `MetaInfo` por manifesto canônico de hashes. A proveniência inclui consulta lógica, limite solicitado, ordem, tamanho e SHA-256 de cada página; zero páginas e corpo único mantêm seu comportamento anterior.
 - **Queimadas, leitura do CSV mensal** — UF, bioma e hora de cada foco passam a ser calculados uma vez por valor distinto, e não linha a linha: o parse de 150 mil focos cai de 1,5 s para 0,5 s, e a leitura do CSV passa a ser quase todo o custo. O resultado é o mesmo.
 - **FUNAI e INCRA — fase sem resultado avisa** — `terras_indigenas(fase=...)` e `quilombolas(fase=...)` que não casam nenhuma linha na leitura completa emitem `UserWarning` e aviso em `validation_warnings` com as fases lidas, como a Embrapa Solos faz com `ordem`: um rótulo novo da fonte deixa de parecer "nenhuma TI/comunidade nessa fase".
+- **Proveniência no manifesto do snapshot** — cada arquivo do `manifest.json` traz `source`, `selected_source`, `source_url`, `fetch_timestamp` e `parametros` (no CEPEA, o `periodo` exportado), e `created_at` sai em UTC com o fuso (antes, a hora local sem fuso). A CLI marca `UTC` em `snapshot list`.
 
 ### Changed
 
@@ -702,6 +703,8 @@ Catálogo desta versão: **54 datasets e 89 contratos registrados**. Mudanças i
 - **ICMBio — `ucs_geo` igual ao `ucs`** — área e ano fora do formato numérico levantam `ParseError`, como no tabular, em vez de virar nulo calado; o `MetaInfo` passa a registrar a seleção (`source_details["query"]`), os filtros aplicados no resultado (`source_details["filtros_locais"]`) e a hora da aquisição em `fetched_at`/`fetch_timestamp`, e não a da montagem.
 - **INCRA — avisos das fontes no `vinculos_quilombolas`** — o `validation_warnings` do composto trazia só o aviso do vínculo; agora traz também os avisos das duas fontes, com o prefixo de cada uma (por exemplo, data fora do intervalo que virou `NaT` em `perimetro_data_*`).
 - **IBGE Censo legado — HTML sem tabela** — sem o `html5lib` instalado, a página HTML sem tabela saía como `ImportError` do fallback do `pandas.read_html`; agora a leitura fica no `lxml` (dependência do núcleo) e a página sem tabela levanta `ParseError` ("Tabela HTML não reconhecida").
+- **Snapshot do CEPEA, série inteira** — `create_snapshot` exportava de cada produto só os últimos 365 dias do cache DuckDB (a janela padrão do `indicador`), sem aviso, e produto com só anos antigos no cache ficava de fora do snapshot; a 1.1.0 fazia o mesmo. Agora o arquivo `cepea/<produto>.parquet` leva toda a série que o cache guarda, como o guia de snapshots promete.
+- **`snapshot create` parcial** — o progresso ia para a saída padrão, e snapshot sem uma das fontes saía com "criado com sucesso" e nenhuma linha avisando. O progresso vai para a saída de erro, a CLI diz `Snapshot criado sem todas as fontes.` com um aviso por fonte, e `SnapshotInfo.errors` traz os erros por fonte (vazio quando todas entraram).
 
 ### Security
 

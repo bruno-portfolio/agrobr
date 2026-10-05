@@ -5,12 +5,16 @@ from __future__ import annotations
 import asyncio
 import importlib.metadata
 import json
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pandas as pd
 import pytest
 
+from agrobr import constants
+from agrobr.cache import duckdb_store
+from agrobr.cepea import api
+from agrobr.models import MetaInfo
 from agrobr.snapshots import (
     SnapshotManifest,
     _collect_snapshot,
@@ -46,6 +50,17 @@ def _make_manifest(
         created_at=datetime(2025, 1, 15, 10, 0),
         agrobr_version="0.3.0",
         sources=sources or [],
+    )
+
+
+def _com_meta(df: pd.DataFrame) -> tuple[pd.DataFrame, MetaInfo]:
+    return df, MetaInfo(
+        source="fonte",
+        source_url="https://exemplo",
+        source_method="httpx",
+        fetched_at=datetime(2025, 1, 15, 10, 0),
+        selected_source="fonte",
+        fetch_timestamp=datetime(2025, 1, 15, 10, 0),
     )
 
 
@@ -310,7 +325,9 @@ class TestSnapshotCepea:
 
         with (
             patch("agrobr.cepea.produtos", new_callable=AsyncMock, return_value=["soja"]),
-            patch("agrobr.cepea.indicador", new_callable=AsyncMock, return_value=empty_df),
+            patch(
+                "agrobr.cepea.indicador", new_callable=AsyncMock, return_value=_com_meta(empty_df)
+            ),
         ):
             await _snapshot_cepea(tmp_path, manifest)
 
@@ -334,7 +351,7 @@ class TestSnapshotCepea:
             patch(
                 "agrobr.cepea.indicador",
                 new_callable=AsyncMock,
-                side_effect=[RuntimeError("fail"), df],
+                side_effect=[RuntimeError("fail"), _com_meta(df)],
             ),
         ):
             await _snapshot_cepea(tmp_path, manifest)
@@ -355,8 +372,10 @@ class TestSnapshotConab:
         df_balanco = pd.DataFrame({"item": ["oferta"], "valor": [200.0]})
 
         with (
-            patch("agrobr.conab.safras", new_callable=AsyncMock, return_value=df_safras),
-            patch("agrobr.conab.balanco", new_callable=AsyncMock, return_value=df_balanco),
+            patch("agrobr.conab.safras", new_callable=AsyncMock, return_value=_com_meta(df_safras)),
+            patch(
+                "agrobr.conab.balanco", new_callable=AsyncMock, return_value=_com_meta(df_balanco)
+            ),
         ):
             await _snapshot_conab(tmp_path, manifest)
 
@@ -374,8 +393,14 @@ class TestSnapshotConab:
         df_balanco = pd.DataFrame({"item": ["oferta"], "valor": [200.0]})
 
         with (
-            patch("agrobr.conab.safras", new_callable=AsyncMock, return_value=pd.DataFrame()),
-            patch("agrobr.conab.balanco", new_callable=AsyncMock, return_value=df_balanco),
+            patch(
+                "agrobr.conab.safras",
+                new_callable=AsyncMock,
+                return_value=_com_meta(pd.DataFrame()),
+            ),
+            patch(
+                "agrobr.conab.balanco", new_callable=AsyncMock, return_value=_com_meta(df_balanco)
+            ),
         ):
             await _snapshot_conab(tmp_path, manifest)
 
@@ -396,7 +421,9 @@ class TestSnapshotConab:
                 new_callable=AsyncMock,
                 side_effect=RuntimeError("fail"),
             ),
-            patch("agrobr.conab.balanco", new_callable=AsyncMock, return_value=df_balanco),
+            patch(
+                "agrobr.conab.balanco", new_callable=AsyncMock, return_value=_com_meta(df_balanco)
+            ),
         ):
             await _snapshot_conab(tmp_path, manifest)
 
@@ -412,7 +439,7 @@ class TestSnapshotConab:
         df_safras = pd.DataFrame({"safra": ["2024/25"], "producao": [100.0]})
 
         with (
-            patch("agrobr.conab.safras", new_callable=AsyncMock, return_value=df_safras),
+            patch("agrobr.conab.safras", new_callable=AsyncMock, return_value=_com_meta(df_safras)),
             patch(
                 "agrobr.conab.balanco",
                 new_callable=AsyncMock,
@@ -435,8 +462,10 @@ class TestSnapshotIbge:
         df_lspa = pd.DataFrame({"produto": ["soja"], "previsao": [95.0]})
 
         with (
-            patch("agrobr.ibge.pam", new_callable=AsyncMock, return_value=pd.DataFrame()),
-            patch("agrobr.ibge.lspa", new_callable=AsyncMock, return_value=df_lspa),
+            patch(
+                "agrobr.ibge.pam", new_callable=AsyncMock, return_value=_com_meta(pd.DataFrame())
+            ),
+            patch("agrobr.ibge.lspa", new_callable=AsyncMock, return_value=_com_meta(df_lspa)),
         ):
             await _snapshot_ibge(tmp_path, manifest)
 
@@ -457,7 +486,7 @@ class TestSnapshotIbge:
                 new_callable=AsyncMock,
                 side_effect=RuntimeError("fail"),
             ),
-            patch("agrobr.ibge.lspa", new_callable=AsyncMock, return_value=df_lspa),
+            patch("agrobr.ibge.lspa", new_callable=AsyncMock, return_value=_com_meta(df_lspa)),
         ):
             await _snapshot_ibge(tmp_path, manifest)
 
@@ -473,7 +502,7 @@ class TestSnapshotIbge:
         df_pam = pd.DataFrame({"produto": ["soja"], "producao": [100.0]})
 
         with (
-            patch("agrobr.ibge.pam", new_callable=AsyncMock, return_value=df_pam),
+            patch("agrobr.ibge.pam", new_callable=AsyncMock, return_value=_com_meta(df_pam)),
             patch(
                 "agrobr.ibge.lspa",
                 new_callable=AsyncMock,
@@ -517,7 +546,9 @@ async def test_snapshot_cepea_sem_dado_nao_registra_erro(tmp_path):
     manifest = _make_manifest("teste")
     with (
         patch("agrobr.cepea.produtos", new_callable=AsyncMock, return_value=["soja"]),
-        patch("agrobr.cepea.indicador", new_callable=AsyncMock, return_value=None),
+        patch(
+            "agrobr.cepea.indicador", new_callable=AsyncMock, return_value=_com_meta(pd.DataFrame())
+        ),
     ):
         await _snapshot_cepea(tmp_path, manifest)
     assert manifest.metadata.get("errors") is None
@@ -534,8 +565,8 @@ async def test_snapshot_cepea_sem_dado_nao_registra_erro(tmp_path):
 async def test_fonte_sem_dados_nao_grava_arquivo_nem_erro(tmp_path, coletar, alvos):
     manifest = _make_manifest("teste")
     with (
-        patch(alvos[0], new_callable=AsyncMock, return_value=None),
-        patch(alvos[1], new_callable=AsyncMock, return_value=None),
+        patch(alvos[0], new_callable=AsyncMock, return_value=_com_meta(pd.DataFrame())),
+        patch(alvos[1], new_callable=AsyncMock, return_value=_com_meta(pd.DataFrame())),
     ):
         await coletar(tmp_path, manifest)
     assert manifest.files == {}
@@ -627,3 +658,96 @@ def test_load_aceita_pyarrow_a_partir_de_14_0_1(tmp_path, monkeypatch, versao):
 
     assert carregado is not None
     assert carregado["safra"].tolist() == ["2024/25"]
+
+
+@requires_pyarrow
+async def test_snapshot_cepea_exporta_a_serie_inteira_do_cache(tmp_path, monkeypatch):
+    store = duckdb_store.DuckDBStore(constants.CacheSettings(cache_dir=tmp_path / "cache"))
+    monkeypatch.setattr(api, "get_store", lambda: store)
+    monkeypatch.setattr(api, "_today", lambda: date(2026, 10, 1))
+    linhas = [
+        ("soja", date(2015, 3, 2)),
+        ("soja", date(2025, 9, 1)),
+        ("soja", date(2026, 9, 30)),
+        ("milho", date(2016, 5, 2)),
+    ]
+    store.indicadores_upsert(
+        [
+            {
+                "produto": produto,
+                "praca": "paranagua",
+                "data": dia,
+                "valor": 100.0,
+                "fonte": "cepea",
+            }
+            for produto, dia in linhas
+        ]
+    )
+    manifest = _make_manifest("teste")
+    try:
+        with patch("agrobr.cepea.produtos", new_callable=AsyncMock, return_value=["soja", "milho"]):
+            await _snapshot_cepea(tmp_path, manifest)
+    finally:
+        store.close()
+
+    soja = pd.read_parquet(tmp_path / "soja.parquet")
+    assert sorted(soja["data"].astype(str)) == ["2015-03-02", "2025-09-01", "2026-09-30"]
+    assert manifest.files["cepea/soja.parquet"]["rows"] == 3
+    assert manifest.files["cepea/soja.parquet"]["parametros"] == {
+        "produto": "soja",
+        "offline": True,
+        "periodo": ["2015-03-02", "2026-09-30"],
+    }
+    assert pd.read_parquet(tmp_path / "milho.parquet")["data"].astype(str).tolist() == [
+        "2016-05-02"
+    ]
+    assert manifest.metadata.get("errors") is None
+
+
+async def test_create_snapshot_devolve_os_erros_das_fontes_que_faltaram(tmp_path, monkeypatch):
+    monkeypatch.setattr("agrobr.snapshots.importlib.util.find_spec", lambda _name: object())
+    with (
+        patch("agrobr.snapshots.get_snapshots_dir", return_value=tmp_path),
+        patch("agrobr.snapshots._snapshot_cepea", side_effect=make_snapshot_source),
+        patch("agrobr.snapshots._snapshot_conab", new_callable=AsyncMock),
+    ):
+        parcial = await create_snapshot("parcial", sources=["cepea", "conab"])
+        completo = await create_snapshot("completo", sources=["cepea"])
+
+    assert parcial.errors == {"conab": ["Nenhum conjunto de dados disponível"]}
+    assert completo.errors == {}
+
+
+@requires_pyarrow
+async def test_manifesto_registra_a_proveniencia_de_cada_arquivo(tmp_path):
+    manifest = _make_manifest("teste")
+    df = pd.DataFrame({"safra": ["2024/25"], "valor": [1.0]})
+    with (
+        patch("agrobr.conab.safras", new_callable=AsyncMock, return_value=_com_meta(df)),
+        patch("agrobr.conab.balanco", new_callable=AsyncMock, return_value=_com_meta(df)),
+    ):
+        await _snapshot_conab(tmp_path, manifest)
+
+    assert manifest.files["conab/safras.parquet"] == {
+        "rows": 1,
+        "columns": ["safra", "valor"],
+        "source": "fonte",
+        "selected_source": "fonte",
+        "source_url": "https://exemplo",
+        "fetch_timestamp": "2025-01-15T10:00:00+00:00",
+        "parametros": {"produto": "soja"},
+    }
+    assert manifest.files["conab/balanco.parquet"]["parametros"] == {}
+
+
+async def test_created_at_do_manifesto_sai_em_utc_com_fuso(tmp_path, monkeypatch):
+    monkeypatch.setattr("agrobr.snapshots.importlib.util.find_spec", lambda _name: object())
+    with (
+        patch("agrobr.snapshots.get_snapshots_dir", return_value=tmp_path),
+        patch("agrobr.snapshots._snapshot_cepea", side_effect=make_snapshot_source),
+    ):
+        info = await create_snapshot("fuso", sources=["cepea"])
+
+    gravado = json.loads((info.path / "manifest.json").read_text(encoding="utf-8"))
+    assert datetime.fromisoformat(gravado["created_at"]).utcoffset() == timedelta(0)
+    assert info.created_at.tzinfo is not None

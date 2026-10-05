@@ -10,13 +10,17 @@ import tempfile
 from dataclasses import dataclass, field
 from datetime import date, datetime
 from pathlib import Path
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 import pandas as pd
 
 from agrobr import _log
 from agrobr.config import get_config
 from agrobr.exceptions import SnapshotError
+from agrobr.utils import time as time_utils
+
+if TYPE_CHECKING:
+    from agrobr.models import MetaInfo
 
 logger = _log.get_logger(__name__)
 
@@ -78,6 +82,7 @@ class SnapshotInfo:
     size_bytes: int
     sources: list[str]
     file_count: int
+    errors: dict[str, list[str]] = field(default_factory=dict)
 
 
 def get_snapshots_dir() -> Path:
@@ -167,7 +172,7 @@ async def create_snapshot(
 
     manifest = SnapshotManifest(
         name=name,
-        created_at=datetime.now(),
+        created_at=time_utils.utcnow_aware(),
         agrobr_version=getattr(agrobr, "__version__", "unknown"),
         sources=sources,
     )
@@ -200,6 +205,7 @@ async def create_snapshot(
         size_bytes=sum(p.stat().st_size for p in snapshot_path.rglob("*") if p.is_file()),
         sources=sources,
         file_count=len(manifest.files),
+        errors=manifest.metadata.get("errors", {}),
     )
 
 
@@ -230,6 +236,24 @@ def _record_error(manifest: SnapshotManifest, source: str, message: str) -> None
     manifest.metadata.setdefault("errors", {}).setdefault(source, []).append(message)
 
 
+def _registrar(
+    manifest: SnapshotManifest,
+    chave: str,
+    df: pd.DataFrame,
+    meta: MetaInfo,
+    parametros: dict[str, Any],
+) -> None:
+    manifest.files[chave] = {
+        "rows": len(df),
+        "columns": df.columns.tolist(),
+        "source": meta.source,
+        "selected_source": meta.selected_source,
+        "source_url": meta.source_url,
+        "fetch_timestamp": meta.fetch_timestamp.isoformat() if meta.fetch_timestamp else None,
+        "parametros": parametros,
+    }
+
+
 async def _snapshot_cepea(path: Path, manifest: SnapshotManifest) -> None:
     from agrobr import cepea
 
@@ -237,16 +261,20 @@ async def _snapshot_cepea(path: Path, manifest: SnapshotManifest) -> None:
 
     for produto in produtos:
         try:
-            df = await cepea.indicador(produto, offline=True)
-            if df is None:
-                continue
+            df, meta = await cepea.indicador(
+                produto, inicio=date.min, offline=True, return_meta=True
+            )
             if not df.empty:
-                file_path = path / f"{produto}.parquet"
-                df.to_parquet(file_path, index=False)
-                manifest.files[f"cepea/{produto}.parquet"] = {
-                    "rows": len(df),
-                    "columns": df.columns.tolist(),
-                }
+                df.to_parquet(path / f"{produto}.parquet", index=False)
+                datas = pd.to_datetime(df["data"])
+                periodo = [datas.min().date().isoformat(), datas.max().date().isoformat()]
+                _registrar(
+                    manifest,
+                    f"cepea/{produto}.parquet",
+                    df,
+                    meta,
+                    {"produto": produto, "offline": True, "periodo": periodo},
+                )
         except Exception as e:
             logger.warning("snapshot_produto_error", produto=produto, error=str(e))
             _record_error(manifest, "cepea", f"{produto}: {e}")
@@ -256,27 +284,19 @@ async def _snapshot_conab(path: Path, manifest: SnapshotManifest) -> None:
     from agrobr import conab
 
     try:
-        df = await conab.safras(produto="soja")
-        if df is not None and not df.empty:
-            file_path = path / "safras.parquet"
-            df.to_parquet(file_path, index=False)
-            manifest.files["conab/safras.parquet"] = {
-                "rows": len(df),
-                "columns": df.columns.tolist(),
-            }
+        df, meta = await conab.safras(produto="soja", return_meta=True)
+        if not df.empty:
+            df.to_parquet(path / "safras.parquet", index=False)
+            _registrar(manifest, "conab/safras.parquet", df, meta, {"produto": "soja"})
     except Exception as e:
         logger.warning("snapshot_conab_safras_error", error=str(e))
         _record_error(manifest, "conab", f"safras: {e}")
 
     try:
-        df = await conab.balanco()
-        if df is not None and not df.empty:
-            file_path = path / "balanco.parquet"
-            df.to_parquet(file_path, index=False)
-            manifest.files["conab/balanco.parquet"] = {
-                "rows": len(df),
-                "columns": df.columns.tolist(),
-            }
+        df, meta = await conab.balanco(return_meta=True)
+        if not df.empty:
+            df.to_parquet(path / "balanco.parquet", index=False)
+            _registrar(manifest, "conab/balanco.parquet", df, meta, {})
     except Exception as e:
         logger.warning("snapshot_conab_balanco_error", error=str(e))
         _record_error(manifest, "conab", f"balanco: {e}")
@@ -286,27 +306,19 @@ async def _snapshot_ibge(path: Path, manifest: SnapshotManifest) -> None:
     from agrobr import ibge
 
     try:
-        df = await ibge.pam(produto="soja")
-        if df is not None and not df.empty:
-            file_path = path / "pam.parquet"
-            df.to_parquet(file_path, index=False)
-            manifest.files["ibge/pam.parquet"] = {
-                "rows": len(df),
-                "columns": df.columns.tolist(),
-            }
+        df, meta = await ibge.pam(produto="soja", return_meta=True)
+        if not df.empty:
+            df.to_parquet(path / "pam.parquet", index=False)
+            _registrar(manifest, "ibge/pam.parquet", df, meta, {"produto": "soja"})
     except Exception as e:
         logger.warning("snapshot_ibge_pam_error", error=str(e))
         _record_error(manifest, "ibge", f"pam: {e}")
 
     try:
-        df = await ibge.lspa(produto="soja")
-        if df is not None and not df.empty:
-            file_path = path / "lspa.parquet"
-            df.to_parquet(file_path, index=False)
-            manifest.files["ibge/lspa.parquet"] = {
-                "rows": len(df),
-                "columns": df.columns.tolist(),
-            }
+        df, meta = await ibge.lspa(produto="soja", return_meta=True)
+        if not df.empty:
+            df.to_parquet(path / "lspa.parquet", index=False)
+            _registrar(manifest, "ibge/lspa.parquet", df, meta, {"produto": "soja"})
     except Exception as e:
         logger.warning("snapshot_ibge_lspa_error", error=str(e))
         _record_error(manifest, "ibge", f"lspa: {e}")

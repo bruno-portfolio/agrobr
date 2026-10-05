@@ -8,7 +8,7 @@ import json
 import os
 import subprocess
 import sys
-from datetime import date, datetime, timedelta
+from datetime import UTC, date, datetime, timedelta
 from decimal import Decimal
 from unittest.mock import AsyncMock, MagicMock, patch
 
@@ -317,6 +317,7 @@ class TestSnapshotCommands:
         mock_info.name = "test_snap"
         mock_info.path = "/tmp/test_snap"
         mock_info.file_count = 3
+        mock_info.errors = {}
 
         with patch(
             "agrobr.snapshots.create_snapshot", new_callable=AsyncMock, return_value=mock_info
@@ -731,3 +732,27 @@ def test_csv_da_cli_num_processo_real_do_windows():
         processo.stdout == "data,praca\r\n2026-09-25,Paranaguá/PR\r\n2026-09-26,Paraná\r\n".encode()
     )
     assert pd.read_csv(io.BytesIO(processo.stdout))["praca"].tolist() == ["Paranaguá/PR", "Paraná"]
+
+
+def test_snapshot_create_parcial_avisa_a_fonte_que_faltou_na_saida_de_erro():
+    info = MagicMock(path="/tmp/parcial", file_count=2)
+    info.name = "parcial"
+    info.errors = {"cepea": ["Nenhum conjunto de dados disponível"]}
+    with patch("agrobr.snapshots.create_snapshot", new_callable=AsyncMock, return_value=info):
+        result = runner.invoke(app, ["snapshot", "create", "parcial"])
+    assert result.exit_code == 0
+    assert "Criando snapshot" not in result.stdout
+    assert "Criando snapshot parcial..." in result.stderr
+    assert "sucesso" not in result.output
+    assert "Snapshot criado sem todas as fontes." in result.stdout
+    assert "Aviso: cepea: Nenhum conjunto de dados disponível" in result.stderr
+
+
+def test_snapshot_list_marca_utc_no_snapshot_novo():
+    snap = MagicMock(size_bytes=1024, sources=["cepea"], file_count=1)
+    snap.name = "novo"
+    snap.created_at = datetime(2026, 10, 5, 11, 0, tzinfo=UTC)
+    with patch("agrobr.snapshots.list_snapshots", return_value=[snap]):
+        result = runner.invoke(app, ["snapshot", "list"])
+    assert result.exit_code == 0
+    assert "    Criado em: 2026-10-05 11:00 UTC" in result.output.splitlines()
