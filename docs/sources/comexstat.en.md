@@ -71,6 +71,9 @@ print(meta.source)  # "comexstat"
 - Each annual CSV is ~100 MB. The download goes to a temporary file and is checked against the GET's
   `Content-Length` or, without it, the HEAD of the same file; without either, the result warns in
   `validation_warnings` ("tamanho do arquivo não conferido").
+- The whole download, retries included, has a 300 s ceiling; past it, `SourceUnavailableError`
+  ("TimeoutError"). `AGROBR_HTTP_TIMEOUT_READ` does not change that ceiling; on a slow network, raise
+  `AGROBR_HTTP_TIMEOUT_DOWNLOAD_COMEXSTAT` ([environment variables](../advanced/ambiente.md)).
 
 ## Source
 

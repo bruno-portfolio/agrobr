@@ -7,6 +7,7 @@ from unittest.mock import AsyncMock
 
 import httpx
 import pytest
+from pydantic import ValidationError
 
 from agrobr import constants
 from agrobr.comexstat import client
@@ -197,3 +198,24 @@ async def test_response_close_error_after_body_is_not_retried(transport):
     receipt = error.value.comexstat_acquisition["receipts"][0]
     assert receipt["received_bytes"] == receipt["size_bytes"] == 8
     assert receipt["close_error_message"] == "response-close" and not receipt["closed"]
+
+
+@pytest.mark.asyncio
+async def test_teto_do_download_vem_do_ambiente(monkeypatch):
+    monkeypatch.setenv("AGROBR_HTTP_TIMEOUT_DOWNLOAD_COMEXSTAT", "0.05")
+
+    async def sem_fim(*_args):
+        await asyncio.Event().wait()
+
+    monkeypatch.setattr(client, "_download", sem_fim)
+    with pytest.raises(SourceUnavailableError, match="TimeoutError") as error:
+        async with client.open_dictionary("vias"):
+            pytest.fail("download passou do teto")
+    assert error.value.comexstat_acquisition["budgets"]["download_timeout_seconds"] == 0.05
+
+
+@pytest.mark.parametrize("valor", ["0", "-1", "inf"])
+def test_teto_do_download_recusa_valor_nao_positivo(monkeypatch, valor):
+    monkeypatch.setenv("AGROBR_HTTP_TIMEOUT_DOWNLOAD_COMEXSTAT", valor)
+    with pytest.raises(ValidationError):
+        constants.HTTPSettings()

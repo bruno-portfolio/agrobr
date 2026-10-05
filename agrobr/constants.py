@@ -784,6 +784,10 @@ class HTTPSettings(BaseSettings):
     rate_limit_conab_ceasa: float = 2.0
     rate_limit_default: float = 1.0
 
+    timeout_download_comexstat: float = Field(
+        default_factory=lambda: float(COMEXSTAT_DOWNLOAD_TIMEOUT_SECONDS), gt=0, allow_inf_nan=False
+    )
+
     max_concurrent_default: int = Field(default=1, ge=1)
     max_concurrent_ana: int = Field(default=1, ge=1)
     max_concurrent_anp_diesel: int = Field(default=3, ge=1)

@@ -7,7 +7,8 @@ All agrobr variables start with `AGROBR_`. None is required, except the credenti
 
 Set the variables before importing agrobr. In detail:
 
-- the timeouts (`AGROBR_HTTP_TIMEOUT_*`) and the CEASA user and password are read when each client is imported;
+- the timeouts (`AGROBR_HTTP_TIMEOUT_*`) and the CEASA user and password are read when each client is imported, except
+  the Comex Stat download ceiling, read on every download;
 - the CEPEA database folder and name are read on the first use of the cache and hold until the process ends; the
   database connection opens and closes on every operation. The other caches (ZARC, ANEC, Acervo Fundiário, IBAMA, RNC
   and Agrofit) read the folder on every query;
@@ -35,6 +36,7 @@ Set the variables before importing agrobr. In detail:
 | `AGROBR_HTTP_TIMEOUT_READ` | `30` | Read seconds. It is a floor: a source client that sets a longer time keeps its own ([resilience](resilience.md#centralized-http-configuration)). Also applies to the ANTAQ download, which uses requests (the write and pool timeouts do not apply to it) |
 | `AGROBR_HTTP_TIMEOUT_WRITE` | `10` | Write seconds |
 | `AGROBR_HTTP_TIMEOUT_POOL` | `10` | Seconds waiting for a free connection |
+| `AGROBR_HTTP_TIMEOUT_DOWNLOAD_COMEXSTAT` | `300` | Ceiling, in seconds, for the whole download of a Comex Stat file, retries included. `AGROBR_HTTP_TIMEOUT_READ` does not change it; raise this one on a slow network. A finite number greater than `0`; anything else is rejected with `ValidationError` |
 | `AGROBR_HTTP_MAX_RETRIES` | `3` | **Total** attempts per request, counting the first. `0` means `1` (no retry); a negative value is rejected with `ValidationError` |
 | `AGROBR_HTTP_RETRY_BASE_DELAY` | `1.0` | First wait between attempts, in seconds |
 | `AGROBR_HTTP_RETRY_MAX_DELAY` | `30.0` | Cap of the wait between attempts, in seconds |

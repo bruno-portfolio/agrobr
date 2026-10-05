@@ -56,10 +56,12 @@ reason, and the fallback used. Execution continues normally.
 
 **Solutions:**
 
-1. Increase the timeout:
+1. Increase the read timeout:
    ```bash
    export AGROBR_HTTP_TIMEOUT_READ=60
    ```
+   On Comex Stat, the whole download has its own 300 s ceiling; on a slow network, raise
+   `AGROBR_HTTP_TIMEOUT_DOWNLOAD_COMEXSTAT` ([environment variables](ambiente.md)).
 2. Check your connection
 3. Try during lower-traffic hours
 

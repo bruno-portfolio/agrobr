@@ -7,7 +7,8 @@ exigem cadastro (USDA, MapBiomas Alerta e a rota observacional do INMET).
 
 Defina as variáveis antes de importar o agrobr. Em detalhe:
 
-- os timeouts (`AGROBR_HTTP_TIMEOUT_*`) e o usuário e a senha da CEASA são lidos na importação de cada cliente;
+- os timeouts (`AGROBR_HTTP_TIMEOUT_*`) e o usuário e a senha da CEASA são lidos na importação de cada cliente, exceto o
+  teto do download do Comex Stat, lido a cada download;
 - a pasta e o nome do banco do CEPEA são lidos no primeiro uso do cache e valem até o fim do processo; a conexão com o
   banco abre e fecha a cada operação. Os outros caches (ZARC, ANEC, Acervo Fundiário, IBAMA, RNC e Agrofit) leem a
   pasta a cada consulta;
@@ -35,6 +36,7 @@ Defina as variáveis antes de importar o agrobr. Em detalhe:
 | `AGROBR_HTTP_TIMEOUT_READ` | `30` | Segundos de leitura. Vale como mínimo: o cliente da fonte que fixa um tempo maior fica com o dele ([resiliência](resilience.md#configuracao-http-centralizada)). Vale também no download da ANTAQ, que usa o requests (os timeouts de escrita e de pool não se aplicam a ele) |
 | `AGROBR_HTTP_TIMEOUT_WRITE` | `10` | Segundos de escrita |
 | `AGROBR_HTTP_TIMEOUT_POOL` | `10` | Segundos de espera por uma conexão livre |
+| `AGROBR_HTTP_TIMEOUT_DOWNLOAD_COMEXSTAT` | `300` | Teto, em segundos, do download inteiro de um arquivo do Comex Stat, novas tentativas incluídas. O `AGROBR_HTTP_TIMEOUT_READ` não mexe nele; suba este em rede lenta. Número finito maior que `0`; o resto é recusado com `ValidationError` |
 | `AGROBR_HTTP_MAX_RETRIES` | `3` | **Total** de tentativas por pedido, contando a primeira. `0` vale `1` (sem retry); negativo é recusado com `ValidationError` |
 | `AGROBR_HTTP_RETRY_BASE_DELAY` | `1.0` | Primeira espera entre tentativas, em segundos |
 | `AGROBR_HTTP_RETRY_MAX_DELAY` | `30.0` | Teto da espera entre tentativas, em segundos |

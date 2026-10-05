@@ -56,10 +56,12 @@ falha e o fallback usado. A execução continua normalmente.
 
 **Soluções:**
 
-1. Aumente o timeout:
+1. Aumente o timeout de leitura:
    ```bash
    export AGROBR_HTTP_TIMEOUT_READ=60
    ```
+   No Comex Stat, o download inteiro tem teto próprio de 300 s; em rede lenta, suba
+   `AGROBR_HTTP_TIMEOUT_DOWNLOAD_COMEXSTAT` ([variáveis de ambiente](ambiente.md)).
 2. Verifique sua conexão
 3. Tente em horário de menor tráfego
 

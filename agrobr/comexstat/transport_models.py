@@ -68,7 +68,7 @@ class DownloadedResource:
     spool_closed: bool | None = None
     close_errors: list[CloseFailure] = field(default_factory=list)
     tls: dict[str, Any] = field(default_factory=dict)
-    budgets: dict[str, int] = field(default_factory=dict)
+    budgets: dict[str, float] = field(default_factory=dict)
 
     @property
     def file(self) -> BinaryIO:

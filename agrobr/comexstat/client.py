@@ -280,13 +280,14 @@ async def _open_resource(
     resource: transport_models.ResourceSpec, limit: int
 ) -> AsyncIterator[transport_models.DownloadedResource]:
     _validate_url(resource.url)
+    teto = constants.HTTPSettings().timeout_download_comexstat
     bundle = transport_models.DownloadedResource(resource=resource)
     bundle.budgets = {
         "resource_bytes": limit,
         "transfer_bytes": constants.COMEXSTAT_MAX_TRANSFER_BYTES,
         "chunk_bytes": constants.COMEXSTAT_CHUNK_BYTES,
         "physical_requests": constants.COMEXSTAT_MAX_PHYSICAL_REQUESTS,
-        "download_timeout_seconds": constants.COMEXSTAT_DOWNLOAD_TIMEOUT_SECONDS,
+        "download_timeout_seconds": teto,
     }
     http: httpx.AsyncClient | None = None
     primary: BaseException | None = None
@@ -307,7 +308,7 @@ async def _open_resource(
             timeout=TIMEOUT, headers=headers, verify=context, follow_redirects=False
         )
         bundle.client_closed = False
-        async with asyncio.timeout(constants.COMEXSTAT_DOWNLOAD_TIMEOUT_SECONDS):
+        async with asyncio.timeout(teto):
             await _download(http, bundle, limit)
         logger.info(
             "comexstat_download_complete",
