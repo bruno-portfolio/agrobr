@@ -113,7 +113,7 @@ async def estacao(
 )
 ```
 
-Observações autenticadas de uma estação, com intervalo inclusivo e agregação horária ou diária. Períodos longos são divididos em blocos; falha de aquisição em qualquer bloco interrompe a consulta. HTTP 204 autenticado e medições naturalmente ausentes não são convertidos em zero. Período sem nenhuma observação levanta `SourceUnavailableError`, como o `historico()` de estação sem dados no ano.
+Observações autenticadas de uma estação, com intervalo inclusivo e agregação horária ou diária. Períodos longos são divididos em blocos; falha de aquisição em qualquer bloco interrompe a consulta ali, sem pedir os blocos seguintes. Campo de medição que não vem em nenhuma observação sai nulo, com `UserWarning` e aviso em `validation_warnings`. HTTP 204 autenticado e medições naturalmente ausentes não são convertidos em zero. Período sem nenhuma observação levanta `SourceUnavailableError`, como o `historico()` de estação sem dados no ano.
 
 ## `clima_uf`
 

@@ -65,6 +65,12 @@ class TestParseHistoricoCsv:
         with levanta_exatamente(ParseError, "Header"):
             parser.parse_historico_csv(csv_quebrado, "A701")
 
+    def test_medicao_renomeada_no_cabecalho_raises(self):
+        raw = _golden_bytes().replace(b"TEMPERATURA DO AR - BULBO SECO", b"TEMP. AR BULBO SECO")
+
+        with levanta_exatamente(ParseError, "A701 sem a medição temperatura do ar"):
+            parser.parse_historico_csv(raw, "A701")
+
 
 class TestHistoricoApi:
     @pytest.mark.asyncio

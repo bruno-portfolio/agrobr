@@ -45,6 +45,23 @@ class TestInmetHTTP204:
             await client.fetch_dados_estacao("A001", date(2024, 1, 1), date(2024, 1, 10))
 
 
+class TestInmetBlocos:
+    @pytest.mark.asyncio
+    async def test_falha_num_bloco_interrompe_a_coleta(self):
+        mock_client = make_mock_async_client()
+        mock_client.get = AsyncMock(return_value=make_mock_response(204))
+
+        with (
+            patch.dict("os.environ", {}, clear=True),
+            patch("agrobr.inmet.client.httpx.AsyncClient", return_value=mock_client),
+            pytest.raises(SourceUnavailableError, match="bloco 2022-01-01 a 2022-12-31") as caught,
+        ):
+            await client.fetch_dados_estacao("A001", date(2022, 1, 1), date(2024, 12, 31))
+
+        assert mock_client.get.await_count == 1
+        assert "AGROBR_INMET_TOKEN" in str(caught.value)
+
+
 class TestInmetToken:
     @pytest.mark.asyncio
     async def test_token_nao_vaza_em_erro(self):

@@ -206,6 +206,7 @@ async def estacao(
             "station_selection": {"mode": "codigo", "codigo": codigo},
         },
     )
+    _avisar_campos_ausentes(dados, meta.validation_warnings)
     return finalize_result(df, meta, as_polars=as_polars, return_meta=return_meta)
 
 
@@ -286,6 +287,7 @@ async def clima_uf(
             },
         },
     )
+    _avisar_campos_ausentes(dados, meta.validation_warnings)
     _avisar_chuva_parcial(df_mensal, meta.validation_warnings)
     return finalize_result(df_mensal, meta, as_polars=as_polars, return_meta=return_meta)
 
@@ -297,6 +299,19 @@ def _exigir_observacoes(dados: list[dict[str, Any]], alvo: str, inicio: date, fi
             url=client.BASE_URL,
             last_error=f"INMET sem observações {alvo} entre {inicio} e {fim}",
         )
+
+
+def _avisar_campos_ausentes(dados: list[dict[str, Any]], avisos: list[str]) -> None:
+    recebidos = set().union(*(linha.keys() for linha in dados))
+    ausentes = [campo for campo in parser.COLUNAS_HORARIAS if campo not in recebidos]
+    if not ausentes:
+        return
+    aviso = (
+        f"inmet: a API não trouxe {', '.join(ausentes)} em nenhuma observação; "
+        "as medições correspondentes saem nulas"
+    )
+    avisos.append(aviso)
+    warnings.warn(aviso, UserWarning, stacklevel=3)
 
 
 def _avisar_chuva_parcial(mensal: pd.DataFrame, avisos: list[str]) -> None:

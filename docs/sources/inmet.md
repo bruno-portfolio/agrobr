@@ -46,11 +46,11 @@ Nenhuma hora/dia ausente é imputada ou extrapolada. Grupos inteiramente sem med
 
 Cada consulta histórica baixa os ZIPs anuais necessários e seleciona os CSVs pertinentes. Tamanho varia por ano; os arquivos modernos podem ter dezenas de MB. O cache em memória do processo tem limite total de 256 MiB, TTL de 1 hora para o ano corrente e 24 horas para anos anteriores, com descarte dos menos recentemente usados. ZIPs acima do limite não são retidos. Consultas simultâneas do mesmo ano no mesmo loop compartilham a aquisição; não há cache persistente de revisões nem consulta HTTP condicional por ETag nesta implementação.
 
-Falhas HTTP/transporte, ZIP inválido, CRC ou layout abortam a consulta histórica; anos bem-sucedidos não são apresentados como uma aquisição completa após erro. Observações idênticas repetidas são contadas uma vez; registros conflitantes para estação/data/hora causam erro.
+Falhas HTTP/transporte, ZIP inválido, CRC ou layout abortam a consulta histórica (inclusive CSV sem uma das 13 medições horárias no cabeçalho, com `ParseError` que nomeia a estação e a medição); anos bem-sucedidos não são apresentados como uma aquisição completa após erro. Observações idênticas repetidas são contadas uma vez; registros conflitantes para estação/data/hora causam erro.
 
 `historico_periodo` diagnostica anos sem membro e pode retornar observações parciais ou vazio tipado. `historico` anual mantém erro quando o membro está ausente. `historico_uf` pode retornar vazio tipado quando não há observações da UF. Nenhum desses resultados prova ausência de dados em outros serviços do INMET.
 
-A API observacional divide intervalos longos em blocos de até 365 dias; falha de aquisição interrompe a consulta. HTTP 204 autenticado e valores naturalmente ausentes são tratados como ausência de observações, sem criar chuva zero.
+A API observacional divide intervalos longos em blocos de até 365 dias; falha de aquisição interrompe a consulta no bloco que falhou, e a mensagem traz o bloco. Campo de medição que não vem em nenhuma observação sai nulo com `UserWarning` e aviso em `validation_warnings`. HTTP 204 autenticado e valores naturalmente ausentes são tratados como ausência de observações, sem criar chuva zero.
 
 ## Proveniência e edição
 

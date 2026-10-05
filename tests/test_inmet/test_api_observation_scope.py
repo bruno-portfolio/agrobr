@@ -8,7 +8,7 @@ import pytest
 
 from agrobr import inmet
 from agrobr.exceptions import ParseError
-from agrobr.inmet import client
+from agrobr.inmet import client, parser
 from tests.helpers import levanta_exatamente
 
 
@@ -22,6 +22,15 @@ def observation(**changes):
         "TEM_MAX": "27",
         "TEM_MIN": "20",
         "CHUVA": "4",
+        "UMD_INS": "60",
+        "UMD_MAX": "70",
+        "UMD_MIN": "50",
+        "PRE_INS": "900",
+        "VEN_VEL": "2",
+        "VEN_DIR": "90",
+        "VEN_RAJ": "5",
+        "RAD_GLO": "1000",
+        "PTO_INS": "15",
         **changes,
     }
 
@@ -119,7 +128,7 @@ async def test_uf_desembrulha_erro_de_layout_da_estacao(monkeypatch):
 
 
 @pytest.mark.asyncio
-async def test_uf_sem_chuva_na_api_nao_conta_estacoes_nem_avisa(monkeypatch):
+async def test_uf_sem_chuva_na_api_nao_conta_estacoes_e_avisa_o_campo_ausente(monkeypatch):
     sem_chuva = {chave: valor for chave, valor in observation().items() if chave != "CHUVA"}
     monkeypatch.setattr(client, "fetch_dados_estacoes_uf", AsyncMock(return_value=[sem_chuva]))
     with warnings.catch_warnings(record=True) as avisos:
@@ -127,4 +136,13 @@ async def test_uf_sem_chuva_na_api_nao_conta_estacoes_nem_avisa(monkeypatch):
         mensal, meta = await inmet.clima_uf("df", 2024, return_meta=True)
     assert "estacoes_chuva" not in mensal.columns
     assert [str(aviso.message) for aviso in avisos if "Chuva mensal" in str(aviso.message)] == []
-    assert meta.validation_warnings == []
+    assert meta.validation_warnings == [
+        "inmet: a API não trouxe CHUVA em nenhuma observação; as medições correspondentes saem nulas"
+    ]
+    assert [str(aviso.message) for aviso in avisos if "não trouxe" in str(aviso.message)] == (
+        meta.validation_warnings
+    )
+
+
+def test_observacao_do_teste_traz_todos_os_campos_da_api():
+    assert set(parser.COLUNAS_HORARIAS) <= set(observation())

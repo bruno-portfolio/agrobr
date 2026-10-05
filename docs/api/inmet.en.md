@@ -113,7 +113,7 @@ async def estacao(
 )
 ```
 
-Authenticated observations for one station, with an inclusive interval and hourly or daily aggregation. Long intervals are split into chunks; an acquisition failure in any chunk aborts the query. Authenticated HTTP 204 and naturally missing measurements are not converted to zero. A period with no observation at all raises `SourceUnavailableError`, like `historico()` for a station without data in the year.
+Authenticated observations for one station, with an inclusive interval and hourly or daily aggregation. Long intervals are split into chunks; an acquisition failure in any chunk aborts the query there, without requesting the following chunks. A measurement field absent from every observation comes out null, with a `UserWarning` and an entry in `validation_warnings`. Authenticated HTTP 204 and naturally missing measurements are not converted to zero. A period with no observation at all raises `SourceUnavailableError`, like `historico()` for a station without data in the year.
 
 ## `clima_uf`
 

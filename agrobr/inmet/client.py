@@ -160,7 +160,6 @@ async def fetch_dados_estacao(
     async def _run(c: httpx.AsyncClient | None) -> list[dict[str, Any]]:
         all_data: list[dict[str, Any]] = []
         chunk_start = inicio
-        last_error: SourceUnavailableError | None = None
 
         while chunk_start <= fim:
             chunk_end = min(chunk_start + timedelta(days=MAX_DAYS_PER_REQUEST - 1), fim)
@@ -179,18 +178,21 @@ async def fetch_dados_estacao(
                     records=len(chunk_data),
                 )
             except SourceUnavailableError as e:
-                last_error = e
                 logger.warning(
                     "inmet_chunk_unavailable",
                     estacao=codigo,
                     error=str(e),
                     chunk_start=str(chunk_start),
                 )
+                raise SourceUnavailableError(
+                    source=e.source,
+                    url=e.url,
+                    last_error=f"bloco {chunk_start} a {chunk_end}: {e.last_error}",
+                    attempted_sources=e.attempted_sources,
+                ) from e
 
             chunk_start = chunk_end + timedelta(days=1)
 
-        if last_error is not None:
-            raise last_error
         return all_data
 
     if http is not None:

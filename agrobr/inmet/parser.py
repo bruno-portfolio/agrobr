@@ -336,6 +336,17 @@ def parse_historico_csv(raw: bytes, codigo: str) -> pd.DataFrame:
     rename = _mapear_header_historico(header)
     if len(set(rename.values())) != len(rename):
         raise ParseError(source="inmet", parser_version=2, reason="Colunas históricas duplicadas")
+    ausentes = [
+        prefixo
+        for prefixo, destino in HISTORICO_COLUNA_PREFIXOS.items()
+        if destino not in rename.values()
+    ]
+    if ausentes:
+        raise ParseError(
+            source="inmet",
+            parser_version=2,
+            reason=f"CSV histórico de {station.codigo} sem a medição {', '.join(ausentes)}",
+        )
     records: list[dict[str, Any]] = []
     for line_number, row in enumerate(reader, start=index + 2):
         if not row or not any(cell.strip() for cell in row):

@@ -46,11 +46,11 @@ Missing hours/days are never imputed or extrapolated. Entirely missing measureme
 
 Historical queries download the required annual ZIPs and select relevant CSVs. Sizes vary by year; modern archives can contain tens of MB. The in-process memory cache has a total limit of 256 MiB, with a 1-hour TTL for the current year and 24 hours for earlier years, evicting least recently used entries. Archives larger than the limit are not retained. Concurrent queries for a year in the same event loop share acquisition; this implementation does not provide persistent revision caching or conditional ETag requests.
 
-HTTP/transport failures, invalid ZIPs, CRC or layout errors abort the historical query; successful years are not presented as a complete acquisition after an error. Identical repeated observations are counted once; conflicting station/date/hour records cause an error.
+HTTP/transport failures, invalid ZIPs, CRC or layout errors abort the historical query (including a CSV whose header lacks one of the 13 hourly measurements, with a `ParseError` naming the station and the measurement); successful years are not presented as a complete acquisition after an error. Identical repeated observations are counted once; conflicting station/date/hour records cause an error.
 
 `historico_periodo` diagnoses years without members and may return partial observations or a typed empty frame. Annual `historico` retains an error when its station member is absent. `historico_uf` may return a typed empty frame if the archive has no state observations. None of these results establishes that other INMET services lack data.
 
-The observational API splits long intervals into chunks of up to 365 days; acquisition failures abort the query. Authenticated HTTP 204 and naturally missing values represent missing observations without inventing zero rainfall.
+The observational API splits long intervals into chunks of up to 365 days; an acquisition failure aborts the query at the failing chunk, and the message names the chunk. A measurement field absent from every observation comes out null, with a `UserWarning` and an entry in `validation_warnings`. Authenticated HTTP 204 and naturally missing values represent missing observations without inventing zero rainfall.
 
 ## Provenance and editions
 
