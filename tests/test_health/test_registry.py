@@ -2,9 +2,12 @@
 
 from __future__ import annotations
 
+import ssl
+
 import httpx
 
 from agrobr.constants import Fonte
+from agrobr.health import checker
 from agrobr.health.registry import (
     HEALTH_REGISTRY,
     SourceHealthConfig,
@@ -46,3 +49,25 @@ def test_sfb_consulta_pontos_ifn_ativos_no_df():
         "f": "json",
         "returnCountOnly": "true",
     }
+
+
+async def test_sonda_da_funai_completa_a_cadeia_com_o_intermediario_fixado(monkeypatch):
+    recebidos = []
+    original = httpx.AsyncClient
+
+    def fabrica(**kwargs):
+        recebidos.append(kwargs["verify"])
+        resposta = httpx.Response(200, text="<wfs:WFS_Capabilities/>")
+        return original(transport=httpx.MockTransport(lambda _: resposta), **kwargs)
+
+    monkeypatch.setattr(httpx, "AsyncClient", fabrica)
+    await checker._check_http(HEALTH_REGISTRY[Fonte.FUNAI])
+
+    (contexto,) = recebidos
+    assert isinstance(contexto, ssl.SSLContext)
+    assert contexto.verify_mode == ssl.CERT_REQUIRED and contexto.check_hostname
+    assert "Sectigo Public Server Authentication CA OV R36" in [
+        dict(campo[0] for campo in certificado["subject"]).get("commonName")
+        for certificado in contexto.get_ca_certs()
+    ]
+    assert HEALTH_REGISTRY[Fonte.INCRA].verify is True

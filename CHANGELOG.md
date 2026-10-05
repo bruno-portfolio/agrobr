@@ -679,6 +679,7 @@ Catálogo desta versão: **54 datasets e 89 contratos registrados**. Mudanças i
 - **ABIOVE, volume e receita ausentes** — volume em branco sai nulo na tabela detalhada (antes, 0), e no total mensal (`agregacao="mensal"`) volume e receita saem nulos quando falta o valor de algum produto (com valores conhecidos e ausentes no mesmo mês, o `MetaInfo` traz aviso); mês sem nenhuma receita sai nulo, não 0, e a coluna `receita_usd_mil` está sempre no total.
 - **ANTAQ, TEU em branco** — `antaq.movimentacao` preserva o TEU em branco como nulo (`Int64`); o "0" publicado na carga não conteinerizada segue 0. No `datasets.movimentacao_portuaria`, o grupo com TEU nulo sai nulo, como peso e quantidade.
 - **BCB crédito rural, origem no fallback** — quando o OData falha e o dado vem do BigQuery (Base dos Dados), `MetaInfo.source_url` aponta o conjunto `br-bcb-sicor` da Base dos Dados, não o endpoint OData que falhou.
+- **FUNAI, conexão recusada pelo certificado do GeoServer** — desde o certificado emitido em 14/09/2026, o GeoServer da FUNAI envia só o certificado do servidor, sem o intermediário da Sectigo, e `terras_indigenas` e `terras_indigenas_geo` falhavam com `SourceUnavailableError` (`CERTIFICATE_VERIFY_FAILED`) depois das tentativas. O agrobr completa a cadeia com o intermediário incluído no pacote, conferido pela impressão digital SHA-256 antes do uso, e mantém a validação integral, com hostname; `SSL_CERT_FILE` e `SSL_CERT_DIR` continuam valendo para as raízes.
 
 ### Security
 

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import hashlib
 import io
+import ssl
 import time
 from collections.abc import Callable
 from datetime import UTC, datetime
@@ -59,12 +60,16 @@ class Transport(Generic[ResourceT, RoleT]):
     def _close_failure(self, _resource: ResourceT, _exc: httpx.HTTPError) -> None:
         pass
 
+    def _verify(self) -> ssl.SSLContext | bool:
+        return True
+
     def session(self) -> httpx.AsyncClient:
         return httpx.AsyncClient(
             timeout=self.timeout,
             headers=user_agents.UserAgentRotator.get_bot_headers(),
             follow_redirects=False,
             event_hooks={"request": [self.request]},
+            verify=self._verify(),
         )
 
     async def request(self, request: httpx.Request) -> None:

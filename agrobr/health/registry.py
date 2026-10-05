@@ -10,6 +10,7 @@ from typing import Any, Literal
 from agrobr.ana import models as ana_models
 from agrobr.cnuc import client as cnuc_client
 from agrobr.constants import RNC_PUBLIC_URLS, URLS, Fonte
+from agrobr.funai import _tls as funai_tls
 from agrobr.icmbio import models as icmbio_models
 from agrobr.sfb import models as sfb_models
 from agrobr.utils import geo
@@ -117,6 +118,7 @@ def _build_registry() -> dict[Fonte, SourceHealthConfig]:
         },
         Fonte.FUNAI: {
             "url": _wfs_capabilities_url(URLS[Fonte.FUNAI]["geoserver"]),
+            "verify": funai_tls.build_context(),
         },
         Fonte.ICMBIO: {
             "url": geo.build_wfs_url(

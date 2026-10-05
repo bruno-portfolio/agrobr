@@ -1,12 +1,13 @@
 from __future__ import annotations
 
+import ssl
 from datetime import UTC, datetime
 from typing import Any, Literal
 
 from agrobr import constants
 from agrobr.http import settings, wfs_transport
 
-from . import acquisition
+from . import _tls, acquisition
 
 TIMEOUT = settings.get_timeout(read=120.0)
 Role = Literal["count_before", "page", "count_after"]
@@ -28,3 +29,6 @@ class Transport(wfs_transport.Transport[acquisition.FunaiResource, Role]):
 
     def _finished(self, resource: acquisition.FunaiResource) -> None:
         resource.finished_at = datetime.now(UTC)
+
+    def _verify(self) -> ssl.SSLContext:
+        return _tls.build_context()
