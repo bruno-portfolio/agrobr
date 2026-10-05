@@ -10,10 +10,10 @@ Fonte: **ICMBio**. Registro do contrato: `unidades_conservacao_federais`.
 |---|---|---|---|---|
 | `codigo` | str | Não | — | Código CNUC publicado |
 | `nome` | str | Não | — | — |
-| `categoria` | str | Não | — | — |
+| `categoria` | str | Não | — | Sigla da categoria, como publicada pelo ICMBio (`PARNA`, `ESEC`, `APA` etc.) |
 | `grupo` | str | Não | — | — |
 | `uf` | str | Não | — | Pode conter várias UFs |
-| `bioma` | str | Não | — | Pode conter vários biomas |
+| `bioma` | str | Não | — | Texto do ICMBio em caixa alta, que pode juntar biomas e a lei (`CERRADO E MATA ATLÂNTICA (LEI 11.428)`, `SISTEMA COSTEIRO-MARINHO`) |
 | `area_ha` | float | Sim | ha | Área da UC inteira, não a parte dentro da UF |
 | `ano_criacao` | int | Sim | — | — |
 | `ato_criacao` | str | Não | — | — |
@@ -23,6 +23,8 @@ Fonte: **ICMBio**. Registro do contrato: `unidades_conservacao_federais`.
 Todas as colunas estáveis devem existir, inclusive anuláveis e em resultados vazios. Mudanças incompatíveis exigem versão major do contrato.
 
 ## Semântica e proveniência
+
+`categoria` e `bioma` têm os mesmos nomes do [`unidades_conservacao`](unidades_conservacao.md), com outro domínio: lá, a categoria vem por extenso (`Parque`) e o bioma é derivado das áreas por bioma (`Cerrado/Mata Atlântica`). Normalize os dois antes de empilhar ou juntar os datasets.
 
 Retorno tabular sem geometria. UF e bioma podem conter mais de uma classificação publicada; códigos não recebem unicidade artificial. `bbox` usa longitude/latitude (oeste, sul, leste, norte). Cobertura, rota escolhida, recursos e hashes da fonte acompanham os metadados.
 

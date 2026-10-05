@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+from datetime import UTC, datetime
 from pathlib import Path
 from unittest.mock import AsyncMock, patch
 
@@ -60,3 +61,35 @@ async def test_official_cerrado_matches_tabular_and_compound_biomes():
     assert meta.records_count == 50
     helpers.conferir_corpo(meta, raw)
     assert (result["bioma"] != "CERRADO").any()
+
+
+@pytest.mark.asyncio
+async def test_geo_registra_a_selecao_e_a_hora_da_aquisicao(monkeypatch):
+    pytest.importorskip("geopandas")
+    raw = (FIXTURE / "attributes.json").read_bytes()
+    aquisicao = datetime(2026, 9, 5, 12, 0, tzinfo=UTC)
+
+    class Relogio:
+        @staticmethod
+        def now(_tz):
+            return aquisicao
+
+    monkeypatch.setattr(api, "datetime", Relogio)
+    hits = b'<wfs:FeatureCollection xmlns:wfs="http://www.opengis.net/wfs" numberOfFeatures="347"/>'
+    monkeypatch.setattr(
+        api.client, "fetch_ucs_count", AsyncMock(return_value=(hits, "https://test/hits"))
+    )
+    monkeypatch.setattr(
+        api.client, "fetch_ucs_geo", AsyncMock(return_value=(raw, "https://inde.gov.br"))
+    )
+
+    _, meta = await api.ucs_geo(bioma="Cerrado", grupo="PI", return_meta=True)
+
+    assert meta.source_details["query"] == {
+        "uf": None,
+        "grupo": "PI",
+        "bioma": "Cerrado",
+        "bbox": None,
+    }
+    assert meta.source_details["filtros_locais"] == {"grupo": "PI", "bioma": "Cerrado"}
+    assert meta.fetched_at == meta.fetch_timestamp == aquisicao

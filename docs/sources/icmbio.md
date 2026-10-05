@@ -55,7 +55,7 @@ asyncio.run(main())
 | categoria | str | Sigla da categoria (PARNA, ESEC, FLONA, etc) |
 | grupo | str | PI (protecao integral) ou US (uso sustentavel) |
 | uf | str | UF(s) abrangidas (separadas por /) |
-| bioma | str | Bioma IBGE |
+| bioma | str | Texto publicado pelo ICMBio, em caixa alta (ex.: `CERRADO E MATA ATLÂNTICA (LEI 11.428)`) |
 | area_ha | float | Area em hectares |
 | ano_criacao | Int64 | Ano de criacao |
 | ato_criacao | str | Ato legal de criacao |
@@ -78,3 +78,8 @@ O WFS devolve 11 campos; `FID` e `ogc_fid` ficam fora da saída pública. O XSD 
 `ucs_geo` pede `srsName=EPSG:4326` e confere o CRS que o corpo declara: se vier
 outro (o nativo da camada é EPSG:4674), levanta `ParseError` em vez de publicar
 as coordenadas com o rótulo 4326.
+
+Em `ucs_geo`, área e ano fora do formato numérico levantam `ParseError`, como no `ucs`. Os filtros `uf`, `grupo` e
+`bioma` valem sobre a camada baixada (no `ucs`, vão na consulta ao servidor): o `MetaInfo` registra a seleção em
+`source_details["query"]`, os filtros aplicados no resultado em `source_details["filtros_locais"]` e a hora da aquisição
+em `fetched_at`/`fetch_timestamp`.

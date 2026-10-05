@@ -11,6 +11,15 @@ GEO = Path(__file__).parents[1] / "golden_data/icmbio/ucs_geo_sample/response.ge
 
 
 class TestParseUcsGeojson:
+    def test_numero_fora_do_formato_levanta_como_no_tabular(self):
+        from agrobr.exceptions import ParseError
+        from agrobr.icmbio.parser import parse_ucs_geojson
+
+        dados = json.loads(GEO.read_bytes())
+        dados["features"][0]["properties"]["areahaalb"] = "12,5"
+        with pytest.raises(ParseError, match="area_ha='12,5' fora do formato"):
+            parse_ucs_geojson(json.dumps(dados).encode())
+
     def test_empty_features_returns_empty_geodataframe(self):
         from agrobr.icmbio.parser import parse_ucs_geojson
 

@@ -699,6 +699,7 @@ Catálogo desta versão: **54 datasets e 89 contratos registrados**. Mudanças i
 - **Modo determinístico, formato do snapshot** — `deterministic()` e `deterministic_decorator()` aceitavam `"20241231"` e `"2024-W01-1"` (o `date.fromisoformat` do Python 3.11 aceita os dois), e o `preco_diario` terminava num `ValueError` cru depois da consulta. Agora só `AAAA-MM-DD` entra; o resto levanta `InvalidParameterError` na abertura do contexto.
 - **INMET, medição renomeada** — no ZIP histórico, CSV sem uma das 13 medições horárias no cabeçalho levanta `ParseError` com a estação e a medição; antes, a coluna renomeada saía nula, igual a estação sem sensor, até o `datasets.clima`. Na API, campo de medição que não vem em nenhuma observação sai nulo com `UserWarning` e aviso em `validation_warnings`.
 - **Acervo Fundiário — reparo de geometria registrado** — as variantes `_geo` reparavam polígono inválido com `make_valid` só no log; agora o reparo sai em `validation_warnings` e em `source_details["topology_repaired"]` (a contagem), e a doc da fonte avisa que o polígono entregue difere do publicado pelo INCRA.
+- **ICMBio — `ucs_geo` igual ao `ucs`** — área e ano fora do formato numérico levantam `ParseError`, como no tabular, em vez de virar nulo calado; o `MetaInfo` passa a registrar a seleção (`source_details["query"]`), os filtros aplicados no resultado (`source_details["filtros_locais"]`) e a hora da aquisição em `fetched_at`/`fetch_timestamp`, e não a da montagem.
 
 ### Security
 

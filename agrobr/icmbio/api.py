@@ -270,6 +270,7 @@ async def ucs_geo(
             url=count_url,
         )
     geojson_bytes, source_url = await client.fetch_ucs_geo(bbox=bbox)
+    acquired_at = datetime.now(UTC)
     fetch_ms = int((time.monotonic() - t0) * 1000)
 
     t1 = time.monotonic()
@@ -304,7 +305,17 @@ async def ucs_geo(
             selected_source="icmbio_wfs_geo",
             raw_content_hash=hashlib.sha256(geojson_bytes).hexdigest(),
             raw_content_size=len(geojson_bytes),
+            source_details={
+                "query": {"uf": uf, "grupo": grupo, "bioma": bioma, "bbox": bbox},
+                "filtros_locais": {
+                    nome: valor
+                    for nome, valor in (("uf", uf), ("grupo", grupo), ("bioma", bioma))
+                    if valor is not None
+                },
+            },
         )
+        meta.fetched_at = acquired_at
+        meta.fetch_timestamp = acquired_at
         meta.source_details["coverage"] = {
             "status": "count_reconciled",
             "expected_features": expected,

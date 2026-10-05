@@ -24,6 +24,8 @@ All stable columns must exist, including nullable columns and empty results. Bre
 
 ## Semantics and provenance
 
+`categoria` is the category acronym as ICMBio publishes it (`PARNA`, `ESEC`, `APA`, etc.), and `bioma` is ICMBio's upper-case text, which may join biomes and the law (`CERRADO E MATA ATLÂNTICA (LEI 11.428)`, `SISTEMA COSTEIRO-MARINHO`). The names match those of [`unidades_conservacao`](unidades_conservacao.md), with another domain: there, the category is spelled out (`Parque`) and the biome is derived from the per-biome areas (`Cerrado/Mata Atlântica`). Normalize both before stacking or joining the datasets.
+
 Tabular output without geometry. State and biome fields may contain multiple published classifications; codes are not assigned artificial uniqueness. `bbox` uses longitude/latitude (west, south, east, north). Metadata retains source coverage, selected route, resources and hashes.
 
 `return_meta=True` returns data and `MetaInfo`, including attempted/selected sources, acquisition time, contract version and source diagnostics. These current publications do not support selecting a historical revision through `deterministic`.

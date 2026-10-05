@@ -32,7 +32,7 @@ All stable columns must exist, including nullable columns and empty results. Bre
 
 Tabular output without geometry; geometry is available from `cnuc.ucs_geo`. The layer only has units with a boundary registered in CNUC: units without a polygon and buffer zones are left out. `uf` may hold more than one state, and the `uf=` filter matches the state code inside the list. The `municipio=` filter matches the full name of each published municipality against the IBGE register, never a substring; lists cut by the source and spellings that do not match IBGE go to `MetaInfo.validation_warnings` and to a `UserWarning`. `bbox` uses longitude/latitude (west, south, east, north).
 
-`bioma` is derived: the biomes (Amazônia, Caatinga, Cerrado, Mata Atlântica, Pampa and Pantanal) with an area greater than zero in the layer's per-biome area fields. Marine area is left out, and a unit without published per-biome area has a null `bioma`.
+`bioma` is derived: the biomes (Amazônia, Caatinga, Cerrado, Mata Atlântica, Pampa and Pantanal) with an area greater than zero in the layer's per-biome area fields. Marine area is left out, and a unit without published per-biome area has a null `bioma`. [`unidades_conservacao_federais`](unidades_conservacao_federais.md) uses the same names with another domain (`categoria` as an acronym, such as `PARNA`, and `bioma` as ICMBio's text): normalize before stacking or joining the two.
 
 `return_meta=True` returns data and `MetaInfo`, including attempted/selected sources, acquisition time, contract version and source diagnostics (service count before download, reconciled with the result). The layer is current and does not support selecting a historical revision through `deterministic`.
 

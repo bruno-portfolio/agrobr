@@ -32,7 +32,7 @@ Todas as colunas estáveis devem existir, inclusive anuláveis e em resultados v
 
 Retorno tabular sem geometria; a geometria está em `cnuc.ucs_geo`. A camada só tem as UCs com limite cadastrado no CNUC: as UCs sem polígono e as zonas de amortecimento não entram. `uf` pode ter mais de uma sigla, e o filtro `uf=` casa a sigla dentro da lista. O filtro `municipio=` casa o nome inteiro de cada município publicado com o cadastro do IBGE, nunca por pedaço; listas cortadas pela fonte e grafias que não casam com o IBGE vão para `MetaInfo.validation_warnings` e para um `UserWarning`. `bbox` usa longitude/latitude (oeste, sul, leste, norte).
 
-`bioma` é derivado: são os biomas (Amazônia, Caatinga, Cerrado, Mata Atlântica, Pampa e Pantanal) que têm área maior que zero nas colunas de área por bioma da camada. A área marinha fica de fora, e a UC sem área por bioma publicada sai com `bioma` nulo.
+`bioma` é derivado: são os biomas (Amazônia, Caatinga, Cerrado, Mata Atlântica, Pampa e Pantanal) que têm área maior que zero nas colunas de área por bioma da camada. A área marinha fica de fora, e a UC sem área por bioma publicada sai com `bioma` nulo. O [`unidades_conservacao_federais`](unidades_conservacao_federais.md) usa os mesmos nomes com outro domínio (`categoria` em sigla, como `PARNA`, e `bioma` como o texto do ICMBio): normalize antes de empilhar ou juntar os dois.
 
 `return_meta=True` retorna dados e `MetaInfo`, com fontes tentadas/selecionada, aquisição, versão contratual e diagnósticos da fonte (contagem do serviço antes do download, conciliada com o retorno). A camada é corrente e não permite selecionar uma revisão histórica via `deterministic`.
 

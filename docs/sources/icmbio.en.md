@@ -55,7 +55,7 @@ asyncio.run(main())
 | categoria | str | Category abbreviation (PARNA, ESEC, FLONA, etc) |
 | grupo | str | PI (strict protection) or US (sustainable use) |
 | uf | str | State(s) covered (separated by /) |
-| bioma | str | IBGE biome |
+| bioma | str | Text published by ICMBio, in upper case (e.g. `CERRADO E MATA ATLÂNTICA (LEI 11.428)`) |
 | area_ha | float | Area in hectares |
 | ano_criacao | Int64 | Creation year |
 | ato_criacao | str | Legal act of creation |
@@ -78,3 +78,8 @@ The WFS returns 11 fields; `FID` and `ogc_fid` are omitted from public output. T
 `ucs_geo` requests `srsName=EPSG:4326` and checks the CRS declared by the body:
 if another one comes back (the layer's native CRS is EPSG:4674), it raises
 `ParseError` instead of publishing the coordinates labeled as 4326.
+
+In `ucs_geo`, an area or year out of numeric format raises `ParseError`, as in `ucs`. The `uf`, `grupo` and `bioma`
+filters apply to the downloaded layer (in `ucs`, they go into the server query): `MetaInfo` records the selection in
+`source_details["query"]`, the filters applied to the result in `source_details["filtros_locais"]` and the acquisition
+time in `fetched_at`/`fetch_timestamp`.

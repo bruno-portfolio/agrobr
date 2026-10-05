@@ -102,8 +102,25 @@ def parse_ucs_geojson(data: bytes) -> Any:
         return gdf.astype({name: DTYPES[name] for name in gdf.columns if name in DTYPES})
 
     gdf = gdf.rename(columns=RENAME_MAP)
-    gdf["area_ha"] = pd.to_numeric(gdf["area_ha"], errors="coerce")
-    gdf["ano_criacao"] = pd.to_numeric(gdf["ano_criacao"], errors="coerce").astype("Int64")
+    for coluna in ("area_ha", "ano_criacao"):
+        bruto = gdf[coluna].mask(gdf[coluna].eq(""))
+        valores = pd.to_numeric(bruto, errors="coerce")
+        invalidos = bruto.notna() & valores.isna()
+        if invalidos.any():
+            raise ParseError(
+                source="icmbio",
+                parser_version=PARSER_VERSION,
+                reason=f"UC invalida: {coluna}={bruto[invalidos].iloc[0]!r} fora do formato numérico",
+            )
+        gdf[coluna] = valores
+    try:
+        gdf["ano_criacao"] = gdf["ano_criacao"].astype("Int64")
+    except TypeError as exc:
+        raise ParseError(
+            source="icmbio",
+            parser_version=PARSER_VERSION,
+            reason="UC invalida: ano_criacao não inteiro",
+        ) from exc
     gdf["grupo"] = gdf["grupo"].str.upper()
 
     output_cols = [c for c in COLUNAS_SAIDA_GEO if c in gdf.columns]
