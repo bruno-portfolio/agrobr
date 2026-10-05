@@ -81,6 +81,7 @@ class HealthReport:
                     "status": r.status.value,
                     "latency_ms": r.latency_ms,
                     "message": r.message,
+                    "category": r.category,
                     "details": r.details,
                     "timestamp": r.timestamp.isoformat() + "Z",
                 }

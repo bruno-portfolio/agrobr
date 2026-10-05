@@ -5,6 +5,7 @@ from __future__ import annotations
 import ssl
 
 import httpx
+import pytest
 
 from agrobr.constants import Fonte
 from agrobr.health import checker
@@ -91,3 +92,8 @@ async def test_sonda_do_comexstat_valida_a_cadeia_com_o_intermediario_fixado(mon
         dict(campo[0] for campo in certificado["subject"]).get("commonName")
         for certificado in contexto.get_ca_certs()
     ]
+
+
+def test_config_recusa_expected_status_que_nao_tinha_efeito():
+    with pytest.raises(TypeError, match="expected_status"):
+        SourceHealthConfig(Fonte.CEPEA, "https://exemplo", expected_status=204)

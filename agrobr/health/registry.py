@@ -23,7 +23,6 @@ class SourceHealthConfig:
     url: str
     method: Literal["GET", "HEAD"] = "GET"
     timeout: float = 15.0
-    expected_status: int = 200
     follow_redirects: bool = True
     verify: bool | ssl.SSLContext = True
     has_deep_check: bool = False

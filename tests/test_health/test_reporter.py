@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 from datetime import datetime
 from unittest.mock import AsyncMock, patch
 
@@ -164,3 +165,20 @@ class TestGenerateReport:
         ):
             await generate_report(save_path=tmp_path / "saida.yaml", format="yaml")
         checks.assert_not_awaited()
+
+
+def test_json_traz_a_categoria_de_cada_checagem():
+    bloqueio = CheckResult(
+        source=Fonte.CEPEA,
+        status=CheckStatus.WARNING,
+        latency_ms=10.0,
+        message="HTTP 403",
+        details={},
+        timestamp=datetime(2024, 6, 15, 12, 0, 0),
+        category="soft_block",
+    )
+    report = HealthReport([bloqueio, _make_result(Fonte.CONAB)])
+
+    categorias = [check["category"] for check in json.loads(report.to_json())["checks"]]
+
+    assert categorias == ["soft_block", None]
