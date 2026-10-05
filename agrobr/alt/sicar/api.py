@@ -7,11 +7,10 @@ import time
 from collections.abc import AsyncGenerator
 from typing import TYPE_CHECKING, Any, Literal, overload
 
-import httpx
 import pandas as pd
 
 from agrobr import _log, contracts
-from agrobr.exceptions import InvalidParameterError, SourceUnavailableError
+from agrobr.exceptions import InvalidParameterError
 from agrobr.models import MetaInfo
 from agrobr.utils.geo import check_geopandas
 from agrobr.utils.result import (
@@ -24,7 +23,6 @@ from agrobr.utils.result import (
 
 from . import client, models, parser
 from .models import (
-    MAX_FEATURES_WARNING,
     UFS_SEM_DATA_ATUALIZACAO,
     WFS_BASE,
 )
@@ -120,24 +118,6 @@ def _check_atualizado_apos_uf(uf: str, atualizado_apos: str | None) -> None:
         )
 
 
-async def _warn_consulta_grande(uf_upper: str, cql: str | None, max_registros: int | None) -> None:
-    try:
-        async with client.make_session() as http:
-            total = await client.fetch_hits(uf_upper, cql, client=http)
-        effective = total if max_registros is None else min(total, max_registros)
-        if effective > MAX_FEATURES_WARNING:
-            logger.warning(
-                "sicar_geo_large_query",
-                uf=uf_upper,
-                total=total,
-                max_registros=max_registros,
-                threshold=MAX_FEATURES_WARNING,
-                hint="Considere definir max_registros ou filtrar por municipio para reduzir volume",
-            )
-    except (httpx.HTTPError, SourceUnavailableError):
-        logger.warning("sicar_geo_hit_count_check_failed", uf=uf_upper, exc_info=True)
-
-
 @overload
 async def imoveis(
     uf: str,
@@ -225,21 +205,6 @@ async def imoveis(
         criado_apos=criado_apos,
         atualizado_apos=atualizado_apos,
     )
-
-    if cod_municipio is None:
-        try:
-            async with client.make_session() as http:
-                total = await client.fetch_hits(uf_upper, cql, client=http)
-            if total > MAX_FEATURES_WARNING:
-                logger.warning(
-                    "sicar_large_query",
-                    uf=uf_upper,
-                    total=total,
-                    threshold=MAX_FEATURES_WARNING,
-                    hint="Considere filtrar por municipio para reduzir volume",
-                )
-        except (httpx.HTTPError, SourceUnavailableError):
-            logger.warning("sicar_hit_count_check_failed", uf=uf_upper, exc_info=True)
 
     t0 = time.monotonic()
     validation_warnings: list[str] = []
@@ -352,9 +317,6 @@ async def imoveis_geo(
         criado_apos=criado_apos,
         atualizado_apos=atualizado_apos,
     )
-
-    if cod_municipio is None:
-        await _warn_consulta_grande(uf_upper, cql, max_registros)
 
     validation_warnings: list[str] = []
     t0 = time.monotonic()

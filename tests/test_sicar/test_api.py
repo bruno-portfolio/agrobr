@@ -13,7 +13,6 @@ from typing import Any
 from unittest.mock import AsyncMock, Mock
 from xml.etree import ElementTree
 
-import httpx
 import pandas as pd
 import pytest
 
@@ -21,7 +20,7 @@ from agrobr import contracts
 from agrobr.alt import sicar
 from agrobr.alt.sicar import api, client, parser
 from agrobr.alt.sicar.models import COLUNAS_IMOVEIS_GEO
-from agrobr.exceptions import ParseError, SourceUnavailableError
+from agrobr.exceptions import ParseError
 from agrobr.utils import geo as geo_utils
 from tests import helpers
 from tests.helpers import collect_failures
@@ -592,49 +591,31 @@ async def test_resumo_estadual_rotula_a_contagem_de_feicoes_publicadas(
     ]
 
 
-async def test_sondagem_de_volume_avisa_e_nao_derruba_a_consulta(monkeypatch: pytest.MonkeyPatch):
-    body = geo_capture("df_geo_srs4326_count3.json")
+async def test_contagem_sai_uma_vez_e_o_aviso_de_volume_vem_do_client(
+    monkeypatch: pytest.MonkeyPatch,
+):
     tabular = gzip.decompress((R11 / "sicar_df_001.json.gz").read_bytes())
-    monkeypatch.setattr(client, "fetch_imoveis_geo", AsyncMock(return_value=([body], URL)))
-    monkeypatch.setattr(client, "fetch_imoveis", AsyncMock(return_value=([tabular], URL)))
-    indisponivel = SourceUnavailableError(source="sicar", last_error="TLS")
-    casos: list[tuple[str, dict[str, Any], int | Exception, int, str | None]] = [
-        ("imoveis", {}, 200_000, 1, "sicar_large_query"),
-        ("imoveis", {}, 100_000, 1, None),
-        ("imoveis", {"municipio": 5300108}, 0, 0, None),
-        ("imoveis", {}, indisponivel, 1, "sicar_hit_count_check_failed"),
-        ("imoveis_geo", {"max_registros": None}, 200_000, 1, "sicar_geo_large_query"),
-        ("imoveis_geo", {"max_registros": 5_000}, 200_000, 1, None),
-        ("imoveis_geo", {"max_registros": 150_000}, 500_000, 1, "sicar_geo_large_query"),
-        ("imoveis_geo", {"max_registros": None}, 100_000, 1, None),
-        ("imoveis_geo", {"municipio": "Brasília", "max_registros": None}, 0, 0, None),
-        (
-            "imoveis_geo",
-            {"max_registros": None},
-            httpx.ConnectError("boom"),
-            1,
-            "sicar_geo_hit_count_check_failed",
-        ),
-        (
-            "imoveis_geo",
-            {"max_registros": None},
-            indisponivel,
-            1,
-            "sicar_geo_hit_count_check_failed",
-        ),
+    geo = json.loads(geo_capture("df_geo_srs4326_count3.json"))
+    geo.update(numberMatched=3, totalFeatures=3)
+    corpos = {"imoveis": tabular, "imoveis_geo": json.dumps(geo).encode()}
+    casos: list[tuple[str, dict[str, Any], int, int, int, str | None]] = [
+        ("imoveis", {}, 62, 61, 1, "sicar_large_query"),
+        ("imoveis", {}, 62, 62, 1, None),
+        ("imoveis_geo", {"max_registros": None}, 3, 2, 1, "sicar_geo_large_query"),
+        ("imoveis_geo", {"max_registros": None}, 3, 3, 1, None),
+        ("imoveis_geo", {"max_registros": 5_000}, 3, 2, 0, None),
     ]
     with collect_failures() as check:
-        for nome, filtros, sondagem, chamadas, evento in casos:
-            with check((nome, filtros, sondagem)):
+        for nome, filtros, total, limiar, chamadas, evento in casos:
+            with check((nome, filtros, limiar)):
                 logger = Mock()
-                if isinstance(sondagem, Exception):
-                    hits = AsyncMock(side_effect=sondagem)
-                else:
-                    hits = AsyncMock(return_value=sondagem)
-                monkeypatch.setattr(api, "logger", logger)
+                hits = AsyncMock(return_value=total)
+                monkeypatch.setattr(client, "logger", logger)
+                monkeypatch.setattr(client.models, "MAX_FEATURES_WARNING", limiar)
                 monkeypatch.setattr(client, "fetch_hits", hits)
+                monkeypatch.setattr(client, "fetch_wfs", AsyncMock(return_value=corpos[nome]))
                 frame = await getattr(api, nome)("DF", **filtros)
-                assert len(frame) == (3 if nome == "imoveis_geo" else 62)
+                assert len(frame) == total
                 avisos = [call.args[0] for call in logger.warning.call_args_list]
                 assert avisos == ([] if evento is None else [evento])
                 assert hits.await_count == chamadas

@@ -131,6 +131,14 @@ async def fetch_imoveis(
     async with make_session() as http:
         total = await fetch_hits(uf, cql_filter, client=http)
         logger.info("sicar_hits", uf=uf, total=total, cql_filter=cql_filter)
+        if total > models.MAX_FEATURES_WARNING:
+            logger.warning(
+                "sicar_large_query",
+                uf=uf,
+                total=total,
+                threshold=models.MAX_FEATURES_WARNING,
+                hint="Considere filtrar por municipio para reduzir volume",
+            )
 
         if total == 0:
             if source_details is not None:
@@ -268,6 +276,15 @@ async def stream_imoveis_geo(
         logger.info("sicar_geo_hits", uf=uf, total=total, cql_filter=cql_filter)
 
         limit = min(total, max_features) if max_features is not None else total
+        if limit > models.MAX_FEATURES_WARNING:
+            logger.warning(
+                "sicar_geo_large_query",
+                uf=uf,
+                total=total,
+                max_registros=max_features,
+                threshold=models.MAX_FEATURES_WARNING,
+                hint="Considere definir max_registros ou filtrar por municipio para reduzir volume",
+            )
 
         base_url = _build_wfs_url(
             uf,
