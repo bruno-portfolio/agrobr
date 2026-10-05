@@ -20,7 +20,7 @@ classificação do dado chega ao `MetaInfo.license`.
 | **ANDA** | Fonte privada; licença de reutilização não localizada | Não comprovado por licença | `zona_cinza` | [Termos/fundamento](https://anda.org.br/recursos/) |
 | **ANTAQ** | Estatístico Aquaviário: dados abertos no PDA | Sim, nas condições descritas | `livre` | [Termos/fundamento](https://www.gov.br/antaq/pt-br/acesso-a-informacao/dados-abertos/PDA20262028ANTAQOCR.pdf) |
 | **ANP Diesel** | Preços e vendas: política de dados abertos, PDA 2026–2028 | Sim, nas condições descritas | `livre` | [Termos/fundamento](https://www.gov.br/anp/pt-br/centrais-de-conteudo/dados-abertos/arquivos/home/pda-2026-2028.pdf) |
-| **ANTT Pedagio** | CC BY — versão não indicada nos dois catálogos | Sim, nas condições descritas | `livre` | [Termos/fundamento](https://dados.antt.gov.br/api/3/action/package_show?id=volume-trafego-praca-pedagio) |
+| **ANTT Pedágio** | CC BY — versão não indicada nos dois catálogos | Sim, nas condições descritas | `livre` | [Termos/fundamento](https://dados.antt.gov.br/api/3/action/package_show?id=volume-trafego-praca-pedagio) |
 | **MAPA PSR** | CC BY — versão não indicada no catálogo PSR | Sim, nas condições descritas | `livre` | [Termos/fundamento](https://dados.agricultura.gov.br/api/3/action/package_search?fq=id:baefdc68-9bad-4204-83e8-f2888b79ab48&rows=0&facet.field=%5B%22license_id%22%5D) |
 | **SICAR** | Dados públicos federais; licença CC da base não comprovada | Sim, com fonte e proveniência | `livre` | [Termos/base](https://consultapublica.car.gov.br/publico/geoservicos/index) |
 | **ABIOVE** | Fonte privada; licença de reutilização não localizada | Não comprovado por licença | `zona_cinza` | [Termos/fundamento](https://abiove.org.br/estatisticas/) |
@@ -46,18 +46,18 @@ classificação do dado chega ao `MetaInfo.license`.
 | **MAPA Agrofit (Defensivos)** | CC BY, sem versão; CSVs de formulados e técnicos | Sim, nas condições descritas | `livre` | [Termos/fundamento](https://dados.agricultura.gov.br/api/3/action/package_show?id=sistema-de-agrotoxicos-fitossanitarios-agrofit) |
 | **ZARC** | CC BY, sem versão; tábua de risco do ZARC | Sim, nas condições descritas | `livre` | [Termos/fundamento](https://dados.agricultura.gov.br/api/3/action/package_show?id=tabua-de-risco-zoneamento-agricola-de-risco-climatico) |
 | **ANA/SNIRH** | Dados públicos; base legal e política institucional | Sim, nas condições descritas | `livre` | [Termos/fundamento](https://www.gov.br/ana/pt-br/todos-os-documentos-do-portal/documentos-cor/planos-de-dados-abertos/plano-de-dados-abertos-2025-2027) |
-| **FUNAI Terras Indigenas** | Termo específico da camada: reprodução com citação | Sim, nas condições descritas | `livre` | [Termos/fundamento](https://www.gov.br/funai/pt-br/atuacao/terras-indigenas/geoprocessamento-e-mapas) |
+| **FUNAI Terras Indígenas** | Termo específico da camada: reprodução com citação | Sim, nas condições descritas | `livre` | [Termos/fundamento](https://www.gov.br/funai/pt-br/atuacao/terras-indigenas/geoprocessamento-e-mapas) |
 | **IBAMA Embargos** | Outra (Aberta), com selo Open Definition no catálogo | Sim, preservando fonte e condições | `livre` | [Termos/base](https://dadosabertos.ibama.gov.br/dataset/fiscalizacao-termo-de-embargo) |
 | **ICMBio UCs Federais** | Política de dados abertos para limites federais | Sim, nas condições descritas | `livre` | [Termos/fundamento](https://www.gov.br/icmbio/pt-br/acesso-a-informacao/dados-abertos) |
 | **CNUC (MMA)** | WFS: base legal; catálogo CKAN: CC BY sem versão | Sim, nas condições descritas | `livre` | [Termos/fundamento](https://dados.mma.gov.br/api/3/action/package_show?id=unidadesdeconservacao) |
 | **INCRA Quilombolas** | Dados públicos do INCRA; base legal federal | Sim, nas condições descritas | `livre` | [Termos/fundamento](https://www.gov.br/incra/pt-br/acesso-a-informacao/dados-abertos) |
 | **Lista Suja** | CC BY-ND 3.0 no portal; sem licença individual dos arquivos | Sim, nas condições descritas | `livre` | [Termos/fundamento](https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/inspecao-do-trabalho/areas-de-atuacao/combate-ao-trabalho-escravo-e-analogo-ao-de-escravo) |
 | **MapBiomas Alerta** | CC BY-SA 3.0 BR — dados, inclusive via API | Sim, com atribuição e SA nas adaptações | `livre` | [Termos/base](https://plataforma.alerta.mapbiomas.org/terms) |
-| **SFB** | Dados públicos federais: CNFP, concessões e IFN; sem CC nominal comprovada | Sim, preservando fonte e proveniência | `livre` | [Termos/base](https://mapas.florestal.gov.br) |
+| **SFB** | Dados públicos federais: CNFP, concessões e IFN; sem CC nominal comprovada | Sim, preservando fonte e proveniência | `livre` | [Termos/base](https://www.gov.br/florestal/pt-br/acesso-a-informacao/dados-abertos/disponibilizacao-das-bases-de-dados-programadas-para-abertura-no-pda-do-orgao) |
 | **RNC/CultivarWeb** | Cadastros públicos RNC/SNPC; sem CC nominal | Sim, nas condições descritas | `livre` | [Termos/fundamento](https://sistemas.agricultura.gov.br/snpc/cultivarweb/cultivares_registradas.php) |
 | **EMBRAPA Solos** | CC BY-NC 3.0 BR nas duas camadas | Requer autorização do titular | `nc` | [Termos/fundamento](https://geoinfo.dados.embrapa.br/datasets/geoinfo_data%3Ageonode%3Aperfis_pronasolos_2020/metadata_detail) |
-| **Acervo Fundiario/INCRA** | Dados públicos SIGEF/SNCI/assentamentos; base legal e INCRA | Sim, nas condições descritas | `livre` | [Termos/fundamento](https://www.gov.br/incra/pt-br/acesso-a-informacao/dados-abertos) |
-| **Fundacao Rio Verde** | Fonte privada; licença de reutilização não localizada | Não comprovado por licença | `zona_cinza` | [Termos/fundamento](https://fundacaorioverde.com.br/publicacoes/) |
+| **Acervo Fundiário/INCRA** | Dados públicos SIGEF/SNCI/assentamentos; base legal e INCRA | Sim, nas condições descritas | `livre` | [Termos/fundamento](https://www.gov.br/incra/pt-br/acesso-a-informacao/dados-abertos) |
+| **Fundação Rio Verde** | Fonte privada; licença de reutilização não localizada | Não comprovado por licença | `zona_cinza` | [Termos/fundamento](https://fundacaorioverde.com.br/publicacoes/) |
 | **UNICA** | Fonte privada; licença de reutilização não localizada | Não comprovado por licença | `zona_cinza` | [Termos/fundamento](https://unicadata.com.br/) |
 
 ### Legenda de Classificação
@@ -183,7 +183,7 @@ O Estatístico Aquaviário é identificado como base aberta no PDA 2026–2028 d
 
 A Série Histórica de Preços de Combustíveis e de GLP e as Vendas de derivados de petróleo e biocombustíveis são identificadas como conjuntos já abertos no PDA ANP 2026–2028. A classificação livre decorre dessa política específica, lida com o Decreto 8.777/2016. Os termos gerais do portal contêm restrições comerciais; foram confrontados com a política dos conjuntos, não declarados inexistentes. Não foi comprovada CC nominal. Citar ANP, família, período, edição, unidade e alterações. A conclusão não abrange todos os sistemas ou serviços da ANP.
 
-### ANTT Pedagio
+### ANTT Pedágio
 
 Os dois conjuntos ANTT, Volume de tráfego por praça de pedágio e Praça de pedágio, declaram Creative Commons Atribuição. Uso comercial com crédito e indicação de alterações. A versão não é informada nos catálogos; não a completar como 4.0. Ao combinar os conjuntos, conservar a identificação e o link de ambos.
 
@@ -271,11 +271,11 @@ CNFP, concessões florestais e IFN são classificados como `livre` pela base fed
 
 Os metadados de perfis_pronasolos_2020 e brasil_solos_5m_20201104 declaram separadamente CC BY-NC 3.0 BR. Manter atribuição à Embrapa e aos autores indicados, camada/edição, link da licença e alterações. Uso comercial depende de permissão do titular. Não generalizar essa condição para todos os recursos GeoInfo nem acrescentar SA não demonstrada.
 
-### Acervo Fundiario/INCRA
+### Acervo Fundiário/INCRA
 
 Os dados públicos SIGEF, SNCI e assentamentos do Acervo Fundiário/INCRA são classificados como livre pela LAI, pelo Decreto 8.777/2016 e pela política institucional do INCRA, após busca sem restrição comercial específica localizada. A alegação anterior de veto comercial não tinha cláusula comprovada. A indicação histórica de CC BY não foi recapturada e não sustenta versão numérica. Citar INCRA, família, UF/abrangência, arquivo, edição e transformações, preservando direitos de terceiros expressos. O PDA 2021–2023 prova política e origem, não atualidade de todo serviço em 2026.
 
-### Fundacao Rio Verde
+### Fundação Rio Verde
 
 A Fundação Rio Verde é um publicador privado sem licença específica de reutilização localizada para os resultados de competição de cultivares de soja. A classificação é zona_cinza. A reserva genérica do portal não comprova NC dos valores, e a ausência de licença não libera a reprodução integral da base ou dos PDFs. Citar fundação, safra, publicação, página/tabela e extração.
 
