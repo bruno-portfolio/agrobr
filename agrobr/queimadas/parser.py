@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import warnings
+from collections.abc import Callable
 from typing import Any
 
 import pandas as pd
@@ -28,6 +29,11 @@ def _o_que_veio(data: bytes) -> str:
     if data.startswith(b"PK"):
         return "a fonte devolveu um ZIP que não se lê como o CSV"
     return "CSV vazio: o arquivo não tem linhas de dado"
+
+
+def _por_valor(serie: pd.Series, funcao: Callable[[str], str]) -> pd.Series:
+    texto = serie.fillna("")
+    return texto.map({valor: funcao(valor) for valor in texto.unique()})
 
 
 def parse_focos_csv(data: bytes) -> pd.DataFrame:
@@ -74,15 +80,16 @@ def parse_focos_csv(data: bytes) -> pd.DataFrame:
 
     dates.converter_coluna(df, "data_hora_gmt", fonte="queimadas")
     df["data"] = df["data_hora_gmt"].dt.normalize()
-    df["hora_gmt"] = df["data_hora_gmt"].dt.strftime("%H:%M")
+    minutos = df["data_hora_gmt"].dt.hour * 60 + df["data_hora_gmt"].dt.minute
+    df["hora_gmt"] = minutos.map({m: f"{m // 60:02d}:{m % 60:02d}" for m in range(1440)})
 
     if "estado" in df.columns:
-        df["uf"] = df["estado"].fillna("").apply(estado_para_uf)
+        df["uf"] = _por_valor(df["estado"], estado_para_uf)
     else:
         df["uf"] = ""
 
     if "bioma" in df.columns:
-        df["bioma"] = df["bioma"].fillna("").apply(normalizar_bioma)
+        df["bioma"] = _por_valor(df["bioma"], normalizar_bioma)
 
     for col in ["numero_dias_sem_chuva", "precipitacao", "risco_fogo", "frp"]:
         if col in df.columns:

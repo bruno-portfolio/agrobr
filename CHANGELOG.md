@@ -131,6 +131,7 @@ Catálogo desta versão: **54 datasets e 89 contratos registrados**. Mudanças i
 - **Licenças — MapBiomas Alerta, SICAR e IBGE** — os dados do MapBiomas Alerta, inclusive pela API, são documentados como CC BY-SA 3.0 BR, com atribuição e compartilhamento das adaptações nas condições SA; a classe permanece `livre`. SICAR deixa de afirmar CC-BY sem comprovação e mantém `livre` pela base federal e pelo escopo público do serviço. SIDRA, PPM, Abate, Censos e Áreas Urbanizadas têm a fundamentação delimitada pela base federal, pelo PDA IBGE 2024–2025 e pelos termos do produto, sem CC nominal geral.
 - **SFB IFN — proveniência por página** — o `MetaInfo` do IFN traz cada página de pontos e de lotes com URL, SHA-256 e tamanho; `raw_content_hash` identifica o manifesto desses recursos (`manifest_encoding="canonical_json_utf8"`).
 - Consultas ANA com múltiplas páginas passam a identificar todas as respostas no `MetaInfo` por manifesto canônico de hashes. A proveniência inclui consulta lógica, limite solicitado, ordem, tamanho e SHA-256 de cada página; zero páginas e corpo único mantêm seu comportamento anterior.
+- **Queimadas, leitura do CSV mensal** — UF, bioma e hora de cada foco passam a ser calculados uma vez por valor distinto, e não linha a linha: o parse de 150 mil focos cai de 1,5 s para 0,5 s, e a leitura do CSV passa a ser quase todo o custo. O resultado é o mesmo.
 
 ### Changed
 
