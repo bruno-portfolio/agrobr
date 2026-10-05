@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import warnings
 import zipfile
 from pathlib import Path, PurePosixPath
 from typing import Any, cast
@@ -21,10 +22,12 @@ from .models import (
     ASSENTAMENTOS_NUMERIC_COLS,
     ASSENTAMENTOS_RENAME_MAP,
     ASSENTAMENTOS_REQUIRED_COLS,
+    COLUNAS_INTEIRAS,
     DBF_ENCODING,
     SIGEF_COLUNAS_SAIDA,
     SIGEF_COLUNAS_SAIDA_GEO,
     SIGEF_DATE_COLS,
+    SIGEF_NUMERIC_COLS,
     SIGEF_RENAME_MAP,
     SIGEF_REQUIRED_COLS,
     SNCI_COLUNAS_SAIDA,
@@ -113,13 +116,15 @@ def _read_geo(zip_path: Path, *, bbox: BBox | None = None) -> Any:
     return gpd.read_file(caminho, encoding=DBF_ENCODING, bbox=bbox)
 
 
-def _validate_required(df: pd.DataFrame, required: frozenset[str], label: str) -> None:
+def _validate_required(
+    df: pd.DataFrame, required: frozenset[str], label: str, zip_path: Path
+) -> None:
     missing = required - set(df.columns)
     if missing:
         raise ParseError(
             source="acervo_fundiario",
             parser_version=PARSER_VERSION,
-            reason=f"Colunas obrigatorias ausentes em {label}: {sorted(missing)}",
+            reason=f"Colunas obrigatorias ausentes em {label} ({zip_path.name}): {sorted(missing)}",
         )
 
 
@@ -150,11 +155,31 @@ def _coerce_dates(df: pd.DataFrame, date_cols: tuple[str, ...]) -> pd.DataFrame:
     return df
 
 
-def _coerce_numeric(df: pd.DataFrame, numeric_cols: tuple[str, ...]) -> pd.DataFrame:
+def _coerce_numeric(
+    df: pd.DataFrame, numeric_cols: tuple[str, ...], zip_path: Path
+) -> pd.DataFrame:
     df = df.copy()
     for col in numeric_cols:
         if col in df.columns:
-            df[col] = pd.to_numeric(df[col], errors="coerce")
+            valores = pd.to_numeric(df[col], errors="coerce")
+            descartados = df[col].notna() & valores.isna()
+            if descartados.any():
+                aviso = (
+                    f"acervo_fundiario: {int(descartados.sum())} valor(es) de {col} fora do formato "
+                    f"numérico viraram nulo (ex.: {df.loc[descartados, col].iloc[0]!r})"
+                )
+                df.attrs.setdefault(ATRIBUTO_AVISOS, []).append(aviso)
+                warnings.warn(aviso, UserWarning, stacklevel=2)
+            if col in COLUNAS_INTEIRAS:
+                try:
+                    valores = valores.astype("Int64")
+                except TypeError as exc:
+                    raise ParseError(
+                        source="acervo_fundiario",
+                        parser_version=PARSER_VERSION,
+                        reason=f"{col} com valor não inteiro ({zip_path.name})",
+                    ) from exc
+            df[col] = valores
     return df
 
 
@@ -190,6 +215,13 @@ def _make_geometries_valid(gdf: Any) -> Any:
             invalid=n_invalid,
             total=len(gdf),
         )
+        aviso = (
+            f"acervo_fundiario: {n_invalid} geometria(s) inválida(s) reparada(s) com make_valid; "
+            "o polígono entregue difere do publicado pelo INCRA"
+        )
+        gdf.attrs.setdefault(ATRIBUTO_AVISOS, []).append(aviso)
+        warnings.warn(aviso, UserWarning, stacklevel=2)
+    gdf.attrs["topology_repaired"] = n_invalid
     return gdf
 
 
@@ -201,11 +233,12 @@ def _with_natureza(df: Any, natureza: str) -> Any:
 
 def parse_sigef(zip_path: Path, *, natureza: str, bbox: BBox | None = None) -> pd.DataFrame:
     df = _read_tabular(zip_path, bbox=bbox)
-    _validate_required(df, SIGEF_REQUIRED_COLS, "sigef")
+    _validate_required(df, SIGEF_REQUIRED_COLS, "sigef", zip_path)
     df = df.rename(columns=SIGEF_RENAME_MAP)
     df = _resolve_uf_from_ibge(df)
     df = _normalize_uf_column(df)
     df = _coerce_dates(df, SIGEF_DATE_COLS)
+    df = _coerce_numeric(df, SIGEF_NUMERIC_COLS, zip_path)
     df = _with_natureza(df, natureza)
     df = _select_output(df, SIGEF_COLUNAS_SAIDA)
     logger.info("acervo_fundiario_sigef_parse_ok", records=len(df), natureza=natureza)
@@ -214,11 +247,12 @@ def parse_sigef(zip_path: Path, *, natureza: str, bbox: BBox | None = None) -> p
 
 def parse_sigef_geo(zip_path: Path, *, natureza: str, bbox: BBox | None = None) -> Any:
     gdf = _read_geo(zip_path, bbox=bbox)
-    _validate_required(gdf, SIGEF_REQUIRED_COLS, "sigef")
+    _validate_required(gdf, SIGEF_REQUIRED_COLS, "sigef", zip_path)
     gdf = gdf.rename(columns=SIGEF_RENAME_MAP)
     gdf = _resolve_uf_from_ibge(gdf)
     gdf = _normalize_uf_column(gdf)
     gdf = _coerce_dates(gdf, SIGEF_DATE_COLS)
+    gdf = _coerce_numeric(gdf, SIGEF_NUMERIC_COLS, zip_path)
     gdf = _make_geometries_valid(gdf)
     gdf = _with_natureza(gdf, natureza)
     gdf = _select_output(gdf, SIGEF_COLUNAS_SAIDA_GEO)
@@ -249,18 +283,23 @@ def join_sigef(partes: dict[str, Any]) -> Any:
                 "e privado do SIGEF; as linhas dos dois foram mantidas"
             )
     cheios = [frame for frame in frames if len(frame)] or frames[:1]
+    reparadas = [
+        frame.attrs["topology_repaired"] for frame in frames if "topology_repaired" in frame.attrs
+    ]
     df = cheios[0] if len(cheios) == 1 else pd.concat(cheios, ignore_index=True)
     df.attrs = {ATRIBUTO_AVISOS: avisos} if avisos else {}
+    if reparadas:
+        df.attrs["topology_repaired"] = sum(reparadas)
     return df
 
 
 def parse_snci(zip_path: Path, *, bbox: BBox | None = None) -> pd.DataFrame:
     df = _read_tabular(zip_path, bbox=bbox)
-    _validate_required(df, SNCI_REQUIRED_COLS, "snci")
+    _validate_required(df, SNCI_REQUIRED_COLS, "snci", zip_path)
     df = df.rename(columns=SNCI_RENAME_MAP)
     df = _normalize_uf_column(df)
     df = _coerce_dates(df, SNCI_DATE_COLS)
-    df = _coerce_numeric(df, SNCI_NUMERIC_COLS)
+    df = _coerce_numeric(df, SNCI_NUMERIC_COLS, zip_path)
     df = _select_output(df, SNCI_COLUNAS_SAIDA)
     logger.info("acervo_fundiario_snci_parse_ok", records=len(df))
     return df
@@ -268,11 +307,11 @@ def parse_snci(zip_path: Path, *, bbox: BBox | None = None) -> pd.DataFrame:
 
 def parse_snci_geo(zip_path: Path, *, bbox: BBox | None = None) -> Any:
     gdf = _read_geo(zip_path, bbox=bbox)
-    _validate_required(gdf, SNCI_REQUIRED_COLS, "snci")
+    _validate_required(gdf, SNCI_REQUIRED_COLS, "snci", zip_path)
     gdf = gdf.rename(columns=SNCI_RENAME_MAP)
     gdf = _normalize_uf_column(gdf)
     gdf = _coerce_dates(gdf, SNCI_DATE_COLS)
-    gdf = _coerce_numeric(gdf, SNCI_NUMERIC_COLS)
+    gdf = _coerce_numeric(gdf, SNCI_NUMERIC_COLS, zip_path)
     gdf = _make_geometries_valid(gdf)
     gdf = _select_output(gdf, SNCI_COLUNAS_SAIDA_GEO)
     logger.info("acervo_fundiario_snci_geo_parse_ok", records=len(gdf))
@@ -283,11 +322,11 @@ def parse_assentamentos(
     zip_path: Path, *, uf: str | None = None, bbox: BBox | None = None
 ) -> pd.DataFrame:
     df = _read_tabular(zip_path, bbox=bbox)
-    _validate_required(df, ASSENTAMENTOS_REQUIRED_COLS, "assentamentos")
+    _validate_required(df, ASSENTAMENTOS_REQUIRED_COLS, "assentamentos", zip_path)
     df = df.rename(columns=ASSENTAMENTOS_RENAME_MAP)
     df = _normalize_uf_column(df)
     df = _coerce_dates(df, ASSENTAMENTOS_DATE_COLS)
-    df = _coerce_numeric(df, ASSENTAMENTOS_NUMERIC_COLS)
+    df = _coerce_numeric(df, ASSENTAMENTOS_NUMERIC_COLS, zip_path)
     _log_dirty_uf(df, "assentamentos")
     if uf is not None:
         df = df[df["uf"] == uf].reset_index(drop=True)
@@ -300,11 +339,11 @@ def parse_assentamentos_geo(
     zip_path: Path, *, uf: str | None = None, bbox: BBox | None = None
 ) -> Any:
     gdf = _read_geo(zip_path, bbox=bbox)
-    _validate_required(gdf, ASSENTAMENTOS_REQUIRED_COLS, "assentamentos")
+    _validate_required(gdf, ASSENTAMENTOS_REQUIRED_COLS, "assentamentos", zip_path)
     gdf = gdf.rename(columns=ASSENTAMENTOS_RENAME_MAP)
     gdf = _normalize_uf_column(gdf)
     gdf = _coerce_dates(gdf, ASSENTAMENTOS_DATE_COLS)
-    gdf = _coerce_numeric(gdf, ASSENTAMENTOS_NUMERIC_COLS)
+    gdf = _coerce_numeric(gdf, ASSENTAMENTOS_NUMERIC_COLS, zip_path)
     _log_dirty_uf(gdf, "assentamentos_geo")
     if uf is not None:
         gdf = gdf[gdf["uf"] == uf].reset_index(drop=True)

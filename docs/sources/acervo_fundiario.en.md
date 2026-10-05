@@ -101,6 +101,14 @@ error or cancellation; nothing is written to `~/.agrobr/cache/acervo_fundiario/`
 
 ## Schemas
 
+Every shapefile field that becomes an output column is required: if INCRA renames or drops one, the parser raises
+`ParseError` with the field and the file, instead of returning the DataFrame without the column. A number out of format
+(for example, a decimal comma in a text field) becomes null, with a `UserWarning` and an entry in `validation_warnings`.
+`cod_municipio`, `capacidade`, `num_familias` and `fase` come out as `Int64`, with or without nulls. In the `_geo`
+variants, an invalid geometry is repaired with `shapely.make_valid` (a self-crossing polygon becomes a `MultiPolygon`):
+the count goes to `source_details["topology_repaired"]` and to `validation_warnings`, and the delivered polygon differs
+from the one INCRA publishes.
+
 ### SIGEF
 
 | Column | Type | Description |

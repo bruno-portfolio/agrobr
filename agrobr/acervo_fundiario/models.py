@@ -36,7 +36,7 @@ SIGEF_RENAME_MAP: dict[str, str] = {
     "municipio_": "cod_municipio",
 }
 
-SIGEF_REQUIRED_COLS: frozenset[str] = frozenset({"parcela_co", "codigo_imo", "status", "uf_id"})
+SIGEF_REQUIRED_COLS: frozenset[str] = frozenset({"uf_id", *SIGEF_RENAME_MAP})
 
 SIGEF_COLUNAS_SAIDA: list[str] = [
     "codigo_parcela",
@@ -59,6 +59,12 @@ SIGEF_COLUNAS_SAIDA_GEO: list[str] = [*SIGEF_COLUNAS_SAIDA, "geometry"]
 
 SIGEF_DATE_COLS: tuple[str, ...] = ("data_submissao", "data_aprovacao", "registro_data")
 
+SIGEF_NUMERIC_COLS: tuple[str, ...] = ("cod_municipio",)
+
+COLUNAS_INTEIRAS: frozenset[str] = frozenset(
+    {"cod_municipio", "capacidade", "num_familias", "fase"}
+)
+
 
 SNCI_RENAME_MAP: dict[str, str] = {
     "num_proces": "num_processo",
@@ -72,7 +78,7 @@ SNCI_RENAME_MAP: dict[str, str] = {
     "uf_municip": "uf",
 }
 
-SNCI_REQUIRED_COLS: frozenset[str] = frozenset({"num_proces", "cod_imovel", "uf_municip"})
+SNCI_REQUIRED_COLS: frozenset[str] = frozenset(SNCI_RENAME_MAP)
 
 SNCI_COLUNAS_SAIDA: list[str] = [
     "num_processo",
@@ -116,9 +122,7 @@ ASSENTAMENTOS_RENAME_MAP: dict[str, str] = {
     "descricao_": "descricao_fase",
 }
 
-ASSENTAMENTOS_REQUIRED_COLS: frozenset[str] = frozenset(
-    {"cd_sipra", "uf", "nome_proje", "municipio"}
-)
+ASSENTAMENTOS_REQUIRED_COLS: frozenset[str] = frozenset(ASSENTAMENTOS_RENAME_MAP)
 
 ASSENTAMENTOS_COLUNAS_SAIDA: list[str] = [
     "codigo_sipra",

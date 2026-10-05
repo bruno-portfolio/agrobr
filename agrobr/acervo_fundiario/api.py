@@ -94,6 +94,8 @@ def _build_meta(
     meta.from_cache = aquisicao.from_cache
     meta.fetched_at = aquisicao.fetched_at
     meta.fetch_timestamp = aquisicao.fetched_at
+    if "topology_repaired" in df.attrs:
+        meta.source_details["topology_repaired"] = df.attrs["topology_repaired"]
     return meta
 
 
@@ -155,6 +157,8 @@ def _build_sigef_meta(
     meta.from_cache = all(aquisicao.from_cache for aquisicao in aquisicoes)
     meta.fetched_at = min(aquisicao.fetched_at for aquisicao in aquisicoes)
     meta.fetch_timestamp = meta.fetched_at
+    if "topology_repaired" in df.attrs:
+        meta.source_details["topology_repaired"] = df.attrs["topology_repaired"]
     return meta
 
 

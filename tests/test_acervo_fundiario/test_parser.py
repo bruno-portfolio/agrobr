@@ -2,12 +2,14 @@ from __future__ import annotations
 
 import zipfile
 from pathlib import Path
+from typing import Any
 
 import pandas as pd
 import pytest
 
-from agrobr.acervo_fundiario import parser
+from agrobr.acervo_fundiario import models, parser
 from agrobr.exceptions import ParseError
+from agrobr.utils.result import ATRIBUTO_AVISOS
 from tests.helpers import levanta_exatamente
 
 
@@ -97,3 +99,70 @@ def test_zip_do_acervo_com_shapefile_segue_pelo_vsizip(tmp_path):
 
     assert parser._shapefile(honesto) == f"/vsizip/{honesto.as_posix()}/a.shp"
     assert parser._read_tabular(honesto)["txt"].tolist() == ["x"]
+
+
+def _assentamentos(pasta: Path, **campos: list[Any]) -> Path:
+    gpd = pytest.importorskip("geopandas")
+    geometria = pytest.importorskip("shapely.geometry")
+    colunas: dict[str, list[Any]] = {
+        **{campo: ["x", "y"] for campo in models.ASSENTAMENTOS_RENAME_MAP},
+        "uf": ["DF", "DF"],
+        "data_de_cr": ["01/01/2020", "01/01/2020"],
+        "data_obten": ["01/01/2020", "01/01/2020"],
+        "area_hecta": ["12.5", "1"],
+        "area_calc_": [12.5, 1.0],
+        "capacidade": [10, None],
+        "num_famili": [5, 3],
+        "fase": [3, 4],
+        **campos,
+    }
+    camada = gpd.GeoDataFrame(
+        colunas, geometry=[geometria.Point(-47.9, -15.8)] * 2, crs="EPSG:4674"
+    )
+    camada.to_file(pasta / "a.shp", engine="pyogrio")
+    partes = {parte.name: parte.read_bytes() for parte in sorted(pasta.glob("a.*"))}
+    return _zip(pasta / "assentamentos.zip", partes)
+
+
+def test_inteiros_do_assentamento_saem_int64_com_e_sem_nulo(tmp_path):
+    frame = parser.parse_assentamentos(_assentamentos(tmp_path))
+
+    assert {
+        coluna: str(frame[coluna].dtype) for coluna in ("capacidade", "num_familias", "fase")
+    } == {
+        "capacidade": "Int64",
+        "num_familias": "Int64",
+        "fase": "Int64",
+    }
+    assert frame["capacidade"].tolist() == [10, pd.NA]
+
+
+def test_inteiro_fracionario_levanta_parse_error_com_o_arquivo(tmp_path):
+    zip_path = _assentamentos(tmp_path, capacidade=[1.5, 2.0])
+
+    with levanta_exatamente(ParseError, r"capacidade com valor não inteiro \(assentamentos.zip\)"):
+        parser.parse_assentamentos(zip_path)
+
+
+def test_campo_renomeado_pelo_incra_levanta_parse_error_com_o_arquivo(tmp_path):
+    zip_path = _assentamentos(tmp_path)
+    gpd = pytest.importorskip("geopandas")
+    camada = gpd.read_file(tmp_path / "a.shp").rename(columns={"num_famili": "familias"})
+    camada.to_file(tmp_path / "a.shp", engine="pyogrio")
+    partes = {parte.name: parte.read_bytes() for parte in sorted(tmp_path.glob("a.*"))}
+    zip_path = _zip(tmp_path / "assentamentos.zip", partes)
+
+    with levanta_exatamente(ParseError, r"assentamentos \(assentamentos.zip\): \['num_famili'\]"):
+        parser.parse_assentamentos(zip_path)
+
+
+def test_numero_fora_do_formato_vira_nulo_com_aviso(tmp_path):
+    zip_path = _assentamentos(tmp_path, area_hecta=["2449,3310", "1"])
+
+    with pytest.warns(UserWarning, match=r"1 valor\(es\) de area_ha fora do formato"):
+        frame = parser.parse_assentamentos(zip_path)
+
+    assert frame["area_ha"].isna().tolist() == [True, False]
+    assert frame.attrs[ATRIBUTO_AVISOS] == [
+        "acervo_fundiario: 1 valor(es) de area_ha fora do formato numérico viraram nulo (ex.: '2449,3310')"
+    ]
