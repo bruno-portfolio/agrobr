@@ -8,7 +8,7 @@ import httpx
 import pandas as pd
 
 from agrobr import constants
-from agrobr.exceptions import ParseError, SourceUnavailableError
+from agrobr.exceptions import ParseError, ResourceLimitError
 from agrobr.normalize import regions
 from agrobr.utils import geo, spatial, wfs
 from agrobr.utils.memory import deep_size as _deep_size
@@ -130,9 +130,9 @@ class _Collection(wfs.PageState[acquisition.SolosPage]):
             + sys.getsizeof(self.geometries)
         )
         if self.retained_bytes > constants.EMBRAPA_SOLOS_MAX_RETAINED_BYTES:
-            raise SourceUnavailableError(
-                source="embrapa_solos",
-                last_error="Limite operacional de retenção estimada excedido",
+            raise ResourceLimitError(
+                "embrapa_solos",
+                "Limite operacional de retenção estimada excedido; restrinja a seleção (uf, bbox) ou reduza max_registros",
             )
 
     def consume(
@@ -339,8 +339,9 @@ class _Collection(wfs.PageState[acquisition.SolosPage]):
             )
         )
         if retained > constants.EMBRAPA_SOLOS_MAX_RETAINED_BYTES:
-            raise SourceUnavailableError(
-                source="embrapa_solos", last_error="Limite operacional de retenção final excedido"
+            raise ResourceLimitError(
+                "embrapa_solos",
+                "Limite operacional de retenção final excedido; restrinja a seleção (uf, bbox) ou reduza max_registros",
             )
         result.details["retained_bytes_estimate"] = max(retained, self.retained_bytes)
         return result

@@ -7,7 +7,7 @@ from typing import Any, Generic, Protocol, TypeVar
 
 import pandas as pd
 
-from agrobr.exceptions import ParseError, SourceUnavailableError
+from agrobr.exceptions import ParseError, ResourceLimitError
 from agrobr.utils import spatial, wfs
 from agrobr.utils.memory import deep_size as _deep_size
 
@@ -161,9 +161,9 @@ class ResultsCollection(wfs.PageState[PageT], Generic[PageT, QueryT, Acquisition
             + sys.getsizeof(self.geometries)
         )
         if self.retained_bytes > self._memory_limit():
-            raise SourceUnavailableError(
-                source=self.source,
-                last_error="Limite operacional de retenção estimada excedido",
+            raise ResourceLimitError(
+                self.source,
+                "Limite operacional de retenção estimada excedido; restrinja a seleção (uf, bbox) ou reduza max_registros",
             )
 
     def consume(self, content: bytes, transport: TransportState, offset: int, count: int) -> None:
@@ -366,8 +366,9 @@ class ResultsCollection(wfs.PageState[PageT], Generic[PageT, QueryT, Acquisition
             )
         )
         if retained > self._memory_limit():
-            raise SourceUnavailableError(
-                source=self.source, last_error="Limite operacional de retenção final excedido"
+            raise ResourceLimitError(
+                self.source,
+                "Limite operacional de retenção final excedido; restrinja a seleção (uf, bbox) ou reduza max_registros",
             )
         result.details["retained_bytes_estimate"] = max(retained, self.retained_bytes)
         return result

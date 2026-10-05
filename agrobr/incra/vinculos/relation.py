@@ -9,7 +9,7 @@ from typing import Any
 import pandas as pd
 
 from agrobr import constants
-from agrobr.exceptions import SourceUnavailableError
+from agrobr.exceptions import ResourceLimitError
 
 from . import budget, models
 
@@ -190,9 +190,10 @@ def _planned_rows(
     )
     expected += sum(not cell.references for cell in [*left, *right])
     if max_rows is not None and expected > max_rows:
-        raise SourceUnavailableError(
-            source="incra_vinculos",
-            last_error=f"Expansão de {expected} linhas excede max_vinculos={max_rows}",
+        raise ResourceLimitError(
+            "incra_vinculos",
+            f"Expansão de {expected} linhas excede max_vinculos={max_rows}; aumente max_vinculos "
+            "ou use max_vinculos=None",
         )
     return expected
 

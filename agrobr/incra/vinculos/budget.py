@@ -7,7 +7,7 @@ import pandas as pd
 from pydantic import BaseModel
 
 from agrobr import constants
-from agrobr.exceptions import SourceUnavailableError
+from agrobr.exceptions import ResourceLimitError
 
 
 def retained_size(value: Any, seen: set[int] | None = None) -> int:
@@ -31,8 +31,7 @@ def retained_size(value: Any, seen: set[int] | None = None) -> int:
 
 def check(estimated: int) -> int:
     if estimated > constants.INCRA_VINCULOS_MAX_RETAINED_BYTES:
-        raise SourceUnavailableError(
-            source="incra_vinculos",
-            last_error="Orçamento local de retenção estimada do vínculo excedido",
+        raise ResourceLimitError(
+            "incra_vinculos", "Orçamento local de retenção estimada do vínculo excedido"
         )
     return estimated

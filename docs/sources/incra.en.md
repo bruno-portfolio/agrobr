@@ -165,7 +165,8 @@ The 46 columns are the 9 relation columns (`estado_vinculo`, `referencia_tipo`,
 `referencia_literal`, occurrence positions and counts, `referencia_repetida`) followed by the
 22 perimeter columns prefixed `perimetro_` and the 15 progress columns prefixed
 `administrativo_`. A shared NUP does not prove territorial identity. `max_vinculos` (default
-50,000) stops with `SourceUnavailableError` if the expansion exceeds the cap. On 2026-09-22:
+50,000) stops with `ResourceLimitError` if the expansion exceeds the cap; `max_vinculos=None` removes
+the row cap, and the memory cap remains. On 2026-09-22:
 817 rows, 286 exact links.
 
 ## Raw collection

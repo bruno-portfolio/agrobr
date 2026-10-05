@@ -17,6 +17,7 @@ from agrobr.exceptions import (
     ContractViolationError,
     InvalidParameterError,
     ParseError,
+    ResourceLimitError,
     SourceUnavailableError,
 )
 from agrobr.incra.vinculos import api, budget, metadata, models, relation
@@ -285,13 +286,13 @@ async def test_vinculos_public_chain_national_replay_matches_oracle(monkeypatch,
 
 
 def test_relation_expansion_limit_prevents_partial_result():
-    with pytest.raises(SourceUnavailableError, match="Expansão"):
+    with pytest.raises(ResourceLimitError, match="Expansão"):
         relation.build_relation(_geographical([NUP, NUP]), _administrative([NUP, NUP]), max_rows=3)
 
 
 def test_relation_none_limit_does_not_remove_memory_budget(monkeypatch):
     monkeypatch.setattr(constants, "INCRA_VINCULOS_MAX_RETAINED_BYTES", 1)
-    with pytest.raises(SourceUnavailableError, match="retenção"):
+    with pytest.raises(ResourceLimitError, match="retenção"):
         relation.build_relation(_geographical([NUP]), _administrative([NUP]), max_rows=None)
 
 

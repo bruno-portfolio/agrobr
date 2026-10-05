@@ -164,7 +164,8 @@ As 46 colunas são as 9 da relação (`estado_vinculo`, `referencia_tipo`,
 `referencia_literal`, posições e contagens de ocorrência, `referencia_repetida`) seguidas
 das 22 do perímetro com prefixo `perimetro_` e das 15 do andamento com prefixo
 `administrativo_`. NUP em comum não prova identidade territorial. `max_vinculos` (padrão
-50.000) interrompe com `SourceUnavailableError` se a expansão passar do teto. Em
+50.000) interrompe com `ResourceLimitError` se a expansão passar do teto; `max_vinculos=None` tira o
+teto de linhas, e o de memória continua. Em
 22/09/2026: 817 linhas, 286 vínculos exatos.
 
 ## Coleta bruta

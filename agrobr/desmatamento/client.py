@@ -10,7 +10,7 @@ import pandas as pd
 
 from agrobr import _log, constants
 from agrobr.constants import URLS, Fonte
-from agrobr.exceptions import ParseError, SourceUnavailableError
+from agrobr.exceptions import ParseError, ResourceLimitError
 from agrobr.http import wfs_transport
 from agrobr.http.settings import get_timeout
 from agrobr.utils import geo
@@ -215,8 +215,10 @@ async def _collect(
     previous_signature = None
     while accepted < target:
         if len(pages) >= constants.DESMATAMENTO_MAX_PAGES:
-            raise SourceUnavailableError(
-                source="desmatamento", last_error="Limite operacional de páginas excedido"
+            raise ResourceLimitError(
+                "desmatamento",
+                f"Limite operacional de {constants.DESMATAMENTO_MAX_PAGES} páginas excedido; "
+                "restrinja a seleção ou reduza max_registros",
             )
         overlap = int(accepted > 0)
         offset = accepted - overlap
@@ -284,8 +286,10 @@ async def _collect(
             geometries.extend(geo_page)
             del geo_page
         if retained_bytes > constants.DESMATAMENTO_MAX_RETAINED_BYTES:
-            raise SourceUnavailableError(
-                source="desmatamento", last_error="Limite operacional de memória estimada excedido"
+            raise ResourceLimitError(
+                "desmatamento",
+                "Limite operacional de memória estimada excedido; restrinja a seleção ou reduza "
+                "max_registros",
             )
         frames.append(frame)
         pages.append(

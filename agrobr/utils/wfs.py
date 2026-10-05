@@ -5,7 +5,7 @@ import json
 from collections.abc import Awaitable, Callable
 from typing import Any, Generic, TypeVar
 
-from agrobr.exceptions import SourceUnavailableError
+from agrobr.exceptions import ResourceLimitError, SourceUnavailableError
 
 PageT = TypeVar("PageT")
 
@@ -116,8 +116,10 @@ async def collect_pages(
 ) -> None:
     while state.accepted < target:
         if len(state.pages) >= max_pages:
-            raise SourceUnavailableError(
-                source=source, last_error="Limite operacional de páginas excedido"
+            raise ResourceLimitError(
+                source,
+                f"Limite operacional de {max_pages} páginas excedido; restrinja a seleção (uf, bbox) ou reduza max_registros ou aumente "
+                "tamanho_pagina",
             )
         overlap = int(state.accepted > 0)
         offset = state.accepted - overlap

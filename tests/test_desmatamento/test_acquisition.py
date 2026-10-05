@@ -7,7 +7,7 @@ import pytest
 
 from agrobr import constants
 from agrobr.desmatamento import acquisition, client, query
-from agrobr.exceptions import ParseError, SourceUnavailableError
+from agrobr.exceptions import ParseError, ResourceLimitError
 
 
 @pytest.fixture
@@ -245,7 +245,7 @@ async def test_acquisition_operational_limit_aborts(
 ):
     serve(records)
     monkeypatch.setattr(constants, constant, limit)
-    with pytest.raises(SourceUnavailableError, match="Limite operacional"):
+    with pytest.raises(ResourceLimitError, match="Limite operacional"):
         await client.fetch_acquisition(selection)
 
 

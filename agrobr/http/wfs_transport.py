@@ -10,7 +10,7 @@ from typing import Any, Generic, Protocol, TypeVar
 
 import httpx
 
-from agrobr.exceptions import SourceUnavailableError
+from agrobr.exceptions import ResourceLimitError, SourceUnavailableError
 from agrobr.http import responses, retry, user_agents
 
 
@@ -121,14 +121,15 @@ class Transport(Generic[ResourceT, RoleT]):
                 digest.update(chunk)
                 self.total_bytes += len(chunk)
                 if content.tell() > self._body_limit() or self.total_bytes > self._total_limit():
-                    raise SourceUnavailableError(
-                        source=self.source,
+                    raise ResourceLimitError(
+                        self.source,
+                        "Limite operacional de bytes excedido após chunk recebido; restrinja a seleção (uf, bbox) ou reduza max_registros "
+                        "ou tamanho_pagina",
                         url=self.url,
-                        last_error="Limite operacional de bytes excedido após chunk recebido",
                     )
             resource.complete_body = True
             return content.getvalue()
-        except (httpx.HTTPError, SourceUnavailableError) as exc:
+        except (httpx.HTTPError, SourceUnavailableError, ResourceLimitError) as exc:
             resource.error_type = type(exc).__name__
             raise
         finally:
@@ -174,7 +175,7 @@ class Transport(Generic[ResourceT, RoleT]):
             response.raise_for_status()
             responses.raise_for_service_error(response, source=self.source, url=url)
             return response.content
-        except SourceUnavailableError as exc:
+        except (SourceUnavailableError, ResourceLimitError) as exc:
             if self.resources and self.resources[-1].logical_index == self.logical_index:
                 self.resources[-1].error_type = type(exc).__name__
             raise

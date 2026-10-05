@@ -10,7 +10,7 @@ import pytest
 
 from agrobr import constants
 from agrobr.desmatamento import client as desmatamento_client
-from agrobr.exceptions import SourceUnavailableError
+from agrobr.exceptions import ResourceLimitError, SourceUnavailableError
 from agrobr.http import wfs_transport
 from tests.helpers import TrackedAsyncStream
 
@@ -106,7 +106,7 @@ async def test_desmatamento_aborta_stream_sem_consumir_corpo_completo(monkeypatc
         transport=httpx.MockTransport(lambda _: httpx.Response(200, stream=stream)),
         event_hooks={"request": [transport.request]},
     ) as http:
-        with pytest.raises(SourceUnavailableError, match="Limite operacional"):
+        with pytest.raises(ResourceLimitError, match="Limite operacional"):
             await transport.fetch(http, "https://example.test/wfs", "page")
     receipt = transport.resources[-1]
     assert stream.received == 2
@@ -114,4 +114,4 @@ async def test_desmatamento_aborta_stream_sem_consumir_corpo_completo(monkeypatc
     assert receipt.size_bytes == 8
     assert receipt.sha256 == hashlib.sha256(b"12345678").hexdigest()
     assert not receipt.complete_body
-    assert receipt.error_type == "SourceUnavailableError"
+    assert receipt.error_type == "ResourceLimitError"
