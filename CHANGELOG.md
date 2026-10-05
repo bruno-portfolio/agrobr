@@ -701,6 +701,7 @@ Catálogo desta versão: **54 datasets e 89 contratos registrados**. Mudanças i
 - **Acervo Fundiário — reparo de geometria registrado** — as variantes `_geo` reparavam polígono inválido com `make_valid` só no log; agora o reparo sai em `validation_warnings` e em `source_details["topology_repaired"]` (a contagem), e a doc da fonte avisa que o polígono entregue difere do publicado pelo INCRA.
 - **ICMBio — `ucs_geo` igual ao `ucs`** — área e ano fora do formato numérico levantam `ParseError`, como no tabular, em vez de virar nulo calado; o `MetaInfo` passa a registrar a seleção (`source_details["query"]`), os filtros aplicados no resultado (`source_details["filtros_locais"]`) e a hora da aquisição em `fetched_at`/`fetch_timestamp`, e não a da montagem.
 - **INCRA — avisos das fontes no `vinculos_quilombolas`** — o `validation_warnings` do composto trazia só o aviso do vínculo; agora traz também os avisos das duas fontes, com o prefixo de cada uma (por exemplo, data fora do intervalo que virou `NaT` em `perimetro_data_*`).
+- **IBGE Censo legado — HTML sem tabela** — sem o `html5lib` instalado, a página HTML sem tabela saía como `ImportError` do fallback do `pandas.read_html`; agora a leitura fica no `lxml` (dependência do núcleo) e a página sem tabela levanta `ParseError` ("Tabela HTML não reconhecida").
 
 ### Security
 

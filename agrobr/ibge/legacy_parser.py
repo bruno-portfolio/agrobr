@@ -200,7 +200,7 @@ def parse_legacy_html(data: bytes, tema: str, uf: str, filename: str = "") -> pd
     text, _ = encoding.decode_content(data, source="ibge_censo_agro_legado")
     soup = BeautifulSoup(text, "lxml")
     try:
-        frame = pd.read_html(io.StringIO(text), decimal=",", thousands=" ")[0]
+        frame = pd.read_html(io.StringIO(text), flavor="lxml", decimal=",", thousands=" ")[0]
     except (ValueError, IndexError) as exc:
         raise _error(f"Tabela HTML não reconhecida: {filename}") from exc
     title = str(frame.columns[0][0])
