@@ -11,6 +11,7 @@ from weakref import WeakKeyDictionary
 from agrobr import _log
 from agrobr.constants import CacheSettings
 from agrobr.utils import atomic
+from agrobr.utils.warnings import warn_once
 
 from . import client
 from .models import CACHE_TTL
@@ -62,6 +63,11 @@ def _gravar(coleta: Coleta) -> None:
             tmp.write_bytes(coleta.conteudo)
         with atomic.atomic_output(manifesto_path) as tmp:
             tmp.write_text(json.dumps(manifesto, ensure_ascii=False), encoding="utf-8")
+        warn_once(
+            "ibama_cache_pii",
+            f"IBAMA: o cache de 1 hora em {csv_path.parent} guarda o CSV inteiro da fonte, com nome e "
+            "CPF/CNPJ dos embargados; use_cache=False não grava, e apagar a pasta remove o arquivo.",
+        )
     except OSError as exc:
         logger.warning("ibama_cache_gravacao_falhou", path=str(csv_path), error=str(exc))
 

@@ -81,9 +81,11 @@ SIRGAS 2000 → WGS 84 transformation is a null transformation).
 
 ## Particularities
 
-- **PII excluded**: the source CSV carries the name and CPF/CNPJ of the embargoed
-  party; agrobr does not expose those fields (project policy). `descricao` is free text from the source.
-  Anyone who needs them for compliance can download the raw CSV from the source.
+- **Personal data**: the source CSV carries the name and CPF/CNPJ of the embargoed party; agrobr tables do not
+  expose those fields (project policy). `descricao` is free text from the source. The 1-hour cache, however, keeps
+  the whole file, with those columns, and the first write warns with `UserWarning`. To keep personal data off disk,
+  use `use_cache=False`, which writes nothing, or delete the cache's `ibama/` folder after the query. Anyone who
+  needs the fields for compliance can download the raw CSV from the source.
 - **Dirty dates in the source**: there are dates outside any plausible range (years 1667, 2063, 2080, 2090 and 2925).
   Under agrobr's date rule ([Normalization](../guides/normalizacao.en.md#source-dates)), the same on pandas 2 and 3, a
   date with a year outside 1900–2099 (1667 and 2925) and one on a day after the file's own edition
@@ -99,7 +101,8 @@ SIRGAS 2000 → WGS 84 transformation is a null transformation).
   manifest (SHA-256 and collection time), and reused for 1 hour from collection. Consecutive calls with
   different filters download the file only once, even when they run together. `MetaInfo` carries
   `from_cache=True` and, in `fetched_at`, the collection time rather than the call time. `use_cache=False`
-  downloads again without reading or writing the cache. A corrupted or expired file is downloaded again.
+  downloads again without reading or writing the cache. A corrupted or expired file is downloaded again. An
+  expired file is not deleted: it stays on disk until the next collection overwrites it.
 - **Geo with no filter**: `embargos_geo()` without `uf`/`bbox` parses WKT for all of Brazil
   (~4 s); a warning is emitted. With `bbox`, the WKT of the whole selection is read.
 

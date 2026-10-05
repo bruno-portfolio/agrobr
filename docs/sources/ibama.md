@@ -81,9 +81,11 @@ transformação SIRGAS 2000 → WGS 84 da EPSG é nula).
 
 ## Particularidades
 
-- **PII excluido**: o CSV da fonte traz nome e CPF/CNPJ do embargado; o agrobr
-  nao expoe esses campos (politica do projeto). `descricao` é texto livre da fonte.
-  Quem precisar deles para compliance pode baixar o CSV bruto da fonte.
+- **Dado pessoal**: o CSV da fonte traz nome e CPF/CNPJ do embargado; as tabelas do agrobr não expõem esses
+  campos (política do projeto). `descricao` é texto livre da fonte. O cache de 1 hora, porém, guarda o arquivo
+  inteiro, com essas colunas, e a primeira gravação avisa com `UserWarning`. Quem não quer o dado pessoal em disco usa
+  `use_cache=False`, que não grava nada, ou apaga a pasta `ibama/` do cache depois da consulta. Quem precisar dos
+  campos para compliance pode baixar o CSV bruto da fonte.
 - **Datas sujas na fonte**: há datas fora de qualquer faixa plausível (anos 1667, 2063, 2080, 2090 e 2925). Pela regra
   de datas do agrobr ([Normalização](../guides/normalizacao.md#datas-das-fontes)), igual no pandas 2 e no 3, vira `NaT`
   a data com ano fora de 1900–2099 (1667 e 2925) e a de dia posterior à edição do próprio arquivo
@@ -99,7 +101,8 @@ transformação SIRGAS 2000 → WGS 84 da EPSG é nula).
   manifesto (SHA-256 e hora da coleta), e é reusado por 1 hora a partir da coleta. Chamadas seguidas, com
   filtros diferentes, baixam o arquivo uma vez só, inclusive quando rodam juntas. O `MetaInfo` traz
   `from_cache=True` e, em `fetched_at`, a hora da coleta, e não a da chamada. `use_cache=False` baixa de
-  novo sem ler nem gravar o cache. Arquivo corrompido ou vencido é baixado outra vez.
+  novo sem ler nem gravar o cache. Arquivo corrompido ou vencido é baixado outra vez. O arquivo vencido não é
+  apagado: fica no disco até a próxima coleta sobrescrevê-lo.
 - **Geo sem filtro**: `embargos_geo()` sem `uf`/`bbox` parseia WKT do Brasil
   inteiro (~4 s); um warning e emitido. Com `bbox`, o WKT de toda a seleção é lido.
 
