@@ -161,7 +161,6 @@ async def _load(
         warnings.warn(aviso, UserWarning, stacklevel=3)
     status = "bypass"
     if use_cache:
-        _culture_available(bundle.details, selected_query, safra)
         status = (
             _save(
                 key,
@@ -172,6 +171,7 @@ async def _load(
             if _conferido(resource, bundle.details)
             else "store_skipped"
         )
+        _culture_available(bundle.details, selected_query, safra)
         frame = _filtered(frame, selected_query)
     details = copy.deepcopy(bundle.details)
     details["selected_rows"] = len(frame)

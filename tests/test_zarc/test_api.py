@@ -139,6 +139,9 @@ async def test_cultura_catalogo_ausente_falha_apos_validar_tabua(zarc_replay):
     with pytest.raises(InvalidParameterError, match="use safra='perene'"):
         await api.zoneamento(produto="sisal")
     assert len(zarc_replay["requests"]) == 2
+    _, meta = await api.zoneamento(produto="soja", uf="MT", return_meta=True)
+    assert len(zarc_replay["requests"]) == 2
+    assert meta.from_cache
 
 
 @pytest.mark.asyncio
