@@ -41,15 +41,20 @@ async def coletar(
 | `cnuc` | `ucs` | UF, bbox, ambos ou Brasil; filtro obrigatório `limite=uc` | `gml` / `cd_cnuc` |
 | `ibge` | `malha_municipal` | UF, bbox, ambos ou Brasil | `geojson` / `cd_mun` |
 | `ibge` | `areas_urbanizadas` | bbox ou Brasil; UF não é aceita | `geojson` / `fid` |
+| `funai` | `terras_indigenas` | Brasil; UF e bbox não são aceitas; `tamanho_pagina` padrão 20 | `geojson` / `gid` |
+| `funai` | `terras_indigenas_pontos` | Brasil; UF e bbox não são aceitas | `geojson` / `gid` |
+| `incra` | `quilombolas` | Brasil; UF, bbox e `tamanho_pagina` não são aceitos; página única | `geojson` / `feature.id` |
 | `acervo_fundiario` | `sigef_publico` | UF obrigatória; bbox não é aceita | `zip` |
 | `acervo_fundiario` | `sigef_privado` | UF obrigatória; bbox não é aceita | `zip` |
 | `acervo_fundiario` | `snci_publico` | UF obrigatória; bbox não é aceita | `zip` |
 | `acervo_fundiario` | `snci_privado` | UF obrigatória; bbox não é aceita | `zip` |
 | `acervo_fundiario` | `snci_brasil` | UF obrigatória; arquivo Brasil da UF | `zip` |
+| `acervo_fundiario` | `assentamentos` | Brasil; UF e bbox não são aceitas | `zip` |
 | `cnuc` | `cadastro` | Brasil; UF e bbox não são aceitas | `csv` |
 | `ibama` | `termos_embargo` | Brasil; UF e bbox não são aceitas | `csv` |
 | `ibge` | `malha_municipal_zip` | Brasil; UF e bbox não são aceitas | `zip` |
 | `ibge` | `areas_urbanizadas_zip` | Brasil; UF e bbox não são aceitas | `zip` |
+| `sfb` | `cnfp` | Brasil; UF e bbox não são aceitas; o Brasil inteiro pede `tamanho_pagina=20` e `max_bytes_pagina` de 24 MiB | `esri_json` / `fid` |
 | `sicar` | `imoveis` | UF obrigatória; bbox opcional | `geojson` / `feature.id` |
 
 UF aceita sigla, convertida para maiúsculas. UF e bbox combinados significam interseção.
@@ -64,7 +69,8 @@ nomes de dispositivo do Windows, como `CON`, `NUL` e `COM1`, são recusados sem 
 maiúsculas. Dois nomes que diferem apenas por maiúsculas colidem em qualquer plataforma.
 O nome não aplica filtro.
 
-`tamanho_pagina=None` resolve para **100** em consultas paginadas. Um valor explícito deve
+`tamanho_pagina=None` resolve para **100** em consultas paginadas, exceto em `funai`/`terras_indigenas`
+(**20**) e em `incra`/`quilombolas` (página única, que não aceita o parâmetro). Um valor explícito deve
 ser inteiro entre 1 e 1.000, nunca booleano. Em arquivo (ZIP ou CSV), deve ser `None`. Ele divide a aquisição;
 não limita o total de feições. `compactar=True` aplica gzip às páginas e controles, com
 `mtime=0` e sem nome original no cabeçalho; arquivo (ZIP ou CSV) não recebe compactação adicional.
@@ -86,15 +92,49 @@ estritamente crescente em toda a coleta: duas versões com o mesmo `dat_criacao`
 fora do formato encerram a consulta com erro. Um `ok` prova a ordem das feições recebidas naquela coleta,
 não que o par seja único na base inteira.
 
-Os quatro arquivos nacionais (`cnuc`/`cadastro`, `ibama`/`termos_embargo`, `ibge`/`malha_municipal_zip` e
-`ibge`/`areas_urbanizadas_zip`) vêm num GET só, sem recorte: UF e bbox são recusadas e o `nome` padrão é `brasil`.
+As terras indígenas da FUNAI (`funai`/`terras_indigenas`, camada `Funai:tis_poligonais`, e
+`funai`/`terras_indigenas_pontos`, camada `Funai:tis_pontos`) são sempre nacionais: UF e bbox são recusadas e
+`selecao.edicao` é `null`, porque as camadas não publicam edição. As páginas vêm em `sortBy=gid`, sem `srsName` nem
+`propertyName`, e a coleta só fecha `ok` com `gid` inteiro e estritamente crescente em toda a coleta. O GeoServer
+recusa `resultType=hits` (HTTP 403): as contagens antes e depois são o `numberMatched` de um GetFeature GeoJSON com
+`count=1` na mesma ordem, guardado como controle `json`. O CRS nativo conferido é `EPSG:4674`. Os polígonos são
+grandes: em 04/10/2026 eram 665 feições e 49,3 MB, a maior com 2,95 MB; com o padrão de 20 por página, a maior
+página tinha 5,6 MB, e 40 ou mais por página passam do teto de 8 MiB. Os pontos (163 feições, cerca de 100 kB)
+seguem o padrão de 100.
+
+Os quilombolas (`incra`/`quilombolas`) vêm da camada `CMR-PUBLICO:lim_quilombolas_a`, do INCRA, publicada no
+GeoServer do CMR, sempre nacional: UF e bbox são recusadas e `selecao.edicao` é `null`. A camada não tem atributo
+único nem ordenável, então não é paginada: `tamanho_pagina` não é aceito e a coleta é uma página única
+(`count=1000&startIndex=0`, sem `sortBy` e sem CRS de saída), registrada com `opcoes.tamanho_pagina=1000`. É a
+exceção à conferência da ordem pelo campo: o `ok` exige a contagem (`resultType=hits`) antes e depois igual às
+feições recebidas e ao `numberMatched` da página, com `feature.id` presentes e distintos
+(`cobertura.campo_id="feature.id"`). Contagem acima de 1.000 encerra a coleta com `ParseError` antes de pedir a
+página; página acima de `max_bytes_pagina`, com `ResourceLimitError`. O CRS nativo conferido é `EPSG:4674`; em
+04/10/2026 eram 445 feições numa página de 6,7 MB.
+
+O CNFP (`sfb`/`cnfp`) é a camada `Hosted/CNFP_v19_03_retificado_17072025/FeatureServer/9` do ArcGIS do SFB,
+sempre nacional: UF e bbox são recusadas. A edição em `selecao.edicao` é `20250717`, a data de retificação no nome do
+serviço; a última edição da camada só aparece no `etag` das respostas (o `lastEditDate` do ArcGIS, em milissegundos).
+O agrobr conta, lê a lista oficial de `fid` e pede as páginas por faixa de `fid`, com `orderByFields=fid`, todos os
+atributos e a geometria, sem `outSR`. Cada página tem de trazer exatamente os `fid` da faixa, em ordem crescente, e o
+CRS nativo declarado (`wkid` 102100, `latestWkid` 3857), registrado como `EPSG:3857`. Os polígonos são grandes: em
+04/10/2026 eram 20.829 feições, a maior com 5,52 MB, e páginas de 100 chegavam a 37,7 MB. Nenhum tamanho de
+página cabe nos limites padrão (3 ou mais feições por página passam de 8 MiB; 2 ou menos passam de `max_paginas`), e
+a chamada padrão para cedo, na 4ª página, com `ResourceLimitError` que informa a página, a faixa de `fid` e o
+`max_bytes_pagina`. Para o Brasil inteiro, use `tamanho_pagina=20` e
+`limites=bruto.LimitesBrutos(max_bytes_pagina=24 * 1024**2)`: a coleta de 04/10/2026 fechou `ok` com 1.042 páginas (980 MB),
+a maior com 19,3 MB, em 37,5 minutos.
+
+Os cinco arquivos nacionais (`acervo_fundiario`/`assentamentos`, `cnuc`/`cadastro`, `ibama`/`termos_embargo`,
+`ibge`/`malha_municipal_zip` e `ibge`/`areas_urbanizadas_zip`) vêm num GET só, sem recorte: UF e bbox são recusadas e o `nome` padrão é `brasil`.
 O corpo é guardado como a fonte publica, inclusive o encoding, o separador e os fins de linha do CSV. Antes de publicá-lo,
 o agrobr confere só o início: a assinatura do ZIP ou, no CSV, a primeira linha com as colunas que identificam a tabela
 (`Código UC` no CNUC; `SEQ_TAD` e `NUM_TAD` no IBAMA). HTML de erro, planilha XLSX rotulada como CSV ou corpo vazio
 em HTTP 200 encerram a coleta com `ParseError`. A edição fica em `selecao.edicao`: `2025` na malha municipal
 (`BR_Municipios_2025.zip`), `2022` nas áreas urbanizadas (`AreasUrbanizadas2022_Brasil.zip`, a mesma publicação da
-camada WFS), `202607` (ano e mês) no cadastro do CNUC e `null` nos termos de embargo do IBAMA, que não publicam edição;
-a data do arquivo está em `cabecalhos` (`last-modified`).
+camada WFS), `202607` (ano e mês) no cadastro do CNUC e `null` nos termos de embargo do IBAMA e nos assentamentos do INCRA, que não
+publicam edição; a data do arquivo está em `cabecalhos` (`last-modified`). Os assentamentos são o `Assentamento Brasil.zip`
+nacional do Acervo Fundiário, não o arquivo de uma UF; os outros recursos do Acervo seguem por UF.
 
 O cadastro do CNUC é o CSV da edição de julho de 2026 no catálogo de dados abertos do MMA. Antes do GET, o agrobr
 confere no catálogo (`package_show?id=unidadesdeconservacao`) que o recurso `CNUC_2026_07` em CSV aponta para a URL
@@ -332,15 +372,16 @@ temática ou validade de todas as geometrias.
 Em paginado `ok`, a igualdade exigida é
 `total_antes == total_depois == feicoes == recebidas == ids_distintos`,
 com `ids_repetidos=0`, IDs presentes e `estado="conferida"`. As referências incluem
-contagem antes/depois e, na ANA, a lista oficial de FIDs. FIDs recebidos devem ser
+contagem antes/depois e, na ANA e no CNFP, a lista oficial de IDs. IDs recebidos devem ser
 exatamente os listados, por faixa e no conjunto. Para WFS, ordem e avanço devem ser
-conferidos pelo campo da tabela da API. ID duplicado, nulo, página repetida, página curta
+conferidos pelo campo da tabela da API (exceto a página única de `incra`/`quilombolas`, conferida como
+descrito acima). ID duplicado, nulo, página repetida, página curta
 antes do fim, total alterado, CRS inesperado ou continuidade não demonstrada impedem `ok`.
 Um total numérico declarado em página precisa coincidir com a contagem de controle.
 `"unknown"` não vale zero: só os controles com total conhecido permitem fechar a coleta.
 
-Zero confirmado antes/depois é `ok` com `paginas=[]` e contagens zero; ANA também
-confere a lista de IDs vazia. Sem páginas, `recebidas`, `ids_distintos` e
+Zero confirmado antes/depois é `ok` com `paginas=[]` e contagens zero; ANA e CNFP também
+conferem a lista de IDs vazia. Sem páginas, `recebidas`, `ids_distintos` e
 `ids_repetidos` começam em zero em paginado. Uma tentativa incompleta usa
 `nao_comprovada`; inconsistência observada usa `divergente`.
 Inconsistências comprovadas pelo adaptador, incluindo FIDs fora da faixa e alteração de contagem, encerram a coleta com `ParseError`, `status="erro"` e `cobertura.estado="divergente"`. Uma resposta ilegível, sem evidência suficiente para comparar a cobertura, permanece `nao_comprovada`.
@@ -448,11 +489,15 @@ async def main() -> None:
             "areas_urbanizadas",
             {"nome": "area_teste", "bbox": (-48.1, -16.1, -47.9, -15.9)},
         ),
+        ("funai", "terras_indigenas", {}),
+        ("funai", "terras_indigenas_pontos", {}),
+        ("incra", "quilombolas", {}),
         ("acervo_fundiario", "sigef_publico", {"uf": "AL"}),
         ("acervo_fundiario", "sigef_privado", {"uf": "AL"}),
         ("acervo_fundiario", "snci_publico", {"uf": "AL"}),
         ("acervo_fundiario", "snci_privado", {"uf": "AL"}),
         ("acervo_fundiario", "snci_brasil", {"uf": "AL"}),
+        ("acervo_fundiario", "assentamentos", {}),
         ("cnuc", "cadastro", {}),
         ("ibama", "termos_embargo", {}),
         ("ibge", "malha_municipal_zip", {}),

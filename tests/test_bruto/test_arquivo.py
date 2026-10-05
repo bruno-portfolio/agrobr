@@ -36,6 +36,12 @@ CATALOGO = URLS[Fonte.CNUC]["ckan_package"]
 URL_CADASTRO = URLS[Fonte.CNUC]["cadastro_csv"]
 CADASTRO = ("cnuc", "cadastro")
 RECURSOS = {
+    ("acervo_fundiario", "assentamentos"): (
+        "https://certificacao.incra.gov.br/csv_shp/zip/Assentamento%20Brasil.zip",
+        "zip",
+        None,
+        ZIP_SINTETICO,
+    ),
     CADASTRO: (URL_CADASTRO, "csv", 202607, CSV_CNUC),
     ("ibama", "termos_embargo"): (
         URLS[Fonte.IBAMA]["termo_embargo_csv"],
@@ -143,6 +149,7 @@ RECUSAS = [
     *((chave, b"ID;NOME\r\n1;x\r\n", "CSV esperado") for chave in CSVS),
     (("ibge", "malha_municipal_zip"), b"<html>manutencao</html>", "assinatura de ZIP"),
     (("ibge", "areas_urbanizadas_zip"), b"", "assinatura de ZIP"),
+    (("acervo_fundiario", "assentamentos"), b"<html>manutencao</html>", "assinatura de ZIP"),
 ]
 
 

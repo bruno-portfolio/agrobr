@@ -63,7 +63,7 @@ def pedido(
         uf=uf_norm,
         bbox=bbox_norm,
         bbox_crs=None if bbox_norm is None else bbox_crs,  # type: ignore[arg-type]
-        tamanho_pagina=None if arquivo else _tamanho_pagina(tamanho_pagina),
+        tamanho_pagina=None if arquivo else _tamanho_pagina(tamanho_pagina, registrado, alvo),
         compactar=False if arquivo else bool(compactar),
         limites=limites if limites is not None else models.LimitesBrutos(),
     )
@@ -122,10 +122,16 @@ def _nome(nome: object, uf: str | None, bbox: tuple[float, float, float, float] 
     return nome
 
 
-def _tamanho_pagina(tamanho: object) -> int:
-    if tamanho is None:
-        return constants.BRUTO_TAMANHO_PAGINA_PADRAO
+def _tamanho_pagina(tamanho: object, registrado: RecursoRegistrado, alvo: str) -> int:
     maximo = constants.BRUTO_TAMANHO_PAGINA_MAX
+    if registrado.pagina_unica:
+        if tamanho is not None:
+            raise InvalidParameterError(
+                f"bruto: {alvo} vem numa página única de até {maximo} feições; tamanho_pagina não se aplica"
+            )
+        return maximo
+    if tamanho is None:
+        return registrado.tamanho_pagina_padrao
     if isinstance(tamanho, bool) or not isinstance(tamanho, int) or not 1 <= tamanho <= maximo:
         raise InvalidParameterError(
             f"bruto: tamanho_pagina deve ser inteiro de 1 a {maximo}, recebeu {tamanho!r}"

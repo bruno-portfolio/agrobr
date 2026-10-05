@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Literal
 
-from agrobr.bruto import models, protocols
+from agrobr.bruto import arquivo, models, protocols
 from agrobr.exceptions import ParseError
 
 from . import client
@@ -67,3 +67,6 @@ class AdaptadorAcervo:
 
 
 adaptador = AdaptadorAcervo()
+assentamentos = arquivo.AdaptadorArquivo(
+    client._build_url("assentamentos", None), None, arquivo.conferir_zip
+)

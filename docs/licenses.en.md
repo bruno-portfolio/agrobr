@@ -109,7 +109,7 @@ UNICA is a private association; no specific reuse license was located for histor
 
 ### FUNAI
 
-FUNAI's specific geoprocessing term, repeated in the Abstract for Funai:tis_poligonais, permits reproduction with attribution, subject to express contrary provisions and third-party content. For the identified own-source layer, this term takes precedence over the generic BY-ND footer. Credit FUNAI, layer, edition and processing, without presenting modifications as a new official document. Do not extend the license to other producers' layers.
+FUNAI's specific geoprocessing term, repeated in the Abstract for Funai:tis_poligonais and Funai:tis_pontos, permits reproduction with attribution, subject to express contrary provisions and third-party content. For the identified own-source layer, this term takes precedence over the generic BY-ND footer. Credit FUNAI, layer, edition and processing, without presenting modifications as a new official document. Do not extend the license to other producers' layers.
 
 ### IBAMA
 

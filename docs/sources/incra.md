@@ -167,6 +167,10 @@ das 22 do perímetro com prefixo `perimetro_` e das 15 do andamento com prefixo
 50.000) interrompe com `SourceUnavailableError` se a expansão passar do teto. Em
 22/09/2026: 817 linhas, 286 vínculos exatos.
 
+## Coleta bruta
+
+`agrobr.bruto.coletar("incra", "quilombolas", ...)` guarda a resposta GeoJSON original do WFS do CMR para a camada `CMR-PUBLICO:lim_quilombolas_a`, no CRS nativo (`EPSG:4674`) e com todos os atributos, sem o `propertyName`, o `srsName` e a ordenação que `quilombolas()` e `quilombolas_geo()` usam. A coleta é sempre nacional (UF e bbox recusadas) e vem numa página única de até 1.000 feições, porque a camada não tem campo único e ordenável que permita paginar; por isso `tamanho_pagina` não é aceito. Ela fecha com as contagens `hits` antes e depois iguais às feições recebidas e com `feature.id` presentes e distintos; mais de 1.000 feições na contagem é `ParseError`. Veja a [API da coleta bruta](../api/bruto.md) e o [contrato do manifesto](../contracts/bruto.md).
+
 ## Limitações
 
 - Perímetros e PDF são adquiridos em momentos distintos, sem snapshot conjunto.

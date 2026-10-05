@@ -25,7 +25,7 @@ from pydantic import (
 from agrobr import constants
 
 SCHEMA_VERSION: Literal["1.0.0"] = "1.0.0"
-LISTA_OFICIAL_DE_IDS = frozenset({("ana", "massas_dagua")})
+LISTA_OFICIAL_DE_IDS = frozenset({("ana", "massas_dagua"), ("sfb", "cnfp")})
 CABECALHOS_PERMITIDOS = frozenset(
     {
         "last-modified",

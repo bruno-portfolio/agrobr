@@ -168,6 +168,10 @@ The 46 columns are the 9 relation columns (`estado_vinculo`, `referencia_tipo`,
 50,000) stops with `SourceUnavailableError` if the expansion exceeds the cap. On 2026-09-22:
 817 rows, 286 exact links.
 
+## Raw collection
+
+`agrobr.bruto.coletar("incra", "quilombolas", ...)` keeps the original GeoJSON response of the CMR WFS for layer `CMR-PUBLICO:lim_quilombolas_a`, in the native CRS (`EPSG:4674`) and with every attribute, without the `propertyName`, `srsName` and ordering that `quilombolas()` and `quilombolas_geo()` use. The collection is always national (state and bbox refused) and comes in a single page of up to 1,000 features, because the layer has no unique, sortable field to paginate by; that is why `tamanho_pagina` is not accepted. It closes when the `hits` counts before and after equal the features received and every `feature.id` is present and distinct; a count above 1,000 is a `ParseError`. See the [raw collection API](../api/bruto.md) and the [manifest contract](../contracts/bruto.md).
+
 ## Limitations
 
 - Perimeters and the PDF are acquired at different moments, with no joint snapshot.

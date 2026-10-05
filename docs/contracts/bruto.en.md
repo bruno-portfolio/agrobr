@@ -41,15 +41,20 @@ names. `bbox_crs` accepts only `EPSG:4674` and `EPSG:4326`.
 | `cnuc` | `ucs` | UF, bbox, both or Brazil; mandatory `limite=uc` filter | `gml` / `cd_cnuc` |
 | `ibge` | `malha_municipal` | UF, bbox, both or Brazil | `geojson` / `cd_mun` |
 | `ibge` | `areas_urbanizadas` | bbox or Brazil; UF is not accepted | `geojson` / `fid` |
+| `funai` | `terras_indigenas` | Brazil; UF and bbox are not accepted; default `tamanho_pagina` 20 | `geojson` / `gid` |
+| `funai` | `terras_indigenas_pontos` | Brazil; UF and bbox are not accepted | `geojson` / `gid` |
+| `incra` | `quilombolas` | Brazil; UF, bbox and `tamanho_pagina` are not accepted; single page | `geojson` / `feature.id` |
 | `acervo_fundiario` | `sigef_publico` | UF required; bbox is not accepted | `zip` |
 | `acervo_fundiario` | `sigef_privado` | UF required; bbox is not accepted | `zip` |
 | `acervo_fundiario` | `snci_publico` | UF required; bbox is not accepted | `zip` |
 | `acervo_fundiario` | `snci_privado` | UF required; bbox is not accepted | `zip` |
 | `acervo_fundiario` | `snci_brasil` | UF required; that state's Brasil file | `zip` |
+| `acervo_fundiario` | `assentamentos` | Brazil; UF and bbox are not accepted | `zip` |
 | `cnuc` | `cadastro` | Brazil; UF and bbox are not accepted | `csv` |
 | `ibama` | `termos_embargo` | Brazil; UF and bbox are not accepted | `csv` |
 | `ibge` | `malha_municipal_zip` | Brazil; UF and bbox are not accepted | `zip` |
 | `ibge` | `areas_urbanizadas_zip` | Brazil; UF and bbox are not accepted | `zip` |
+| `sfb` | `cnfp` | Brazil; UF and bbox are not accepted; the whole country needs `tamanho_pagina=20` and a 24 MiB `max_bytes_pagina` | `esri_json` / `fid` |
 | `sicar` | `imoveis` | UF required; bbox optional | `geojson` / `feature.id` |
 
 UF accepts a state abbreviation, normalized to uppercase. Combining UF and bbox means
@@ -65,7 +70,8 @@ With a bbox, `nome` is mandatory, including when a UF is also provided. It accep
 are rejected case-insensitively. Names differing only in case collide on every platform.
 The name does not apply a filter.
 
-`tamanho_pagina=None` resolves to **100** for paginated queries. An explicit value must
+`tamanho_pagina=None` resolves to **100** for paginated queries, except for `funai`/`terras_indigenas`
+(**20**) and `incra`/`quilombolas` (a single page, which does not accept the parameter). An explicit value must
 be an integer from 1 to 1,000, never a boolean. For files (ZIP or CSV), it must be `None`. It divides
 the acquisition; it does not limit the total feature count. `compactar=True` applies
 gzip to pages and controls, with `mtime=0` and no original filename in the header;
@@ -88,16 +94,50 @@ not by `cod_imovel`. Because SICAR publishes no sortable identifier, pages use
 out of order or a date in another format fail the query. An `ok` proves the order of the features received in
 that collection, not that the pair is unique across the whole database.
 
-The four national files (`cnuc`/`cadastro`, `ibama`/`termos_embargo`, `ibge`/`malha_municipal_zip` and
-`ibge`/`areas_urbanizadas_zip`) come in a single GET with no selection: UF and bbox are rejected and the default
+FUNAI's Indigenous lands (`funai`/`terras_indigenas`, layer `Funai:tis_poligonais`, and
+`funai`/`terras_indigenas_pontos`, layer `Funai:tis_pontos`) are always national: UF and bbox are rejected and
+`selecao.edicao` is `null`, because the layers publish no edition. Pages use `sortBy=gid`, without `srsName` or
+`propertyName`, and a collection only closes `ok` when `gid` is an integer that strictly increases across the whole
+collection. The GeoServer rejects `resultType=hits` (HTTP 403): the counts before and after are the `numberMatched`
+of a GeoJSON GetFeature with `count=1` in the same order, kept as a `json` control. The checked native CRS is
+`EPSG:4674`. The polygons are large: on 2026-10-04 there were 665 features and 49.3 MB, the largest at 2.95 MB; with
+the default of 20 per page, the largest page had 5.6 MB, and 40 or more per page exceed the 8 MiB page limit. The
+points (163 features, about 100 kB) keep the default of 100.
+
+Quilombola territories (`incra`/`quilombolas`) come from layer `CMR-PUBLICO:lim_quilombolas_a`, INCRA's, published
+on the CMR GeoServer, always national: UF and bbox are rejected and `selecao.edicao` is `null`. The layer has no
+unique or sortable attribute, so it is not paginated: `tamanho_pagina` is not accepted and the collection is a
+single page (`count=1000&startIndex=0`, without `sortBy` and without an output CRS), recorded with
+`opcoes.tamanho_pagina=1000`. This is the exception to checking order by field: `ok` requires the count
+(`resultType=hits`) before and after to equal the features received and the page's `numberMatched`, with every
+`feature.id` present and distinct (`cobertura.campo_id="feature.id"`). A count above 1,000 fails the collection with
+`ParseError` before the page is requested; a page above `max_bytes_pagina`, with `ResourceLimitError`. The checked
+native CRS is `EPSG:4674`; on 2026-10-04 there were 445 features in a 6.7 MB page.
+
+CNFP (`sfb`/`cnfp`) is layer `Hosted/CNFP_v19_03_retificado_17072025/FeatureServer/9` of SFB's ArcGIS, always
+national: UF and bbox are rejected. The edition in `selecao.edicao` is `20250717`, the rectification date in the service
+name; the layer's last edit only shows in the responses' `etag` (ArcGIS `lastEditDate`, in milliseconds). agrobr
+counts, reads the official `fid` list and requests pages by `fid` range, with `orderByFields=fid`, every attribute and
+the geometry, without `outSR`. Each page must bring exactly the range's `fid` values, in ascending order, and the
+declared native CRS (`wkid` 102100, `latestWkid` 3857), recorded as `EPSG:3857`. The polygons are large: on 2026-10-04
+there were 20,829 features, the largest at 5.52 MB, and 100-feature pages reached 37.7 MB. No page size
+fits the default limits (3 or more features per page exceed 8 MiB; 2 or fewer exceed `max_paginas`), and the default
+call stops early, on the 4th page, with a `ResourceLimitError` that states the page, the `fid` range and
+`max_bytes_pagina`. For the whole country, use `tamanho_pagina=20` and
+`limites=bruto.LimitesBrutos(max_bytes_pagina=24 * 1024**2)`: the 2026-10-04 collection closed `ok` with 1,042 pages (980 MB),
+the largest 19.3 MB, in 37.5 minutes.
+
+The five national files (`acervo_fundiario`/`assentamentos`, `cnuc`/`cadastro`, `ibama`/`termos_embargo`,
+`ibge`/`malha_municipal_zip` and `ibge`/`areas_urbanizadas_zip`) come in a single GET with no selection: UF and bbox are rejected and the default
 `nome` is `brasil`. The body is stored as the source publishes it, including the CSV encoding, separator and line
 endings. Before publishing it, agrobr checks only the beginning: the ZIP signature or, for CSV, the first line with the
 columns that identify the table (`Código UC` for CNUC; `SEQ_TAD` and `NUM_TAD` for IBAMA). An error HTML page, an XLSX
 spreadsheet labeled as CSV or an empty body in HTTP 200 fail the collection with `ParseError`. The edition is in
 `selecao.edicao`: `2025` for municipal boundaries (`BR_Municipios_2025.zip`), `2022` for urbanized areas
 (`AreasUrbanizadas2022_Brasil.zip`, the same release as the WFS layer), `202607` (year and month) for the CNUC
-registry and `null` for IBAMA embargo terms, which publish no edition; the file date is in `cabecalhos`
-(`last-modified`).
+registry and `null` for IBAMA embargo terms and INCRA settlements, which publish no edition; the file date is in
+`cabecalhos` (`last-modified`). Settlements are the Land Registry's national `Assentamento Brasil.zip`, not a state's
+file; the other Land Registry resources remain per state.
 
 The CNUC registry is the CSV of the July 2026 edition in MMA's open data catalog. Before the GET, agrobr checks in the
 catalog (`package_show?id=unidadesdeconservacao`) that the `CNUC_2026_07` CSV resource points to the URL pinned in the
@@ -337,14 +377,15 @@ or the validity of every geometry.
 For a paginated `ok` entry, the required equality is
 `total_antes == total_depois == feicoes == recebidas == ids_distintos`,
 with `ids_repetidos=0`, IDs present and `estado="conferida"`. References include the
-before/after counts and, for ANA, the official FID list. Received FIDs must exactly
+before/after counts and, for ANA and CNFP, the official ID list. Received IDs must exactly
 match the list, both per range and overall. For WFS, order and progress must be checked
-using the field in the API table. Duplicate or null IDs, repeated pages, a short page
+using the field in the API table (except the single page of `incra`/`quilombolas`, checked as described
+above). Duplicate or null IDs, repeated pages, a short page
 before the end, a changed total, unexpected CRS or unproven continuity prevent `ok`.
 A numeric total declared in a page must agree with the control count.
 `"unknown"` does not mean zero: only controls with a known total allow completion.
 
-Zero confirmed before/after is `ok` with `paginas=[]` and zero counts; ANA also verifies
+Zero confirmed before/after is `ok` with `paginas=[]` and zero counts; ANA and CNFP also verify
 an empty ID list. Without pages, `recebidas`, `ids_distintos` and `ids_repetidos` start
 at zero for paginated entries. An incomplete attempt uses `nao_comprovada`; an observed
 inconsistency uses `divergente`.
@@ -453,11 +494,15 @@ async def main() -> None:
             "areas_urbanizadas",
             {"nome": "area_teste", "bbox": (-48.1, -16.1, -47.9, -15.9)},
         ),
+        ("funai", "terras_indigenas", {}),
+        ("funai", "terras_indigenas_pontos", {}),
+        ("incra", "quilombolas", {}),
         ("acervo_fundiario", "sigef_publico", {"uf": "AL"}),
         ("acervo_fundiario", "sigef_privado", {"uf": "AL"}),
         ("acervo_fundiario", "snci_publico", {"uf": "AL"}),
         ("acervo_fundiario", "snci_privado", {"uf": "AL"}),
         ("acervo_fundiario", "snci_brasil", {"uf": "AL"}),
+        ("acervo_fundiario", "assentamentos", {}),
         ("cnuc", "cadastro", {}),
         ("ibama", "termos_embargo", {}),
         ("ibge", "malha_municipal_zip", {}),

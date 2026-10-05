@@ -137,3 +137,23 @@ Identifiers, codes and years use nullable `Int64`; areas use `float64`. Text use
 - Data reflects the current state of the SFB ArcGIS Server
 - Forest concessions have few records (~8 polygons)
 - 2s throttle after 5 pages to avoid overloading the server
+
+## Raw collection
+
+`agrobr.bruto.coletar("sfb", "cnfp", ...)` stores the original pages of the CNFP layer (`Hosted/CNFP_v19_03_retificado_17072025/FeatureServer/9`) as Esri JSON, in the native CRS (`wkid` 102100, `latestWkid` 3857, recorded as `EPSG:3857`), with every attribute and the geometry; `cnfp_geo` stays in EPSG:4326. Always national: state and bbox are refused. The edition in the manifest is `20250717`, the rectification date in the service name; the layer's last edit comes in the responses' `etag`. Coverage is checked by `returnCountOnly` before and after the pages and by the official `fid` list (`returnIdsOnly`). Pages are ranges of that list, requested with `orderByFields=fid`, and each must bring exactly the range's `fid` values, in ascending order.
+
+On 2026-10-04 the layer had 20,829 features; the largest had 5.52 MB, and 100-feature pages reached 37.7 MB. With the defaults (`tamanho_pagina=100`, 8 MiB `max_bytes_pagina`), the collection stops early, on the 4th page, with a `ResourceLimitError` that states the page, the `fid` range and the limit. No page size fits the default limits: 3 or more features per page exceed 8 MiB, and 2 or fewer exceed `max_paginas`. For the whole country:
+
+```python
+from agrobr import bruto
+
+coleta = await bruto.coletar(
+    "sfb",
+    "cnfp",
+    destino="coleta",
+    tamanho_pagina=20,
+    limites=bruto.LimitesBrutos(max_bytes_pagina=24 * 1024**2),
+)
+```
+
+The 2026-10-04 collection closed `ok` with 1,042 pages (980 MB), the largest 19.3 MB, in 37.5 minutes. See the [raw collection API](../api/bruto.md) and the [manifest contract](../contracts/bruto.md).

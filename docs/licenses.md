@@ -109,7 +109,7 @@ A UNICA é uma associação privada; não foi localizada licença específica de
 
 ### FUNAI
 
-O termo específico de geoprocessamento da FUNAI, repetido no Abstract de Funai:tis_poligonais, permite reprodução com citação, ressalvados casos expressamente contrários e conteúdos de terceiros. Esse termo precede o rodapé genérico BY-ND para a camada própria identificada. Citar FUNAI, camada, edição e tratamento, sem apresentar modificações próprias como novo documento oficial. Não estender a licença às camadas de outros produtores.
+O termo específico de geoprocessamento da FUNAI, repetido no Abstract de Funai:tis_poligonais e de Funai:tis_pontos, permite reprodução com citação, ressalvados casos expressamente contrários e conteúdos de terceiros. Esse termo precede o rodapé genérico BY-ND para a camada própria identificada. Citar FUNAI, camada, edição e tratamento, sem apresentar modificações próprias como novo documento oficial. Não estender a licença às camadas de outros produtores.
 
 ### IBAMA
 

@@ -137,3 +137,23 @@ Identificadores, códigos e anos usam `Int64` anulável; áreas usam `float64`. 
 - Dados refletem o estado atual do ArcGIS Server do SFB
 - Concessoes florestais tem poucos registros (~8 poligonos)
 - Throttle de 2s apos 5 paginas para nao sobrecarregar o servidor
+
+## Coleta bruta
+
+`agrobr.bruto.coletar("sfb", "cnfp", ...)` guarda as páginas originais da camada do CNFP (`Hosted/CNFP_v19_03_retificado_17072025/FeatureServer/9`) em Esri JSON, no CRS nativo (`wkid` 102100, `latestWkid` 3857, registrado como `EPSG:3857`), com todos os atributos e a geometria; `cnfp_geo` segue em EPSG:4326. Sempre nacional: UF e bbox são recusadas. A edição no manifesto é `20250717`, a data de retificação no nome do serviço; a última edição da camada vem no `etag` das respostas. A cobertura é conferida por `returnCountOnly` antes e depois das páginas e pela lista oficial de `fid` (`returnIdsOnly`). As páginas são faixas dessa lista, pedidas com `orderByFields=fid`, e cada uma tem de trazer exatamente os `fid` da faixa, em ordem crescente.
+
+Em 04/10/2026 a camada tinha 20.829 feições; a maior tinha 5,52 MB, e páginas de 100 chegavam a 37,7 MB. Com o padrão (`tamanho_pagina=100`, `max_bytes_pagina` de 8 MiB), a coleta para cedo, na 4ª página, com `ResourceLimitError` que informa a página, a faixa de `fid` e o limite. Nenhum tamanho de página cabe nos limites padrão: 3 ou mais feições por página passam de 8 MiB, e 2 ou menos passam de `max_paginas`. Para o Brasil inteiro:
+
+```python
+from agrobr import bruto
+
+coleta = await bruto.coletar(
+    "sfb",
+    "cnfp",
+    destino="coleta",
+    tamanho_pagina=20,
+    limites=bruto.LimitesBrutos(max_bytes_pagina=24 * 1024**2),
+)
+```
+
+A coleta de 04/10/2026 fechou `ok` com 1.042 páginas (980 MB), a maior com 19,3 MB, em 37,5 minutos. Veja a [API da coleta bruta](../api/bruto.md) e o [contrato do manifesto](../contracts/bruto.md).

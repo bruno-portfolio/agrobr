@@ -94,6 +94,10 @@ sai com aviso em `validation_warnings` e `UserWarning`, e a lista com as 2 área
 
 Regularizada, Homologada, Declarada, Delimitada, Em Estudo, Encaminhada RI.
 
+## Coleta bruta
+
+`agrobr.bruto.coletar("funai", "terras_indigenas", ...)` guarda as páginas GeoJSON originais do WFS da camada `Funai:tis_poligonais`, no CRS nativo (`EPSG:4674`) e com todos os atributos, sem o `propertyName` e o `srsName` que `terras_indigenas()` e `terras_indigenas_geo()` usam. `agrobr.bruto.coletar("funai", "terras_indigenas_pontos", ...)` faz o mesmo com a camada `Funai:tis_pontos`, um ponto por TI na fase `Em Estudo` (163 em 04/10/2026), que a API tabular não lê. As duas coletas são sempre nacionais (UF e bbox recusadas). As páginas vêm em `sortBy=gid`, e a coleta exige `gid` inteiro, presente, único e estritamente crescente entre as páginas; como o GeoServer recusa `resultType=hits` (HTTP 403), as contagens antes e depois são o `numberMatched` de uma página de 1 feição. Os polígonos usam 20 feições por página no padrão: a maior TI passa de 2,9 MB, e páginas de 100 chegariam a 14 MB, acima do teto de 8 MiB. Veja a [API da coleta bruta](../api/bruto.md) e o [contrato do manifesto](../contracts/bruto.md).
+
 ## Limitacoes
 
 - Apenas TIs poligonais (pontos e linhas excluidos)

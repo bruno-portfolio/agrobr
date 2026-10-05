@@ -21,14 +21,14 @@ Synchronous version: `agrobr.sync.bruto.coletar(...)`, with the same arguments.
 
 | Parameter | Type | Required | Description |
 |---|---|---|---|
-| fonte | str | Yes | Source from the resource table (`ana`, `cnuc`, `ibama`, `ibge`, `acervo_fundiario`, `sicar`) |
+| fonte | str | Yes | Source from the resource table (`ana`, `cnuc`, `funai`, `ibama`, `ibge`, `incra`, `acervo_fundiario`, `sfb`, `sicar`) |
 | recurso | str | Yes | The source's resource, exactly as in the table |
 | destino | str \| PathLike | Yes | Collection folder; receives `manifesto.jsonl` and the files |
 | nome | str | No | Identifies the selection in the manifest; default: the state, or `brasil` with no cut. Required with bbox |
 | uf | str | Depends | State abbreviation; required, optional or refused depending on the resource |
 | bbox | tuple[float, float, float, float] | No | `(minx, miny, maxx, maxy)` in longitude/latitude; refused for file resources (ZIP and CSV) |
 | bbox_crs | `"EPSG:4674"` \| `"EPSG:4326"` | No | CRS of the bbox; default `EPSG:4674` |
-| tamanho_pagina | int | No | Features per page for paginated resources, 1 to 1,000; default 100; `None` for file resources |
+| tamanho_pagina | int | No | Features per page for paginated resources, 1 to 1,000; default 100 (20 for `funai`/`terras_indigenas`); `None` for file resources and for `incra`/`quilombolas` (single page) |
 | compactar | bool | No | Local gzip of pages and controls; default `True`; the file (ZIP or CSV) is stored as received |
 | retomar | bool | No | Reuses the `ok` entry of the same query after checking the hashes; default `False` |
 | limites | `bruto.LimitesBrutos` | No | Budget of the call; default `LimitesBrutos()` |
@@ -41,8 +41,12 @@ Synchronous version: `agrobr.sync.bruto.coletar(...)`, with the same arguments.
 | `cnuc` | `ucs` | State, bbox, both or Brazil; always `limite=uc` | `gml` / `cd_cnuc` |
 | `ibge` | `malha_municipal` | State, bbox, both or Brazil | `geojson` / `cd_mun` |
 | `ibge` | `areas_urbanizadas` | bbox or Brazil; state refused | `geojson` / `fid` |
+| `funai` | `terras_indigenas`, `terras_indigenas_pontos` | Brazil; state and bbox refused; polygons default to 20 per page | `geojson` / `gid` |
+| `incra` | `quilombolas` | Brazil; state, bbox and `tamanho_pagina` refused; single page, no sortable field | `geojson` / `feature.id` |
 | `acervo_fundiario` | `sigef_publico`, `sigef_privado` | State required | `zip` |
 | `acervo_fundiario` | `snci_publico`, `snci_privado`, `snci_brasil` | State required | `zip` |
+| `acervo_fundiario` | `assentamentos` | Brazil; state and bbox refused; INCRA's national ZIP | `zip` |
+| `sfb` | `cnfp` | Brazil; state and bbox refused; the whole country needs `tamanho_pagina=20` and a 24 MiB `max_bytes_pagina` | `esri_json` / `fid` |
 | `sicar` | `imoveis` | State required; bbox optional | `geojson` / `feature.id` |
 | `cnuc` | `cadastro` | Brazil; state and bbox refused; edition `202607` checked in MMA's catalog | `csv` |
 | `ibama` | `termos_embargo` | Brazil; state and bbox refused; contains personal data (name and CPF/CNPJ) | `csv` |
