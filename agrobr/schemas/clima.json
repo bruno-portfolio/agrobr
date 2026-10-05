@@ -157,7 +157,7 @@
       "name": "radiacao_media_mj",
       "type": "float",
       "nullable": true,
-      "unit": "MJ/m²",
+      "unit": "MJ/m²/dia",
       "stable": true,
       "deprecated": false,
       "description": "",

@@ -5,7 +5,7 @@ from datetime import UTC, datetime
 import pandas as pd
 import pytest
 
-from agrobr import contracts
+from agrobr import constants, contracts
 from agrobr.contracts import clima
 from agrobr.exceptions import ContractViolationError
 from agrobr.models import MetaInfo
@@ -77,3 +77,14 @@ def test_hourly_contract_reports_duplicate_columns(hourly_frame):
     with levanta_exatamente(ContractViolationError) as erro:
         contracts.validate_dataset(frame, clima.CLIMA_ESTACAO_HORARIA_V1)
     assert erro.value.violation == "Duplicate column labels: ['hora_utc']"
+
+
+def test_radiacao_media_do_clima_tem_a_unidade_diaria_da_nasa():
+    unidade_nasa = {
+        coluna_mensal: unidade
+        for _, _, _, coluna_mensal, unidade in constants.NASA_POWER_PARAMETER_DEFINITIONS
+    }["radiacao_media_mj"]
+    coluna = contracts.get_contract("clima").get_column("radiacao_media_mj")
+
+    assert unidade_nasa == "MJ/m^2/day"
+    assert coluna is not None and coluna.unit == "MJ/m²/dia"

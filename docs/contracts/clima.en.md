@@ -45,7 +45,7 @@ Registry key: `clima`. PK: `[mes, uf]`. Version 2.0 remains available as a histo
 | `temp_min_media` | FLOAT | Yes | °C |
 | `num_estacoes` | INTEGER | Yes | Stations with rows in month; null for NASA |
 | `umidade_media` | FLOAT | Yes | %, available in NASA aggregates |
-| `radiacao_media_mj` | FLOAT | Yes | MJ/m², NASA daily mean |
+| `radiacao_media_mj` | FLOAT | Yes | MJ/m²/day, NASA daily mean |
 | `vento_medio_ms` | FLOAT | Yes | m/s, available in NASA aggregates |
 | `fonte` | STRING | No | `inmet` or `nasa_power` |
 | `lat` | FLOAT | Yes | NASA point latitude; null for INMET aggregates |

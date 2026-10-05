@@ -45,7 +45,7 @@ Registro: `clima`. PK: `[mes, uf]`. A versão 2.0 permanece disponível como con
 | `temp_min_media` | FLOAT | Sim | °C |
 | `num_estacoes` | INTEGER | Sim | Estações com linhas no mês; nulo no NASA |
 | `umidade_media` | FLOAT | Sim | %, disponível no agregado NASA |
-| `radiacao_media_mj` | FLOAT | Sim | MJ/m², média diária NASA |
+| `radiacao_media_mj` | FLOAT | Sim | MJ/m²/dia, média diária NASA |
 | `vento_medio_ms` | FLOAT | Sim | m/s, disponível no agregado NASA |
 | `fonte` | STRING | Não | `inmet` ou `nasa_power` |
 | `lat` | FLOAT | Sim | Latitude do ponto NASA; nula no agregado INMET |

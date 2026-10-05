@@ -68,7 +68,7 @@ CLIMA_V3 = contracts.Contract(
             name="radiacao_media_mj",
             type=contracts.ColumnType.FLOAT,
             nullable=True,
-            unit="MJ/m²",
+            unit="MJ/m²/dia",
             min_value=0,
         ),
         contracts.Column(
