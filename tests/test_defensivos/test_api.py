@@ -296,3 +296,15 @@ async def test_cheio_real_vazio_e_contrato_com_os_mesmos_dtypes(function, contra
     esperado = contracts.get_contract(contrato).empty_frame()
     assert len(cheio) and vazio.empty
     assert vazio.dtypes.to_dict() == cheio.dtypes.to_dict() == esperado.dtypes.to_dict()
+
+
+@pytest.mark.usefixtures("replay_captures")
+async def test_falha_ao_gravar_o_cache_nao_derruba_a_consulta_baixada(monkeypatch):
+    monkeypatch.setattr(snapshot, "write_snapshot", Mock(side_effect=PermissionError("travado")))
+
+    frame, meta = await defensivos.tecnicos(nr_registro="00301", return_meta=True)
+
+    assert frame["nr_registro"].tolist() == ["00301"]
+    assert meta.from_cache is False
+    assert meta.cache_key is None
+    assert meta.cache_expires_at is None

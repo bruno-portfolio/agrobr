@@ -106,7 +106,14 @@ async def _load_snapshot(kind: str, use_cache: bool) -> snapshot.Snapshot:
             else None
         )
         if use_cache:
-            snapshot.write_snapshot(kind, tables, meta)
+            try:
+                snapshot.write_snapshot(kind, tables, meta)
+            except OSError as error:
+                logger.warning(
+                    "defensivos_cache_write_failed", kind=kind, error=type(error).__name__
+                )
+                meta.cache_key = None
+                meta.cache_expires_at = None
         return snapshot.Snapshot(tables=tables, meta=meta)
 
 
