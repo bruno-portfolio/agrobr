@@ -157,7 +157,15 @@ async def _query(
     meta.contract_version = contract.version
     meta.parse_duration_ms += int((time.monotonic() - started) * 1000)
     meta.source_details["query"] = {"table": table, "filters": selected}
-    return result_utils.finalize_result(frame, meta, as_polars=as_polars, return_meta=return_meta)
+    return result_utils.finalize_result(
+        frame,
+        meta,
+        as_polars=as_polars,
+        return_meta=return_meta,
+        string_columns=tuple(
+            column.name for column in contract.columns if column.type == contracts.ColumnType.STRING
+        ),
+    )
 
 
 @overload

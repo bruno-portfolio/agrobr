@@ -308,3 +308,22 @@ async def test_falha_ao_gravar_o_cache_nao_derruba_a_consulta_baixada(monkeypatc
     assert meta.from_cache is False
     assert meta.cache_key is None
     assert meta.cache_expires_at is None
+
+
+@pytest.mark.usefixtures("replay_captures")
+async def test_cache_devolve_texto_nulo_igual_a_coleta_fresca():
+    fresco = await defensivos.tecnicos(nr_registro="00301")
+    cacheado = await defensivos.tecnicos(nr_registro="00301")
+
+    assert fresco["nome_cientifico"].isna().all()
+    assert [type(valor) for valor in cacheado.iloc[0]] == [type(valor) for valor in fresco.iloc[0]]
+
+
+@pytest.mark.usefixtures("replay_captures")
+async def test_as_polars_tipa_texto_igual_com_e_sem_cache():
+    pl = pytest.importorskip("polars")
+    fresco = await defensivos.tecnicos(nr_registro="00301", as_polars=True)
+    cacheado = await defensivos.tecnicos(nr_registro="00301", as_polars=True)
+
+    assert cacheado.schema == fresco.schema
+    assert fresco.schema["nome_cientifico"] == pl.String

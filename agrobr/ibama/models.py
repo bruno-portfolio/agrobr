@@ -32,4 +32,16 @@ EDICAO_COLUMN_CSV = "ULTIMA_ATUALIZACAO_RELATORIO"
 
 COLUNAS_SAIDA: list[str] = list(CSV_COLUMN_MAP.values())
 
+COLUNAS_TEXTO: tuple[str, ...] = (
+    "seq_tad",
+    "numero_tad",
+    "num_processo",
+    "descricao",
+    "codigo_municipio",
+    "municipio",
+    "uf",
+    "nome_imovel",
+    "status",
+)
+
 COLUNAS_SAIDA_GEO: list[str] = [*COLUNAS_SAIDA, "geometry"]

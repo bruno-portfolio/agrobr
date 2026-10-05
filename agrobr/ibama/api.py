@@ -107,7 +107,13 @@ async def embargos(
     parse_ms = int((time.monotonic() - t1) * 1000)
 
     meta = _meta(coleta, df, "httpx+csv", fetch_ms, parse_ms)
-    return finalize_result(df, meta, as_polars=as_polars, return_meta=return_meta)
+    return finalize_result(
+        df,
+        meta,
+        as_polars=as_polars,
+        return_meta=return_meta,
+        string_columns=models.COLUNAS_TEXTO,
+    )
 
 
 @overload

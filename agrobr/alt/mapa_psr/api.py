@@ -258,7 +258,17 @@ async def _fetch(
     for aviso in avisos:
         meta.validation_warnings.append(aviso)
         warnings.warn(aviso, UserWarning, stacklevel=3)
-    return finalize_result(df_out, meta, as_polars=as_polars, return_meta=return_meta)
+    return finalize_result(
+        df_out,
+        meta,
+        as_polars=as_polars,
+        return_meta=return_meta,
+        string_columns=tuple(
+            coluna.name
+            for coluna in contracts.get_contract(contrato).columns
+            if coluna.type == contracts.ColumnType.STRING
+        ),
+    )
 
 
 def _colapsar_reenvios(df: pd.DataFrame, contrato: str) -> tuple[pd.DataFrame, dict[str, Any]]:

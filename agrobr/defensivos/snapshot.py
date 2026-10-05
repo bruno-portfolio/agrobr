@@ -215,7 +215,7 @@ def _read_table(content: bytes, table: _TableManifest, null_token: str) -> pd.Da
     if frame.columns.tolist() != table.columns or len(frame) != table.rows:
         raise ValueError("Layout ou contagem de tabela incompatível")
     for column, dtype in table.dtypes.items():
-        series = frame[column].astype(object).mask(frame[column].eq(null_token))
+        series = frame[column].astype(object).mask(frame[column].eq(null_token), None)
         frame[column] = series.astype(
             parser.TEXTO
             if dtype in {"object", "string", "str"}
