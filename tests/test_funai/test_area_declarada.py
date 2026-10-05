@@ -6,7 +6,6 @@ import warnings
 from pathlib import Path
 from types import SimpleNamespace
 
-import geopandas as gpd
 import pandas as pd
 import pytest
 
@@ -14,6 +13,8 @@ from agrobr import funai
 from agrobr.funai import api
 
 from .test_oficial_veracidade import GEO_1, chamar, instalar, na_feicao, pagina
+
+gpd = pytest.importorskip("geopandas")
 
 RECORTE = Path(__file__).parents[1] / "golden_data" / "funai" / "area_declarada_ac_20260926"
 POLIGONO_R56 = {8601: 36362.0208, 31301: 31967.6367, 73878: 543430.106}

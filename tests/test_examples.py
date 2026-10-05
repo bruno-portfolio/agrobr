@@ -2,10 +2,15 @@ from __future__ import annotations
 
 import ast
 import importlib
+import importlib.util
 import inspect
 from pathlib import Path
+from unittest.mock import AsyncMock
 
+import pandas as pd
 import pytest
+
+from agrobr import cepea, conab, ibge
 
 EXEMPLOS = sorted((Path(__file__).resolve().parents[1] / "examples").glob("*.py"))
 
@@ -47,3 +52,20 @@ def test_exemplo_chama_a_api_publica_com_argumentos_validos(exemplo: Path):
 
     assert chamadas
     assert erros == []
+
+
+async def test_pipeline_async_exporta_safras_e_pam_mesmo_sem_nenhum_preco(monkeypatch, tmp_path):
+    caminho = next(exemplo for exemplo in EXEMPLOS if exemplo.name == "pipeline_async.py")
+    spec = importlib.util.spec_from_file_location("exemplo_pipeline_async", caminho)
+    assert spec is not None and spec.loader is not None
+    modulo = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(modulo)
+    tabela = pd.DataFrame({"produto": ["soja"], "valor": [1.0]})
+    monkeypatch.chdir(tmp_path)
+    monkeypatch.setattr(cepea, "indicador", AsyncMock(side_effect=RuntimeError("simulada")))
+    monkeypatch.setattr(conab, "safras", AsyncMock(return_value=tabela))
+    monkeypatch.setattr(ibge, "pam", AsyncMock(return_value=tabela))
+
+    await modulo.main()
+
+    assert sorted(p.name for p in (tmp_path / "output").iterdir()) == ["pam.csv", "safras.csv"]

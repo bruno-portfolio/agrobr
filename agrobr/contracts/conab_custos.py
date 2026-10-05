@@ -124,6 +124,8 @@ def _strict(df: pd.DataFrame) -> list[str]:
 class CustosContract(Contract):
     def validate(self, df: pd.DataFrame) -> tuple[bool, list[str]]:
         _, errors = super().validate(df)
+        if df.columns.duplicated().any():
+            return False, errors
         errors.extend(_strict(df))
         return not errors, errors
 
@@ -239,6 +241,8 @@ def _sociobio_dtype(name: str) -> str:
 class SociobioContract(Contract):
     def validate(self, df: pd.DataFrame) -> tuple[bool, list[str]]:
         _, errors = super().validate(df)
+        if df.columns.duplicated().any():
+            return False, errors
         if list(df.columns) != list(SOCIOBIO_COLUMNS):
             errors.append("Ordem/projeção de sociobiodiversidade difere do contrato 1.0")
         for name in SOCIOBIO_COLUMNS:

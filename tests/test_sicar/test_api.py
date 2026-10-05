@@ -17,6 +17,7 @@ import pandas as pd
 import pytest
 
 from agrobr import contracts
+from agrobr.alt import sicar
 from agrobr.alt.sicar import api, client, parser
 from agrobr.alt.sicar.models import COLUNAS_IMOVEIS_GEO
 from agrobr.exceptions import ParseError, SourceUnavailableError
@@ -636,3 +637,8 @@ async def test_sondagem_de_volume_avisa_e_nao_derruba_a_consulta(monkeypatch: py
                 avisos = [call.args[0] for call in logger.warning.call_args_list]
                 assert avisos == ([] if evento is None else [evento])
                 assert hits.await_count == chamadas
+
+
+def test_docstring_do_pacote_nao_afirma_licenca_cc_by():
+    assert "CC-BY" not in sicar.__doc__
+    assert "não comprovada" in sicar.__doc__

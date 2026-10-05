@@ -97,7 +97,7 @@ def _validate_period(ano: object, mes: object, dia: object | None) -> tuple[int,
     if not 1 <= mes_int <= 12:
         raise InvalidParameterError("mes deve estar entre 1 e 12")
     try:
-        date(ano_int, mes_int, dia_int or 1)
+        date(ano_int, mes_int, 1 if dia_int is None else dia_int)
     except ValueError as exc:
         raise InvalidParameterError(
             f"data inválida: ano={ano_int}, mes={mes_int}, dia={dia_int}"

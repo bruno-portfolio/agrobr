@@ -8,7 +8,7 @@ from unittest.mock import AsyncMock, Mock
 import pandas as pd
 import pytest
 
-from agrobr import datasets
+from agrobr import contracts, datasets
 from agrobr.datasets import base
 from agrobr.models import MetaInfo
 from tests import helpers
@@ -210,3 +210,24 @@ async def test_as_polars_data_toda_nula_sai_datetime_pelo_contrato():
     resultado = await wrapped(datasets.get_dataset("embarques_anec"), as_polars=True)
     assert resultado["data_inicio"].null_count() == 1
     assert resultado.schema["data_inicio"] == pl.Datetime("ns")
+
+
+async def test_as_polars_meta_columns_segue_a_ordem_do_contrato_na_saida(source_meta):
+    pl = pytest.importorskip("polars")
+    contrato = contracts.get_contract("embarques_anec").list_columns()
+    invertidas = [*reversed(contrato[:3]), "extra"]
+    frame = pl.DataFrame({nome: pl.Series([], dtype=pl.Utf8) for nome in invertidas})
+    meta = replace(source_meta, columns=list(frame.columns))
+
+    async def nativo(_dataset, *, as_polars=False, return_meta=False):
+        assert as_polars and return_meta
+        return frame, meta
+
+    wrapped = base._with_output_format(nativo)
+
+    resultado, saida = await wrapped(
+        datasets.get_dataset("embarques_anec"), as_polars=True, return_meta=True
+    )
+
+    assert resultado.columns == [*contrato[:3], "extra"]
+    assert saida.columns == resultado.columns

@@ -528,7 +528,11 @@ def _meta(frame: pd.DataFrame, result: Any, state: Pipeline) -> MetaInfo:
             "all_resources_eof": all(item["eof_reached"] for item in state.parsing),
             "transactional_snapshot": False,
             "population_total_known": False,
-            "aggregation": "sum exact Int64 per period and literal dimensions; occurrences not deduplicated",
+            "aggregation": (
+                "sum exact Int64 per period and literal dimensions; occurrences not deduplicated, except a "
+                "concessionaria x month block published twice with identical rows, kept once "
+                "(parsing.duplicated_blocks)"
+            ),
         },
         "memory": {
             "basis": "conservative retained/transient estimates; not measured process RSS; excludes disk spool",

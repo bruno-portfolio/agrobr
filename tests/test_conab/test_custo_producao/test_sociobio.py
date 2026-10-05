@@ -7,7 +7,7 @@ import pandas as pd
 import pytest
 from bs4 import BeautifulSoup
 
-from agrobr import conab, constants, datasets
+from agrobr import conab, constants, contracts, datasets
 from agrobr.conab._custo_producao import (
     _acquisition,
     _sociobio_api,
@@ -18,7 +18,7 @@ from agrobr.conab._custo_producao import (
 from agrobr.conab._custo_producao._sociobio_workbook import WorkbookSociobio
 from agrobr.contracts import conab_custos
 from agrobr.datasets.deterministic import deterministic
-from agrobr.exceptions import InvalidParameterError, ParseError
+from agrobr.exceptions import ContractViolationError, InvalidParameterError, ParseError
 from tests import helpers
 
 
@@ -231,3 +231,13 @@ async def test_catalogo_contextos_mantem_recusas_nominais(monkeypatch):
     assert frame.loc[frame.aba == "Igarapé-Miri-PA-2008", "status"].item() == "identified"
     tipos = frame.dtypes[["ano", "indice_aba", "produtividade", "data_precos"]]
     assert tipos.astype(str).tolist() == ["Int64", "Int64", "float64", "datetime64[ns]"]
+
+
+@pytest.mark.parametrize("nome", ["custo_producao", "custo_sociobiodiversidade"])
+def test_coluna_duplicada_vira_violacao_de_contrato(nome):
+    contrato = contracts.get_contract(nome)
+    vazio = contrato.empty_frame()
+    duplicada = pd.concat([vazio, vazio[[contrato.list_columns()[0]]]], axis=1)
+
+    with pytest.raises(ContractViolationError, match="Duplicate column labels"):
+        contracts.validate_dataset(duplicada, nome)

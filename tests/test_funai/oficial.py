@@ -8,7 +8,7 @@ from typing import Any
 from urllib.parse import parse_qsl
 
 import pandas as pd
-from shapely.geometry import box, shape
+import pytest
 
 GOLDEN = Path(__file__).parents[1] / "golden_data" / "funai" / "oficial_20260923"
 PRINCIPAIS = [
@@ -103,7 +103,8 @@ def publicado(frame: pd.DataFrame) -> list[dict[str, Any]]:
 
 
 def intersecta(geometria: dict[str, Any], bbox: tuple[float, float, float, float]) -> bool:
-    return bool(shape(geometria).intersects(box(*bbox)))
+    geometria_shapely = pytest.importorskip("shapely.geometry")
+    return bool(geometria_shapely.shape(geometria).intersects(geometria_shapely.box(*bbox)))
 
 
 def coordenadas(geometria: Any) -> Any:

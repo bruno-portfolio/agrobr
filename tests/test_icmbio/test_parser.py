@@ -28,3 +28,13 @@ class TestParseUcsGeojson:
         assert not cheio.empty and vazio.empty
         assert list(vazio.columns) == list(cheio.columns)
         assert vazio.dtypes.astype(str).to_dict() == cheio.dtypes.astype(str).to_dict()
+
+    def test_vazio_recebido_tem_o_crs_pedido_e_reprojeta(self):
+        from agrobr.icmbio.parser import parse_ucs_geojson
+
+        cheio = parse_ucs_geojson(GEO.read_bytes())
+        vazio = parse_ucs_geojson(
+            json.dumps({"type": "FeatureCollection", "features": []}).encode()
+        )
+        assert vazio.crs == cheio.crs == "EPSG:4326"
+        assert vazio.to_crs(4674).crs == "EPSG:4674"

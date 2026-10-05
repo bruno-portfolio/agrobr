@@ -231,7 +231,7 @@ def parse_geojson_base(
                 reason="GeoJSON sem features",
             )
         empty = gpd.GeoDataFrame(columns=output_cols_empty)
-        empty = empty.set_geometry("geometry")
+        empty = empty.set_geometry("geometry", crs=crs)
         return empty
 
     if max_features is not None and len(features) >= max_features:

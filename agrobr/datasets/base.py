@@ -185,7 +185,10 @@ def _tipar_pelo_contrato(result: Any, contract_name: str | None) -> Any:
     nomes = [c.name for c in get_contract(contract_name).columns if c.name in frame.columns]
     ordem = [*nomes, *(c for c in frame.columns if c not in nomes)]
     tipado = cast(Any, frame).cast(tipos).select(ordem)
-    return (tipado, meta) if isinstance(result, tuple) else tipado
+    if not isinstance(result, tuple):
+        return tipado
+    meta.columns = list(tipado.columns)
+    return tipado, meta
 
 
 def _with_output_format(

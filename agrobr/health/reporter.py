@@ -97,11 +97,11 @@ class HealthReport:
         path.parent.mkdir(parents=True, exist_ok=True)
 
         if format == "json":
-            path.write_text(self.to_json())
+            path.write_text(self.to_json(), encoding="utf-8")
         elif format == "html":
-            path.write_text(self.to_html())
+            path.write_text(self.to_html(), encoding="utf-8")
         else:
-            path.write_text(self.to_markdown())
+            path.write_text(self.to_markdown(), encoding="utf-8")
 
         logger.info("health_report_saved", path=str(path), format=format)
 
@@ -188,6 +188,7 @@ class HealthReport:
 <!DOCTYPE html>
 <html>
 <head>
+    <meta charset="utf-8">
     <title>Health Check Report</title>
     <style>
         body {{ font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; margin: 40px; }}

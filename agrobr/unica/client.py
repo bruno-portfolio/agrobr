@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import re
+from datetime import datetime
 
 import httpx
 
@@ -12,6 +13,7 @@ from agrobr.http.retry import retry_on_status
 from agrobr.http.settings import get_timeout
 from agrobr.http.user_agents import UserAgentRotator
 from agrobr.normalize.encoding import detect_encoding_chain
+from agrobr.utils.time import utcnow
 
 from .models import (
     IDTABELA_HISTORICO_PRODUTO,
@@ -28,12 +30,15 @@ PDF_URL_RE = re.compile(r"arquivos/pdfs/\d{4}/\d{2}/[0-9a-f]{32}\.pdf")
 
 XLSX_MAGIC = b"PK\x03\x04"
 
-_pdf_cache: tuple[str, bytes] | None = None
+_pdf_cache: tuple[str, bytes, datetime] | None = None
 
 
-async def fetch_quinzenal_pdf() -> tuple[bytes, str]:
+async def fetch_quinzenal_pdf() -> tuple[bytes, str, datetime, bool]:
     """Cache de 1 entrada por URL do PDF: edição publicada em outra URL força o
-    download (o nome do arquivo na URL não é o md5 do conteúdo)."""
+    download (o nome do arquivo na URL não é o md5 do conteúdo).
+
+    Devolve o PDF, a URL, a hora em que o PDF foi baixado e se ele veio do cache.
+    """
     global _pdf_cache
     page_url = URLS[Fonte.UNICA]["quinzenal_page"]
 
@@ -59,7 +64,7 @@ async def fetch_quinzenal_pdf() -> tuple[bytes, str]:
 
         if _pdf_cache is not None and _pdf_cache[0] == pdf_url:
             logger.debug("unica_quinzenal_pdf_cache_hit", url=pdf_url)
-            return _pdf_cache[1], pdf_url
+            return _pdf_cache[1], pdf_url, _pdf_cache[2], True
 
         logger.info("unica_quinzenal_pdf_request", url=pdf_url)
 
@@ -74,9 +79,10 @@ async def fetch_quinzenal_pdf() -> tuple[bytes, str]:
             last_error=f"PDF inválido ({len(content)} bytes)",
         )
 
-    _pdf_cache = (pdf_url, content)
+    adquirido_em = utcnow()
+    _pdf_cache = (pdf_url, content, adquirido_em)
     logger.info("unica_quinzenal_pdf_ok", bytes=len(content))
-    return content, pdf_url
+    return content, pdf_url, adquirido_em, False
 
 
 async def fetch_historico_xlsx(

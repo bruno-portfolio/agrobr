@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import hashlib
 import time
+from datetime import datetime
 from typing import Literal, overload
 
 import pandas as pd
@@ -84,7 +85,15 @@ async def moagem_quinzenal(
     if regiao is not None and regiao not in REGIOES_QUINZENAL:
         raise InvalidParameterError(f"Região '{regiao}' inválida. Opções: {REGIOES_QUINZENAL}")
 
-    parsed, source_url, fetch_ms, parse_ms, pdf_bytes = await _fetch_and_parse_quinzenal()
+    (
+        parsed,
+        source_url,
+        fetch_ms,
+        parse_ms,
+        pdf_bytes,
+        adquirido_em,
+        do_cache,
+    ) = await _fetch_and_parse_quinzenal()
 
     df = parsed.series[parsed.series["produto"] == produto_canonico]
     if regiao is not None:
@@ -104,6 +113,8 @@ async def moagem_quinzenal(
         raw_content_hash=hashlib.sha256(pdf_bytes).hexdigest(),
         raw_content_size=len(pdf_bytes),
     )
+    meta.from_cache = do_cache
+    meta.fetched_at = meta.fetch_timestamp = adquirido_em
     return finalize_result(df, meta, as_polars=as_polars, return_meta=return_meta)
 
 
@@ -154,7 +165,15 @@ async def safra_resumo(
             f"Período '{periodo}' inválido. Opções: {list(PERIODOS_RESUMO)}"
         )
 
-    parsed, source_url, fetch_ms, parse_ms, pdf_bytes = await _fetch_and_parse_quinzenal()
+    (
+        parsed,
+        source_url,
+        fetch_ms,
+        parse_ms,
+        pdf_bytes,
+        adquirido_em,
+        do_cache,
+    ) = await _fetch_and_parse_quinzenal()
 
     disponiveis = sorted(set(parsed.resumo["periodo"]))
     if periodo not in disponiveis:
@@ -177,6 +196,8 @@ async def safra_resumo(
         raw_content_hash=hashlib.sha256(pdf_bytes).hexdigest(),
         raw_content_size=len(pdf_bytes),
     )
+    meta.from_cache = do_cache
+    meta.fetched_at = meta.fetch_timestamp = adquirido_em
     return finalize_result(df, meta, as_polars=as_polars, return_meta=return_meta)
 
 
@@ -259,16 +280,18 @@ async def producao_historica(
 _parsed_cache: tuple[str, parser.ParsedQuinzenal] | None = None
 
 
-async def _fetch_and_parse_quinzenal() -> tuple[parser.ParsedQuinzenal, str, int, int, bytes]:
+async def _fetch_and_parse_quinzenal() -> tuple[
+    parser.ParsedQuinzenal, str, int, int, bytes, datetime, bool
+]:
     """Cache de 1 entrada keyed pela URL do PDF: `moagem_quinzenal` e
     `safra_resumo` na mesma sessão pagam um único parse."""
     global _parsed_cache
     t0 = time.monotonic()
-    pdf_bytes, source_url = await client.fetch_quinzenal_pdf()
+    pdf_bytes, source_url, adquirido_em, do_cache = await client.fetch_quinzenal_pdf()
     fetch_ms = int((time.monotonic() - t0) * 1000)
 
     if _parsed_cache is not None and _parsed_cache[0] == source_url:
-        return _parsed_cache[1], source_url, fetch_ms, 0, pdf_bytes
+        return _parsed_cache[1], source_url, fetch_ms, 0, pdf_bytes, adquirido_em, do_cache
 
     t1 = time.monotonic()
     parsed = parser.parse_quinzenal_pdf(pdf_bytes)
@@ -281,4 +304,4 @@ async def _fetch_and_parse_quinzenal() -> tuple[parser.ParsedQuinzenal, str, int
         posicao=str(parsed.posicao.date()),
         series_rows=len(parsed.series),
     )
-    return parsed, source_url, fetch_ms, parse_ms, pdf_bytes
+    return parsed, source_url, fetch_ms, parse_ms, pdf_bytes, adquirido_em, do_cache

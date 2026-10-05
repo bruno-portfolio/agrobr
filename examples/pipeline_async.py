@@ -34,7 +34,8 @@ async def coletar_precos() -> pd.DataFrame:
 
     dfs = await asyncio.gather(*[get_produto(p) for p in produtos])
 
-    return pd.concat([df for df in dfs if not df.empty], ignore_index=True)
+    coletados = [df for df in dfs if not df.empty]
+    return pd.concat(coletados, ignore_index=True) if coletados else pd.DataFrame()
 
 
 async def coletar_safras() -> pd.DataFrame:

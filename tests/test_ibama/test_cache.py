@@ -19,6 +19,7 @@ def _manifesto() -> dict[str, object]:
 
 
 async def test_coleta_dentro_do_ttl_sai_do_cache_com_a_hora_da_coleta(monkeypatch):
+    pytest.importorskip("geopandas")
     pedidos = instalar(monkeypatch)
 
     primeiro, meta1 = await ibama.embargos(uf="DF", return_meta=True)
@@ -35,6 +36,7 @@ async def test_coleta_dentro_do_ttl_sai_do_cache_com_a_hora_da_coleta(monkeypatc
 
 
 async def test_use_cache_false_baixa_de_novo_sem_ler_nem_gravar(monkeypatch):
+    pytest.importorskip("geopandas")
     pedidos = instalar(monkeypatch)
 
     _, meta1 = await ibama.embargos(use_cache=False, return_meta=True)

@@ -61,3 +61,29 @@ def test_modified_certificate_rejected_before_context(monkeypatch):
     )
     with pytest.raises(ValueError, match="SHA"):
         _tls.build_context()
+
+
+@pytest.mark.parametrize("fim_de_linha", ["\n", "\r\n"], ids=["lf", "crlf"])
+def test_impressao_digital_do_der_independe_do_fim_de_linha(monkeypatch, tmp_path, fim_de_linha):
+    copia = tmp_path / "intermediario.pem"
+    texto = _tls.CERTIFICADO.read_text("ascii").replace("\r\n", "\n")
+    copia.write_bytes(texto.replace("\n", fim_de_linha).encode("ascii"))
+    monkeypatch.setattr(_tls, "CERTIFICADO", copia)
+
+    contexto = _tls.build_context()
+
+    assert contexto.verify_mode == ssl.CERT_REQUIRED and contexto.check_hostname
+
+
+def test_der_com_um_byte_trocado_e_recusado_antes_do_contexto(monkeypatch, tmp_path):
+    der = bytearray(ssl.PEM_cert_to_DER_cert(_tls.CERTIFICADO.read_text("ascii")))
+    der[100] ^= 0x01
+    copia = tmp_path / "intermediario.pem"
+    copia.write_text(ssl.DER_cert_to_PEM_cert(bytes(der)), "ascii")
+    monkeypatch.setattr(_tls, "CERTIFICADO", copia)
+    monkeypatch.setattr(
+        _tls.ssl, "create_default_context", lambda **_: pytest.fail("created unsafe context")
+    )
+
+    with pytest.raises(ValueError, match="SHA"):
+        _tls.build_context()

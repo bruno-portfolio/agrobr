@@ -78,6 +78,19 @@ class TestHealthReport:
         assert path.exists()
         assert "<!DOCTYPE html>" in path.read_text(encoding="utf-8")
 
+    @pytest.mark.parametrize("formato", ["json", "html", "md"])
+    def test_save_grava_utf8_com_acentos_em_todo_formato(self, tmp_path, formato):
+        report = HealthReport(
+            [_make_result(status=CheckStatus.FAILED, message="Conexão recusada — sem rota")]
+        )
+        path = tmp_path / f"report.{formato}"
+        report.save(path, format=formato)
+
+        texto = path.read_bytes().decode("utf-8")
+        assert "Conexão recusada" in texto or formato == "json"
+        if formato == "html":
+            assert '<meta charset="utf-8">' in texto
+
     def test_save_markdown(self, tmp_path):
         report = HealthReport([_make_result()])
         path = tmp_path / "report.md"

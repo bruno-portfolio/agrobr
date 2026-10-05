@@ -51,6 +51,7 @@ class TestFocos:
             ({"ano": 2025, "mes": 13}, "mes"),
             ({"ano": 2025, "mes": "1"}, "inteiro"),
             ({"ano": 2025, "mes": 2, "dia": 30}, "data inválida"),
+            ({"ano": 2025, "mes": 1, "dia": 0}, "data inválida"),
             ({"ano": 9999, "mes": 1}, "ano"),
             ({"ano": 2025, "mes": 1, "uf": "XX"}, "UF inválida"),
         ],
