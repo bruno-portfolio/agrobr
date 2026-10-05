@@ -95,6 +95,9 @@ the 34 lands exceed 5%.
 
 Regularizada, Homologada, Declarada, Delimitada, Em Estudo, Encaminhada RI.
 
+If the complete read (with no `max_registros` cut) matches no TI with the requested `fase`, the result is empty with a
+`UserWarning` and an entry in `validation_warnings` listing the `fase_ti` values read: a new FUNAI label shows up there.
+
 ## Raw collection
 
 `agrobr.bruto.coletar("funai", "terras_indigenas", ...)` keeps the original GeoJSON pages of the WFS layer `Funai:tis_poligonais`, in the native CRS (`EPSG:4674`) and with every attribute, without the `propertyName` and `srsName` that `terras_indigenas()` and `terras_indigenas_geo()` use. `agrobr.bruto.coletar("funai", "terras_indigenas_pontos", ...)` does the same for layer `Funai:tis_pontos`, one point per Indigenous land in the `Em Estudo` phase (163 on 2026-10-04), which the tabular API does not read. Both collections are always national (state and bbox refused). Pages use `sortBy=gid`, and the collection requires `gid` to be an integer, present, unique and strictly increasing across pages; since the GeoServer refuses `resultType=hits` (HTTP 403), the counts before and after are the `numberMatched` of a one-feature page. Polygons default to 20 features per page: the largest Indigenous land exceeds 2.9 MB, and 100-feature pages would reach 14 MB, above the 8 MiB limit. See the [raw collection API](../api/bruto.md) and the [manifest contract](../contracts/bruto.md).

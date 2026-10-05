@@ -75,6 +75,13 @@ async def _fetch(
     meta = metadata.build_meta(acquired, frame)
     meta.validation_warnings.extend(acquired.frame.attrs.get(result.ATRIBUTO_AVISOS, []))
     remote = acquired.coverage.remote
+    if validated.fase is not None and not remote.truncated and frame.empty:
+        aviso = (
+            f"INCRA: fase={validated.fase!r} não encontrou registros na leitura completa. "
+            f"Valores de ds_fase presentes na leitura: {acquired.local_filters['fases_observadas']!r}"
+        )
+        meta.validation_warnings.append(aviso)
+        warnings.warn(aviso, UserWarning, stacklevel=3)
     if remote.truncated:
         warnings.warn(
             f"INCRA: prefixo remoto de {remote.accepted_rows} de {remote.expected_before} ocorrências; "

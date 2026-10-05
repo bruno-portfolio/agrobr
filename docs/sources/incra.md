@@ -59,7 +59,9 @@ sobrepostas em uma ocorrência para detectar mudança durante a paginação.
 Os filtros `uf` e `fase` são aplicados localmente depois do download: o servidor não
 respeita `CQL_FILTER` nesses campos. Parâmetro inválido levanta `InvalidParameterError`
 antes de qualquer requisição. Quando `max_registros` corta a população, um
-`UserWarning` informa que a seleção veio de um prefixo remoto. `deterministic()` não é
+`UserWarning` informa que a seleção veio de um prefixo remoto. Se a leitura completa não casar
+nenhuma comunidade com a `fase` pedida, o resultado vem vazio com `UserWarning` e aviso em `validation_warnings` que
+listam os valores de `ds_fase` lidos (um rótulo novo do INCRA aparece ali). `deterministic()` não é
 suportado (o WFS não publica edição imutável).
 
 ### Colunas

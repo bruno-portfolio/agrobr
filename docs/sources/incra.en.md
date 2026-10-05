@@ -59,7 +59,9 @@ pages overlapping by one occurrence to detect changes during pagination.
 The `uf` and `fase` filters are applied locally after the download: the server does not
 honor `CQL_FILTER` on those fields. An invalid parameter raises `InvalidParameterError`
 before any request. When `max_registros` cuts the population, a `UserWarning` says the
-selection came from a remote prefix. `deterministic()` is not supported (the WFS publishes
+selection came from a remote prefix. If the complete read matches no community with the
+requested `fase`, the result is empty with a `UserWarning` and an entry in `validation_warnings` listing the `ds_fase`
+values read (a new INCRA label shows up there). `deterministic()` is not supported (the WFS publishes
 no immutable edition).
 
 ### Columns

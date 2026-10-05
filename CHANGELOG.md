@@ -132,6 +132,7 @@ Catálogo desta versão: **54 datasets e 89 contratos registrados**. Mudanças i
 - **SFB IFN — proveniência por página** — o `MetaInfo` do IFN traz cada página de pontos e de lotes com URL, SHA-256 e tamanho; `raw_content_hash` identifica o manifesto desses recursos (`manifest_encoding="canonical_json_utf8"`).
 - Consultas ANA com múltiplas páginas passam a identificar todas as respostas no `MetaInfo` por manifesto canônico de hashes. A proveniência inclui consulta lógica, limite solicitado, ordem, tamanho e SHA-256 de cada página; zero páginas e corpo único mantêm seu comportamento anterior.
 - **Queimadas, leitura do CSV mensal** — UF, bioma e hora de cada foco passam a ser calculados uma vez por valor distinto, e não linha a linha: o parse de 150 mil focos cai de 1,5 s para 0,5 s, e a leitura do CSV passa a ser quase todo o custo. O resultado é o mesmo.
+- **FUNAI e INCRA — fase sem resultado avisa** — `terras_indigenas(fase=...)` e `quilombolas(fase=...)` que não casam nenhuma linha na leitura completa emitem `UserWarning` e aviso em `validation_warnings` com as fases lidas, como a Embrapa Solos faz com `ordem`: um rótulo novo da fonte deixa de parecer "nenhuma TI/comunidade nessa fase".
 
 ### Changed
 

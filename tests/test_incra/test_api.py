@@ -299,3 +299,19 @@ async def test_incra_deterministic_precedes_optional_and_http(monkeypatch, funct
             await getattr(api, function)()
     fetch.assert_not_called()
     optional.assert_not_called()
+
+
+async def test_incra_fase_com_rotulo_novo_na_fonte_avisa_as_fases_lidas(monkeypatch):
+    replay.install_national_wfs(
+        monkeypatch, transformar=lambda corpo: corpo.replace(b'"TITULADO"', b'"TITULADA"')
+    )
+    with warnings.catch_warnings(record=True) as emitidos:
+        warnings.simplefilter("always")
+        frame, meta = await api.quilombolas(fase="TITULADO", return_meta=True)
+
+    assert frame.empty
+    [aviso] = [
+        str(item.message) for item in emitidos if "não encontrou registros" in str(item.message)
+    ]
+    assert "'TITULADA'" in aviso and "fase='TITULADO'" in aviso
+    assert aviso in meta.validation_warnings

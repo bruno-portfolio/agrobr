@@ -116,6 +116,13 @@ async def _fetch(
     if include_geometry:
         _avisar_area_divergente(frame, meta)
     remote = acquired.coverage.remote
+    if validated.fase is not None and not remote.truncated and frame.empty:
+        aviso = (
+            f"FUNAI: fase={validated.fase!r} não encontrou registros na leitura completa. "
+            f"Valores de fase_ti presentes na leitura: {acquired.local_filters['fases_observadas']!r}"
+        )
+        meta.validation_warnings.append(aviso)
+        warnings.warn(aviso, UserWarning, stacklevel=3)
     if remote.truncated:
         warnings.warn(
             f"FUNAI: prefixo remoto de {remote.accepted_rows} de {remote.expected_before} ocorrências; "

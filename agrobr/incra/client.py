@@ -75,9 +75,21 @@ class _Collection(
                 "sort_validation": "numeric_first_sort_component_order_only_text_inversions_diagnostic",
             },
         )
+        self.fases: set[str] = set()
 
     def _matches(self, feature: Any) -> bool:
+        if self.query.fase is not None:
+            fase = feature.properties.model_dump(by_alias=True)["ds_fase"]
+            if isinstance(fase, str):
+                self.fases.add(fase)
         return _matches(feature, self.query)
+
+    def finish(
+        self, transport: wfs_collection.TransportState, after: int
+    ) -> acquisition.IncraAcquisition:
+        result = super().finish(transport, after)
+        result.local_filters["fases_observadas"] = sorted(self.fases)
+        return result
 
     def _check_sort(self, parsed: Any) -> None:
         prior = self.previous_sort

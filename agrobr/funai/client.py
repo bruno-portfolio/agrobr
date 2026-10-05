@@ -76,9 +76,21 @@ class _Collection(
                 "continuity_basis": "all_18_properties_and_acquired_geometry_excluding_feature_id",
             },
         )
+        self.fases: set[str] = set()
 
     def _matches(self, feature: Any) -> bool:
+        if self.query.fase is not None:
+            fase = feature.properties.model_dump(by_alias=True)["fase_ti"]
+            if isinstance(fase, str):
+                self.fases.add(fase)
         return _matches(feature, self.query)
+
+    def finish(
+        self, transport: wfs_collection.TransportState, after: int
+    ) -> acquisition.FunaiAcquisition:
+        result = super().finish(transport, after)
+        result.local_filters["fases_observadas"] = sorted(self.fases)
+        return result
 
     def _check_sort(self, parsed: Any) -> None:
         prior = self.previous_sort

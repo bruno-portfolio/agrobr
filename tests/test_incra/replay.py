@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+from collections.abc import Callable
 from pathlib import Path
 from types import SimpleNamespace
 from typing import Any
@@ -35,7 +36,9 @@ def national_features() -> list[dict]:
     return first + second[1:]
 
 
-def install_national_wfs(monkeypatch) -> list[tuple[dict[str, str], dict[str, str]]]:
+def install_national_wfs(
+    monkeypatch, transformar: Callable[[bytes], bytes] | None = None
+) -> list[tuple[dict[str, str], dict[str, str]]]:
     resources = json.loads((NATIONAL / "metadata.json").read_bytes())["resources"]
     probes = iter(item for item in resources if item["role"] != "page")
     pages = {
@@ -53,7 +56,10 @@ def install_national_wfs(monkeypatch) -> list[tuple[dict[str, str], dict[str, st
             else pages[(params.get("startIndex"), params.get("count"))]
         )
         calls.append((dict(params), item["parameters"]))
-        return httpx.Response(200, content=(NATIONAL / item["file"]).read_bytes(), request=request)
+        corpo = (NATIONAL / item["file"]).read_bytes()
+        if transformar is not None and item["role"] == "page":
+            corpo = transformar(corpo)
+        return httpx.Response(200, content=corpo, request=request)
 
     namespace = SimpleNamespace(**vars(httpx))
     namespace.AsyncClient = lambda **kwargs: httpx.AsyncClient(
