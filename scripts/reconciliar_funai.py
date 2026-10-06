@@ -18,6 +18,8 @@ import pandas as pd
 from shapely import wkt
 from shapely.geometry import box
 
+from agrobr.funai import _tls
+
 URL = "https://geoserver.funai.gov.br/geoserver/Funai/ows"
 AGENT = "agrobr-reconciliacao/1.0 (+https://github.com/bruno-portfolio/agrobr)"
 CAMADA = "tis_poligonais"
@@ -220,7 +222,9 @@ def comparar(cliente: httpx.Client, opcoes: dict[str, Any]) -> dict[str, Any]:
 def run(saida: Path) -> int:
     resultados: dict[str, Any] = {}
     with httpx.Client(
-        headers={"User-Agent": AGENT}, timeout=httpx.Timeout(60, read=300)
+        headers={"User-Agent": AGENT},
+        timeout=httpx.Timeout(60, read=300),
+        verify=_tls.build_context(),
     ) as cliente:
         for nome, opcoes in CASOS:
             resultados[nome] = comparar(cliente, opcoes)

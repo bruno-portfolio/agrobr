@@ -11,6 +11,9 @@ from typing import Any
 import httpx
 import pandas as pd
 
+from agrobr import exceptions
+from agrobr.http import responses
+
 BASE = "https://portal1.snirh.gov.br/server/rest/services/dados_abertos"
 PATHS = {
     "hidrografia": "Hidrografia/MapServer/0",
@@ -84,6 +87,25 @@ def where(options: dict[str, Any]) -> str:
     return "1=1" if uf is None else f"NM_ESTADO='{ESTADOS[uf]}'"
 
 
+def _official_json(response: httpx.Response) -> dict[str, Any]:
+    responses.raise_for_status(response, source="ana")
+    url = str(response.url)
+    content_type = response.headers.get("content-type", "").partition(";")[0].strip().lower()
+    if content_type not in {"application/json", "application/geo+json", "text/plain"}:
+        raise exceptions.SourceUnavailableError(
+            source="ana", url=url, last_error=f"Tipo de resposta inesperado: {content_type!r}"
+        )
+    payload = responses.parse_json_response(response, source="ana", url=url)
+    if not isinstance(payload, dict):
+        raise exceptions.SourceUnavailableError(
+            source="ana", url=url, last_error="Resposta oficial não é um objeto JSON"
+        )
+    error = responses.arcgis_error_message(payload)
+    if error:
+        raise exceptions.SourceUnavailableError(source="ana", url=url, last_error=error)
+    return payload
+
+
 def official(
     client: httpx.Client, layer: str, options: dict[str, Any], fmt: str
 ) -> tuple[list[int], dict[int, dict[str, Any]]]:
@@ -92,7 +114,7 @@ def official(
         url,
         params={"where": where(options), "f": "json", "returnIdsOnly": "true", **spatial(options)},
     )
-    ids: list[int] = sorted(ids_response.json().get("objectIds") or [])
+    ids: list[int] = sorted(_official_json(ids_response).get("objectIds") or [])
     features: dict[int, dict[str, Any]] = {}
     for start in range(0, len(ids), BATCH):
         chunk = ids[start : start + BATCH]
@@ -103,7 +125,8 @@ def official(
             "f": fmt,
             "returnGeometry": "true" if fmt == "geojson" else "false",
         }
-        for feature in client.get(url, params=params).json().get("features", []):
+        payload = _official_json(client.get(url, params=params))
+        for feature in payload.get("features", []):
             attributes = feature.get("attributes") or feature.get("properties") or {}
             features[int(attributes["OBJECTID"])] = feature
     return ids, features

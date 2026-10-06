@@ -723,6 +723,7 @@ Catálogo desta versão: **54 datasets e 89 contratos registrados**. Mudanças i
 - **IBAMA bruto, dado pessoal** — `bruto.coletar("ibama", "termos_embargo", ...)` avisava do CPF/CNPJ só na documentação; agora avisa com `UserWarning` (uma vez por processo) e grava o aviso em `avisos` da entrada do manifesto.
 - **Bruto e snapshot no Windows** — o arquivo nacional do bruto ia ao manifesto durável sem `fsync` (queda de energia podia deixar a entrada `ok` apontando para arquivo truncado); agora vai ao disco antes de publicado. A publicação do bruto (`os.replace` de páginas e arquivos) e a do snapshot repetem o `PermissionError` transitório do Windows (antivírus, indexador) até cinco vezes, como o Acervo Fundiário já fazia.
 - **`snapshot create` parcial** — o progresso ia para a saída padrão, e snapshot sem uma das fontes saía com "criado com sucesso" e nenhuma linha avisando. O progresso vai para a saída de erro, a CLI diz `Snapshot criado sem todas as fontes.` com um aviso por fonte, e `SnapshotInfo.errors` traz os erros por fonte (vazio quando todas entraram).
+- **Reconciliação semanal** — `scripts/reconciliar_funai.py` usa o contexto TLS da biblioteca (com o certificado intermediário da FUNAI), e `scripts/reconciliar_ana.py` confere status e tipo da resposta antes de ler o JSON: página de erro em HTML, JSON inválido e erro do ArcGIS viram fonte indisponível, não erro do script
 
 ### Security
 
