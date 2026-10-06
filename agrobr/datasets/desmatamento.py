@@ -186,9 +186,6 @@ class DesmatamentoDataset(base.BaseDataset):
         meta.timestamp = datetime.now(UTC)
         return result.finalize_result(frame, meta, as_polars=as_polars, return_meta=return_meta)
 
-    def _normalize(self, df: pd.DataFrame, tipo: Literal["prodes", "deter"]) -> pd.DataFrame:
-        return _desmatamento_aggregation.aggregate(df, tipo)[0]
-
 
 _desmatamento = DesmatamentoDataset()
 registry.register(_desmatamento)

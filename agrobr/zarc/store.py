@@ -179,14 +179,6 @@ def query(revision_key: str, selected: query_models.ZarcQuery) -> pd.DataFrame:
     return frame
 
 
-def evict() -> None:
-    if path().is_file():
-        with _connection() as connection:
-            connection.execute("BEGIN TRANSACTION")
-            _evict(connection)
-            connection.execute("COMMIT")
-
-
 def clear() -> None:
     if path().is_file():
         with _connection() as connection:

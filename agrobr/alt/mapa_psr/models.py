@@ -129,8 +129,6 @@ COLUNAS_APOLICES = [
 
 ANO_INICIO_PSR = 2006
 
-CD_IBGE_PATTERN = r"[0-9]{7}"
-
 
 class AnoApolice(pydantic.BaseModel):
     ano_apolice: int = pydantic.Field(ge=ANO_INICIO_PSR, le=9999)

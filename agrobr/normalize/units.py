@@ -128,8 +128,6 @@ def _para_kg(valor: Decimal, unidade: str) -> Decimal:
         return valor * Decimal("1000000")
     if unidade in PESO_SACA_KG:
         return valor * PESO_SACA_KG[unidade]
-    if unidade == "sc60kg":
-        return valor * Decimal("60")
     if unidade == "arroba":
         return valor * PESO_ARROBA_KG
 
@@ -147,8 +145,6 @@ def _de_kg(valor_kg: Decimal, unidade: str) -> Decimal:
         return valor_kg / Decimal("1000000")
     if unidade in PESO_SACA_KG:
         return valor_kg / PESO_SACA_KG[unidade]
-    if unidade == "sc60kg":
-        return valor_kg / Decimal("60")
     if unidade == "arroba":
         return valor_kg / PESO_ARROBA_KG
 

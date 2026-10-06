@@ -330,7 +330,7 @@ def _read(content: bytes, pdfplumber: Any, backend: Any) -> models.ParsedPublica
         "kind": "incra_andamento_pdf_rectangular_clipping_and_painted_regional_groups",
         "header": list(constants.INCRA_ANDAMENTO_HEADERS),
         "column_bounds": borders,
-        "parser_version": 1,
+        "parser_version": constants.INCRA_ANDAMENTO_PARSER_VERSION,
     }
     fingerprint["sha256"] = hashlib.sha256(
         json.dumps(fingerprint, ensure_ascii=False, sort_keys=True, separators=(",", ":")).encode()
@@ -364,7 +364,11 @@ def parse_publication(content: bytes) -> models.ParsedPublication:
     from pdfminer.pdfexceptions import PDFException
 
     if not isinstance(content, bytes) or not content.startswith(b"%PDF"):
-        raise ParseError("incra", 1, "Publicação administrativa sem assinatura PDF")
+        raise ParseError(
+            "incra",
+            constants.INCRA_ANDAMENTO_PARSER_VERSION,
+            "Publicação administrativa sem assinatura PDF",
+        )
     try:
         return _read(content, pdfplumber, backend)
     except (
@@ -376,4 +380,8 @@ def parse_publication(content: bytes) -> models.ParsedPublication:
         PDFException,
         pdfplumber.utils.exceptions.PdfminerException,
     ) as exc:
-        raise ParseError("incra", 1, f"Layout administrativo não suportado: {exc}") from exc
+        raise ParseError(
+            "incra",
+            constants.INCRA_ANDAMENTO_PARSER_VERSION,
+            f"Layout administrativo não suportado: {exc}",
+        ) from exc

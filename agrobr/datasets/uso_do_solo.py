@@ -190,9 +190,6 @@ class UsodoSoloDataset(base.BaseDataset):
         )
         return result.finalize_result(frame, meta, as_polars=as_polars, return_meta=return_meta)
 
-    def _normalize(self, df: pd.DataFrame) -> pd.DataFrame:
-        return df
-
 
 _uso_do_solo = UsodoSoloDataset()
 registry.register(_uso_do_solo)

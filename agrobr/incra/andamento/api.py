@@ -95,7 +95,7 @@ def _meta(
         acquired.duration_ms,
         parse_ms,
         parsed.frame,
-        1,
+        constants.INCRA_ANDAMENTO_PARSER_VERSION,
         attempted_sources=["incra_andamento_pdf"],
         selected_source="incra_andamento_pdf",
         raw_content_hash=hashlib.sha256(manifest).hexdigest(),

@@ -47,16 +47,6 @@ PARAMS_AG: list[str] = [
     "WS2M",
 ]
 
-COLUNAS_MAP: dict[str, str] = {
-    "T2M": "temp_media",
-    "T2M_MAX": "temp_max",
-    "T2M_MIN": "temp_min",
-    "PRECTOTCORR": "precip_mm",
-    "RH2M": "umidade_rel",
-    "ALLSKY_SFC_SW_DWN": "radiacao_mj",
-    "WS2M": "vento_ms",
-}
-
 SENTINEL: float = -999.0
 
 

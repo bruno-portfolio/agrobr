@@ -98,9 +98,6 @@ class CustoSociobiodiversidadeDataset(BaseDataset):
         meta.timestamp = utcnow_aware()
         return _sociobio_api.finalize_output(frame, meta, as_polars, return_meta)
 
-    def _normalize(self, df: pd.DataFrame, _produto: str) -> pd.DataFrame:
-        return df
-
 
 _custo_sociobiodiversidade = CustoSociobiodiversidadeDataset()
 registry.register(_custo_sociobiodiversidade)

@@ -16,8 +16,6 @@ CATEGORIES_BY_YEAR: dict[int, str] = {
     2026: "cmke9w2wu8873b4txfa547lki",
 }
 
-PERIODO_LAST_WEEK = "last_week"
-PERIODO_CURRENT_WEEK = "current_week"
 TIPO_EFETIVADO = "efetivado"
 TIPO_PROGRAMADO = "programado"
 

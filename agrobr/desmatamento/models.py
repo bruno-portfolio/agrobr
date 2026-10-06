@@ -287,8 +287,6 @@ class PageEnvelope(BaseModel):
         return value
 
 
-COLUNAS_SAIDA_PRODES_V2 = list(constants.DESMATAMENTO_PRODES_COLUMNS)
-COLUNAS_SAIDA_DETER_V2 = list(constants.DESMATAMENTO_DETER_COLUMNS)
 PROPERTY_MODELS: dict[tuple[str, str], type[Properties]] = {
     ("PRODES", "Amazônia"): ProdesAmazonProperties,
     ("PRODES", "Cerrado"): ProdesCerradoProperties,

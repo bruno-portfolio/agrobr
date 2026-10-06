@@ -118,12 +118,6 @@ class CustoProducaoDataset(BaseDataset):
         meta.timestamp = utcnow_aware()
         return finalize_output(df, meta, as_polars, return_meta)
 
-    def _normalize(self, df: pd.DataFrame, produto: str) -> pd.DataFrame:
-        if "cultura" not in df.columns:
-            df["cultura"] = produto
-
-        return df
-
 
 _custo_producao = CustoProducaoDataset()
 

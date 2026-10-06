@@ -35,24 +35,38 @@ def resolve_edition(content: bytes, page_url: str) -> models.LinkedEdition:
             or target.fragment
             or not target.path.startswith(source.path.rstrip("/") + "/")
         ):
-            raise ParseError("incra", 1, "Link administrativo fora da família oficial revisada")
+            raise ParseError(
+                "incra",
+                constants.INCRA_ANDAMENTO_PARSER_VERSION,
+                "Link administrativo fora da família oficial revisada",
+            )
         matched = re.fullmatch(
             re.escape(source.path.rstrip("/"))
             + r"/andamento_dos_processos_quilombolas-(\d{2})_(\d{2})_(\d{4})\.pdf/@@display-file/file",
             target.path,
         )
         if not matched:
-            raise ParseError("incra", 1, "Formato não reconhecido do recurso administrativo")
+            raise ParseError(
+                "incra",
+                constants.INCRA_ANDAMENTO_PARSER_VERSION,
+                "Formato não reconhecido do recurso administrativo",
+            )
         try:
             published = date(int(matched[3]), int(matched[2]), int(matched[1]))
         except ValueError as exc:
-            raise ParseError("incra", 1, "Data inválida no recurso administrativo") from exc
+            raise ParseError(
+                "incra",
+                constants.INCRA_ANDAMENTO_PARSER_VERSION,
+                "Data inválida no recurso administrativo",
+            ) from exc
         choices[url] = models.LinkedEdition(
             file_date=published, href=href, url=url, label=link.get_text(" ", strip=True)
         )
     if len(choices) != 1:
         raise ParseError(
-            "incra", 1, "A publicação deve resolver exatamente um recurso administrativo"
+            "incra",
+            constants.INCRA_ANDAMENTO_PARSER_VERSION,
+            "A publicação deve resolver exatamente um recurso administrativo",
         )
     return next(iter(choices.values()))
 
@@ -159,7 +173,11 @@ async def fetch_publication() -> models.Acquisition:
             linked = resolve_edition(html, page_url)
             pdf = await downloader.fetch(http, linked.url, "pdf")
             if not pdf.startswith(b"%PDF"):
-                raise ParseError("incra", 1, "Recurso administrativo não é um PDF")
+                raise ParseError(
+                    "incra",
+                    constants.INCRA_ANDAMENTO_PARSER_VERSION,
+                    "Recurso administrativo não é um PDF",
+                )
         return models.Acquisition(
             content=pdf,
             linked_edition=linked,

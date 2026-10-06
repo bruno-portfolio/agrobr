@@ -19,7 +19,6 @@ from agrobr.http.user_agents import UserAgentRotator
 from . import ptax_acquisition, ptax_models, ptax_parser, ptax_query
 
 logger = _log.get_logger(__name__)
-PTAX_BASE = constants.URLS[constants.Fonte.BCB]["ptax"]
 TIMEOUT = get_timeout(read=30.0)
 PTAX_MAX_RETRIES = 4
 StreamQuery = ptax_acquisition.PtaxQuery | ptax_acquisition.PtaxCatalogQuery

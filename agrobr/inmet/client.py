@@ -203,8 +203,6 @@ async def fetch_dados_estacao(
         return await _run(c)
 
 
-HISTORICO_MIN_ANO = constants.INMET_HISTORICO_MIN_ANO
-
 HISTORICO_TIMEOUT = get_timeout(read=600.0)
 
 MIN_HISTORICO_ZIP = 100_000

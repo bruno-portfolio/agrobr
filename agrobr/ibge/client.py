@@ -549,30 +549,6 @@ PRODUTOS_EXTRACAO_VEGETAL: dict[str, str] = {
     "pequi_amendoa": "3444",
 }
 
-UNIDADES_EXTRACAO_VEGETAL: dict[str, str] = {
-    "acai": "Toneladas",
-    "castanha_caju": "Toneladas",
-    "castanha_para": "Toneladas",
-    "erva_mate": "Toneladas",
-    "mangaba": "Toneladas",
-    "palmito": "Toneladas",
-    "pequi_fruto": "Toneladas",
-    "pinhao": "Toneladas",
-    "umbu": "Toneladas",
-    "hevea_coagulado": "Toneladas",
-    "hevea_liquido": "Toneladas",
-    "carnauba_cera": "Toneladas",
-    "carnauba_po": "Toneladas",
-    "piacava": "Toneladas",
-    "carvao": "Toneladas",
-    "lenha": "Metros cúbicos",
-    "madeira_tora": "Metros cúbicos",
-    "babacu": "Toneladas",
-    "copaiba": "Toneladas",
-    "cumaru": "Toneladas",
-    "pequi_amendoa": "Toneladas",
-}
-
 TABELAS_LEITE = {"leite_trimestral": "1086"}
 
 VARIAVEIS_LEITE = {

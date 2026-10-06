@@ -17,7 +17,6 @@ from agrobr.http.user_agents import UserAgentRotator
 from . import focus_acquisition, focus_models, focus_parser, focus_query
 
 logger = _log.get_logger(__name__)
-FOCUS_BASE = constants.URLS[constants.Fonte.BCB]["focus"]
 TIMEOUT = get_timeout(read=30.0)
 
 

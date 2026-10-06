@@ -14,7 +14,6 @@ from agrobr.normalize.regions import normalizar_bioma as normalizar_bioma  # noq
 ANO_INICIO = 1985
 COLECAO_ATUAL = 11
 ANOS_FINAIS = {10: 2024, 11: 2025}
-ANO_FIM = ANOS_FINAIS[COLECAO_ATUAL]
 CLASSES_LEGENDA: dict[int, str] = {
     1: "Floresta",
     3: "Formação Florestal",
@@ -74,9 +73,6 @@ CLASSES_LEGENDA_10 = {
     0: "Não observado",
     13: "Outras Formações não Florestais",
 }
-
-SHEET_COBERTURA = "COVERAGE_11"
-SHEET_TRANSICAO = "TRANSITION_11"
 
 COLUNAS_SAIDA_COBERTURA = [
     "bioma",
