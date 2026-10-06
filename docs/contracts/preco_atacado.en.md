@@ -1,6 +1,8 @@
-# preco_atacado v1.1
+# preco_atacado v2.0
 
 Wholesale prices at Brazilian CEASAs (CONAB/PROHORT).
+
+The current contract is `PRECO_ATACADO_V2`, effective since agrobr 2.0.0.
 
 ## Sources
 
@@ -38,7 +40,7 @@ ones; a published product outside the 48 in `conab.ceasa_produtos()` also filter
 - `ceasa_uf` is a 2-letter uppercase state code
 - Monetary values are in BRL
 - `preco` is always > 0 (nulls filtered)
-- `categoria` is FRUTAS, HORTALICAS or OVOS; null only for a product outside agrobr's table, with a warning (1.1)
+- `categoria` is FRUTAS, HORTALICAS or OVOS; null only for a product outside agrobr's table, with a warning (2.0)
 
 ## Example
 

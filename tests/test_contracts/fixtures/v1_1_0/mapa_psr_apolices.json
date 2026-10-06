@@ -1,35 +1,20 @@
 {
   "name": "mapa_psr.apolices",
-  "schema_version": "2.0",
-  "effective_from": "2.0.0",
+  "schema_version": "1.0",
+  "effective_from": "0.12.0",
   "breaking_policy": "major",
   "primary_key": [
     "nr_apolice",
     "ano_apolice",
     "uf",
     "cultura",
-    "cd_ibge",
-    "seguradora"
+    "cd_ibge"
   ],
   "required_columns": [
     "nr_apolice",
     "ano_apolice",
     "uf",
-    "municipio",
-    "cd_ibge",
-    "cultura",
-    "classificacao",
-    "area_total",
-    "valor_premio",
-    "valor_subvencao",
-    "valor_limite_garantia",
-    "valor_indenizacao",
-    "evento",
-    "produtividade_estimada",
-    "produtividade_segurada",
-    "nivel_cobertura",
-    "taxa",
-    "seguradora"
+    "cultura"
   ],
   "dtypes": {
     "nr_apolice": "str",
@@ -49,8 +34,7 @@
     "produtividade_segurada": "float",
     "nivel_cobertura": "float",
     "taxa": "float",
-    "seguradora": "str",
-    "cod_municipio": "int"
+    "seguradora": "str"
   },
   "nullable": {
     "nr_apolice": false,
@@ -70,8 +54,7 @@
     "produtividade_segurada": true,
     "nivel_cobertura": true,
     "taxa": true,
-    "seguradora": false,
-    "cod_municipio": true
+    "seguradora": true
   },
   "columns": [
     {
@@ -264,22 +247,11 @@
     {
       "name": "seguradora",
       "type": "str",
-      "nullable": false,
+      "nullable": true,
       "unit": null,
       "stable": true,
       "deprecated": false,
       "description": "",
-      "min_value": null,
-      "max_value": null
-    },
-    {
-      "name": "cod_municipio",
-      "type": "int",
-      "nullable": true,
-      "unit": null,
-      "stable": false,
-      "deprecated": false,
-      "description": "Código IBGE do município (7 dígitos), a chave comum dos datasets municipais; nulo onde a linha não é de município.",
       "min_value": null,
       "max_value": null
     }

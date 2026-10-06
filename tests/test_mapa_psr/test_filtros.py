@@ -148,7 +148,7 @@ async def test_seguro_rural_repassa_os_filtros_a_fonte(monkeypatch, argumentos, 
     with sem_excecao():
         frame, meta = await datasets.seguro_rural(**argumentos, return_meta=True)
     assert len(frame) == linhas
-    assert meta.contract_version == ("1.1" if argumentos.get("tipo") == "sinistros" else "1.2")
+    assert meta.contract_version == ("1.1" if argumentos.get("tipo") == "sinistros" else "2.0")
 
 
 @pytest.mark.parametrize("tipo", ["apolices", "sinistros"])

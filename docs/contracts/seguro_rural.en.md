@@ -1,4 +1,4 @@
-# seguro_rural v1.2
+# seguro_rural v2.0
 
 Rural insurance — PSR policies and claims (MAPA).
 
@@ -19,7 +19,9 @@ The dataset supports two query types via the `tipo` parameter:
 - `tipo="apolices"` (default) — all policies with federal subsidy
 - `tipo="sinistros"` — reported positive indemnities with a non-empty event
 
-Each type has its own contract (`mapa_psr_apolices` and `mapa_psr_sinistros`). `evento` only filters `tipo="sinistros"`: with `tipo="apolices"`, it raises `InvalidParameterError` before the request.
+Each type has its own contract (`mapa_psr_apolices` 2.0 and `mapa_psr_sinistros` 1.1). `evento` only filters `tipo="sinistros"`: with `tipo="apolices"`, it raises `InvalidParameterError` before the request.
+
+The current policies contract is `MAPA_PSR_APOLICES_V2`, effective since agrobr 2.0.0.
 
 ## Schema — Policies
 
@@ -116,9 +118,9 @@ contract = get_contract("mapa_psr_sinistros")
 
 ## Policy integrity and periods
 
-The complete CSV is validated before filters are applied. Duplicate headers, records with too many or too few fields, and invalid policy years raise `ParseError` with the record position; these rows are not silently discarded. Quoted fields may contain delimiters and line breaks. The parser is version 4; the policies contract is at 1.2 and the claims contract at 1.1. `ano_apolice` comes as `Int64`, with rows and when empty.
+The complete CSV is validated before filters are applied. Duplicate headers, records with too many or too few fields, and invalid policy years raise `ParseError` with the record position; these rows are not silently discarded. Quoted fields may contain delimiters and line breaks. The parser is version 4; the policies contract is at 2.0 and the claims contract at 1.1. `ano_apolice` comes as `Int64`, with rows and when empty.
 
-**Key and record published twice (`mapa_psr_apolices` contract 1.2).** The policy key is `nr_apolice`, `ano_apolice`, `uf`, `cultura`, `cd_ibge` and `seguradora`: the policy number is only unique within the insurer (in 2007, 2008, 2009, 2011 and 2012 MAPA publishes the same number under two insurers, with different area and premium). A record published twice and identical in every column agrobr delivers (in 2009, Mapfre policy 1977000249501, with a resubmitted proposal) is returned once, with a warning (`warn_once`) and the count in `source_details["duplicatas_colapsadas"]`. A repeated key with any different value raises `ContractViolationError` (`SourceUnavailableError` in the dataset).
+**Key and record published twice (`mapa_psr_apolices` contract 2.0).** The policy key is `nr_apolice`, `ano_apolice`, `uf`, `cultura`, `cd_ibge` and `seguradora`: the policy number is only unique within the insurer (in 2007, 2008, 2009, 2011 and 2012 MAPA publishes the same number under two insurers, with different area and premium). A record published twice and identical in every column agrobr delivers (in 2009, Mapfre policy 1977000249501, with a resubmitted proposal) is returned once, with a warning (`warn_once`) and the count in `source_details["duplicatas_colapsadas"]`. A repeated key with any different value raises `ContractViolationError` (`SourceUnavailableError` in the dataset).
 
 **Municipality and IBGE code.** `municipio=` accepts the 7-digit IBGE code or the full municipality name (ignoring case and accents; a fragment of a name raises `InvalidParameterError` listing the candidates) and filters by the published code. MAPA labels some policies with the district name: in Caxias do Sul (4305108), in 2024, 274 of the 693 policies with that code carry the municipality name, and the filter returns all 693. Policies published with "-" instead of the geocode (null `cd_ibge`) are included when the label is the full municipality name, in the same state. Details in the [MAPA PSR source](../sources/mapa_psr.md#municipality-and-ibge-code).
 

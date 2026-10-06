@@ -682,9 +682,9 @@ AJUSTE_DIARIO_V1 = Contract(
     breaking_policy=BreakingChangePolicy.MAJOR_VERSION,
 )
 
-PRECO_ATACADO_V1 = Contract(
+PRECO_ATACADO_V2 = Contract(
     name="conab.preco_atacado",
-    version="1.1",
+    version="2.0",
     effective_from="2.0.0",
     primary_key=["data", "produto", "ceasa"],
     columns=[
@@ -1102,7 +1102,7 @@ MOVIMENTACAO_PORTUARIA_V2 = Contract(
 
 register_contract("ajuste_diario", AJUSTE_DIARIO_V1)
 register_contract("conab_progresso", CONAB_PROGRESSO_V2)
-register_contract("preco_atacado", PRECO_ATACADO_V1)
+register_contract("preco_atacado", PRECO_ATACADO_V2)
 register_contract("credito_rural", CREDITO_RURAL_V2)
 register_contract("exportacao", EXPORTACAO_V1_1)
 register_contract("fertilizante", FERTILIZANTE_V2)
@@ -1243,10 +1243,10 @@ MAPA_PSR_SINISTROS_V1 = Contract(
     breaking_policy=BreakingChangePolicy.MAJOR_VERSION,
 )
 
-MAPA_PSR_APOLICES_V1 = Contract(
+MAPA_PSR_APOLICES_V2 = Contract(
     name="mapa_psr.apolices",
-    version="1.2",
-    effective_from="0.12.0",
+    version="2.0",
+    effective_from="2.0.0",
     primary_key=["nr_apolice", "ano_apolice", "uf", "cultura", "cd_ibge", "seguradora"],
     columns=[
         Column(name="nr_apolice", type=ColumnType.STRING, nullable=False, stable=True),
@@ -1321,7 +1321,7 @@ MAPA_PSR_APOLICES_V1 = Contract(
 )
 
 register_contract("mapa_psr_sinistros", MAPA_PSR_SINISTROS_V1)
-register_contract("mapa_psr_apolices", MAPA_PSR_APOLICES_V1)
+register_contract("mapa_psr_apolices", MAPA_PSR_APOLICES_V2)
 
 
 ANTT_PEDAGIO_PRACAS_V1 = Contract(
@@ -2314,7 +2314,7 @@ __all__ = [
     "FERTILIZANTE_V2",
     "FOCOS_QUEIMADAS_V1",
     "IMPORTACAO_V1_2",
-    "MAPA_PSR_APOLICES_V1",
+    "MAPA_PSR_APOLICES_V2",
     "MAPA_PSR_SINISTROS_V1",
     "MAPBIOMAS_COBERTURA_V2",
     "MAPBIOMAS_COBERTURA_MUNICIPAL_V1",
@@ -2327,7 +2327,7 @@ __all__ = [
     "POSICIONAMENTO_FUNDOS_V1",
     "POSICIONAMENTO_FUNDOS_V2",
     "POSICOES_ABERTAS_V1",
-    "PRECO_ATACADO_V1",
+    "PRECO_ATACADO_V2",
     "RNC_PROTEGIDAS_V1",
     "RNC_REGISTRADAS_V1",
     "SERIE_HISTORICA_SAFRA_V1",
@@ -2341,6 +2341,8 @@ def __getattr__(name: str) -> Contract:
         names=frozenset(
             [
                 "ANP_DIESEL_PRECOS_V1",
+                "PRECO_ATACADO_V1",
+                "MAPA_PSR_APOLICES_V1",
                 "ANTT_PEDAGIO_FLUXO_V1",
                 "ANTT_PEDAGIO_FLUXO_V2",
                 "COMERCIO_BILATERAL_V1",

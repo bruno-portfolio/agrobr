@@ -137,7 +137,7 @@ df = alt.mapa_psr.apolices(ano=2023)
 
 ## Policy integrity and periods
 
-The complete CSV is validated before filters are applied. Duplicate headers, records with too many or too few fields, and invalid policy years raise `ParseError` with the record position; these rows are not silently discarded. Quoted fields may contain delimiters and line breaks. The parser is version 4; the policies contract is at 1.2 and the claims contract at 1.1. `ano_apolice` comes as `Int64`, with rows and when empty.
+The complete CSV is validated before filters are applied. Duplicate headers, records with too many or too few fields, and invalid policy years raise `ParseError` with the record position; these rows are not silently discarded. Quoted fields may contain delimiters and line breaks. The parser is version 4; the policies contract is at 2.0 and the claims contract at 1.1. `ano_apolice` comes as `Int64`, with rows and when empty.
 
 `ano_apolice` is the year the policy was contracted, according to the SISSER dictionary; it is not the event or payment date. `sinistros` selects positive indemnities with a non-empty event. Published zeros remain zero in `apolices`; missing values remain null. Monetary values are not rounded to cents. Policy numbers and geographic codes retain leading zeros. Only the record published twice and identical in every column is returned once (see [MAPA PSR](../sources/mapa_psr.md)); no other row is deduplicated.
 

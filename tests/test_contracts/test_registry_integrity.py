@@ -1,5 +1,8 @@
 from __future__ import annotations
 
+import json
+from pathlib import Path
+
 import pandas as pd
 import pytest
 
@@ -37,6 +40,8 @@ def test_duplicate_registration_preserves_original(monkeypatch):
         (datasets, "ZONEAMENTO_AGRICOLA_V1", "zoneamento_agricola", "1.0"),
         (datasets, "SICAR_IMOVEIS_V1", "cadastro_rural", "1.0"),
         (datasets, "CREDITO_RURAL_V1_1", "credito_rural", "1.1"),
+        (datasets, "PRECO_ATACADO_V1", "preco_atacado", "1.0"),
+        (datasets, "MAPA_PSR_APOLICES_V1", "mapa_psr_apolices", "1.0"),
     ],
 )
 def test_historical_import_preserves_active_contract(module, symbol, key, version):
@@ -48,6 +53,62 @@ def test_historical_import_preserves_active_contract(module, symbol, key, versio
     assert contracts.get_contract(key) == active
     assert symbol not in module.__all__
     assert not set(map(id, historical.columns)) & set(map(id, active.columns))
+
+
+@pytest.mark.parametrize(
+    "symbol,key",
+    [
+        ("PRECO_ATACADO_V1", "preco_atacado"),
+        ("MAPA_PSR_APOLICES_V1", "mapa_psr_apolices"),
+    ],
+)
+def test_historicos_preservam_schema_publicado_na_1_1_0(symbol, key):
+    schema_path = Path(__file__).parent / "fixtures" / "v1_1_0" / f"{key}.json"
+    published = json.loads(schema_path.read_text(encoding="utf-8"))
+    with pytest.warns(DeprecationWarning, match="contrato histórico"):
+        historical = getattr(datasets, symbol)
+    serialized = historical.to_dict()
+    for field in (
+        "name",
+        "schema_version",
+        "effective_from",
+        "breaking_policy",
+        "primary_key",
+        "columns",
+        "guarantees",
+    ):
+        assert serialized[field] == published[field], field
+
+
+@pytest.mark.parametrize(
+    "symbol,key,primary_key,column,nullable",
+    [
+        (
+            "PRECO_ATACADO_V2",
+            "preco_atacado",
+            ["data", "produto", "ceasa"],
+            "categoria",
+            True,
+        ),
+        (
+            "MAPA_PSR_APOLICES_V2",
+            "mapa_psr_apolices",
+            ["nr_apolice", "ano_apolice", "uf", "cultura", "cd_ibge", "seguradora"],
+            "seguradora",
+            False,
+        ),
+    ],
+)
+def test_contratos_ativos_psr_e_atacado_usam_major_2(symbol, key, primary_key, column, nullable):
+    active = contracts.get_contract(key)
+    assert active.version == "2.0"
+    assert active.effective_from == "2.0.0"
+    assert active == getattr(datasets, symbol)
+    assert symbol in datasets.__all__
+    assert active.primary_key == primary_key
+    definition = active.get_column(column)
+    assert definition is not None
+    assert definition.nullable is nullable
 
 
 @pytest.mark.parametrize(

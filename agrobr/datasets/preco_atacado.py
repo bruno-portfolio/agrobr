@@ -37,7 +37,7 @@ PRECO_ATACADO_INFO = DatasetInfo(
         ),
     ],
     products=sorted(ceasa_models.PRODUTOS_PROHORT),
-    contract_version="1.1",
+    contract_version="2.0",
     update_frequency="daily",
     typical_latency="D+1",
     source_url=ceasa_models.PENTAHO_BASE,

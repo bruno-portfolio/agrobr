@@ -1,6 +1,8 @@
-# preco_atacado v1.1
+# preco_atacado v2.0
 
 Preços de atacado em CEASAs brasileiras (CONAB/PROHORT).
+
+O contrato atual é `PRECO_ATACADO_V2`, vigente desde o agrobr 2.0.0.
 
 ## Fontes
 
@@ -38,7 +40,7 @@ publicado fora dos 48 de `conab.ceasa_produtos()` também filtra.
 - `ceasa_uf` código UF de 2 letras uppercase
 - Valores monetários em BRL
 - `preco` sempre > 0 (nulls filtrados)
-- `categoria` FRUTAS, HORTALICAS ou OVOS; nula só para produto fora da tabela do agrobr, com aviso (1.1)
+- `categoria` FRUTAS, HORTALICAS ou OVOS; nula só para produto fora da tabela do agrobr, com aviso (2.0)
 
 ## Exemplo
 

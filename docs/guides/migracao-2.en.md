@@ -262,6 +262,13 @@ Named historical imports remain available with `DeprecationWarning`. They retain
 | `datasets` | `IMPORTACAO_V1` | `IMPORTACAO_V1_2` |
 | `datasets` | `MAPBIOMAS_COBERTURA_V1` | `MAPBIOMAS_COBERTURA_V2` |
 | `datasets` | `MAPBIOMAS_TRANSICAO_V1` | `MAPBIOMAS_TRANSICAO_V2` |
+| `datasets` | `PRECO_ATACADO_V1` | `PRECO_ATACADO_V2` |
+| `datasets` | `MAPA_PSR_APOLICES_V1` | `MAPA_PSR_APOLICES_V2` |
+
+`preco_atacado` and `mapa_psr_apolices` move to 2.0: in wholesale prices, `categoria` is null for products
+outside agrobr's table; in policies, `seguradora` joins the key. Code validating the category handles the null,
+and joins on the old policy key add the insurer. `PRECO_ATACADO_V1` and `MAPA_PSR_APOLICES_V1` return the
+1.0 contracts shipped in 1.1.0, with `DeprecationWarning`; they do not describe the current output.
 
 Canonical names `IBGE_LSPA_V2`, `IBGE_CENSO_AGRO_LEGADO_V2`, and
 `CONAB_SAFRA_V2` also identify the current contracts (`ibge.lspa` 2.0, `ibge.censo_agro_legado` 2.1, `conab.safras` 2.0). Their three previous `_V1` names
@@ -1107,7 +1114,7 @@ returns the new map. `celulose` (`4703`) and `tabaco` (`2401`) do not change; th
 
 ## 41. PSR: `seguradora` in the policy key and records published twice
 
-`mapa_psr.apolices` and `datasets.seguro_rural(tipo="apolices")` now use the `mapa_psr_apolices` 1.2 contract (`seguradora` is in the key since 1.1), with
+`mapa_psr.apolices` and `datasets.seguro_rural(tipo="apolices")` now use the `mapa_psr_apolices` 2.0 contract, with
 `seguradora` in the primary key (non-null). In 1.1.0 the dataset raised `ContractViolationError` for 2007, 2008, 2009, 2011 and
 2012, because MAPA publishes the same policy number under two insurers; these years are now delivered in full. Anyone joining
 policies on the old key must add `seguradora`.

@@ -85,13 +85,13 @@ Os dois [datasets de cultivares](../api/cultivares.md) reutilizam os novos contr
 | [lspa](./lspa.md) | Estimativas mensais de produção agrícola | IBGE LSPA |
 | [oferta_demanda_global](./oferta_demanda_global.md) | Oferta/demanda global (USDA PSD) | USDA |
 | [pib_agro](./pib_agro.md) | PIB agropecuário por setor e trimestre | IBGE SIDRA |
-| [preco_atacado](./preco_atacado.md) | Preços de atacado em CEASAs | CONAB CEASA/PROHORT |
+| [preco_atacado](./preco_atacado.md) | Preços de atacado em CEASAs — `preco_atacado` v2.0 | CONAB CEASA/PROHORT |
 | [progresso_safra](./progresso_safra.md) | Progresso semanal semeadura/colheita | CONAB |
 | [queimadas](./queimadas.md) | Focos de calor por satélite | INPE |
 | [futuros_agricolas](./futuros_agricolas.md) | Futuros agrícolas B3 (ajustes, histórico, posições) | B3 |
 | [posicionamento_fundos](./posicionamento_fundos.md) | Posicionamento de fundos por categoria de trader (COT) | CFTC |
 | [movimentacao_portuaria](./movimentacao_portuaria.md) | Movimentação portuária de cargas ⚠️ (fonte fora do ar) | ANTAQ |
-| [seguro_rural](./seguro_rural.md) | Seguro rural — apólices e sinistros | MAPA PSR |
+| [seguro_rural](./seguro_rural.md) | Seguro rural — apólices (`mapa_psr_apolices` v2.0) e sinistros (`mapa_psr_sinistros` v1.1) | MAPA PSR |
 | [serie_historica_safra](./serie_historica_safra.md) | Série histórica de safras (45 produtos) | CONAB |
 | [series_economicas](./series_economicas.md) | Séries por código ou alias SGS, intervalo e últimas observações | BCB SGS |
 | [uso_do_solo](./uso_do_solo.md) | Cobertura e uso da terra (MapBiomas) | MapBiomas |

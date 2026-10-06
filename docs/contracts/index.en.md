@@ -85,13 +85,13 @@ The two [cultivar datasets](../api/cultivares.en.md) reuse the new `rnc_registra
 | [lspa](./lspa.md) | Monthly agricultural production estimates | IBGE LSPA |
 | [oferta_demanda_global](./oferta_demanda_global.md) | Global supply/demand (USDA PSD) | USDA |
 | [pib_agro](./pib_agro.md) | Agricultural GDP by sector and quarter | IBGE SIDRA |
-| [preco_atacado](./preco_atacado.md) | Wholesale prices at CEASAs | CONAB CEASA/PROHORT |
+| [preco_atacado](./preco_atacado.md) | Wholesale prices at CEASAs — `preco_atacado` v2.0 | CONAB CEASA/PROHORT |
 | [progresso_safra](./progresso_safra.md) | Weekly sowing/harvest progress | CONAB |
 | [queimadas](./queimadas.md) | Satellite fire hotspots | INPE |
 | [futuros_agricolas](./futuros_agricolas.md) | B3 agricultural futures (settlements, history, positions) | B3 |
 | [posicionamento_fundos](./posicionamento_fundos.md) | Fund positioning by trader category (COT) | CFTC |
 | [movimentacao_portuaria](./movimentacao_portuaria.md) | Port cargo movement ⚠️ (source offline) | ANTAQ |
-| [seguro_rural](./seguro_rural.md) | Rural insurance — policies and claims | MAPA PSR |
+| [seguro_rural](./seguro_rural.md) | Rural insurance — policies (`mapa_psr_apolices` v2.0) and claims (`mapa_psr_sinistros` v1.1) | MAPA PSR |
 | [serie_historica_safra](./serie_historica_safra.md) | Crop historical series (45 products) | CONAB |
 | [series_economicas](./series_economicas.en.md) | Series by SGS code or alias, date range and latest observations | BCB SGS |
 | [uso_do_solo](./uso_do_solo.md) | Land cover and use (MapBiomas) | MapBiomas |

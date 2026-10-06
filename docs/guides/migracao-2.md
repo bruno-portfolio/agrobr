@@ -266,6 +266,13 @@ Os imports nomeados históricos continuam disponíveis com `DeprecationWarning`.
 | `datasets` | `IMPORTACAO_V1` | `IMPORTACAO_V1_2` |
 | `datasets` | `MAPBIOMAS_COBERTURA_V1` | `MAPBIOMAS_COBERTURA_V2` |
 | `datasets` | `MAPBIOMAS_TRANSICAO_V1` | `MAPBIOMAS_TRANSICAO_V2` |
+| `datasets` | `PRECO_ATACADO_V1` | `PRECO_ATACADO_V2` |
+| `datasets` | `MAPA_PSR_APOLICES_V1` | `MAPA_PSR_APOLICES_V2` |
+
+`preco_atacado` e `mapa_psr_apolices` passam a 2.0: no atacado, `categoria` sai nula para produto fora da
+tabela do agrobr; nas apólices, `seguradora` entra na chave. Quem valida a categoria trata o nulo, e quem junta
+apólices pela chave antiga inclui a seguradora. `PRECO_ATACADO_V1` e `MAPA_PSR_APOLICES_V1` devolvem os
+contratos 1.0 da 1.1.0, com `DeprecationWarning`; não descrevem a saída atual.
 
 Os nomes canônicos `IBGE_LSPA_V2`, `IBGE_CENSO_AGRO_LEGADO_V2` e
 `CONAB_SAFRA_V2` também identificam os contratos atuais (`ibge.lspa` 2.0, `ibge.censo_agro_legado` 2.1, `conab.safras` 2.0). Seus três nomes antigos
@@ -1109,7 +1116,7 @@ devolve o mapa novo. `celulose` (`4703`) e `tabaco` (`2401`) não mudam; a doc p
 
 ## 41. PSR: `seguradora` na chave das apólices e registro publicado em dobro
 
-`mapa_psr.apolices` e `datasets.seguro_rural(tipo="apolices")` passam a usar o contrato `mapa_psr_apolices` 1.2 (a `seguradora` entra na chave desde a 1.1), com
+`mapa_psr.apolices` e `datasets.seguro_rural(tipo="apolices")` passam a usar o contrato `mapa_psr_apolices` 2.0, com
 `seguradora` na chave primária (não nula). Na 1.1.0, o dataset levantava `ContractViolationError` em 2007, 2008, 2009, 2011 e
 2012, porque o MAPA publica o mesmo número de apólice em duas seguradoras; agora esses anos saem inteiros. Quem junta apólices
 pela chave antiga precisa incluir a `seguradora`.

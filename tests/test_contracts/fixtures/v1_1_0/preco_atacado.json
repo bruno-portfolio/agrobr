@@ -1,7 +1,7 @@
 {
   "name": "conab.preco_atacado",
-  "schema_version": "2.0",
-  "effective_from": "2.0.0",
+  "schema_version": "1.0",
+  "effective_from": "0.10.0",
   "breaking_policy": "major",
   "primary_key": [
     "data",
@@ -29,7 +29,7 @@
   "nullable": {
     "data": false,
     "produto": false,
-    "categoria": true,
+    "categoria": false,
     "unidade": false,
     "ceasa": false,
     "ceasa_uf": false,
@@ -61,7 +61,7 @@
     {
       "name": "categoria",
       "type": "str",
-      "nullable": true,
+      "nullable": false,
       "unit": null,
       "stable": true,
       "deprecated": false,
@@ -121,7 +121,7 @@
   "guarantees": [
     "PK unica por combinacao data + produto + ceasa",
     "'produto' sempre em maiusculas (ex: TOMATE, ABACAXI)",
-    "'categoria' FRUTAS, HORTALICAS ou OVOS; nula só para produto fora da tabela do agrobr, com aviso",
+    "'categoria' sempre FRUTAS ou HORTALICAS",
     "'unidade' sempre KG, UN ou DZ",
     "'ceasa_uf' sempre codigo UF de 2 letras",
     "'preco' sempre > 0 (nulls filtrados)"
