@@ -9,7 +9,7 @@ httpx: sai como `SourceUnavailableError`.
 
 | Exceção | Significa |
 |---------|-----------|
-| `SourceUnavailableError` | A fonte não entregou o dado: timeout, falha de conexão ou status HTTP de erro. A mensagem traz a fonte, a URL e o status ("HTTP 403: a fonte recusou o pedido (bloqueio de WAF ou permissão)", "HTTP 404: o recurso não existe na URL"), e `__cause__` guarda a exceção original. No dataset, todas as fontes falharam: `attempted_sources` lista as tentadas, na ordem, `errors` traz o motivo de cada uma, e `__cause__` é o erro da última |
+| `SourceUnavailableError` | A fonte não entregou o dado: timeout, falha de conexão ou status HTTP de erro. Em erros de status HTTP, a mensagem traz a fonte e o status; o atributo `url` guarda a URL, e `__cause__` guarda a exceção original do httpx. No dataset, todas as fontes falharam: `attempted_sources` lista as tentadas, na ordem, `errors` traz o motivo de cada uma, e `__cause__` é o erro da última |
 | `ParseError` | O dado chegou, mas o layout da fonte mudou e o parser não o lê |
 | `InvalidParameterError` | Parâmetro recusado antes da rede; também é `ValueError` |
 | `AgrobrError` | A base: captura qualquer erro do agrobr |
