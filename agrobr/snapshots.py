@@ -121,6 +121,7 @@ def list_snapshots() -> list[SnapshotInfo]:
                     size_bytes=size,
                     sources=manifest.sources,
                     file_count=file_count,
+                    errors=manifest.metadata.get("errors", {}),
                 )
             )
         except Exception as e:
