@@ -114,6 +114,10 @@ def _normalize_range(
     inicio: str | date | None,
     fim: str | date | None,
 ) -> tuple[date | None, date | None]:
+    if isinstance(inicio, datetime):
+        inicio = inicio.date()
+    if isinstance(fim, datetime):
+        fim = fim.date()
     try:
         start = date.fromisoformat(inicio) if isinstance(inicio, str) else inicio
         end = date.fromisoformat(fim) if isinstance(fim, str) else fim
