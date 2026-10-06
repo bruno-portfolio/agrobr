@@ -139,24 +139,24 @@ Headless Playwright is an **optional/internal** fallback (`_use_browser=False` b
 - Viewport: 1920x1080
 - Locale: pt-BR, timezone America/Sao_Paulo
 
-**Indicator URLs:**
+**Indicator pages:**
 
-Base: `https://www.cepea.org.br/br/indicador/{slug}.aspx`
+Source: indicator pages on the CEPEA website.
 
-| agrobr | URL Slug |
+| agrobr | Indicator page |
 |--------|---------|
-| `soja` | soja |
-| `milho` | milho |
-| `boi` / `boi_gordo` | boi-gordo |
-| `cafe` / `cafe_arabica` | cafe |
-| `algodao` | algodao |
-| `trigo` | trigo |
-| `arroz` | arroz |
-| `acucar` | acucar |
-| `frango_congelado` / `frango_resfriado` | frango |
-| `suino` | suino |
-| `etanol_hidratado` / `etanol_anidro` | etanol |
-| `leite` | leite |
+| `soja` | Soybean indicator |
+| `milho` | Corn indicator |
+| `boi` / `boi_gordo` | Fed cattle indicator |
+| `cafe` / `cafe_arabica` | Coffee indicators |
+| `algodao` | Cotton indicator |
+| `trigo` | Wheat indicator |
+| `arroz` | Rice indicator |
+| `acucar` | Sugar indicators |
+| `frango_congelado` / `frango_resfriado` | Chicken indicators |
+| `suino` | Swine indicator |
+| `etanol_hidratado` / `etanol_anidro` | Ethanol indicators |
+| `leite` | Milk indicator |
 
 Partial list: the full mapping (22 keys → 15 indicator pages) is in `CEPEA_PRODUTOS`, in `agrobr/constants.py`.
 
@@ -519,32 +519,32 @@ wheat, cotton, coffee (arabica, conilon), sugar, ethanol, meats
     All rights reserved (Law 9.610/98). **Not recommended as a
     primary source in ports.** Prefer CEPEA directly via headless browser.
 
-URL mapping (not standardized, must be hardcoded):
+Quotation pages (explicit mapping by product):
 
-| agrobr | Path |
+| agrobr | Quotation page |
 |--------|------|
-| `soja` | `soja/soja-indicador-cepea-esalq-porto-paranagua` |
-| `soja_parana` | `soja/indicador-cepea-esalq-soja-parana` |
-| `milho` | `milho/indicador-cepea-esalq-milho` |
-| `boi` | `boi-gordo/boi-gordo-indicador-esalq-bmf` |
-| `cafe` | `cafe/indicador-cepea-esalq-cafe-arabica` |
-| `algodao` | `algodao/algodao-indicador-cepea-esalq-a-prazo` |
-| `trigo` | `trigo/preco-medio-do-trigo-cepea-esalq` |
-| `arroz` | `arroz/arroz-em-casca-esalq-bbm` |
-| `acucar` | `sucroenergetico/acucar-cristal-cepea` |
-| `acucar_refinado` | `sucroenergetico/acucar-refinado-amorfo` |
-| `etanol_hidratado` | `sucroenergetico/indicador-semanal-etanol-hidratado-cepea-esalq` |
-| `etanol_anidro` | `sucroenergetico/indicador-semanal-etanol-anidro-cepea-esalq` |
-| `frango_congelado` | `frango/precos-do-frango-congelado-cepea-esalq` |
-| `frango_resfriado` | `frango/precos-do-frango-resfriado-cepea-esalq` |
-| `suino` | `suinos/indicador-do-suino-vivo-cepea-esalq` |
-| `leite` | `leite/leite-precos-ao-produtor-cepea-rs-litro` |
-| `laranja_industria` | `laranja/laranja-industria` |
-| `laranja_in_natura` | `laranja/laranja-pera-in-natura` |
+| `soja` | Soybean — CEPEA/ESALQ indicator, Port of Paranaguá |
+| `soja_parana` | Soybean — CEPEA/ESALQ indicator, Paraná |
+| `milho` | Corn — CEPEA/ESALQ indicator |
+| `boi` | Fed cattle — ESALQ/BM&F indicator |
+| `cafe` | Arabica coffee — CEPEA/ESALQ indicator |
+| `algodao` | Cotton — CEPEA/ESALQ indicator for deferred payment |
+| `trigo` | Wheat — CEPEA/ESALQ average price |
+| `arroz` | Paddy rice — ESALQ/BBM indicator |
+| `acucar` | Crystal sugar — CEPEA |
+| `acucar_refinado` | Amorphous refined sugar |
+| `etanol_hidratado` | Hydrous ethanol — CEPEA/ESALQ weekly indicator |
+| `etanol_anidro` | Anhydrous ethanol — CEPEA/ESALQ weekly indicator |
+| `frango_congelado` | Frozen chicken — CEPEA/ESALQ prices |
+| `frango_resfriado` | Chilled chicken — CEPEA/ESALQ prices |
+| `suino` | Live swine — CEPEA/ESALQ indicator |
+| `leite` | Milk — CEPEA producer prices (R$/litre) |
+| `laranja_industria` | Oranges for processing |
+| `laranja_in_natura` | Fresh Pera oranges |
 
-The table shows 18 of the 22 mappings (including aliases; 20 unique URLs); the full list is in `NOTICIAS_AGRICOLAS_PRODUTOS`, in `agrobr/constants.py`.
+The table shows 18 of the 22 mappings (including aliases; 20 quotation pages); the full list is in `NOTICIAS_AGRICOLAS_PRODUTOS`, in `agrobr/constants.py`.
 
-Base: `https://www.noticiasagricolas.com.br/cotacoes/{path}`
+Source: quotation pages on Notícias Agrícolas.
 
 ---
 

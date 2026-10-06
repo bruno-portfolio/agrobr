@@ -18,12 +18,12 @@
 
 ### Primary Source
 
-- **Official URL**: `https://www.cepea.org.br/br/indicador/soja.aspx`
+- **Official page**: CEPEA indicators
 - **Access**: Direct HTTP attempt; blocks and unavailability may trigger the fallback
 
 ### Alternative Source
 
-- **URL**: `https://www.noticiasagricolas.com.br/cotacoes/{produto}/`
+- **Page**: Notícias Agrícolas quotations
 - **Type**: Authorized mirror of CEPEA indicators
 - **Use**: When enabled and available for the requested product
 
@@ -164,7 +164,7 @@ page supplies closing and reference dates separately, but its standalone
 parser exposes the closing date. Migration 9 preserves these legacy rows in
 quarantine without assuming a fixed lag to convert them to reference months.
 
-Refined sugar uses its [dedicated indicator page](https://www.cepea.org.br/br/indicador/acucar-refinado-amorfo-sp.aspx), in `BRL/kg`, not the crystal-sugar table. HTTP 200 without a recognized table also triggers the Notícias Agrícolas fallback when enabled and available for the product, with the usual license warning. So does a table without the value column in reais recognized by its header ("Valor R$", "R$/litro", "Preço médio" for milk, "A Prazo" for oranges): the parser raises `ParseError` instead of using another number from the row, and a US$ column never becomes a BRL price.
+Refined sugar uses its dedicated indicator page on the CEPEA website, in `BRL/kg`, not the crystal-sugar table. HTTP 200 without a recognized table also triggers the Notícias Agrícolas fallback when enabled and available for the product, with the usual license warning. So does a table without the value column in reais recognized by its header ("Valor R$", "R$/litro", "Preço médio" for milk, "A Prazo" for oranges): the parser raises `ParseError` instead of using another number from the row, and a US$ column never becomes a BRL price.
 
 ## Price validation
 

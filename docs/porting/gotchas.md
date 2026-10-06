@@ -139,24 +139,24 @@ Playwright headless é um fallback **opcional/interno** (`_use_browser=False` po
 - Viewport: 1920x1080
 - Locale: pt-BR, timezone America/Sao_Paulo
 
-**URLs dos indicadores:**
+**Páginas dos indicadores:**
 
-Base: `https://www.cepea.org.br/br/indicador/{slug}.aspx`
+Fonte: páginas dos indicadores no site do CEPEA.
 
-| agrobr | Slug URL |
+| agrobr | Página do indicador |
 |--------|---------|
-| `soja` | soja |
-| `milho` | milho |
-| `boi` / `boi_gordo` | boi-gordo |
-| `cafe` / `cafe_arabica` | cafe |
-| `algodao` | algodao |
-| `trigo` | trigo |
-| `arroz` | arroz |
-| `acucar` | acucar |
-| `frango_congelado` / `frango_resfriado` | frango |
-| `suino` | suino |
-| `etanol_hidratado` / `etanol_anidro` | etanol |
-| `leite` | leite |
+| `soja` | Indicador da soja |
+| `milho` | Indicador do milho |
+| `boi` / `boi_gordo` | Indicador do boi gordo |
+| `cafe` / `cafe_arabica` | Indicadores do café |
+| `algodao` | Indicador do algodão |
+| `trigo` | Indicador do trigo |
+| `arroz` | Indicador do arroz |
+| `acucar` | Indicadores do açúcar |
+| `frango_congelado` / `frango_resfriado` | Indicadores do frango |
+| `suino` | Indicador do suíno |
+| `etanol_hidratado` / `etanol_anidro` | Indicadores do etanol |
+| `leite` | Indicador do leite |
 
 Lista parcial: o mapeamento completo (22 chaves → 15 páginas de indicador) está em `CEPEA_PRODUTOS`, em `agrobr/constants.py`.
 
@@ -519,32 +519,32 @@ trigo, algodão, café (arábica, conilon), açúcar, etanol, carnes
     Todos os direitos reservados (Lei 9.610/98). **Não recomendado como
     fonte primária em ports.** Prefira CEPEA direto via headless browser.
 
-Mapeamento de URLs (não padronizado, precisa ser hardcoded):
+Páginas de cotações (mapeamento explícito por produto):
 
-| agrobr | Path |
+| agrobr | Página de cotações |
 |--------|------|
-| `soja` | `soja/soja-indicador-cepea-esalq-porto-paranagua` |
-| `soja_parana` | `soja/indicador-cepea-esalq-soja-parana` |
-| `milho` | `milho/indicador-cepea-esalq-milho` |
-| `boi` | `boi-gordo/boi-gordo-indicador-esalq-bmf` |
-| `cafe` | `cafe/indicador-cepea-esalq-cafe-arabica` |
-| `algodao` | `algodao/algodao-indicador-cepea-esalq-a-prazo` |
-| `trigo` | `trigo/preco-medio-do-trigo-cepea-esalq` |
-| `arroz` | `arroz/arroz-em-casca-esalq-bbm` |
-| `acucar` | `sucroenergetico/acucar-cristal-cepea` |
-| `acucar_refinado` | `sucroenergetico/acucar-refinado-amorfo` |
-| `etanol_hidratado` | `sucroenergetico/indicador-semanal-etanol-hidratado-cepea-esalq` |
-| `etanol_anidro` | `sucroenergetico/indicador-semanal-etanol-anidro-cepea-esalq` |
-| `frango_congelado` | `frango/precos-do-frango-congelado-cepea-esalq` |
-| `frango_resfriado` | `frango/precos-do-frango-resfriado-cepea-esalq` |
-| `suino` | `suinos/indicador-do-suino-vivo-cepea-esalq` |
-| `leite` | `leite/leite-precos-ao-produtor-cepea-rs-litro` |
-| `laranja_industria` | `laranja/laranja-industria` |
-| `laranja_in_natura` | `laranja/laranja-pera-in-natura` |
+| `soja` | Soja — Indicador CEPEA/ESALQ, Porto de Paranaguá |
+| `soja_parana` | Soja — Indicador CEPEA/ESALQ, Paraná |
+| `milho` | Milho — Indicador CEPEA/ESALQ |
+| `boi` | Boi gordo — Indicador ESALQ/BM&F |
+| `cafe` | Café arábica — Indicador CEPEA/ESALQ |
+| `algodao` | Algodão — Indicador CEPEA/ESALQ a prazo |
+| `trigo` | Trigo — Preço médio CEPEA/ESALQ |
+| `arroz` | Arroz em casca — Indicador ESALQ/BBM |
+| `acucar` | Açúcar cristal — CEPEA |
+| `acucar_refinado` | Açúcar refinado amorfo |
+| `etanol_hidratado` | Etanol hidratado — Indicador semanal CEPEA/ESALQ |
+| `etanol_anidro` | Etanol anidro — Indicador semanal CEPEA/ESALQ |
+| `frango_congelado` | Frango congelado — Preços CEPEA/ESALQ |
+| `frango_resfriado` | Frango resfriado — Preços CEPEA/ESALQ |
+| `suino` | Suíno vivo — Indicador CEPEA/ESALQ |
+| `leite` | Leite — Preços ao produtor CEPEA (R$/litro) |
+| `laranja_industria` | Laranja para indústria |
+| `laranja_in_natura` | Laranja pera in natura |
 
-A tabela mostra 18 dos 22 mapeamentos (incluindo aliases; 20 URLs únicas); a lista completa está em `NOTICIAS_AGRICOLAS_PRODUTOS`, em `agrobr/constants.py`.
+A tabela mostra 18 dos 22 mapeamentos (incluindo aliases; 20 páginas de cotações); a lista completa está em `NOTICIAS_AGRICOLAS_PRODUTOS`, em `agrobr/constants.py`.
 
-Base: `https://www.noticiasagricolas.com.br/cotacoes/{path}`
+Fonte: páginas de cotações do Notícias Agrícolas.
 
 ---
 

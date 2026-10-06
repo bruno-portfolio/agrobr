@@ -18,12 +18,12 @@
 
 ### Fonte Primaria
 
-- **URL oficial**: `https://www.cepea.org.br/br/indicador/soja.aspx`
+- **Página oficial**: Indicadores do CEPEA
 - **Acesso**: Tentativa direta por HTTP; bloqueios e indisponibilidade podem acionar o fallback
 
 ### Fonte Alternativa
 
-- **URL**: `https://www.noticiasagricolas.com.br/cotacoes/{produto}/`
+- **Página**: Cotações do Notícias Agrícolas
 - **Tipo**: Mirror autorizado dos indicadores CEPEA
 - **Uso**: Quando habilitado e disponível para o produto consultado
 
@@ -164,7 +164,7 @@ fechamento e referência separadamente, mas seu parser autônomo expõe o
 fechamento. A migração 9 preserva essas linhas legadas em quarentena, sem
 presumir uma defasagem fixa para convertê-las em mês de referência.
 
-O açúcar refinado usa a [página própria do indicador](https://www.cepea.org.br/br/indicador/acucar-refinado-amorfo-sp.aspx), em `BRL/kg`, e não a tabela do cristal. HTTP 200 sem tabela reconhecida também aciona o fallback Notícias Agrícolas, quando habilitado e disponível para o produto, com o aviso de licença habitual. A tabela sem a coluna de valor em reais reconhecida pelo cabeçalho ("Valor R$", "R$/litro", "Preço médio" no leite, "A Prazo" na laranja) também: o parser levanta `ParseError` e não usa outro número da linha, e uma coluna em US$ nunca vira preço em BRL.
+O açúcar refinado usa a página própria do indicador no site do CEPEA, em `BRL/kg`, e não a tabela do cristal. HTTP 200 sem tabela reconhecida também aciona o fallback Notícias Agrícolas, quando habilitado e disponível para o produto, com o aviso de licença habitual. A tabela sem a coluna de valor em reais reconhecida pelo cabeçalho ("Valor R$", "R$/litro", "Preço médio" no leite, "A Prazo" na laranja) também: o parser levanta `ParseError` e não usa outro número da linha, e uma coluna em US$ nunca vira preço em BRL.
 
 ## Validação de preços
 

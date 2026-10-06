@@ -50,7 +50,7 @@ ativando o cache fallback no módulo CEPEA.
 
 ## Fonte
 
-- URL: `https://www.noticiasagricolas.com.br/cotacoes/`
+- Página: Cotações do Notícias Agrícolas
 - Formato: HTML (server-side rendered, sem JavaScript)
 - Atualização: diária (segue CEPEA)
 - Licença: `zona_cinza`; origem CEPEA `nc`

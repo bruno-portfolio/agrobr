@@ -65,22 +65,13 @@ IMEA, DERAL ou Queimadas.
 O CEPEA fica atrás do Cloudflare, que pode responder 403 a requests diretos com `httr2`.
 Por isso o exemplo usa `chromote` (headless Chrome nativo do R):
 
+`url` é o endereço da página do indicador no site do CEPEA.
+
 ```r
 library(chromote)
 library(rvest)
 
-buscar_cepea <- function(produto) {
-  slugs <- list(
-    soja = "soja", milho = "milho", boi = "boi-gordo",
-    cafe = "cafe", algodao = "algodao", trigo = "trigo",
-    arroz = "arroz", acucar = "acucar", frango = "frango",
-    suino = "suino", etanol = "etanol", leite = "leite"
-  )
-  slug <- slugs[[produto]]
-  if (is.null(slug)) stop(paste("Produto nao suportado:", produto))
-
-  url <- paste0("https://www.cepea.org.br/br/indicador/", slug, ".aspx")
-
+buscar_cepea <- function(url) {
   b <- ChromoteSession$new()
   b$Page$navigate(url = url)
   Sys.sleep(3)
@@ -93,7 +84,8 @@ buscar_cepea <- function(produto) {
   tabelas[[1]]
 }
 
-df_soja <- buscar_cepea("soja")
+url_soja <- "<página do indicador da soja no site do CEPEA>"
+df_soja <- buscar_cepea(url_soja)
 ```
 
 ### CONAB CEASA (HTTP puro)

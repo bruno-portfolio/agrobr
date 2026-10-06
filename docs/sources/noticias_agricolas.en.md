@@ -50,7 +50,7 @@ activating the cache fallback in the CEPEA module.
 
 ## Source
 
-- URL: `https://www.noticiasagricolas.com.br/cotacoes/`
+- Page: Notícias Agrícolas quotations
 - Format: HTML (server-side rendered, no JavaScript)
 - Update: daily (follows CEPEA)
 - License: `zona_cinza`; CEPEA origin `nc`
