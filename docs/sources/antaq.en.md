@@ -134,6 +134,8 @@ atracacao without carga never shows up. A carga without atracacao keeps the row 
 in the source API and is dropped by the dataset, which requires `ano` and `mes`. A carga whose
 `CDMercadoria` is absent from the table keeps the row with null `mercadoria`/`grupo_mercadoria`.
 
+**Conflicting catalog names.** A repeated `CDMercadoria` with different `Grupo de Mercadoria`, `Mercadoria` or `Nomenclatura Simplificada Mercadoria` raises `ParseError`, including when one of the names is null. Identical repetitions in these fields are accepted without multiplying cargo rows.
+
 **Missing column.** If a TXT member lacks a column used by the join, the filters or the dataset key,
 `antaq.movimentacao()` and `datasets.movimentacao_portuaria()` raise `ParseError` naming the column.
 These are: in atracacao, `IDAtracacao`, `Porto Atracação`, `Complexo Portuário`, `Terminal`, `Município`,

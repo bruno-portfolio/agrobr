@@ -58,6 +58,8 @@ registros do indicador `708192508838936580` (R$/sc, Mato Grosso e 22 municípios
   `source_details["chaves_repetidas"]`. Um erro derrubaria a cadeia inteira por um indicador.
 - Os 2 avisos vão para `meta.validation_warnings` em toda chamada; o `UserWarning` sai só na 1ª chamada de cada cadeia no processo.
 
+**Catálogo com nomes conflitantes.** Se o catálogo repetir um `Id` com nomes diferentes, a consulta levanta `ParseError`: não há como escolher o nome correto do indicador. Repetições com o mesmo nome continuam aceitas.
+
 ### Unidade e indicador
 
 `unidade` sozinha não identifica o produto. Na soja, `unidade="R$/sc"` traz o grão (saca de 60 kg, ex.: "Preço soja

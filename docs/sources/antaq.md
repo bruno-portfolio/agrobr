@@ -133,6 +133,8 @@ atracacoes; atracacao sem carga nao aparece. Carga sem atracacao mantem a linha 
 nulos na API da fonte e e descartada pelo dataset, que exige `ano` e `mes`. Carga com
 `CDMercadoria` fora da tabela mantem a linha com `mercadoria`/`grupo_mercadoria` nulos.
 
+**Catálogo com nomes conflitantes.** Um `CDMercadoria` repetido com diferenças em `Grupo de Mercadoria`, `Mercadoria` ou `Nomenclatura Simplificada Mercadoria` levanta `ParseError`, inclusive quando um dos nomes é nulo. Repetições idênticas nesses campos são aceitas sem multiplicar as cargas.
+
 **Coluna ausente.** Se um dos TXT vier sem uma coluna que o join, os filtros ou a chave do dataset usam,
 `antaq.movimentacao()` e `datasets.movimentacao_portuaria()` levantam `ParseError` com o nome da coluna.
 São elas: na atracação, `IDAtracacao`, `Porto Atracação`, `Complexo Portuário`, `Terminal`, `Município`,

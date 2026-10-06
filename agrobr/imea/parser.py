@@ -66,7 +66,16 @@ def parse_cotacoes(
     df["cadeia"] = cadeia_name(cadeia_id)
 
     df["indicador_id"] = df["indicador_id"].map(lambda v: None if pd.isna(v) else str(v))
-    nomes = {str(item["Id"]): item["Nome"] for item in indicadores}
+    nomes: dict[str, Any] = {}
+    for item in indicadores:
+        indicador_id = str(item["Id"])
+        if indicador_id in nomes and nomes[indicador_id] != item["Nome"]:
+            raise ParseError(
+                source="imea",
+                parser_version=PARSER_VERSION,
+                reason=f"Catálogo de indicadores com nomes conflitantes para Id {indicador_id}",
+            )
+        nomes[indicador_id] = item["Nome"]
     df["indicador"] = df["indicador_id"].map(nomes)
     sem_nome = int(df["indicador"].isna().sum())
     if sem_nome:

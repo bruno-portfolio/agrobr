@@ -145,8 +145,19 @@ def join_movimentacao(
             for c in ["CDMercadoria", "Grupo de Mercadoria", "Nomenclatura Simplificada Mercadoria"]
             if c in df_mercadoria.columns
         ]
+        catalogo = df_mercadoria[
+            [coluna for coluna in COLUNAS_MERCADORIA if coluna in df_mercadoria.columns]
+        ].drop_duplicates()
+        conflitos = catalogo.duplicated(subset=["CDMercadoria"], keep=False)
+        if conflitos.any():
+            codigos = catalogo.loc[conflitos, "CDMercadoria"].drop_duplicates().tolist()
+            raise ParseError(
+                source="antaq",
+                parser_version=PARSER_VERSION,
+                reason=f"Catálogo de mercadorias com nomes conflitantes para CDMercadoria {codigos}",
+            )
         df = df.merge(
-            df_mercadoria[merc_cols].drop_duplicates(subset=["CDMercadoria"]),
+            catalogo[merc_cols],
             on="CDMercadoria",
             how="left",
         )
