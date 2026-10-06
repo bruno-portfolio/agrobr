@@ -24,7 +24,7 @@ jobs:
     steps:
       - uses: actions/checkout@v7
         with:
-          token: ${{ secrets.LANDING_PUSH_TOKEN }}
+          persist-credentials: false
 
       - name: Setup Python
         uses: actions/setup-python@v7
@@ -39,10 +39,26 @@ jobs:
         run: python scripts/update_landing_data.py
 
       - name: Commit se houver mudanca
-        env:
-          GH_TOKEN: ${{ github.token }}
+        id: commit
         run: |
           git config user.name "agrobr-bot"
           git config user.email "bot@agrobr.dev"
           git add index.html en/index.html
-          git diff --staged --quiet || (git commit -m "chore(landing): atualiza indicadores do ticker [skip ci]" && git pull --rebase origin main && git push && gh workflow run docs.yml --ref main)
+          if git diff --staged --quiet; then
+            exit 0
+          fi
+          git commit -m "chore(landing): atualiza indicadores do ticker [skip ci]"
+          git pull --rebase origin main
+          echo "changed=true" >> "$GITHUB_OUTPUT"
+
+      - name: Push updated data
+        if: steps.commit.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.LANDING_PUSH_TOKEN }}
+        run: git -c credential.helper= -c 'credential.helper=!gh auth git-credential' push origin HEAD:main
+
+      - name: Publish documentation
+        if: steps.commit.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run docs.yml --ref main

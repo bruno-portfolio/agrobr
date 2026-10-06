@@ -743,6 +743,7 @@ Catálogo desta versão: **54 datasets e 89 contratos registrados**. Mudanças i
 - **URL dos webhooks no log do httpx** — com o log `INFO` do `httpx` ligado pela aplicação, a linha `HTTP Request: POST <URL>` expunha a URL dos webhooks do Slack e do Discord, que é a própria credencial. No envio do alerta, a URL sai como `[REDACTED]`.
 - **Acervo Fundiário, só shapefile no GDAL** — o ZIP baixado do INCRA ia inteiro ao GDAL, que escolhe o leitor pelo conteúdo do arquivo e não pela extensão; um ZIP adulterado com outro formato podia fazer a leitura acessar arquivos locais ou a rede. Agora só passam as partes de um shapefile (`.shp`, `.shx`, `.dbf`, `.prj`, `.cpg`), sem caminho com `..`, o `.shp` tem de ter o cabeçalho do formato e é aberto pelo caminho explícito dentro do ZIP; fora disso, `ParseError` antes do GDAL.
 - **Links da CONAB e do PSR só por `https`** — os links de planilha dos levantamentos da CONAB aceitavam `http://` e porta arbitrária, e os recursos do catálogo do PSR aceitavam porta e credencial na URL. Agora os dois exigem `https`, sem porta nem credencial; link fora disso é ignorado, como já era o de outro host.
+- **Workflows da landing e do explorer** — o checkout não guarda credencial, e o token de escrita só existe no passo do push; os passos que instalam dependências e rodam scripts não o veem
 
 ## [1.1.0] - 2026-06-18
 
