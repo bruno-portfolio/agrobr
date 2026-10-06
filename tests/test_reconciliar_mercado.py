@@ -77,22 +77,50 @@ def test_compare_sgs_fields():
     assert reconciliation.compare_sgs_fields([{"data": "01/01/2024"}])["status"] == "mismatch"
 
 
-def test_compare_ceasa_alignment_on_captured_bodies_and_mutations():
-    folder = GOLDEN / "conab_ceasa/precos_sample"
+@pytest.mark.parametrize("caso", ["precos_sample", "precos_20260923", "precos_20261006"])
+def test_compare_ceasa_alignment_on_captured_bodies_and_mutations(caso):
+    folder = GOLDEN / "conab_ceasa" / caso
     precos = json.loads((folder / "precos_response.json").read_text(encoding="utf-8"))
-    ceasas = json.loads((folder / "ceasas_response.json").read_text(encoding="utf-8"))
-    result = reconciliation.compare_ceasa_alignment(precos, ceasas)
+    result = reconciliation.compare_ceasa_alignment(precos)
     assert result == {"status": "ok", "problems": [], "colunas": 43, "ceasas": 43, "linhas": 48}
-    assert reconciliation.compare_ceasa_alignment({}, {})["status"] == "mismatch"
-    swapped = json.loads(json.dumps(ceasas))
-    swapped["resultset"][0], swapped["resultset"][1] = (
-        swapped["resultset"][1],
-        swapped["resultset"][0],
+    assert reconciliation.compare_ceasa_alignment({})["status"] == "mismatch"
+    swapped = json.loads(json.dumps(precos))
+    swapped["metadata"][1], swapped["metadata"][2] = (
+        swapped["metadata"][2],
+        swapped["metadata"][1],
     )
-    assert reconciliation.compare_ceasa_alignment(precos, swapped)["status"] == "mismatch"
-    shorter = json.loads(json.dumps(ceasas))
-    shorter["resultset"] = shorter["resultset"][:-1]
-    assert reconciliation.compare_ceasa_alignment(precos, shorter)["status"] == "mismatch"
+    assert reconciliation.compare_ceasa_alignment(swapped)["status"] == "ok"
+    shorter = json.loads(json.dumps(precos))
+    shorter["metadata"] = shorter["metadata"][:-1]
+    assert reconciliation.compare_ceasa_alignment(shorter)["status"] == "mismatch"
+    duplicated = json.loads(json.dumps(precos))
+    duplicated["metadata"][2] = duplicated["metadata"][1]
+    result = reconciliation.compare_ceasa_alignment(duplicated)
+    assert result["status"] == "mismatch"
+    assert any("duplicada" in problema for problema in result["problems"])
+
+
+@pytest.mark.parametrize(
+    "cabecalho",
+    [
+        "",
+        None,
+        "CEAGESP - SAO PAULO\r(13/02/2026)/Preco (R$)",
+        " \rSAO PAULO\r(13/02/2026)/Preco (R$)",
+        "CEAGESP \r \r(13/02/2026)/Preco (R$)",
+        "CEAGESP \rSAO PAULO\r(13/02/2026)/Volume (KG)",
+        "CEAGESP \rSAO PAULO\r(13/02/2026)/Preco (R$) extra",
+        "CEAGESP \rSAO PAULO\r(31/02/2026)/Preco (R$)",
+        "CEAGESP\n \rSAO PAULO\r(13/02/2026)/Preco (R$)",
+    ],
+)
+def test_compare_ceasa_alignment_recusa_cabecalho_fora_do_formato(cabecalho):
+    folder = GOLDEN / "conab_ceasa/precos_20261006"
+    precos = json.loads((folder / "precos_response.json").read_bytes())
+    precos["metadata"][1]["colName"] = cabecalho
+    result = reconciliation.compare_ceasa_alignment(precos)
+    assert result["status"] == "mismatch"
+    assert any("fora do formato publicado" in problema for problema in result["problems"])
 
 
 def test_compare_ceasa_catalog_acusa_produto_novo_no_prohort():

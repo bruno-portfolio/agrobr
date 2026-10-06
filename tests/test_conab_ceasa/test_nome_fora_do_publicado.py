@@ -29,10 +29,7 @@ def _servir(monkeypatch: pytest.MonkeyPatch) -> dict:
                 "file": arquivo,
                 "content_type": "application/json",
             }
-            for consulta, arquivo in (
-                (models.QUERY_PRECOS, "precos_response.json"),
-                (models.QUERY_CEASAS, "ceasas_response.json"),
-            )
+            for consulta, arquivo in ((models.QUERY_PRECOS, "precos_response.json"),)
         ]
     }
     return install_replay_http(monkeypatch, caso, GOLDEN)
@@ -84,14 +81,12 @@ async def test_nomes_publicados_seguem_filtrando(monkeypatch):
 )
 async def test_produto_confere_com_o_publicado_depois_da_rede(original, publicado, pedido, saida):
     precos = json.loads((AMOSTRA / "precos_response.json").read_text(encoding="utf-8"))
-    ceasas = json.loads((AMOSTRA / "ceasas_response.json").read_text(encoding="utf-8"))
     alterado = copy.deepcopy(precos)
     linha = next(row for row in alterado["resultset"] if row[0] == original)
     linha[0] = publicado
     url = "https://pentahoportaldeinformacoes.conab.gov.br/pentaho/plugin/cda/api/doQuery"
     with (
         patch.object(client, "fetch_precos", new_callable=AsyncMock, return_value=(alterado, url)),
-        patch.object(client, "fetch_ceasas", new_callable=AsyncMock, return_value=(ceasas, url)),
         warnings.catch_warnings(),
     ):
         warnings.simplefilter("ignore")

@@ -18,31 +18,46 @@ from .models import (
 
 PARSER_VERSION = 1
 
-_RE_DATA_HEADER = re.compile(r"\((\d{2}/\d{2}/\d{4})\)")
-_RE_SUFIXO_DATA = re.compile(r"\s*\(\d{2}/\d{2}/\d{4}\).*$")
+_RE_CABECALHO_PRECO = re.compile(
+    r"(?P<instituicao>[^\r\n]+)\r(?P<cidade>[^\r\n]+)\r"
+    r"\((?P<data>\d{2}/\d{2}/\d{4})\)/Preco \(R\$\)"
+)
 
 
-def _ceasa_do_cabecalho(col_name: str) -> str:
-    nome = _RE_SUFIXO_DATA.sub("", col_name).replace("\r", " - ")
-    return re.sub(r"\s+", " ", nome).strip()
+def _ceasa_do_cabecalho(col_name: str) -> tuple[str, datetime]:
+    m = _RE_CABECALHO_PRECO.fullmatch(col_name) if isinstance(col_name, str) else None
+    if m is None or not m.group("instituicao").strip() or not m.group("cidade").strip():
+        raise ParseError(
+            source="conab_ceasa",
+            parser_version=PARSER_VERSION,
+            reason=f"Cabeçalho de preço fora do formato publicado: {col_name!r}",
+        )
+    try:
+        data = datetime.strptime(m.group("data"), "%d/%m/%Y")
+    except ValueError as exc:
+        raise ParseError(
+            source="conab_ceasa",
+            parser_version=PARSER_VERSION,
+            reason=f"Cabeçalho de preço com data inválida: {col_name!r}",
+        ) from exc
+    nome = f"{m.group('instituicao').strip()} - {m.group('cidade').strip()}"
+    return re.sub(r"\s+", " ", nome), data
 
 
-def _validar_identidade_ceasas(ceasas_por_coluna: list[str], ceasas_list: list[str]) -> None:
-    catalogo = set(ceasas_list)
-    ausentes = [nome for nome in ceasas_por_coluna if nome not in catalogo]
+def _validar_identidade_ceasas(ceasas_por_coluna: list[str]) -> None:
     duplicadas = {nome for nome in ceasas_por_coluna if ceasas_por_coluna.count(nome) > 1}
-    if not ceasas_por_coluna or ausentes or duplicadas:
+    if not ceasas_por_coluna or duplicadas:
         raise ParseError(
             source="conab_ceasa",
             parser_version=PARSER_VERSION,
             reason=(
-                "Cabeçalhos de preço não identificam CEASAs do catálogo: "
-                f"ausentes={sorted(ausentes)[:5]} duplicadas={sorted(duplicadas)[:5]}"
+                "Cabeçalhos de preço não identificam CEASAs únicas: "
+                f"duplicadas={sorted(duplicadas)[:5]}"
             ),
         )
 
 
-def parse_precos(precos_json: dict[str, Any], ceasas_json: dict[str, Any]) -> pd.DataFrame:
+def parse_precos(precos_json: dict[str, Any]) -> pd.DataFrame:
     resultset = precos_json.get("resultset") if isinstance(precos_json, dict) else None
     if not isinstance(resultset, list):
         raise ParseError(
@@ -53,25 +68,39 @@ def parse_precos(precos_json: dict[str, Any], ceasas_json: dict[str, Any]) -> pd
     if not resultset:
         return pd.DataFrame(columns=COLUNAS_SAIDA)
 
-    ceasas_list = [row[1] for row in ceasas_json.get("resultset", [])]
-    if not ceasas_list:
+    metadata = precos_json.get("metadata", [])
+    if not isinstance(metadata, list):
         raise ParseError(
             source="conab_ceasa",
             parser_version=PARSER_VERSION,
-            reason="Lista de CEASAs vazia",
+            reason="Cabeçalhos de preço sem lista de metadata",
         )
 
-    metadata = precos_json.get("metadata", [])
-    datas_por_ceasa: list[datetime | None] = []
+    datas_por_ceasa: list[datetime] = []
     ceasas_por_coluna: list[str] = []
-    for i, col in enumerate(metadata):
-        if i == 0:
-            continue
-        col_name = col.get("colName", "")
-        m = _RE_DATA_HEADER.search(col_name)
-        datas_por_ceasa.append(datetime.strptime(m.group(1), "%d/%m/%Y") if m else None)
-        ceasas_por_coluna.append(_ceasa_do_cabecalho(col_name))
-    _validar_identidade_ceasas(ceasas_por_coluna, ceasas_list)
+    for col in metadata[1:]:
+        col_name = col.get("colName", "") if isinstance(col, dict) else ""
+        nome, data = _ceasa_do_cabecalho(col_name)
+        datas_por_ceasa.append(data)
+        ceasas_por_coluna.append(nome)
+    _validar_identidade_ceasas(ceasas_por_coluna)
+    for index, column in enumerate(metadata):
+        if (
+            not isinstance(column, dict)
+            or type(column.get("colIndex")) is not int
+            or column["colIndex"] != index
+        ):
+            raise ParseError(
+                source="conab_ceasa",
+                parser_version=PARSER_VERSION,
+                reason=f"Cabeçalhos de preço: metadata[{index}].colIndex deve ser {index}",
+            )
+    if any(len(row) != len(metadata) for row in resultset):
+        raise ParseError(
+            source="conab_ceasa",
+            parser_version=PARSER_VERSION,
+            reason="Quantidade de preços por linha diverge dos cabeçalhos de CEASA",
+        )
 
     records: list[dict[str, object]] = []
     fora_da_tabela: set[str] = set()
@@ -89,11 +118,11 @@ def parse_precos(precos_json: dict[str, Any], ceasas_json: dict[str, Any]) -> pd
             ceasa_idx = col_idx - 1
             ceasa_name = ceasas_por_coluna[ceasa_idx]
             ceasa_uf = parse_ceasa_uf(ceasa_name) or ""
-            data = datas_por_ceasa[ceasa_idx] if ceasa_idx < len(datas_por_ceasa) else None
+            data = datas_por_ceasa[ceasa_idx]
 
             records.append(
                 {
-                    "data": pd.Timestamp(data) if data else pd.NaT,
+                    "data": pd.Timestamp(data),
                     "produto": produto,
                     "categoria": categoria,
                     "unidade": unidade,

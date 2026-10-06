@@ -23,10 +23,7 @@ async def test_ceasa_nome_parcial_preserva_preco_publicado(monkeypatch):
                     "file": filename,
                     "content_type": "application/json",
                 }
-                for query, filename in (
-                    (models.QUERY_PRECOS, "precos_response.json"),
-                    (models.QUERY_CEASAS, "ceasas_response.json"),
-                )
+                for query, filename in ((models.QUERY_PRECOS, "precos_response.json"),)
             ]
         },
         GOLDEN,

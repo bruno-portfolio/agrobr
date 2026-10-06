@@ -180,9 +180,11 @@ async def test_sociobio_recusa_seletor_vazio_antes_da_rede():
         await conab.custo_sociobiodiversidade("acai", local=" ")
 
 
-def test_ceasa_recusa_catalogo_vazio_com_precos():
-    with helpers.levanta_exatamente(ParseError, "Lista de CEASAs vazia"):
-        ceasa_parser.parse_precos({"resultset": [["Tomate (kg)", 5]]}, {"resultset": []})
+def test_ceasa_recusa_metadata_sem_coluna_de_preco():
+    with helpers.levanta_exatamente(ParseError, "Cabeçalhos de preço"):
+        ceasa_parser.parse_precos(
+            {"resultset": [["Tomate (kg)", 5]], "metadata": [{"colName": "ProdutoUnid"}]}
+        )
 
 
 async def test_catalogo_recusa_levantamento_fora_do_intervalo(monkeypatch):

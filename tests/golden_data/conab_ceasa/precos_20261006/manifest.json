@@ -1,0 +1,41 @@
+{
+ "descricao": "Matriz oficial de preços diários do PROHORT (Pentaho CDA precoDia: MDXProdutoPreco, 48 produtos × 43 CEASAs) e catálogo parcial MDXceasa (22 CEASAs), capturados em 06/10/2026. Corpos preservados byte a byte.",
+ "arquivos": [
+  {
+   "file": "precos_response.json",
+   "bytes": 13286,
+   "sha256": "39e8085af54ef4199b67e6dce2274a7fff68ad77bef58956cc4fe63c0a3285a3",
+   "captured_at": "2026-10-06T15:17:18.191957+00:00",
+   "url": "https://pentahoportaldeinformacoes.conab.gov.br/pentaho/plugin/cda/api/doQuery"
+  },
+  {
+   "file": "ceasas_response.json",
+   "bytes": 1434,
+   "sha256": "23e9d6536e5db8b466e0e8b28a19cf4f151fc0859705993e074e1ab1fa7f2716",
+   "captured_at": "2026-10-06T15:17:20.379608+00:00",
+   "url": "https://pentahoportaldeinformacoes.conab.gov.br/pentaho/plugin/cda/api/doQuery"
+  }
+ ],
+ "recibos": {
+  "MDXProdutoPreco": {
+   "nome": "MDXProdutoPreco",
+   "file": "precos_response.json",
+   "bytes": 13286,
+   "sha256": "39e8085af54ef4199b67e6dce2274a7fff68ad77bef58956cc4fe63c0a3285a3",
+   "captured_at": "2026-10-06T15:17:18.191957+00:00",
+   "url": "https://pentahoportaldeinformacoes.conab.gov.br/pentaho/plugin/cda/api/doQuery",
+   "status": 200,
+   "content_type": "application/json"
+  },
+  "MDXceasa": {
+   "nome": "MDXceasa",
+   "file": "ceasas_response.json",
+   "bytes": 1434,
+   "sha256": "23e9d6536e5db8b466e0e8b28a19cf4f151fc0859705993e074e1ab1fa7f2716",
+   "captured_at": "2026-10-06T15:17:20.379608+00:00",
+   "url": "https://pentahoportaldeinformacoes.conab.gov.br/pentaho/plugin/cda/api/doQuery",
+   "status": 200,
+   "content_type": "application/json"
+  }
+ }
+}

@@ -16,7 +16,6 @@ from .models import (
     CDA_PROHORT,
     PENTAHO_AUTH,
     PENTAHO_BASE,
-    QUERY_CEASAS,
     QUERY_PRECOS,
 )
 
@@ -65,7 +64,3 @@ async def _fetch_query(cda_path: str, query_id: str) -> tuple[dict[str, Any], st
 
 async def fetch_precos() -> tuple[dict[str, Any], str]:
     return await _fetch_query(CDA_PROHORT, QUERY_PRECOS)
-
-
-async def fetch_ceasas() -> tuple[dict[str, Any], str]:
-    return await _fetch_query(CDA_PROHORT, QUERY_CEASAS)

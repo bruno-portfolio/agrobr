@@ -25,10 +25,7 @@ def _caso() -> dict:
                 "file": arquivo,
                 "content_type": "application/json",
             }
-            for consulta, arquivo in (
-                (models.QUERY_PRECOS, "precos_response.json"),
-                (models.QUERY_CEASAS, "ceasas_response.json"),
-            )
+            for consulta, arquivo in ((models.QUERY_PRECOS, "precos_response.json"),)
         ]
     }
 

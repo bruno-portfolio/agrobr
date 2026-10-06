@@ -1104,9 +1104,7 @@ def test_conab_ceasa_golden_parsing(_name: str, path: Path):
 
     expected = _load_expected(path)
     precos_json = json.loads((path / "precos_response.json").read_text(encoding="utf-8"))
-    ceasas_json = json.loads((path / "ceasas_response.json").read_text(encoding="utf-8"))
-
-    df = parse_precos(precos_json, ceasas_json)
+    df = parse_precos(precos_json)
 
     for col in expected["columns"]:
         assert col in df.columns, f"Missing column: {col}"

@@ -16,27 +16,14 @@ def _precos_json() -> dict:
     return json.loads(GOLDEN_DIR.joinpath("precos_response.json").read_text(encoding="utf-8"))
 
 
-def _ceasas_json() -> dict:
-    return json.loads(GOLDEN_DIR.joinpath("ceasas_response.json").read_text(encoding="utf-8"))
-
-
 @pytest.fixture()
 def mock_fetch():
     precos = _precos_json()
-    ceasas = _ceasas_json()
-    with (
-        patch.object(
-            client,
-            "fetch_precos",
-            new_callable=AsyncMock,
-            return_value=(precos, "https://pentahoportaldeinformacoes.conab.gov.br/test"),
-        ),
-        patch.object(
-            client,
-            "fetch_ceasas",
-            new_callable=AsyncMock,
-            return_value=(ceasas, "https://pentahoportaldeinformacoes.conab.gov.br/test"),
-        ),
+    with patch.object(
+        client,
+        "fetch_precos",
+        new_callable=AsyncMock,
+        return_value=(precos, "https://pentahoportaldeinformacoes.conab.gov.br/test"),
     ):
         yield
 

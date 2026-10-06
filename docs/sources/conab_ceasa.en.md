@@ -52,7 +52,9 @@ The parser unpivots the matrix into long-form format with 7 columns.
 
 ## Limitations
 
-- The CEASA of each price column comes from the column header itself (`colName`), checked against the `MDXceasa` catalog; a header missing from the catalog or duplicated raises `ParseError` instead of assigning the price to another market. A price response without the `resultset` list also raises `ParseError`; only an empty `resultset` becomes an empty table.
+- Each `colIndex` must be an integer equal to its position in `metadata`, including the product column; missing, repeated or out-of-order indices raise `ParseError`.
+
+- The CEASA of each price column comes from the column header itself (`colName`), in the format `<institution> \r<city>\r(dd/mm/yyyy)/Preco (R$)`, with a nonempty institution and city, a valid date and no duplicate CEASA; otherwise, it raises `ParseError` instead of assigning the price to another market. The `MDXceasa` catalog no longer lists every CEASA with prices and is no longer queried. A price response without the `resultset` list also raises `ParseError`; only an empty `resultset` becomes an empty table.
 
 - Only the most recent prices (daily snapshot, no time series in this version)
 - Dates vary by CEASA (some inactive since 2023)

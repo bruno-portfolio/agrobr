@@ -82,16 +82,12 @@ async def test_produto_fora_da_tabela_sai_sem_categoria_e_com_um_aviso():
     precos = json.loads(
         (GOLDEN / "conab_ceasa/precos_sample/precos_response.json").read_text(encoding="utf-8")
     )
-    ceasas = json.loads(
-        (GOLDEN / "conab_ceasa/precos_sample/ceasas_response.json").read_text(encoding="utf-8")
-    )
     alterado = copy.deepcopy(precos)
     linha = next(row for row in alterado["resultset"] if row[0] == "TOMATE (KG)")
     linha[0] = "PITAYA (KG)"
     url = "https://pentahoportaldeinformacoes.conab.gov.br/pentaho/plugin/cda/api/doQuery"
     with (
         patch.object(client, "fetch_precos", new_callable=AsyncMock, return_value=(alterado, url)),
-        patch.object(client, "fetch_ceasas", new_callable=AsyncMock, return_value=(ceasas, url)),
         sem_excecao(),
         warnings.catch_warnings(record=True) as avisos,
     ):

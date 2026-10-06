@@ -48,12 +48,6 @@ async def _anp(monkeypatch: pytest.MonkeyPatch, espiao: _Espiao) -> Any:
     return await anp_api.acquire_prices(uf="DF")
 
 
-async def _ceasa(monkeypatch: pytest.MonkeyPatch, espiao: _Espiao) -> Any:
-    monkeypatch.setattr(ceasa_client, "fetch_precos", espiao)
-    monkeypatch.setattr(ceasa_client, "fetch_ceasas", espiao)
-    return await conab.ceasa.precos()
-
-
 async def _sidra(
     chamada: Callable[[], Any], monkeypatch: pytest.MonkeyPatch, espiao: _Espiao
 ) -> Any:
@@ -69,7 +63,6 @@ async def _alerta(monkeypatch: pytest.MonkeyPatch, espiao: _Espiao) -> Any:
 
 PONTOS: dict[str, Callable[[pytest.MonkeyPatch, _Espiao], Any]] = {
     "anp_semanas": _anp,
-    "ceasa": _ceasa,
     "ibge_lspa_subprodutos": lambda mp, esp: _sidra(lambda: ibge.lspa("milho", ano=2024), mp, esp),
     "ibge_censo_tabelas": lambda mp, esp: _sidra(
         lambda: ibge.censo_agro("uso_terra", ano=1995), mp, esp
@@ -98,6 +91,17 @@ async def test_falha_de_uma_tarefa_cancela_as_irmas(monkeypatch, ponto):
     assert espiao.chamadas >= 2
     assert espiao.registro == ["cancelada"] * (espiao.chamadas - 1)
     assert time.monotonic() - inicio < 2
+
+
+async def test_ceasa_propaga_falha_da_unica_consulta(monkeypatch):
+    espiao = _Espiao()
+    monkeypatch.setattr(ceasa_client, "fetch_precos", espiao)
+
+    with levanta_exatamente(SourceUnavailableError, "a 1ª tarefa falhou"):
+        await conab.ceasa.precos()
+
+    assert espiao.chamadas == 1
+    assert espiao.registro == []
 
 
 async def test_gather_or_cancel_devolve_na_ordem():

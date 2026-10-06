@@ -17,7 +17,6 @@ PENTAHO_AUTH = (
 CDA_PROHORT = "/home/PROHORT/precoDia.cda"
 
 QUERY_PRECOS = "MDXProdutoPreco"
-QUERY_CEASAS = "MDXceasa"
 
 FRUTAS: list[str] = [
     "ABACATE",

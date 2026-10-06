@@ -31,7 +31,7 @@ PTAX_ROUTES = ("CotacaoMoedaDia", "CotacaoMoedaPeriodo", "Moedas")
 CFTC_METADATA_URL = "https://publicreporting.cftc.gov/api/views/72hh-3qpy.json"
 SGS_PROBE_URL = "https://api.bcb.gov.br/dados/serie/bcdata.sgs.433/dados/ultimos/1?formato=json"
 B3_AJUSTES_PROBE = constants.URLS[constants.Fonte.B3]["ajustes_zip"]
-CEASA_DATE = re.compile(r"\s*\(\d{2}/\d{2}/\d{4}\).*$")
+CEASA_DATE = re.compile(r"\(\d{2}/\d{2}/\d{4}\)/Preco \(R\$\)")
 EDM = "{http://docs.oasis-open.org/odata/ns/edm}"
 _FOCUS_COMMON = {
     "Indicador": "Edm.String",
@@ -187,27 +187,51 @@ def compare_sgs_fields(body: Any) -> dict[str, Any]:
 
 
 def ceasa_header_name(col_name: str) -> str:
-    stripped = CEASA_DATE.sub("", col_name).replace("\r", " - ")
-    return re.sub(r"\s+", " ", stripped).strip()
+    partes = col_name.split("\r") if isinstance(col_name, str) else []
+    if (
+        len(partes) != 3
+        or not partes[0].strip()
+        or not partes[1].strip()
+        or "\n" in col_name
+        or CEASA_DATE.fullmatch(partes[2]) is None
+    ):
+        return ""
+    try:
+        datetime.strptime(partes[2][1:11], "%d/%m/%Y")
+    except ValueError:
+        return ""
+    return " - ".join(" ".join(parte.split()) for parte in partes[:2])
 
 
-def compare_ceasa_alignment(precos: dict[str, Any], ceasas: dict[str, Any]) -> dict[str, Any]:
-    headers = [column.get("colName", "") for column in precos.get("metadata", [])[1:]]
-    names = [row[1] for row in ceasas.get("resultset", []) if len(row) > 1]
+def compare_ceasa_alignment(precos: dict[str, Any]) -> dict[str, Any]:
+    metadata = precos.get("metadata", [])
+    headers = (
+        [column.get("colName", "") if isinstance(column, dict) else "" for column in metadata[1:]]
+        if isinstance(metadata, list)
+        else []
+    )
+    rows = precos.get("resultset", [])
+    rows = rows if isinstance(rows, list) else []
+    names: set[str] = set()
     problems = []
-    if not headers or not names or not precos.get("resultset"):
-        problems.append("documento CEASA sem colunas de preço, sem catálogo ou sem linhas")
-    if len(headers) != len(names):
-        problems.append(f"{len(headers)} colunas de preço para {len(names)} CEASAs")
-    for index, (header, name) in enumerate(zip(headers, names, strict=False), start=1):
-        if ceasa_header_name(header) != name:
-            problems.append(f"coluna {index}: cabeçalho {header!r} não corresponde a {name!r}")
+    if not headers or not rows:
+        problems.append("documento CEASA sem colunas de preço ou sem linhas")
+    if any(not isinstance(row, list) or len(row) != len(headers) + 1 for row in rows):
+        problems.append("quantidade de preços por linha diverge dos cabeçalhos de CEASA")
+    for index, header in enumerate(headers, start=1):
+        name = ceasa_header_name(header)
+        if not name:
+            problems.append(f"coluna {index}: cabeçalho {header!r} fora do formato publicado")
+        elif name in names:
+            problems.append(f"coluna {index}: CEASA duplicada {name!r}")
+        else:
+            names.add(name)
     return {
         "status": "mismatch" if problems else "ok",
         "problems": problems,
         "colunas": len(headers),
         "ceasas": len(names),
-        "linhas": len(precos.get("resultset", [])),
+        "linhas": len(rows),
     }
 
 
@@ -463,11 +487,9 @@ async def run(output: Path) -> int:
                 "nota": "disponibilidade do endpoint; 404 significa pregão ainda não publicado",
             }
         )
-    (precos, _), (ceasas, _) = await asyncio.gather(
-        ceasa_client.fetch_precos(), ceasa_client.fetch_ceasas()
-    )
+    precos, _ = await ceasa_client.fetch_precos()
     report["structure"].append(
-        {"case": "ceasa_alinhamento_colunas", **compare_ceasa_alignment(precos, ceasas)}
+        {"case": "ceasa_alinhamento_colunas", **compare_ceasa_alignment(precos)}
     )
     report["structure"].append(
         {"case": "ceasa_catalogo_categorias", **compare_ceasa_catalog(precos)}

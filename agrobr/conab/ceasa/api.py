@@ -9,7 +9,6 @@ from agrobr import _log
 from agrobr.exceptions import InvalidParameterError
 from agrobr.models import MetaInfo
 from agrobr.normalize import regions
-from agrobr.utils import tasks
 from agrobr.utils.result import DataFrameResult, build_source_meta, finalize_result
 from agrobr.utils.warnings import warn_once
 
@@ -97,14 +96,11 @@ async def precos(
     logger.info("conab_ceasa_precos", produto=produto, ceasa=ceasa)
 
     t0 = time.monotonic()
-    (precos_json, source_url), (ceasas_json, _) = await tasks.gather_or_cancel(
-        client.fetch_precos(),
-        client.fetch_ceasas(),
-    )
+    precos_json, source_url = await client.fetch_precos()
     fetch_ms = int((time.monotonic() - t0) * 1000)
 
     t1 = time.monotonic()
-    df = parser.parse_precos(precos_json, ceasas_json)
+    df = parser.parse_precos(precos_json)
     parse_ms = int((time.monotonic() - t1) * 1000)
 
     publicados = {coluna: sorted(df[coluna].dropna().unique()) for coluna in ("produto", "ceasa")}

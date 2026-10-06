@@ -17,7 +17,6 @@ USUARIO = "usuario_c43_falso"
 SENHA = "senha_c43_falsa"
 CORPOS = {
     models.QUERY_PRECOS: (GOLDEN / "precos_response.json").read_bytes(),
-    models.QUERY_CEASAS: (GOLDEN / "ceasas_response.json").read_bytes(),
 }
 
 
@@ -61,8 +60,8 @@ async def test_credencial_vai_no_cabecalho_e_fica_fora_da_url_do_log_e_do_meta(
     df, meta = await ceasa_precos(return_meta=True)
 
     esperado = "Basic " + base64.b64encode(f"{USUARIO}:{SENHA}".encode()).decode()
-    assert len(pedidos) == 2
-    assert [pedido.headers.get("authorization") for pedido in pedidos] == [esperado, esperado]
+    assert len(pedidos) == 1
+    assert [pedido.headers.get("authorization") for pedido in pedidos] == [esperado]
     assert not df.empty
     assert "HTTP Request: GET" in caplog.text
     for texto in [*(str(pedido.url) for pedido in pedidos), caplog.text, capsys.readouterr().out]:

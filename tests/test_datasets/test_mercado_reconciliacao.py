@@ -255,11 +255,9 @@ def test_float_sum_tolerance_rejects_one_unit():
 
 
 @pytest.mark.parametrize("mutation", ["troca_de_ordem", "nome_fora_do_catalogo"])
-async def test_preco_atacado_catalog_identity(
+async def test_preco_atacado_independe_da_identidade_do_catalogo(
     mutation: str, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
 ):
-    from agrobr import exceptions
-
     case = json.loads(json.dumps(CASES["ceasa_precos_20260213"]))
     catalog_request = next(r for r in case["requests"] if r["role"] == "ceasas")
     body = json.loads(_golden(catalog_request["file"]).read_text(encoding="utf-8"))
@@ -270,12 +268,10 @@ async def test_preco_atacado_catalog_identity(
     mutated = tmp_path / f"catalog_{mutation}.json"
     mutated.write_text(json.dumps(body), encoding="utf-8")
     catalog_request["file"] = str(mutated)
-    install_replay_http(monkeypatch, case, GOLDEN)
-    if mutation == "troca_de_ordem":
-        frame = await datasets.preco_atacado()
-        assert len(frame) == case["period"]["rows"]
-        assert_replay_samples(frame, case)
-    else:
-        with pytest.raises(exceptions.ParseError) as failure:
-            await datasets.preco_atacado()
-        assert "CEASA" in str(failure.value)
+    seen = install_replay_http(monkeypatch, case, GOLDEN)
+    frame = await datasets.preco_atacado()
+    assert_replay_served(seen)
+    assert len(seen["served"]) == 1
+    assert len(frame) == case["period"]["rows"]
+    assert_replay_samples(frame, case)
+    assert_replay_structure(frame, case)
