@@ -28,7 +28,7 @@ from tests.helpers import collect_failures
 GOLDEN = Path(__file__).parents[1] / "golden_data"
 GEO = GOLDEN / "sicar/geo_20260922"
 GEO_MANIFEST = json.loads((GEO / "manifest.json").read_text(encoding="utf-8"))
-R11 = GOLDEN / "reconciliacao_r11_20260918/sicar"
+R11 = GOLDEN / "reconciliacao_registros_precos_zoneamento_seguro_20260918/sicar"
 URL = "https://geoserver.car.gov.br/geoserver/sicar/wfs"
 INSTANTES = [
     ("2026-09-01T16:44:58.004Z", "2026-09-01T16:44:58.004Z"),

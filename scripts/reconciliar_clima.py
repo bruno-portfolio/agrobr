@@ -22,7 +22,7 @@ from agrobr.nasa_power import models as nasa_models
 ROOT = Path(__file__).resolve().parents[1]
 GOLDEN = ROOT / "tests/golden_data"
 INMET_MANIFEST = GOLDEN / "inmet/selecao_20260906/manifest.json"
-NASA_GOLDEN = GOLDEN / "reconciliacao_r10_20260918/nasa_power/nasa_power_mt_2025.json"
+NASA_GOLDEN = GOLDEN / "reconciliacao_clima_20260918/nasa_power/nasa_power_mt_2025.json"
 INMET_CATALOG_URL = f"{constants.URLS[constants.Fonte.INMET]['estacoes']}/T"
 NASA_UNITS = {
     "T2M": "C",

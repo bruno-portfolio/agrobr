@@ -1,0 +1,225 @@
+[
+ {
+  "call": "pam_soja_uf_2023",
+  "rows": 27,
+  "columns": [
+   "localidade",
+   "ano",
+   "area_colhida",
+   "area_plantada",
+   "producao",
+   "rendimento",
+   "produto",
+   "fonte",
+   "unidade_producao",
+   "unidade_rendimento",
+   "unidade_valor_producao",
+   "condicao_produto"
+  ],
+  "canal": "servicodados",
+  "source_url": "https://servicodados.ibge.gov.br/api/v3/agregados/5457/periodos/2023/variaveis/8331,216,214,112?localidades=N3[all]&classificacao=782[40124]",
+  "requests": [
+   "agregados_001",
+   "agregados_002"
+  ]
+ },
+ {
+  "call": "pam_milho_brasil_2022_2023",
+  "rows": 2,
+  "columns": [
+   "localidade",
+   "ano",
+   "area_colhida",
+   "area_plantada",
+   "producao",
+   "rendimento",
+   "produto",
+   "fonte",
+   "unidade_producao",
+   "unidade_rendimento",
+   "unidade_valor_producao",
+   "condicao_produto"
+  ],
+  "canal": "servicodados",
+  "source_url": "https://servicodados.ibge.gov.br/api/v3/agregados/5457/periodos/2022,2023/variaveis/8331,216,214,112?localidades=N1[all]&classificacao=782[40122]",
+  "requests": [
+   "agregados_003"
+  ]
+ },
+ {
+  "call": "lspa_soja_202607",
+  "rows": 4,
+  "columns": [
+   "ano",
+   "mes",
+   "localidade",
+   "localidade_cod",
+   "produto",
+   "variavel",
+   "variavel_cod",
+   "valor",
+   "unidade",
+   "fonte"
+  ],
+  "canal": "servicodados",
+  "source_url": "https://servicodados.ibge.gov.br/api/v3/agregados/6588/periodos/202607/variaveis/all?localidades=N1[all]&classificacao=48[39443]",
+  "requests": [
+   "agregados_004",
+   "agregados_005"
+  ]
+ },
+ {
+  "call": "ppm_bovino_uf_2023",
+  "rows": 27,
+  "columns": [
+   "ano",
+   "localidade",
+   "localidade_cod",
+   "especie",
+   "valor",
+   "unidade",
+   "fonte"
+  ],
+  "canal": "servicodados",
+  "source_url": "https://servicodados.ibge.gov.br/api/v3/agregados/3939/periodos/2023/variaveis/105?localidades=N3[all]&classificacao=79[2670]",
+  "requests": [
+   "agregados_006",
+   "agregados_007"
+  ]
+ },
+ {
+  "call": "abate_bovino_2024T1",
+  "rows": 27,
+  "columns": [
+   "trimestre",
+   "localidade",
+   "localidade_cod",
+   "especie",
+   "animais_abatidos",
+   "peso_carcacas",
+   "fonte"
+  ],
+  "canal": "servicodados",
+  "source_url": "https://servicodados.ibge.gov.br/api/v3/agregados/1092/periodos/202401/variaveis/284,285?localidades=N3[all]&classificacao=12716[115236]|12529[118225]|18[992]",
+  "requests": [
+   "agregados_008",
+   "agregados_009"
+  ]
+ },
+ {
+  "call": "silvicultura_2023",
+  "rows": 26,
+  "columns": [
+   "ano",
+   "localidade",
+   "localidade_cod",
+   "produto",
+   "valor",
+   "unidade",
+   "fonte"
+  ],
+  "canal": "servicodados",
+  "source_url": "https://servicodados.ibge.gov.br/api/v3/agregados/291/periodos/2023/variaveis/142?localidades=N3[all]&classificacao=194[3455]",
+  "requests": [
+   "agregados_010",
+   "agregados_011"
+  ]
+ },
+ {
+  "call": "extracao_vegetal_2023",
+  "rows": 27,
+  "columns": [
+   "ano",
+   "localidade",
+   "localidade_cod",
+   "produto",
+   "valor",
+   "unidade",
+   "fonte"
+  ],
+  "canal": "servicodados",
+  "source_url": "https://servicodados.ibge.gov.br/api/v3/agregados/289/periodos/2023/variaveis/144?localidades=N3[all]&classificacao=193[3403]",
+  "requests": [
+   "agregados_012",
+   "agregados_013"
+  ]
+ },
+ {
+  "call": "leite_2024T1",
+  "rows": 26,
+  "columns": [
+   "trimestre",
+   "localidade",
+   "localidade_cod",
+   "leite_adquirido",
+   "leite_industrializado",
+   "preco_medio",
+   "fonte"
+  ],
+  "canal": "servicodados",
+  "source_url": "https://servicodados.ibge.gov.br/api/v3/agregados/1086/periodos/202401/variaveis/282,283,2522?localidades=N3[all]",
+  "requests": [
+   "agregados_014",
+   "agregados_015"
+  ]
+ },
+ {
+  "call": "pib_agro_2024T1",
+  "rows": 1,
+  "columns": [
+   "trimestre",
+   "valor",
+   "unidade",
+   "setor",
+   "fonte"
+  ],
+  "canal": "servicodados",
+  "source_url": "https://servicodados.ibge.gov.br/api/v3/agregados/1846/periodos/202401/variaveis/585?localidades=N1[all]&classificacao=11255[90687]",
+  "requests": [
+   "agregados_016",
+   "agregados_017"
+  ]
+ },
+ {
+  "call": "censo_efetivo_2017_uf",
+  "rows": 756,
+  "columns": [
+   "ano",
+   "localidade",
+   "localidade_cod",
+   "tema",
+   "categoria",
+   "variavel",
+   "valor",
+   "unidade",
+   "fonte"
+  ],
+  "canal": "servicodados",
+  "source_url": "https://servicodados.ibge.gov.br/api/v3/agregados/6907/periodos/all/variaveis/10010,2209?localidades=N3[all]&classificacao=829[46302]|12443[all]|218[46502]",
+  "requests": [
+   "agregados_018",
+   "agregados_019"
+  ]
+ },
+ {
+  "call": "censo_historico_estab",
+  "rows": 648,
+  "columns": [
+   "ano",
+   "localidade",
+   "localidade_cod",
+   "tema",
+   "categoria",
+   "variavel",
+   "valor",
+   "unidade",
+   "fonte"
+  ],
+  "canal": "servicodados",
+  "source_url": "https://servicodados.ibge.gov.br/api/v3/agregados/263/periodos/2006/variaveis/183,1000183,184,1000184?localidades=N3[all]&classificacao=220[all]",
+  "requests": [
+   "agregados_020",
+   "agregados_021"
+  ]
+ }
+]

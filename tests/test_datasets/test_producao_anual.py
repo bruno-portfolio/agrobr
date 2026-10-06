@@ -188,7 +188,8 @@ class TestProducaoAnualFallback:
     @pytest.mark.asyncio
     async def test_conab_brasil_uf_sem_a_cultura_entra_como_zero_e_parte_ausente_anula(self):
         boletim = (
-            Path(__file__).parents[1] / "golden_data/reconciliacao_r3_20260918/c3c31afbe3e52d92.xls"
+            Path(__file__).parents[1]
+            / "golden_data/reconciliacao_conab_20260918/c3c31afbe3e52d92.xls"
         )
         linhas = ConabParserV1().parse_safra_produto(BytesIO(boletim.read_bytes()), "milho_3")
         publicado = pd.DataFrame([s.model_dump() for s in linhas if s.safra == "2018/19" and s.uf])
@@ -220,9 +221,9 @@ class TestProducaoAnualFallback:
 class TestProducaoAnualFetchFunctions:
     @pytest.mark.asyncio
     async def test_fetch_conab_normalizes_real_golden(self):
-        path = Path(__file__).parents[1] / "golden_data" / "reconciliacao_r3_20260918"
+        path = Path(__file__).parents[1] / "golden_data" / "reconciliacao_conab_20260918"
         metadata = {
-            "url": "golden://reconciliacao_r3_20260918/7cd4df7946e5c57f.xlsx",
+            "url": "golden://reconciliacao_conab_20260918/7cd4df7946e5c57f.xlsx",
             "safra": "2025/26",
             "levantamento": 12,
         }
@@ -278,7 +279,7 @@ class TestProducaoAnualSpecific:
 @pytest.mark.asyncio
 async def test_fallback_conab_sem_ano_entrega_a_ultima_safra_fechada(monkeypatch):
     golden = (
-        Path(__file__).parents[1] / "golden_data/reconciliacao_r3_20260918/7cd4df7946e5c57f.xlsx"
+        Path(__file__).parents[1] / "golden_data/reconciliacao_conab_20260918/7cd4df7946e5c57f.xlsx"
     )
     livro = openpyxl.load_workbook(golden, read_only=True, data_only=True)
     aba = livro["Trigo"]
@@ -297,7 +298,7 @@ async def test_fallback_conab_sem_ano_entrega_a_ultima_safra_fechada(monkeypatch
     corrente = sum(linha[8].value or 0 for linha in ufs)
     assert (fechada, corrente) == (pytest.approx(aba["H42"].value), pytest.approx(aba["I42"].value))
     edicao = {
-        "url": "golden://reconciliacao_r3_20260918/7cd4df7946e5c57f.xlsx",
+        "url": "golden://reconciliacao_conab_20260918/7cd4df7946e5c57f.xlsx",
         "levantamento": 12,
         "safra": "2025/26",
         "ano_inicio": 2025,

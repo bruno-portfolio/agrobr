@@ -15,7 +15,7 @@ import requests
 from agrobr.antaq import client, models
 
 ROOT = Path(__file__).resolve().parents[1]
-GOLDEN = ROOT / "tests/golden_data/reconciliacao_r13_20260918"
+GOLDEN = ROOT / "tests/golden_data/reconciliacao_movimentacao_portuaria_20260918"
 FONTE = ROOT / "tests/golden_data/antaq/movimentacao_sample"
 MANIFEST = GOLDEN / "manifest.json"
 ORACLE = GOLDEN / "oracle.json"

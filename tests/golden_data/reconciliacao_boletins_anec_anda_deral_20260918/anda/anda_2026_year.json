@@ -1,0 +1,17 @@
+{
+  "synthetic_source_mutation": true,
+  "source_sha256": "f48596676f1d395fab73ca941b02ab88e4cf51a67ec8bc83d705c0fb5e22e283",
+  "changes": [
+    {
+      "before": "2026 ",
+      "after": "2027 ",
+      "bounds": [
+        412.57000732421875,
+        757.82080078125,
+        428.2300109863281,
+        763.0768432617188
+      ]
+    }
+  ],
+  "sha256": "41d054d20dab706a95c19de4fc2e3707295a16df2ce3c59a22ab2c61a1020437"
+}

@@ -1,0 +1,911 @@
+{
+  "format_version": 2,
+  "lot": "censos_sidra",
+  "oracle": "stdlib CSV; independent of agrobr; provenance incomplete",
+  "files": [
+    {
+      "file": "../ibge/censo_agro_efetivo_sample/response.csv",
+      "sha256": "d4d3c1823e98b8ded8c18eef34f2ebbd7915b2f4b05248c61ea562a6b0d042b1",
+      "bytes": 1642,
+      "provenance": "metadata 2026-02-14, sem URL, sem recibo e sem original HTTP"
+    }
+  ],
+  "cases": [
+    {
+      "id": "efetivo_2017_proveniencia_incompleta",
+      "dataset": "censo_agropecuario",
+      "file": "../ibge/censo_agro_efetivo_sample/response.csv",
+      "key_columns": [
+        "ano",
+        "localidade_cod",
+        "tema",
+        "categoria",
+        "variavel"
+      ],
+      "expected_keys": [
+        {
+          "ano": 2017,
+          "localidade_cod": 35,
+          "tema": "efetivo_rebanho",
+          "categoria": "Bovinos",
+          "variavel": "cabecas"
+        },
+        {
+          "ano": 2017,
+          "localidade_cod": 35,
+          "tema": "efetivo_rebanho",
+          "categoria": "Bovinos",
+          "variavel": "estabelecimentos"
+        },
+        {
+          "ano": 2017,
+          "localidade_cod": 51,
+          "tema": "efetivo_rebanho",
+          "categoria": "Bovinos",
+          "variavel": "cabecas"
+        },
+        {
+          "ano": 2017,
+          "localidade_cod": 51,
+          "tema": "efetivo_rebanho",
+          "categoria": "Bovinos",
+          "variavel": "estabelecimentos"
+        },
+        {
+          "ano": 2017,
+          "localidade_cod": 52,
+          "tema": "efetivo_rebanho",
+          "categoria": "Bovinos",
+          "variavel": "cabecas"
+        },
+        {
+          "ano": 2017,
+          "localidade_cod": 52,
+          "tema": "efetivo_rebanho",
+          "categoria": "Bovinos",
+          "variavel": "estabelecimentos"
+        },
+        {
+          "ano": 2017,
+          "localidade_cod": 35,
+          "tema": "efetivo_rebanho",
+          "categoria": "Ovinos",
+          "variavel": "cabecas"
+        },
+        {
+          "ano": 2017,
+          "localidade_cod": 35,
+          "tema": "efetivo_rebanho",
+          "categoria": "Ovinos",
+          "variavel": "estabelecimentos"
+        },
+        {
+          "ano": 2017,
+          "localidade_cod": 51,
+          "tema": "efetivo_rebanho",
+          "categoria": "Ovinos",
+          "variavel": "cabecas"
+        },
+        {
+          "ano": 2017,
+          "localidade_cod": 51,
+          "tema": "efetivo_rebanho",
+          "categoria": "Ovinos",
+          "variavel": "estabelecimentos"
+        }
+      ],
+      "samples": [
+        {
+          "key": {
+            "ano": 2017,
+            "localidade_cod": 35,
+            "tema": "efetivo_rebanho",
+            "categoria": "Bovinos",
+            "variavel": "cabecas"
+          },
+          "column": "valor",
+          "value": 10391878.0,
+          "raw_cells": [
+            {
+              "csv_data_row": 1,
+              "column": "V",
+              "value": "10391878"
+            }
+          ],
+          "conversion": "valor/ano/categoria preservados; caixa de unidade canonica documentada"
+        },
+        {
+          "key": {
+            "ano": 2017,
+            "localidade_cod": 35,
+            "tema": "efetivo_rebanho",
+            "categoria": "Bovinos",
+            "variavel": "cabecas"
+          },
+          "column": "ano",
+          "value": 2017,
+          "raw_cells": [
+            {
+              "csv_data_row": 1,
+              "column": "D3C",
+              "value": "2017"
+            }
+          ],
+          "conversion": "valor/ano/categoria preservados; caixa de unidade canonica documentada"
+        },
+        {
+          "key": {
+            "ano": 2017,
+            "localidade_cod": 35,
+            "tema": "efetivo_rebanho",
+            "categoria": "Bovinos",
+            "variavel": "cabecas"
+          },
+          "column": "categoria",
+          "value": "Bovinos",
+          "raw_cells": [
+            {
+              "csv_data_row": 1,
+              "column": "D5N",
+              "value": "Bovinos"
+            }
+          ],
+          "conversion": "valor/ano/categoria preservados; caixa de unidade canonica documentada"
+        },
+        {
+          "key": {
+            "ano": 2017,
+            "localidade_cod": 35,
+            "tema": "efetivo_rebanho",
+            "categoria": "Bovinos",
+            "variavel": "cabecas"
+          },
+          "column": "unidade",
+          "value": "cabeças",
+          "raw_cells": [
+            {
+              "csv_data_row": 1,
+              "column": "MN",
+              "value": "Cabeças"
+            }
+          ],
+          "conversion": "valor/ano/categoria preservados; caixa de unidade canonica documentada"
+        },
+        {
+          "key": {
+            "ano": 2017,
+            "localidade_cod": 35,
+            "tema": "efetivo_rebanho",
+            "categoria": "Bovinos",
+            "variavel": "estabelecimentos"
+          },
+          "column": "valor",
+          "value": 131234.0,
+          "raw_cells": [
+            {
+              "csv_data_row": 2,
+              "column": "V",
+              "value": "131234"
+            }
+          ],
+          "conversion": "valor/ano/categoria preservados; caixa de unidade canonica documentada"
+        },
+        {
+          "key": {
+            "ano": 2017,
+            "localidade_cod": 35,
+            "tema": "efetivo_rebanho",
+            "categoria": "Bovinos",
+            "variavel": "estabelecimentos"
+          },
+          "column": "ano",
+          "value": 2017,
+          "raw_cells": [
+            {
+              "csv_data_row": 2,
+              "column": "D3C",
+              "value": "2017"
+            }
+          ],
+          "conversion": "valor/ano/categoria preservados; caixa de unidade canonica documentada"
+        },
+        {
+          "key": {
+            "ano": 2017,
+            "localidade_cod": 35,
+            "tema": "efetivo_rebanho",
+            "categoria": "Bovinos",
+            "variavel": "estabelecimentos"
+          },
+          "column": "categoria",
+          "value": "Bovinos",
+          "raw_cells": [
+            {
+              "csv_data_row": 2,
+              "column": "D5N",
+              "value": "Bovinos"
+            }
+          ],
+          "conversion": "valor/ano/categoria preservados; caixa de unidade canonica documentada"
+        },
+        {
+          "key": {
+            "ano": 2017,
+            "localidade_cod": 35,
+            "tema": "efetivo_rebanho",
+            "categoria": "Bovinos",
+            "variavel": "estabelecimentos"
+          },
+          "column": "unidade",
+          "value": "unidades",
+          "raw_cells": [
+            {
+              "csv_data_row": 2,
+              "column": "MN",
+              "value": "Unidades"
+            }
+          ],
+          "conversion": "valor/ano/categoria preservados; caixa de unidade canonica documentada"
+        },
+        {
+          "key": {
+            "ano": 2017,
+            "localidade_cod": 51,
+            "tema": "efetivo_rebanho",
+            "categoria": "Bovinos",
+            "variavel": "cabecas"
+          },
+          "column": "valor",
+          "value": 30199340.0,
+          "raw_cells": [
+            {
+              "csv_data_row": 3,
+              "column": "V",
+              "value": "30199340"
+            }
+          ],
+          "conversion": "valor/ano/categoria preservados; caixa de unidade canonica documentada"
+        },
+        {
+          "key": {
+            "ano": 2017,
+            "localidade_cod": 51,
+            "tema": "efetivo_rebanho",
+            "categoria": "Bovinos",
+            "variavel": "cabecas"
+          },
+          "column": "ano",
+          "value": 2017,
+          "raw_cells": [
+            {
+              "csv_data_row": 3,
+              "column": "D3C",
+              "value": "2017"
+            }
+          ],
+          "conversion": "valor/ano/categoria preservados; caixa de unidade canonica documentada"
+        },
+        {
+          "key": {
+            "ano": 2017,
+            "localidade_cod": 51,
+            "tema": "efetivo_rebanho",
+            "categoria": "Bovinos",
+            "variavel": "cabecas"
+          },
+          "column": "categoria",
+          "value": "Bovinos",
+          "raw_cells": [
+            {
+              "csv_data_row": 3,
+              "column": "D5N",
+              "value": "Bovinos"
+            }
+          ],
+          "conversion": "valor/ano/categoria preservados; caixa de unidade canonica documentada"
+        },
+        {
+          "key": {
+            "ano": 2017,
+            "localidade_cod": 51,
+            "tema": "efetivo_rebanho",
+            "categoria": "Bovinos",
+            "variavel": "cabecas"
+          },
+          "column": "unidade",
+          "value": "cabeças",
+          "raw_cells": [
+            {
+              "csv_data_row": 3,
+              "column": "MN",
+              "value": "Cabeças"
+            }
+          ],
+          "conversion": "valor/ano/categoria preservados; caixa de unidade canonica documentada"
+        },
+        {
+          "key": {
+            "ano": 2017,
+            "localidade_cod": 51,
+            "tema": "efetivo_rebanho",
+            "categoria": "Bovinos",
+            "variavel": "estabelecimentos"
+          },
+          "column": "valor",
+          "value": 87560.0,
+          "raw_cells": [
+            {
+              "csv_data_row": 4,
+              "column": "V",
+              "value": "87560"
+            }
+          ],
+          "conversion": "valor/ano/categoria preservados; caixa de unidade canonica documentada"
+        },
+        {
+          "key": {
+            "ano": 2017,
+            "localidade_cod": 51,
+            "tema": "efetivo_rebanho",
+            "categoria": "Bovinos",
+            "variavel": "estabelecimentos"
+          },
+          "column": "ano",
+          "value": 2017,
+          "raw_cells": [
+            {
+              "csv_data_row": 4,
+              "column": "D3C",
+              "value": "2017"
+            }
+          ],
+          "conversion": "valor/ano/categoria preservados; caixa de unidade canonica documentada"
+        },
+        {
+          "key": {
+            "ano": 2017,
+            "localidade_cod": 51,
+            "tema": "efetivo_rebanho",
+            "categoria": "Bovinos",
+            "variavel": "estabelecimentos"
+          },
+          "column": "categoria",
+          "value": "Bovinos",
+          "raw_cells": [
+            {
+              "csv_data_row": 4,
+              "column": "D5N",
+              "value": "Bovinos"
+            }
+          ],
+          "conversion": "valor/ano/categoria preservados; caixa de unidade canonica documentada"
+        },
+        {
+          "key": {
+            "ano": 2017,
+            "localidade_cod": 51,
+            "tema": "efetivo_rebanho",
+            "categoria": "Bovinos",
+            "variavel": "estabelecimentos"
+          },
+          "column": "unidade",
+          "value": "unidades",
+          "raw_cells": [
+            {
+              "csv_data_row": 4,
+              "column": "MN",
+              "value": "Unidades"
+            }
+          ],
+          "conversion": "valor/ano/categoria preservados; caixa de unidade canonica documentada"
+        },
+        {
+          "key": {
+            "ano": 2017,
+            "localidade_cod": 52,
+            "tema": "efetivo_rebanho",
+            "categoria": "Bovinos",
+            "variavel": "cabecas"
+          },
+          "column": "valor",
+          "value": 14430243.0,
+          "raw_cells": [
+            {
+              "csv_data_row": 5,
+              "column": "V",
+              "value": "14430243"
+            }
+          ],
+          "conversion": "valor/ano/categoria preservados; caixa de unidade canonica documentada"
+        },
+        {
+          "key": {
+            "ano": 2017,
+            "localidade_cod": 52,
+            "tema": "efetivo_rebanho",
+            "categoria": "Bovinos",
+            "variavel": "cabecas"
+          },
+          "column": "ano",
+          "value": 2017,
+          "raw_cells": [
+            {
+              "csv_data_row": 5,
+              "column": "D3C",
+              "value": "2017"
+            }
+          ],
+          "conversion": "valor/ano/categoria preservados; caixa de unidade canonica documentada"
+        },
+        {
+          "key": {
+            "ano": 2017,
+            "localidade_cod": 52,
+            "tema": "efetivo_rebanho",
+            "categoria": "Bovinos",
+            "variavel": "cabecas"
+          },
+          "column": "categoria",
+          "value": "Bovinos",
+          "raw_cells": [
+            {
+              "csv_data_row": 5,
+              "column": "D5N",
+              "value": "Bovinos"
+            }
+          ],
+          "conversion": "valor/ano/categoria preservados; caixa de unidade canonica documentada"
+        },
+        {
+          "key": {
+            "ano": 2017,
+            "localidade_cod": 52,
+            "tema": "efetivo_rebanho",
+            "categoria": "Bovinos",
+            "variavel": "cabecas"
+          },
+          "column": "unidade",
+          "value": "cabeças",
+          "raw_cells": [
+            {
+              "csv_data_row": 5,
+              "column": "MN",
+              "value": "Cabeças"
+            }
+          ],
+          "conversion": "valor/ano/categoria preservados; caixa de unidade canonica documentada"
+        },
+        {
+          "key": {
+            "ano": 2017,
+            "localidade_cod": 52,
+            "tema": "efetivo_rebanho",
+            "categoria": "Bovinos",
+            "variavel": "estabelecimentos"
+          },
+          "column": "valor",
+          "value": 92150.0,
+          "raw_cells": [
+            {
+              "csv_data_row": 6,
+              "column": "V",
+              "value": "92150"
+            }
+          ],
+          "conversion": "valor/ano/categoria preservados; caixa de unidade canonica documentada"
+        },
+        {
+          "key": {
+            "ano": 2017,
+            "localidade_cod": 52,
+            "tema": "efetivo_rebanho",
+            "categoria": "Bovinos",
+            "variavel": "estabelecimentos"
+          },
+          "column": "ano",
+          "value": 2017,
+          "raw_cells": [
+            {
+              "csv_data_row": 6,
+              "column": "D3C",
+              "value": "2017"
+            }
+          ],
+          "conversion": "valor/ano/categoria preservados; caixa de unidade canonica documentada"
+        },
+        {
+          "key": {
+            "ano": 2017,
+            "localidade_cod": 52,
+            "tema": "efetivo_rebanho",
+            "categoria": "Bovinos",
+            "variavel": "estabelecimentos"
+          },
+          "column": "categoria",
+          "value": "Bovinos",
+          "raw_cells": [
+            {
+              "csv_data_row": 6,
+              "column": "D5N",
+              "value": "Bovinos"
+            }
+          ],
+          "conversion": "valor/ano/categoria preservados; caixa de unidade canonica documentada"
+        },
+        {
+          "key": {
+            "ano": 2017,
+            "localidade_cod": 52,
+            "tema": "efetivo_rebanho",
+            "categoria": "Bovinos",
+            "variavel": "estabelecimentos"
+          },
+          "column": "unidade",
+          "value": "unidades",
+          "raw_cells": [
+            {
+              "csv_data_row": 6,
+              "column": "MN",
+              "value": "Unidades"
+            }
+          ],
+          "conversion": "valor/ano/categoria preservados; caixa de unidade canonica documentada"
+        },
+        {
+          "key": {
+            "ano": 2017,
+            "localidade_cod": 35,
+            "tema": "efetivo_rebanho",
+            "categoria": "Ovinos",
+            "variavel": "cabecas"
+          },
+          "column": "valor",
+          "value": 1558648.0,
+          "raw_cells": [
+            {
+              "csv_data_row": 7,
+              "column": "V",
+              "value": "1558648"
+            }
+          ],
+          "conversion": "valor/ano/categoria preservados; caixa de unidade canonica documentada"
+        },
+        {
+          "key": {
+            "ano": 2017,
+            "localidade_cod": 35,
+            "tema": "efetivo_rebanho",
+            "categoria": "Ovinos",
+            "variavel": "cabecas"
+          },
+          "column": "ano",
+          "value": 2017,
+          "raw_cells": [
+            {
+              "csv_data_row": 7,
+              "column": "D3C",
+              "value": "2017"
+            }
+          ],
+          "conversion": "valor/ano/categoria preservados; caixa de unidade canonica documentada"
+        },
+        {
+          "key": {
+            "ano": 2017,
+            "localidade_cod": 35,
+            "tema": "efetivo_rebanho",
+            "categoria": "Ovinos",
+            "variavel": "cabecas"
+          },
+          "column": "categoria",
+          "value": "Ovinos",
+          "raw_cells": [
+            {
+              "csv_data_row": 7,
+              "column": "D5N",
+              "value": "Ovinos"
+            }
+          ],
+          "conversion": "valor/ano/categoria preservados; caixa de unidade canonica documentada"
+        },
+        {
+          "key": {
+            "ano": 2017,
+            "localidade_cod": 35,
+            "tema": "efetivo_rebanho",
+            "categoria": "Ovinos",
+            "variavel": "cabecas"
+          },
+          "column": "unidade",
+          "value": "cabeças",
+          "raw_cells": [
+            {
+              "csv_data_row": 7,
+              "column": "MN",
+              "value": "Cabeças"
+            }
+          ],
+          "conversion": "valor/ano/categoria preservados; caixa de unidade canonica documentada"
+        },
+        {
+          "key": {
+            "ano": 2017,
+            "localidade_cod": 35,
+            "tema": "efetivo_rebanho",
+            "categoria": "Ovinos",
+            "variavel": "estabelecimentos"
+          },
+          "column": "valor",
+          "value": 12340.0,
+          "raw_cells": [
+            {
+              "csv_data_row": 8,
+              "column": "V",
+              "value": "12340"
+            }
+          ],
+          "conversion": "valor/ano/categoria preservados; caixa de unidade canonica documentada"
+        },
+        {
+          "key": {
+            "ano": 2017,
+            "localidade_cod": 35,
+            "tema": "efetivo_rebanho",
+            "categoria": "Ovinos",
+            "variavel": "estabelecimentos"
+          },
+          "column": "ano",
+          "value": 2017,
+          "raw_cells": [
+            {
+              "csv_data_row": 8,
+              "column": "D3C",
+              "value": "2017"
+            }
+          ],
+          "conversion": "valor/ano/categoria preservados; caixa de unidade canonica documentada"
+        },
+        {
+          "key": {
+            "ano": 2017,
+            "localidade_cod": 35,
+            "tema": "efetivo_rebanho",
+            "categoria": "Ovinos",
+            "variavel": "estabelecimentos"
+          },
+          "column": "categoria",
+          "value": "Ovinos",
+          "raw_cells": [
+            {
+              "csv_data_row": 8,
+              "column": "D5N",
+              "value": "Ovinos"
+            }
+          ],
+          "conversion": "valor/ano/categoria preservados; caixa de unidade canonica documentada"
+        },
+        {
+          "key": {
+            "ano": 2017,
+            "localidade_cod": 35,
+            "tema": "efetivo_rebanho",
+            "categoria": "Ovinos",
+            "variavel": "estabelecimentos"
+          },
+          "column": "unidade",
+          "value": "unidades",
+          "raw_cells": [
+            {
+              "csv_data_row": 8,
+              "column": "MN",
+              "value": "Unidades"
+            }
+          ],
+          "conversion": "valor/ano/categoria preservados; caixa de unidade canonica documentada"
+        },
+        {
+          "key": {
+            "ano": 2017,
+            "localidade_cod": 51,
+            "tema": "efetivo_rebanho",
+            "categoria": "Ovinos",
+            "variavel": "cabecas"
+          },
+          "column": "valor",
+          "value": 256890.0,
+          "raw_cells": [
+            {
+              "csv_data_row": 9,
+              "column": "V",
+              "value": "256890"
+            }
+          ],
+          "conversion": "valor/ano/categoria preservados; caixa de unidade canonica documentada"
+        },
+        {
+          "key": {
+            "ano": 2017,
+            "localidade_cod": 51,
+            "tema": "efetivo_rebanho",
+            "categoria": "Ovinos",
+            "variavel": "cabecas"
+          },
+          "column": "ano",
+          "value": 2017,
+          "raw_cells": [
+            {
+              "csv_data_row": 9,
+              "column": "D3C",
+              "value": "2017"
+            }
+          ],
+          "conversion": "valor/ano/categoria preservados; caixa de unidade canonica documentada"
+        },
+        {
+          "key": {
+            "ano": 2017,
+            "localidade_cod": 51,
+            "tema": "efetivo_rebanho",
+            "categoria": "Ovinos",
+            "variavel": "cabecas"
+          },
+          "column": "categoria",
+          "value": "Ovinos",
+          "raw_cells": [
+            {
+              "csv_data_row": 9,
+              "column": "D5N",
+              "value": "Ovinos"
+            }
+          ],
+          "conversion": "valor/ano/categoria preservados; caixa de unidade canonica documentada"
+        },
+        {
+          "key": {
+            "ano": 2017,
+            "localidade_cod": 51,
+            "tema": "efetivo_rebanho",
+            "categoria": "Ovinos",
+            "variavel": "cabecas"
+          },
+          "column": "unidade",
+          "value": "cabeças",
+          "raw_cells": [
+            {
+              "csv_data_row": 9,
+              "column": "MN",
+              "value": "Cabeças"
+            }
+          ],
+          "conversion": "valor/ano/categoria preservados; caixa de unidade canonica documentada"
+        },
+        {
+          "key": {
+            "ano": 2017,
+            "localidade_cod": 51,
+            "tema": "efetivo_rebanho",
+            "categoria": "Ovinos",
+            "variavel": "estabelecimentos"
+          },
+          "column": "valor",
+          "value": 4500.0,
+          "raw_cells": [
+            {
+              "csv_data_row": 10,
+              "column": "V",
+              "value": "4500"
+            }
+          ],
+          "conversion": "valor/ano/categoria preservados; caixa de unidade canonica documentada"
+        },
+        {
+          "key": {
+            "ano": 2017,
+            "localidade_cod": 51,
+            "tema": "efetivo_rebanho",
+            "categoria": "Ovinos",
+            "variavel": "estabelecimentos"
+          },
+          "column": "ano",
+          "value": 2017,
+          "raw_cells": [
+            {
+              "csv_data_row": 10,
+              "column": "D3C",
+              "value": "2017"
+            }
+          ],
+          "conversion": "valor/ano/categoria preservados; caixa de unidade canonica documentada"
+        },
+        {
+          "key": {
+            "ano": 2017,
+            "localidade_cod": 51,
+            "tema": "efetivo_rebanho",
+            "categoria": "Ovinos",
+            "variavel": "estabelecimentos"
+          },
+          "column": "categoria",
+          "value": "Ovinos",
+          "raw_cells": [
+            {
+              "csv_data_row": 10,
+              "column": "D5N",
+              "value": "Ovinos"
+            }
+          ],
+          "conversion": "valor/ano/categoria preservados; caixa de unidade canonica documentada"
+        },
+        {
+          "key": {
+            "ano": 2017,
+            "localidade_cod": 51,
+            "tema": "efetivo_rebanho",
+            "categoria": "Ovinos",
+            "variavel": "estabelecimentos"
+          },
+          "column": "unidade",
+          "value": "unidades",
+          "raw_cells": [
+            {
+              "csv_data_row": 10,
+              "column": "MN",
+              "value": "Unidades"
+            }
+          ],
+          "conversion": "valor/ano/categoria preservados; caixa de unidade canonica documentada"
+        }
+      ],
+      "null_columns": [],
+      "absent_rows": [],
+      "boundary": {
+        "first": {
+          "NC": "3",
+          "NN": "Unidade da Federação",
+          "MC": "24",
+          "MN": "Cabeças",
+          "V": "10391878",
+          "D1C": "35",
+          "D1N": "São Paulo",
+          "D2C": "2209",
+          "D2N": "Número de cabeças",
+          "D3C": "2017",
+          "D3N": "2017",
+          "D4C": "46302",
+          "D4N": "Total",
+          "D5C": "110056",
+          "D5N": "Bovinos",
+          "D6C": "46502",
+          "D6N": "Total"
+        },
+        "last": {
+          "NC": "3",
+          "NN": "Unidade da Federação",
+          "MC": "1020",
+          "MN": "Unidades",
+          "V": "4500",
+          "D1C": "51",
+          "D1N": "Mato Grosso",
+          "D2C": "10010",
+          "D2N": "Número de estabelecimentos agropecuários com efetivo da pecuária",
+          "D3C": "2017",
+          "D3N": "2017",
+          "D4C": "46302",
+          "D4N": "Total",
+          "D5C": "110062",
+          "D5N": "Ovinos",
+          "D6C": "46502",
+          "D6N": "Total"
+        },
+        "records": 10
+      },
+      "coverage": {
+        "N1": "metadados originais pendentes",
+        "N2_source_certified": false,
+        "N2_local": "CSV legado sem corpo HTTP/recibo",
+        "N3": "nao aplicavel"
+      },
+      "dataset_replay_note": "323/1995 retorna resposta vazia SINTETICA somente para isolar 2017; nao certifica ausencia de publicacao em 1995"
+    }
+  ]
+}

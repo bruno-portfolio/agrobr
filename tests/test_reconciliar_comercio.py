@@ -15,7 +15,7 @@ from scripts import reconciliar_comercio as reconciliation
 
 GOLDEN = Path(__file__).parent / "golden_data"
 MANIFEST = json.loads(
-    (GOLDEN / "reconciliacao_r8_20260918/manifest.json").read_text(encoding="utf-8")
+    (GOLDEN / "reconciliacao_comercio_exterior_20260918/manifest.json").read_text(encoding="utf-8")
 )
 WORKBOOK = (GOLDEN / "abiove/exportacao_sample/response.xlsx").read_bytes()
 NCM_OFICIAL = reconciliation.ncm_dictionary(

@@ -14,7 +14,7 @@ from agrobr.utils import time as time_utils
 
 R9_SICOR = (
     Path(__file__).parents[1]
-    / "golden_data/reconciliacao_r9_20260918/sicor/sicor_custeio_soja_2024_2025_MT.json"
+    / "golden_data/reconciliacao_mercados_credito_20260918/sicor/sicor_custeio_soja_2024_2025_MT.json"
 )
 REGISTROS = json.loads(R9_SICOR.read_bytes())["value"]
 

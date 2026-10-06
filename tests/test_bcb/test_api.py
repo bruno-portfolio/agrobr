@@ -19,7 +19,7 @@ ORACULO = Path(__file__).parents[1] / "golden_data/bcb/oraculo_20260923"
 ORACULO_MANIFEST = json.loads((ORACULO / "manifest.json").read_text(encoding="utf-8"))
 R9_SICOR = (
     Path(__file__).parents[1]
-    / "golden_data/reconciliacao_r9_20260918/sicor/sicor_custeio_soja_2024_2025_MT.json"
+    / "golden_data/reconciliacao_mercados_credito_20260918/sicor/sicor_custeio_soja_2024_2025_MT.json"
 )
 COLUNAS = [
     "safra",

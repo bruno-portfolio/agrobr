@@ -5,7 +5,7 @@ import pytest
 
 from agrobr import antaq, datasets
 from agrobr.exceptions import InvalidParameterError, ParseError
-from tests.test_antaq.test_reconciliacao_r13 import _corpo, install_replay_antaq
+from tests.test_antaq.test_reconciliacao import _corpo, install_replay_antaq
 
 
 @pytest.mark.parametrize("consulta", [antaq.movimentacao, datasets.movimentacao_portuaria])

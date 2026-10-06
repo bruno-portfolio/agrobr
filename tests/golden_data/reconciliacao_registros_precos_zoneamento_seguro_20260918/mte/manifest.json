@@ -1,0 +1,5171 @@
+{
+  "manifest_schema": "agrobr.reconciliation.r11.family",
+  "format_version": 1,
+  "schema_document": "README.md",
+  "files": [
+    {
+      "file": "mte_csv_012.html.gz",
+      "bytes": 22531,
+      "sha256": "8c9252b2adb4e8a1c2586045998c136363cab62b581f1dece7d6bdd8d0247e2b",
+      "decoded_sha256": "19fd8c952a52e805d787e29e610c3325bf2250ad044693c8aa280f32914a5865",
+      "decoded_bytes": 159383,
+      "original": {
+        "case": "mte_csv",
+        "requested_url": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/inspecao-do-trabalho/areas-de-atuacao/combate-ao-trabalho-escravo-e-analogo-ao-de-escravo",
+        "url": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/inspecao-do-trabalho/areas-de-atuacao/combate-ao-trabalho-escravo-e-analogo-ao-de-escravo",
+        "method": "GET",
+        "status": 200,
+        "fetched_at": "2026-09-18T16:04:43.157934+00:00",
+        "bytes": 159383,
+        "sha256": "19fd8c952a52e805d787e29e610c3325bf2250ad044693c8aa280f32914a5865",
+        "file": "mte_csv_012.html",
+        "headers": {
+          "date": "Fri, 18 Sep 2026 15:12:35 GMT",
+          "content-type": "text/html;charset=utf-8",
+          "content-encoding": "gzip",
+          "content-length": "22594"
+        }
+      }
+    },
+    {
+      "file": "mte_csv_013.csv.gz",
+      "bytes": 26809,
+      "sha256": "233272f08cd8eb2246e4c50a6e7cf12cbc0336d3cef68676bf8c7d3c1913d2ed",
+      "decoded_sha256": "4a4f81cbf26740b8050d5b0c6af5ddd62868ad207becef3135ba2e4df728b846",
+      "decoded_bytes": 81270,
+      "original": {
+        "case": "mte_csv",
+        "requested_url": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/inspecao-do-trabalho/areas-de-atuacao/cadastro_de_empregadores.csv",
+        "url": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/inspecao-do-trabalho/areas-de-atuacao/cadastro_de_empregadores.csv",
+        "method": "GET",
+        "status": 200,
+        "fetched_at": "2026-09-18T16:04:45.264180+00:00",
+        "bytes": 87566,
+        "sha256": "3a9c4d2c71b266706502b1e80a1de1407654e422f61cfa96d375f62dea06fb63",
+        "file": "mte_csv_013.csv",
+        "headers": {
+          "date": "Fri, 18 Sep 2026 15:14:25 GMT",
+          "content-length": "87566",
+          "content-type": "text/csv"
+        }
+      },
+      "masked": true
+    },
+    {
+      "file": "mte_csv_014.txt.gz",
+      "bytes": 35117,
+      "sha256": "37d2ec237aeae4f5a568f13cf7d8f72ba8d9c33700de797cac76adb8ef482d88",
+      "decoded_sha256": "f1a4b4fdd73798fab3e63541a7c793a213acfa7c47e355c0ba65e1f5d4d81880",
+      "decoded_bytes": 330375,
+      "original": {
+        "case": "mte_csv",
+        "requested_url": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/inspecao-do-trabalho/areas-de-atuacao/cadastro_de_empregadores.txt",
+        "url": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/inspecao-do-trabalho/areas-de-atuacao/cadastro_de_empregadores.txt",
+        "method": "GET",
+        "status": 200,
+        "fetched_at": "2026-09-18T16:04:47.317225+00:00",
+        "bytes": 330375,
+        "sha256": "b0689d77c89144848c17be74b47af6dfca7c782a1008672a33b3141ca9670085",
+        "file": "mte_csv_014.txt",
+        "headers": {
+          "date": "Fri, 18 Sep 2026 13:27:58 GMT",
+          "content-type": "text/plain",
+          "content-encoding": "gzip",
+          "content-length": "42834"
+        }
+      },
+      "masked": true
+    },
+    {
+      "file": "mte_pdf_015.html.gz",
+      "bytes": 22531,
+      "sha256": "8c9252b2adb4e8a1c2586045998c136363cab62b581f1dece7d6bdd8d0247e2b",
+      "decoded_sha256": "19fd8c952a52e805d787e29e610c3325bf2250ad044693c8aa280f32914a5865",
+      "decoded_bytes": 159383,
+      "original": {
+        "case": "mte_pdf",
+        "requested_url": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/inspecao-do-trabalho/areas-de-atuacao/combate-ao-trabalho-escravo-e-analogo-ao-de-escravo",
+        "url": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/inspecao-do-trabalho/areas-de-atuacao/combate-ao-trabalho-escravo-e-analogo-ao-de-escravo",
+        "method": "GET",
+        "status": 200,
+        "fetched_at": "2026-09-18T16:04:49.429272+00:00",
+        "bytes": 159383,
+        "sha256": "19fd8c952a52e805d787e29e610c3325bf2250ad044693c8aa280f32914a5865",
+        "file": "mte_pdf_015.html",
+        "headers": {
+          "date": "Fri, 18 Sep 2026 15:12:35 GMT",
+          "content-type": "text/html;charset=utf-8",
+          "content-encoding": "gzip",
+          "content-length": "22594"
+        }
+      }
+    },
+    {
+      "file": "mte_pdf_016.pdf.gz",
+      "bytes": 458381,
+      "sha256": "74bde52c28d042f29ebedad300b180cc59448ba4476bf940bae9eb570d1278d5",
+      "decoded_sha256": "41f992fa0f9a83acd0d8199b52820165c1947564815402b1b2b426121f2edae6",
+      "decoded_bytes": 487191,
+      "original": {
+        "case": "mte_pdf",
+        "requested_url": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/inspecao-do-trabalho/areas-de-atuacao/cadastro_de_empregadores.pdf",
+        "url": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/inspecao-do-trabalho/areas-de-atuacao/cadastro_de_empregadores.pdf",
+        "method": "GET",
+        "status": 200,
+        "fetched_at": "2026-09-18T16:04:51.629322+00:00",
+        "bytes": 496146,
+        "sha256": "4e6d71ce78820323d73613ef437d6c1e69ca7fd459eb94f6f12639fcea64f7b4",
+        "file": "mte_pdf_016.pdf",
+        "headers": {
+          "date": "Thu, 17 Sep 2026 18:34:12 GMT",
+          "content-length": "496146",
+          "content-type": "application/pdf"
+        }
+      },
+      "masked": true
+    }
+  ],
+  "resources": [
+    {
+      "id": "csv",
+      "format": "csv",
+      "body_file": "mte_csv_013.csv.gz",
+      "companion_file": "mte_csv_014.txt.gz",
+      "encoding": "cp1252",
+      "headers": [
+        "ID",
+        "Ano da ação fiscal",
+        "UF",
+        "Empregador",
+        "CNPJ/CPF",
+        "Estabelecimento",
+        "Trabalhadores envolvidos",
+        "CNAE",
+        "Decisão administrativa de procedência",
+        "Inclusão no Cadastro de Empregadores"
+      ],
+      "oracle": {
+        "file": "csv_oracle.json.gz",
+        "bytes": 38396,
+        "sha256": "dcaca29942231d4af2a17c77060874cb6b679d5a39d125488d6b6feca420cace",
+        "decoded_sha256": "f062051bdca7b3d2995b8307abe86ed06d57c18a141353639074d129a19b71fb",
+        "rows": 579,
+        "columns": [
+          "empregador",
+          "cpf_cnpj",
+          "estabelecimento",
+          "uf",
+          "cnae",
+          "data_inclusao",
+          "trabalhadores_resgatados",
+          "ano_acao_fiscal",
+          "id_registro",
+          "data_decisao",
+          "data_atualizacao",
+          "data_inclusao_texto"
+        ]
+      }
+    },
+    {
+      "id": "pdf",
+      "format": "pdf",
+      "body_file": "mte_pdf_016.pdf.gz",
+      "pages": [
+        {
+          "page": 1,
+          "header": [
+            "ID",
+            "Ano da\nação\nfiscal",
+            "UF",
+            "Empregador",
+            "CNPJ/CPF",
+            "Estabelecimento",
+            "Trabalhadores\nenvolvidos",
+            "CNAE",
+            "Decisão\nadministrativa de\nprocedência",
+            "Inclusão no\nCadastro de\nEmpregadores"
+          ],
+          "records": 13,
+          "page_bbox": [
+            0,
+            0,
+            842.0,
+            595.0
+          ]
+        },
+        {
+          "page": 2,
+          "header": [
+            "ID",
+            "Ano da\nação\nfiscal",
+            "UF",
+            "Empregador",
+            "CNPJ/CPF",
+            "Estabelecimento",
+            "Trabalhadores\nenvolvidos",
+            "CNAE",
+            "Decisão\nadministrativa de\nprocedência",
+            "Inclusão no\nCadastro de\nEmpregadores"
+          ],
+          "records": 13,
+          "page_bbox": [
+            0,
+            0,
+            842.0,
+            595.0
+          ]
+        },
+        {
+          "page": 3,
+          "header": [
+            "ID",
+            "Ano da\nação\nfiscal",
+            "UF",
+            "Empregador",
+            "CNPJ/CPF",
+            "Estabelecimento",
+            "Trabalhadores\nenvolvidos",
+            "CNAE",
+            "Decisão\nadministrativa de\nprocedência",
+            "Inclusão no\nCadastro de\nEmpregadores"
+          ],
+          "records": 13,
+          "page_bbox": [
+            0,
+            0,
+            842.0,
+            595.0
+          ]
+        },
+        {
+          "page": 4,
+          "header": [
+            "ID",
+            "Ano da\nação\nfiscal",
+            "UF",
+            "Empregador",
+            "CNPJ/CPF",
+            "Estabelecimento",
+            "Trabalhadores\nenvolvidos",
+            "CNAE",
+            "Decisão\nadministrativa de\nprocedência",
+            "Inclusão no\nCadastro de\nEmpregadores"
+          ],
+          "records": 13,
+          "page_bbox": [
+            0,
+            0,
+            842.0,
+            595.0
+          ]
+        },
+        {
+          "page": 5,
+          "header": [
+            "ID",
+            "Ano da\nação\nfiscal",
+            "UF",
+            "Empregador",
+            "CNPJ/CPF",
+            "Estabelecimento",
+            "Trabalhadores\nenvolvidos",
+            "CNAE",
+            "Decisão\nadministrativa de\nprocedência",
+            "Inclusão no\nCadastro de\nEmpregadores"
+          ],
+          "records": 13,
+          "page_bbox": [
+            0,
+            0,
+            842.0,
+            595.0
+          ]
+        },
+        {
+          "page": 6,
+          "header": [
+            "ID",
+            "Ano da\nação\nfiscal",
+            "UF",
+            "Empregador",
+            "CNPJ/CPF",
+            "Estabelecimento",
+            "Trabalhadores\nenvolvidos",
+            "CNAE",
+            "Decisão\nadministrativa de\nprocedência",
+            "Inclusão no\nCadastro de\nEmpregadores"
+          ],
+          "records": 13,
+          "page_bbox": [
+            0,
+            0,
+            842.0,
+            595.0
+          ]
+        },
+        {
+          "page": 7,
+          "header": [
+            "ID",
+            "Ano da\nação\nfiscal",
+            "UF",
+            "Empregador",
+            "CNPJ/CPF",
+            "Estabelecimento",
+            "Trabalhadores\nenvolvidos",
+            "CNAE",
+            "Decisão\nadministrativa de\nprocedência",
+            "Inclusão no\nCadastro de\nEmpregadores"
+          ],
+          "records": 13,
+          "page_bbox": [
+            0,
+            0,
+            842.0,
+            595.0
+          ]
+        },
+        {
+          "page": 8,
+          "header": [
+            "ID",
+            "Ano da\nação\nfiscal",
+            "UF",
+            "Empregador",
+            "CNPJ/CPF",
+            "Estabelecimento",
+            "Trabalhadores\nenvolvidos",
+            "CNAE",
+            "Decisão\nadministrativa de\nprocedência",
+            "Inclusão no\nCadastro de\nEmpregadores"
+          ],
+          "records": 13,
+          "page_bbox": [
+            0,
+            0,
+            842.0,
+            595.0
+          ]
+        },
+        {
+          "page": 9,
+          "header": [
+            "ID",
+            "Ano da\nação\nfiscal",
+            "UF",
+            "Empregador",
+            "CNPJ/CPF",
+            "Estabelecimento",
+            "Trabalhadores\nenvolvidos",
+            "CNAE",
+            "Decisão\nadministrativa de\nprocedência",
+            "Inclusão no\nCadastro de\nEmpregadores"
+          ],
+          "records": 13,
+          "page_bbox": [
+            0,
+            0,
+            842.0,
+            595.0
+          ]
+        },
+        {
+          "page": 10,
+          "header": [
+            "ID",
+            "Ano da\nação\nfiscal",
+            "UF",
+            "Empregador",
+            "CNPJ/CPF",
+            "Estabelecimento",
+            "Trabalhadores\nenvolvidos",
+            "CNAE",
+            "Decisão\nadministrativa de\nprocedência",
+            "Inclusão no\nCadastro de\nEmpregadores"
+          ],
+          "records": 13,
+          "page_bbox": [
+            0,
+            0,
+            842.0,
+            595.0
+          ]
+        },
+        {
+          "page": 11,
+          "header": [
+            "ID",
+            "Ano da\nação\nfiscal",
+            "UF",
+            "Empregador",
+            "CNPJ/CPF",
+            "Estabelecimento",
+            "Trabalhadores\nenvolvidos",
+            "CNAE",
+            "Decisão\nadministrativa de\nprocedência",
+            "Inclusão no\nCadastro de\nEmpregadores"
+          ],
+          "records": 13,
+          "page_bbox": [
+            0,
+            0,
+            842.0,
+            595.0
+          ]
+        },
+        {
+          "page": 12,
+          "header": [
+            "ID",
+            "Ano da\nação\nfiscal",
+            "UF",
+            "Empregador",
+            "CNPJ/CPF",
+            "Estabelecimento",
+            "Trabalhadores\nenvolvidos",
+            "CNAE",
+            "Decisão\nadministrativa de\nprocedência",
+            "Inclusão no\nCadastro de\nEmpregadores"
+          ],
+          "records": 13,
+          "page_bbox": [
+            0,
+            0,
+            842.0,
+            595.0
+          ]
+        },
+        {
+          "page": 13,
+          "header": [
+            "ID",
+            "Ano da\nação\nfiscal",
+            "UF",
+            "Empregador",
+            "CNPJ/CPF",
+            "Estabelecimento",
+            "Trabalhadores\nenvolvidos",
+            "CNAE",
+            "Decisão\nadministrativa de\nprocedência",
+            "Inclusão no\nCadastro de\nEmpregadores"
+          ],
+          "records": 13,
+          "page_bbox": [
+            0,
+            0,
+            842.0,
+            595.0
+          ]
+        },
+        {
+          "page": 14,
+          "header": [
+            "ID",
+            "Ano da\nação\nfiscal",
+            "UF",
+            "Empregador",
+            "CNPJ/CPF",
+            "Estabelecimento",
+            "Trabalhadores\nenvolvidos",
+            "CNAE",
+            "Decisão\nadministrativa de\nprocedência",
+            "Inclusão no\nCadastro de\nEmpregadores"
+          ],
+          "records": 13,
+          "page_bbox": [
+            0,
+            0,
+            842.0,
+            595.0
+          ]
+        },
+        {
+          "page": 15,
+          "header": [
+            "ID",
+            "Ano da\nação\nfiscal",
+            "UF",
+            "Empregador",
+            "CNPJ/CPF",
+            "Estabelecimento",
+            "Trabalhadores\nenvolvidos",
+            "CNAE",
+            "Decisão\nadministrativa de\nprocedência",
+            "Inclusão no\nCadastro de\nEmpregadores"
+          ],
+          "records": 13,
+          "page_bbox": [
+            0,
+            0,
+            842.0,
+            595.0
+          ]
+        },
+        {
+          "page": 16,
+          "header": [
+            "ID",
+            "Ano da\nação\nfiscal",
+            "UF",
+            "Empregador",
+            "CNPJ/CPF",
+            "Estabelecimento",
+            "Trabalhadores\nenvolvidos",
+            "CNAE",
+            "Decisão\nadministrativa de\nprocedência",
+            "Inclusão no\nCadastro de\nEmpregadores"
+          ],
+          "records": 13,
+          "page_bbox": [
+            0,
+            0,
+            842.0,
+            595.0
+          ]
+        },
+        {
+          "page": 17,
+          "header": [
+            "ID",
+            "Ano da\nação\nfiscal",
+            "UF",
+            "Empregador",
+            "CNPJ/CPF",
+            "Estabelecimento",
+            "Trabalhadores\nenvolvidos",
+            "CNAE",
+            "Decisão\nadministrativa de\nprocedência",
+            "Inclusão no\nCadastro de\nEmpregadores"
+          ],
+          "records": 13,
+          "page_bbox": [
+            0,
+            0,
+            842.0,
+            595.0
+          ]
+        },
+        {
+          "page": 18,
+          "header": [
+            "ID",
+            "Ano da\nação\nfiscal",
+            "UF",
+            "Empregador",
+            "CNPJ/CPF",
+            "Estabelecimento",
+            "Trabalhadores\nenvolvidos",
+            "CNAE",
+            "Decisão\nadministrativa de\nprocedência",
+            "Inclusão no\nCadastro de\nEmpregadores"
+          ],
+          "records": 13,
+          "page_bbox": [
+            0,
+            0,
+            842.0,
+            595.0
+          ]
+        },
+        {
+          "page": 19,
+          "header": [
+            "ID",
+            "Ano da\nação\nfiscal",
+            "UF",
+            "Empregador",
+            "CNPJ/CPF",
+            "Estabelecimento",
+            "Trabalhadores\nenvolvidos",
+            "CNAE",
+            "Decisão\nadministrativa de\nprocedência",
+            "Inclusão no\nCadastro de\nEmpregadores"
+          ],
+          "records": 13,
+          "page_bbox": [
+            0,
+            0,
+            842.0,
+            595.0
+          ]
+        },
+        {
+          "page": 20,
+          "header": [
+            "ID",
+            "Ano da\nação\nfiscal",
+            "UF",
+            "Empregador",
+            "CNPJ/CPF",
+            "Estabelecimento",
+            "Trabalhadores\nenvolvidos",
+            "CNAE",
+            "Decisão\nadministrativa de\nprocedência",
+            "Inclusão no\nCadastro de\nEmpregadores"
+          ],
+          "records": 13,
+          "page_bbox": [
+            0,
+            0,
+            842.0,
+            595.0
+          ]
+        },
+        {
+          "page": 21,
+          "header": [
+            "ID",
+            "Ano da\nação\nfiscal",
+            "UF",
+            "Empregador",
+            "CNPJ/CPF",
+            "Estabelecimento",
+            "Trabalhadores\nenvolvidos",
+            "CNAE",
+            "Decisão\nadministrativa de\nprocedência",
+            "Inclusão no\nCadastro de\nEmpregadores"
+          ],
+          "records": 13,
+          "page_bbox": [
+            0,
+            0,
+            842.0,
+            595.0
+          ]
+        },
+        {
+          "page": 22,
+          "header": [
+            "ID",
+            "Ano da\nação\nfiscal",
+            "UF",
+            "Empregador",
+            "CNPJ/CPF",
+            "Estabelecimento",
+            "Trabalhadores\nenvolvidos",
+            "CNAE",
+            "Decisão\nadministrativa de\nprocedência",
+            "Inclusão no\nCadastro de\nEmpregadores"
+          ],
+          "records": 13,
+          "page_bbox": [
+            0,
+            0,
+            842.0,
+            595.0
+          ]
+        },
+        {
+          "page": 23,
+          "header": [
+            "ID",
+            "Ano da\nação\nfiscal",
+            "UF",
+            "Empregador",
+            "CNPJ/CPF",
+            "Estabelecimento",
+            "Trabalhadores\nenvolvidos",
+            "CNAE",
+            "Decisão\nadministrativa de\nprocedência",
+            "Inclusão no\nCadastro de\nEmpregadores"
+          ],
+          "records": 13,
+          "page_bbox": [
+            0,
+            0,
+            842.0,
+            595.0
+          ]
+        },
+        {
+          "page": 24,
+          "header": [
+            "ID",
+            "Ano da\nação\nfiscal",
+            "UF",
+            "Empregador",
+            "CNPJ/CPF",
+            "Estabelecimento",
+            "Trabalhadores\nenvolvidos",
+            "CNAE",
+            "Decisão\nadministrativa de\nprocedência",
+            "Inclusão no\nCadastro de\nEmpregadores"
+          ],
+          "records": 13,
+          "page_bbox": [
+            0,
+            0,
+            842.0,
+            595.0
+          ]
+        },
+        {
+          "page": 25,
+          "header": [
+            "ID",
+            "Ano da\nação\nfiscal",
+            "UF",
+            "Empregador",
+            "CNPJ/CPF",
+            "Estabelecimento",
+            "Trabalhadores\nenvolvidos",
+            "CNAE",
+            "Decisão\nadministrativa de\nprocedência",
+            "Inclusão no\nCadastro de\nEmpregadores"
+          ],
+          "records": 13,
+          "page_bbox": [
+            0,
+            0,
+            842.0,
+            595.0
+          ]
+        },
+        {
+          "page": 26,
+          "header": [
+            "ID",
+            "Ano da\nação\nfiscal",
+            "UF",
+            "Empregador",
+            "CNPJ/CPF",
+            "Estabelecimento",
+            "Trabalhadores\nenvolvidos",
+            "CNAE",
+            "Decisão\nadministrativa de\nprocedência",
+            "Inclusão no\nCadastro de\nEmpregadores"
+          ],
+          "records": 13,
+          "page_bbox": [
+            0,
+            0,
+            842.0,
+            595.0
+          ]
+        },
+        {
+          "page": 27,
+          "header": [
+            "ID",
+            "Ano da\nação\nfiscal",
+            "UF",
+            "Empregador",
+            "CNPJ/CPF",
+            "Estabelecimento",
+            "Trabalhadores\nenvolvidos",
+            "CNAE",
+            "Decisão\nadministrativa de\nprocedência",
+            "Inclusão no\nCadastro de\nEmpregadores"
+          ],
+          "records": 13,
+          "page_bbox": [
+            0,
+            0,
+            842.0,
+            595.0
+          ]
+        },
+        {
+          "page": 28,
+          "header": [
+            "ID",
+            "Ano da\nação\nfiscal",
+            "UF",
+            "Empregador",
+            "CNPJ/CPF",
+            "Estabelecimento",
+            "Trabalhadores\nenvolvidos",
+            "CNAE",
+            "Decisão\nadministrativa de\nprocedência",
+            "Inclusão no\nCadastro de\nEmpregadores"
+          ],
+          "records": 13,
+          "page_bbox": [
+            0,
+            0,
+            842.0,
+            595.0
+          ]
+        },
+        {
+          "page": 29,
+          "header": [
+            "ID",
+            "Ano da\nação\nfiscal",
+            "UF",
+            "Empregador",
+            "CNPJ/CPF",
+            "Estabelecimento",
+            "Trabalhadores\nenvolvidos",
+            "CNAE",
+            "Decisão\nadministrativa de\nprocedência",
+            "Inclusão no\nCadastro de\nEmpregadores"
+          ],
+          "records": 13,
+          "page_bbox": [
+            0,
+            0,
+            842.0,
+            595.0
+          ]
+        },
+        {
+          "page": 30,
+          "header": [
+            "ID",
+            "Ano da\nação\nfiscal",
+            "UF",
+            "Empregador",
+            "CNPJ/CPF",
+            "Estabelecimento",
+            "Trabalhadores\nenvolvidos",
+            "CNAE",
+            "Decisão\nadministrativa de\nprocedência",
+            "Inclusão no\nCadastro de\nEmpregadores"
+          ],
+          "records": 13,
+          "page_bbox": [
+            0,
+            0,
+            842.0,
+            595.0
+          ]
+        },
+        {
+          "page": 31,
+          "header": [
+            "ID",
+            "Ano da\nação\nfiscal",
+            "UF",
+            "Empregador",
+            "CNPJ/CPF",
+            "Estabelecimento",
+            "Trabalhadores\nenvolvidos",
+            "CNAE",
+            "Decisão\nadministrativa de\nprocedência",
+            "Inclusão no\nCadastro de\nEmpregadores"
+          ],
+          "records": 13,
+          "page_bbox": [
+            0,
+            0,
+            842.0,
+            595.0
+          ]
+        },
+        {
+          "page": 32,
+          "header": [
+            "ID",
+            "Ano da\nação\nfiscal",
+            "UF",
+            "Empregador",
+            "CNPJ/CPF",
+            "Estabelecimento",
+            "Trabalhadores\nenvolvidos",
+            "CNAE",
+            "Decisão\nadministrativa de\nprocedência",
+            "Inclusão no\nCadastro de\nEmpregadores"
+          ],
+          "records": 13,
+          "page_bbox": [
+            0,
+            0,
+            842.0,
+            595.0
+          ]
+        },
+        {
+          "page": 33,
+          "header": [
+            "ID",
+            "Ano da\nação\nfiscal",
+            "UF",
+            "Empregador",
+            "CNPJ/CPF",
+            "Estabelecimento",
+            "Trabalhadores\nenvolvidos",
+            "CNAE",
+            "Decisão\nadministrativa de\nprocedência",
+            "Inclusão no\nCadastro de\nEmpregadores"
+          ],
+          "records": 13,
+          "page_bbox": [
+            0,
+            0,
+            842.0,
+            595.0
+          ]
+        },
+        {
+          "page": 34,
+          "header": [
+            "ID",
+            "Ano da\nação\nfiscal",
+            "UF",
+            "Empregador",
+            "CNPJ/CPF",
+            "Estabelecimento",
+            "Trabalhadores\nenvolvidos",
+            "CNAE",
+            "Decisão\nadministrativa de\nprocedência",
+            "Inclusão no\nCadastro de\nEmpregadores"
+          ],
+          "records": 13,
+          "page_bbox": [
+            0,
+            0,
+            842.0,
+            595.0
+          ]
+        },
+        {
+          "page": 35,
+          "header": [
+            "ID",
+            "Ano da\nação\nfiscal",
+            "UF",
+            "Empregador",
+            "CNPJ/CPF",
+            "Estabelecimento",
+            "Trabalhadores\nenvolvidos",
+            "CNAE",
+            "Decisão\nadministrativa de\nprocedência",
+            "Inclusão no\nCadastro de\nEmpregadores"
+          ],
+          "records": 13,
+          "page_bbox": [
+            0,
+            0,
+            842.0,
+            595.0
+          ]
+        },
+        {
+          "page": 36,
+          "header": [
+            "ID",
+            "Ano da\nação\nfiscal",
+            "UF",
+            "Empregador",
+            "CNPJ/CPF",
+            "Estabelecimento",
+            "Trabalhadores\nenvolvidos",
+            "CNAE",
+            "Decisão\nadministrativa de\nprocedência",
+            "Inclusão no\nCadastro de\nEmpregadores"
+          ],
+          "records": 13,
+          "page_bbox": [
+            0,
+            0,
+            842.0,
+            595.0
+          ]
+        },
+        {
+          "page": 37,
+          "header": [
+            "ID",
+            "Ano da\nação\nfiscal",
+            "UF",
+            "Empregador",
+            "CNPJ/CPF",
+            "Estabelecimento",
+            "Trabalhadores\nenvolvidos",
+            "CNAE",
+            "Decisão\nadministrativa de\nprocedência",
+            "Inclusão no\nCadastro de\nEmpregadores"
+          ],
+          "records": 13,
+          "page_bbox": [
+            0,
+            0,
+            842.0,
+            595.0
+          ]
+        },
+        {
+          "page": 38,
+          "header": [
+            "ID",
+            "Ano da\nação\nfiscal",
+            "UF",
+            "Empregador",
+            "CNPJ/CPF",
+            "Estabelecimento",
+            "Trabalhadores\nenvolvidos",
+            "CNAE",
+            "Decisão\nadministrativa de\nprocedência",
+            "Inclusão no\nCadastro de\nEmpregadores"
+          ],
+          "records": 13,
+          "page_bbox": [
+            0,
+            0,
+            842.0,
+            595.0
+          ]
+        },
+        {
+          "page": 39,
+          "header": [
+            "ID",
+            "Ano da\nação\nfiscal",
+            "UF",
+            "Empregador",
+            "CNPJ/CPF",
+            "Estabelecimento",
+            "Trabalhadores\nenvolvidos",
+            "CNAE",
+            "Decisão\nadministrativa de\nprocedência",
+            "Inclusão no\nCadastro de\nEmpregadores"
+          ],
+          "records": 13,
+          "page_bbox": [
+            0,
+            0,
+            842.0,
+            595.0
+          ]
+        },
+        {
+          "page": 40,
+          "header": [
+            "ID",
+            "Ano da\nação\nfiscal",
+            "UF",
+            "Empregador",
+            "CNPJ/CPF",
+            "Estabelecimento",
+            "Trabalhadores\nenvolvidos",
+            "CNAE",
+            "Decisão\nadministrativa de\nprocedência",
+            "Inclusão no\nCadastro de\nEmpregadores"
+          ],
+          "records": 13,
+          "page_bbox": [
+            0,
+            0,
+            842.0,
+            595.0
+          ]
+        },
+        {
+          "page": 41,
+          "header": [
+            "ID",
+            "Ano da\nação\nfiscal",
+            "UF",
+            "Empregador",
+            "CNPJ/CPF",
+            "Estabelecimento",
+            "Trabalhadores\nenvolvidos",
+            "CNAE",
+            "Decisão\nadministrativa de\nprocedência",
+            "Inclusão no\nCadastro de\nEmpregadores"
+          ],
+          "records": 13,
+          "page_bbox": [
+            0,
+            0,
+            842.0,
+            595.0
+          ]
+        },
+        {
+          "page": 42,
+          "header": [
+            "ID",
+            "Ano da\nação\nfiscal",
+            "UF",
+            "Empregador",
+            "CNPJ/CPF",
+            "Estabelecimento",
+            "Trabalhadores\nenvolvidos",
+            "CNAE",
+            "Decisão\nadministrativa de\nprocedência",
+            "Inclusão no\nCadastro de\nEmpregadores"
+          ],
+          "records": 13,
+          "page_bbox": [
+            0,
+            0,
+            842.0,
+            595.0
+          ]
+        },
+        {
+          "page": 43,
+          "header": [
+            "ID",
+            "Ano da\nação\nfiscal",
+            "UF",
+            "Empregador",
+            "CNPJ/CPF",
+            "Estabelecimento",
+            "Trabalhadores\nenvolvidos",
+            "CNAE",
+            "Decisão\nadministrativa de\nprocedência",
+            "Inclusão no\nCadastro de\nEmpregadores"
+          ],
+          "records": 13,
+          "page_bbox": [
+            0,
+            0,
+            842.0,
+            595.0
+          ]
+        },
+        {
+          "page": 44,
+          "header": [
+            "ID",
+            "Ano da\nação\nfiscal",
+            "UF",
+            "Empregador",
+            "CNPJ/CPF",
+            "Estabelecimento",
+            "Trabalhadores\nenvolvidos",
+            "CNAE",
+            "Decisão\nadministrativa de\nprocedência",
+            "Inclusão no\nCadastro de\nEmpregadores"
+          ],
+          "records": 13,
+          "page_bbox": [
+            0,
+            0,
+            842.0,
+            595.0
+          ]
+        },
+        {
+          "page": 45,
+          "header": [
+            "ID",
+            "Ano da\nação\nfiscal",
+            "UF",
+            "Empregador",
+            "CNPJ/CPF",
+            "Estabelecimento",
+            "Trabalhadores\nenvolvidos",
+            "CNAE",
+            "Decisão\nadministrativa de\nprocedência",
+            "Inclusão no\nCadastro de\nEmpregadores"
+          ],
+          "records": 7,
+          "page_bbox": [
+            0,
+            0,
+            842.0,
+            595.0
+          ]
+        }
+      ],
+      "column_boundaries": [
+        28.35,
+        52.27,
+        84.59,
+        107.91,
+        247.95,
+        331.54,
+        578.06,
+        630.18,
+        685.9,
+        749.42,
+        813.54
+      ],
+      "oracle": {
+        "file": "pdf_oracle.json.gz",
+        "bytes": 35984,
+        "sha256": "0411859cb138826abc3fb6c161bd1c38645db7e27270f1a6888287a597306823",
+        "decoded_sha256": "3be1d13c8d5a400e02d189fdb23f9a668561f5f053f89cf9ce078a64511907e9",
+        "rows": 579,
+        "columns": [
+          "empregador",
+          "cpf_cnpj",
+          "estabelecimento",
+          "uf",
+          "cnae",
+          "data_inclusao",
+          "trabalhadores_resgatados",
+          "ano_acao_fiscal",
+          "id_registro",
+          "data_decisao",
+          "data_atualizacao",
+          "data_inclusao_texto"
+        ]
+      }
+    }
+  ],
+  "cases": [
+    {
+      "id": "csv_all",
+      "resource": "csv",
+      "r2_id": "empregadores_lista_suja:lista_suja:csv",
+      "query": {
+        "formato": "auto"
+      },
+      "expected_positions": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29,
+        30,
+        31,
+        32,
+        33,
+        34,
+        35,
+        36,
+        37,
+        38,
+        39,
+        40,
+        41,
+        42,
+        43,
+        44,
+        45,
+        46,
+        47,
+        48,
+        49,
+        50,
+        51,
+        52,
+        53,
+        54,
+        55,
+        56,
+        57,
+        58,
+        59,
+        60,
+        61,
+        62,
+        63,
+        64,
+        65,
+        66,
+        67,
+        68,
+        69,
+        70,
+        71,
+        72,
+        73,
+        74,
+        75,
+        76,
+        77,
+        78,
+        79,
+        80,
+        81,
+        82,
+        83,
+        84,
+        85,
+        86,
+        87,
+        88,
+        89,
+        90,
+        91,
+        92,
+        93,
+        94,
+        95,
+        96,
+        97,
+        98,
+        99,
+        100,
+        101,
+        102,
+        103,
+        104,
+        105,
+        106,
+        107,
+        108,
+        109,
+        110,
+        111,
+        112,
+        113,
+        114,
+        115,
+        116,
+        117,
+        118,
+        119,
+        120,
+        121,
+        122,
+        123,
+        124,
+        125,
+        126,
+        127,
+        128,
+        129,
+        130,
+        131,
+        132,
+        133,
+        134,
+        135,
+        136,
+        137,
+        138,
+        139,
+        140,
+        141,
+        142,
+        143,
+        144,
+        145,
+        146,
+        147,
+        148,
+        149,
+        150,
+        151,
+        152,
+        153,
+        154,
+        155,
+        156,
+        157,
+        158,
+        159,
+        160,
+        161,
+        162,
+        163,
+        164,
+        165,
+        166,
+        167,
+        168,
+        169,
+        170,
+        171,
+        172,
+        173,
+        174,
+        175,
+        176,
+        177,
+        178,
+        179,
+        180,
+        181,
+        182,
+        183,
+        184,
+        185,
+        186,
+        187,
+        188,
+        189,
+        190,
+        191,
+        192,
+        193,
+        194,
+        195,
+        196,
+        197,
+        198,
+        199,
+        200,
+        201,
+        202,
+        203,
+        204,
+        205,
+        206,
+        207,
+        208,
+        209,
+        210,
+        211,
+        212,
+        213,
+        214,
+        215,
+        216,
+        217,
+        218,
+        219,
+        220,
+        221,
+        222,
+        223,
+        224,
+        225,
+        226,
+        227,
+        228,
+        229,
+        230,
+        231,
+        232,
+        233,
+        234,
+        235,
+        236,
+        237,
+        238,
+        239,
+        240,
+        241,
+        242,
+        243,
+        244,
+        245,
+        246,
+        247,
+        248,
+        249,
+        250,
+        251,
+        252,
+        253,
+        254,
+        255,
+        256,
+        257,
+        258,
+        259,
+        260,
+        261,
+        262,
+        263,
+        264,
+        265,
+        266,
+        267,
+        268,
+        269,
+        270,
+        271,
+        272,
+        273,
+        274,
+        275,
+        276,
+        277,
+        278,
+        279,
+        280,
+        281,
+        282,
+        283,
+        284,
+        285,
+        286,
+        287,
+        288,
+        289,
+        290,
+        291,
+        292,
+        293,
+        294,
+        295,
+        296,
+        297,
+        298,
+        299,
+        300,
+        301,
+        302,
+        303,
+        304,
+        305,
+        306,
+        307,
+        308,
+        309,
+        310,
+        311,
+        312,
+        313,
+        314,
+        315,
+        316,
+        317,
+        318,
+        319,
+        320,
+        321,
+        322,
+        323,
+        324,
+        325,
+        326,
+        327,
+        328,
+        329,
+        330,
+        331,
+        332,
+        333,
+        334,
+        335,
+        336,
+        337,
+        338,
+        339,
+        340,
+        341,
+        342,
+        343,
+        344,
+        345,
+        346,
+        347,
+        348,
+        349,
+        350,
+        351,
+        352,
+        353,
+        354,
+        355,
+        356,
+        357,
+        358,
+        359,
+        360,
+        361,
+        362,
+        363,
+        364,
+        365,
+        366,
+        367,
+        368,
+        369,
+        370,
+        371,
+        372,
+        373,
+        374,
+        375,
+        376,
+        377,
+        378,
+        379,
+        380,
+        381,
+        382,
+        383,
+        384,
+        385,
+        386,
+        387,
+        388,
+        389,
+        390,
+        391,
+        392,
+        393,
+        394,
+        395,
+        396,
+        397,
+        398,
+        399,
+        400,
+        401,
+        402,
+        403,
+        404,
+        405,
+        406,
+        407,
+        408,
+        409,
+        410,
+        411,
+        412,
+        413,
+        414,
+        415,
+        416,
+        417,
+        418,
+        419,
+        420,
+        421,
+        422,
+        423,
+        424,
+        425,
+        426,
+        427,
+        428,
+        429,
+        430,
+        431,
+        432,
+        433,
+        434,
+        435,
+        436,
+        437,
+        438,
+        439,
+        440,
+        441,
+        442,
+        443,
+        444,
+        445,
+        446,
+        447,
+        448,
+        449,
+        450,
+        451,
+        452,
+        453,
+        454,
+        455,
+        456,
+        457,
+        458,
+        459,
+        460,
+        461,
+        462,
+        463,
+        464,
+        465,
+        466,
+        467,
+        468,
+        469,
+        470,
+        471,
+        472,
+        473,
+        474,
+        475,
+        476,
+        477,
+        478,
+        479,
+        480,
+        481,
+        482,
+        483,
+        484,
+        485,
+        486,
+        487,
+        488,
+        489,
+        490,
+        491,
+        492,
+        493,
+        494,
+        495,
+        496,
+        497,
+        498,
+        499,
+        500,
+        501,
+        502,
+        503,
+        504,
+        505,
+        506,
+        507,
+        508,
+        509,
+        510,
+        511,
+        512,
+        513,
+        514,
+        515,
+        516,
+        517,
+        518,
+        519,
+        520,
+        521,
+        522,
+        523,
+        524,
+        525,
+        526,
+        527,
+        528,
+        529,
+        530,
+        531,
+        532,
+        533,
+        534,
+        535,
+        536,
+        537,
+        538,
+        539,
+        540,
+        541,
+        542,
+        543,
+        544,
+        545,
+        546,
+        547,
+        548,
+        549,
+        550,
+        551,
+        552,
+        553,
+        554,
+        555,
+        556,
+        557,
+        558,
+        559,
+        560,
+        561,
+        562,
+        563,
+        564,
+        565,
+        566,
+        567,
+        568,
+        569,
+        570,
+        571,
+        572,
+        573,
+        574,
+        575,
+        576,
+        577,
+        578
+      ],
+      "requests": [
+        {
+          "file": "mte_csv_012.html.gz",
+          "match": {
+            "path": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/inspecao-do-trabalho/areas-de-atuacao/combate-ao-trabalho-escravo-e-analogo-ao-de-escravo",
+            "params": {},
+            "method": "GET",
+            "skip": 0
+          },
+          "status": 200,
+          "content_type": "text/html;charset=utf-8",
+          "response_headers": {
+            "content-encoding": "gzip"
+          }
+        },
+        {
+          "file": "mte_csv_013.csv.gz",
+          "match": {
+            "path": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/inspecao-do-trabalho/areas-de-atuacao/cadastro_de_empregadores.csv",
+            "params": {},
+            "method": "GET",
+            "skip": 0
+          },
+          "status": 200,
+          "content_type": "text/csv",
+          "response_headers": {
+            "content-encoding": "gzip"
+          }
+        },
+        {
+          "file": "mte_csv_014.txt.gz",
+          "match": {
+            "path": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/inspecao-do-trabalho/areas-de-atuacao/cadastro_de_empregadores.txt",
+            "params": {},
+            "method": "GET",
+            "skip": 0
+          },
+          "status": 200,
+          "content_type": "text/plain",
+          "response_headers": {
+            "content-encoding": "gzip"
+          }
+        }
+      ]
+    },
+    {
+      "id": "csv_sp",
+      "resource": "csv",
+      "r2_id": "empregadores_lista_suja:lista_suja:csv",
+      "query": {
+        "formato": "csv",
+        "uf": "SP"
+      },
+      "expected_positions": [
+        0,
+        2,
+        30,
+        50,
+        53,
+        63,
+        76,
+        84,
+        92,
+        93,
+        95,
+        110,
+        116,
+        143,
+        146,
+        222,
+        235,
+        238,
+        244,
+        261,
+        280,
+        286,
+        303,
+        318,
+        322,
+        328,
+        330,
+        347,
+        384,
+        386,
+        387,
+        389,
+        396,
+        398,
+        400,
+        409,
+        411,
+        430,
+        438,
+        448,
+        452,
+        459,
+        461,
+        462,
+        477,
+        479,
+        488,
+        524,
+        531,
+        533,
+        535,
+        537,
+        543,
+        558,
+        559,
+        561,
+        570,
+        574,
+        577
+      ],
+      "requests": [
+        {
+          "file": "mte_csv_012.html.gz",
+          "match": {
+            "path": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/inspecao-do-trabalho/areas-de-atuacao/combate-ao-trabalho-escravo-e-analogo-ao-de-escravo",
+            "params": {},
+            "method": "GET",
+            "skip": 0
+          },
+          "status": 200,
+          "content_type": "text/html;charset=utf-8",
+          "response_headers": {
+            "content-encoding": "gzip"
+          }
+        },
+        {
+          "file": "mte_csv_013.csv.gz",
+          "match": {
+            "path": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/inspecao-do-trabalho/areas-de-atuacao/cadastro_de_empregadores.csv",
+            "params": {},
+            "method": "GET",
+            "skip": 0
+          },
+          "status": 200,
+          "content_type": "text/csv",
+          "response_headers": {
+            "content-encoding": "gzip"
+          }
+        },
+        {
+          "file": "mte_csv_014.txt.gz",
+          "match": {
+            "path": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/inspecao-do-trabalho/areas-de-atuacao/cadastro_de_empregadores.txt",
+            "params": {},
+            "method": "GET",
+            "skip": 0
+          },
+          "status": 200,
+          "content_type": "text/plain",
+          "response_headers": {
+            "content-encoding": "gzip"
+          }
+        }
+      ]
+    },
+    {
+      "id": "csv_compound",
+      "resource": "csv",
+      "r2_id": "empregadores_lista_suja:lista_suja:csv",
+      "query": {
+        "formato": "csv",
+        "id_registro": "41"
+      },
+      "expected_positions": [
+        40
+      ],
+      "requests": [
+        {
+          "file": "mte_csv_012.html.gz",
+          "match": {
+            "path": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/inspecao-do-trabalho/areas-de-atuacao/combate-ao-trabalho-escravo-e-analogo-ao-de-escravo",
+            "params": {},
+            "method": "GET",
+            "skip": 0
+          },
+          "status": 200,
+          "content_type": "text/html;charset=utf-8",
+          "response_headers": {
+            "content-encoding": "gzip"
+          }
+        },
+        {
+          "file": "mte_csv_013.csv.gz",
+          "match": {
+            "path": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/inspecao-do-trabalho/areas-de-atuacao/cadastro_de_empregadores.csv",
+            "params": {},
+            "method": "GET",
+            "skip": 0
+          },
+          "status": 200,
+          "content_type": "text/csv",
+          "response_headers": {
+            "content-encoding": "gzip"
+          }
+        },
+        {
+          "file": "mte_csv_014.txt.gz",
+          "match": {
+            "path": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/inspecao-do-trabalho/areas-de-atuacao/cadastro_de_empregadores.txt",
+            "params": {},
+            "method": "GET",
+            "skip": 0
+          },
+          "status": 200,
+          "content_type": "text/plain",
+          "response_headers": {
+            "content-encoding": "gzip"
+          }
+        }
+      ]
+    },
+    {
+      "id": "csv_judicial",
+      "resource": "csv",
+      "r2_id": "empregadores_lista_suja:lista_suja:csv",
+      "query": {
+        "formato": "csv",
+        "id_registro": "140"
+      },
+      "expected_positions": [
+        139
+      ],
+      "requests": [
+        {
+          "file": "mte_csv_012.html.gz",
+          "match": {
+            "path": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/inspecao-do-trabalho/areas-de-atuacao/combate-ao-trabalho-escravo-e-analogo-ao-de-escravo",
+            "params": {},
+            "method": "GET",
+            "skip": 0
+          },
+          "status": 200,
+          "content_type": "text/html;charset=utf-8",
+          "response_headers": {
+            "content-encoding": "gzip"
+          }
+        },
+        {
+          "file": "mte_csv_013.csv.gz",
+          "match": {
+            "path": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/inspecao-do-trabalho/areas-de-atuacao/cadastro_de_empregadores.csv",
+            "params": {},
+            "method": "GET",
+            "skip": 0
+          },
+          "status": 200,
+          "content_type": "text/csv",
+          "response_headers": {
+            "content-encoding": "gzip"
+          }
+        },
+        {
+          "file": "mte_csv_014.txt.gz",
+          "match": {
+            "path": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/inspecao-do-trabalho/areas-de-atuacao/cadastro_de_empregadores.txt",
+            "params": {},
+            "method": "GET",
+            "skip": 0
+          },
+          "status": 200,
+          "content_type": "text/plain",
+          "response_headers": {
+            "content-encoding": "gzip"
+          }
+        }
+      ]
+    },
+    {
+      "id": "csv_last",
+      "resource": "csv",
+      "r2_id": "empregadores_lista_suja:lista_suja:csv",
+      "query": {
+        "formato": "csv",
+        "id_registro": "579"
+      },
+      "expected_positions": [
+        578
+      ],
+      "requests": [
+        {
+          "file": "mte_csv_012.html.gz",
+          "match": {
+            "path": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/inspecao-do-trabalho/areas-de-atuacao/combate-ao-trabalho-escravo-e-analogo-ao-de-escravo",
+            "params": {},
+            "method": "GET",
+            "skip": 0
+          },
+          "status": 200,
+          "content_type": "text/html;charset=utf-8",
+          "response_headers": {
+            "content-encoding": "gzip"
+          }
+        },
+        {
+          "file": "mte_csv_013.csv.gz",
+          "match": {
+            "path": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/inspecao-do-trabalho/areas-de-atuacao/cadastro_de_empregadores.csv",
+            "params": {},
+            "method": "GET",
+            "skip": 0
+          },
+          "status": 200,
+          "content_type": "text/csv",
+          "response_headers": {
+            "content-encoding": "gzip"
+          }
+        },
+        {
+          "file": "mte_csv_014.txt.gz",
+          "match": {
+            "path": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/inspecao-do-trabalho/areas-de-atuacao/cadastro_de_empregadores.txt",
+            "params": {},
+            "method": "GET",
+            "skip": 0
+          },
+          "status": 200,
+          "content_type": "text/plain",
+          "response_headers": {
+            "content-encoding": "gzip"
+          }
+        }
+      ]
+    },
+    {
+      "id": "csv_missing_id",
+      "resource": "csv",
+      "r2_id": "empregadores_lista_suja:lista_suja:csv",
+      "query": {
+        "formato": "csv",
+        "id_registro": "00140"
+      },
+      "expected_positions": [],
+      "requests": [
+        {
+          "file": "mte_csv_012.html.gz",
+          "match": {
+            "path": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/inspecao-do-trabalho/areas-de-atuacao/combate-ao-trabalho-escravo-e-analogo-ao-de-escravo",
+            "params": {},
+            "method": "GET",
+            "skip": 0
+          },
+          "status": 200,
+          "content_type": "text/html;charset=utf-8",
+          "response_headers": {
+            "content-encoding": "gzip"
+          }
+        },
+        {
+          "file": "mte_csv_013.csv.gz",
+          "match": {
+            "path": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/inspecao-do-trabalho/areas-de-atuacao/cadastro_de_empregadores.csv",
+            "params": {},
+            "method": "GET",
+            "skip": 0
+          },
+          "status": 200,
+          "content_type": "text/csv",
+          "response_headers": {
+            "content-encoding": "gzip"
+          }
+        },
+        {
+          "file": "mte_csv_014.txt.gz",
+          "match": {
+            "path": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/inspecao-do-trabalho/areas-de-atuacao/cadastro_de_empregadores.txt",
+            "params": {},
+            "method": "GET",
+            "skip": 0
+          },
+          "status": 200,
+          "content_type": "text/plain",
+          "response_headers": {
+            "content-encoding": "gzip"
+          }
+        }
+      ]
+    },
+    {
+      "id": "pdf_all",
+      "resource": "pdf",
+      "r2_id": "empregadores_lista_suja:lista_suja:pdf",
+      "query": {
+        "formato": "pdf"
+      },
+      "expected_positions": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29,
+        30,
+        31,
+        32,
+        33,
+        34,
+        35,
+        36,
+        37,
+        38,
+        39,
+        40,
+        41,
+        42,
+        43,
+        44,
+        45,
+        46,
+        47,
+        48,
+        49,
+        50,
+        51,
+        52,
+        53,
+        54,
+        55,
+        56,
+        57,
+        58,
+        59,
+        60,
+        61,
+        62,
+        63,
+        64,
+        65,
+        66,
+        67,
+        68,
+        69,
+        70,
+        71,
+        72,
+        73,
+        74,
+        75,
+        76,
+        77,
+        78,
+        79,
+        80,
+        81,
+        82,
+        83,
+        84,
+        85,
+        86,
+        87,
+        88,
+        89,
+        90,
+        91,
+        92,
+        93,
+        94,
+        95,
+        96,
+        97,
+        98,
+        99,
+        100,
+        101,
+        102,
+        103,
+        104,
+        105,
+        106,
+        107,
+        108,
+        109,
+        110,
+        111,
+        112,
+        113,
+        114,
+        115,
+        116,
+        117,
+        118,
+        119,
+        120,
+        121,
+        122,
+        123,
+        124,
+        125,
+        126,
+        127,
+        128,
+        129,
+        130,
+        131,
+        132,
+        133,
+        134,
+        135,
+        136,
+        137,
+        138,
+        139,
+        140,
+        141,
+        142,
+        143,
+        144,
+        145,
+        146,
+        147,
+        148,
+        149,
+        150,
+        151,
+        152,
+        153,
+        154,
+        155,
+        156,
+        157,
+        158,
+        159,
+        160,
+        161,
+        162,
+        163,
+        164,
+        165,
+        166,
+        167,
+        168,
+        169,
+        170,
+        171,
+        172,
+        173,
+        174,
+        175,
+        176,
+        177,
+        178,
+        179,
+        180,
+        181,
+        182,
+        183,
+        184,
+        185,
+        186,
+        187,
+        188,
+        189,
+        190,
+        191,
+        192,
+        193,
+        194,
+        195,
+        196,
+        197,
+        198,
+        199,
+        200,
+        201,
+        202,
+        203,
+        204,
+        205,
+        206,
+        207,
+        208,
+        209,
+        210,
+        211,
+        212,
+        213,
+        214,
+        215,
+        216,
+        217,
+        218,
+        219,
+        220,
+        221,
+        222,
+        223,
+        224,
+        225,
+        226,
+        227,
+        228,
+        229,
+        230,
+        231,
+        232,
+        233,
+        234,
+        235,
+        236,
+        237,
+        238,
+        239,
+        240,
+        241,
+        242,
+        243,
+        244,
+        245,
+        246,
+        247,
+        248,
+        249,
+        250,
+        251,
+        252,
+        253,
+        254,
+        255,
+        256,
+        257,
+        258,
+        259,
+        260,
+        261,
+        262,
+        263,
+        264,
+        265,
+        266,
+        267,
+        268,
+        269,
+        270,
+        271,
+        272,
+        273,
+        274,
+        275,
+        276,
+        277,
+        278,
+        279,
+        280,
+        281,
+        282,
+        283,
+        284,
+        285,
+        286,
+        287,
+        288,
+        289,
+        290,
+        291,
+        292,
+        293,
+        294,
+        295,
+        296,
+        297,
+        298,
+        299,
+        300,
+        301,
+        302,
+        303,
+        304,
+        305,
+        306,
+        307,
+        308,
+        309,
+        310,
+        311,
+        312,
+        313,
+        314,
+        315,
+        316,
+        317,
+        318,
+        319,
+        320,
+        321,
+        322,
+        323,
+        324,
+        325,
+        326,
+        327,
+        328,
+        329,
+        330,
+        331,
+        332,
+        333,
+        334,
+        335,
+        336,
+        337,
+        338,
+        339,
+        340,
+        341,
+        342,
+        343,
+        344,
+        345,
+        346,
+        347,
+        348,
+        349,
+        350,
+        351,
+        352,
+        353,
+        354,
+        355,
+        356,
+        357,
+        358,
+        359,
+        360,
+        361,
+        362,
+        363,
+        364,
+        365,
+        366,
+        367,
+        368,
+        369,
+        370,
+        371,
+        372,
+        373,
+        374,
+        375,
+        376,
+        377,
+        378,
+        379,
+        380,
+        381,
+        382,
+        383,
+        384,
+        385,
+        386,
+        387,
+        388,
+        389,
+        390,
+        391,
+        392,
+        393,
+        394,
+        395,
+        396,
+        397,
+        398,
+        399,
+        400,
+        401,
+        402,
+        403,
+        404,
+        405,
+        406,
+        407,
+        408,
+        409,
+        410,
+        411,
+        412,
+        413,
+        414,
+        415,
+        416,
+        417,
+        418,
+        419,
+        420,
+        421,
+        422,
+        423,
+        424,
+        425,
+        426,
+        427,
+        428,
+        429,
+        430,
+        431,
+        432,
+        433,
+        434,
+        435,
+        436,
+        437,
+        438,
+        439,
+        440,
+        441,
+        442,
+        443,
+        444,
+        445,
+        446,
+        447,
+        448,
+        449,
+        450,
+        451,
+        452,
+        453,
+        454,
+        455,
+        456,
+        457,
+        458,
+        459,
+        460,
+        461,
+        462,
+        463,
+        464,
+        465,
+        466,
+        467,
+        468,
+        469,
+        470,
+        471,
+        472,
+        473,
+        474,
+        475,
+        476,
+        477,
+        478,
+        479,
+        480,
+        481,
+        482,
+        483,
+        484,
+        485,
+        486,
+        487,
+        488,
+        489,
+        490,
+        491,
+        492,
+        493,
+        494,
+        495,
+        496,
+        497,
+        498,
+        499,
+        500,
+        501,
+        502,
+        503,
+        504,
+        505,
+        506,
+        507,
+        508,
+        509,
+        510,
+        511,
+        512,
+        513,
+        514,
+        515,
+        516,
+        517,
+        518,
+        519,
+        520,
+        521,
+        522,
+        523,
+        524,
+        525,
+        526,
+        527,
+        528,
+        529,
+        530,
+        531,
+        532,
+        533,
+        534,
+        535,
+        536,
+        537,
+        538,
+        539,
+        540,
+        541,
+        542,
+        543,
+        544,
+        545,
+        546,
+        547,
+        548,
+        549,
+        550,
+        551,
+        552,
+        553,
+        554,
+        555,
+        556,
+        557,
+        558,
+        559,
+        560,
+        561,
+        562,
+        563,
+        564,
+        565,
+        566,
+        567,
+        568,
+        569,
+        570,
+        571,
+        572,
+        573,
+        574,
+        575,
+        576,
+        577,
+        578
+      ],
+      "requests": [
+        {
+          "file": "mte_pdf_015.html.gz",
+          "match": {
+            "path": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/inspecao-do-trabalho/areas-de-atuacao/combate-ao-trabalho-escravo-e-analogo-ao-de-escravo",
+            "params": {},
+            "method": "GET",
+            "skip": 0
+          },
+          "status": 200,
+          "content_type": "text/html;charset=utf-8",
+          "response_headers": {
+            "content-encoding": "gzip"
+          }
+        },
+        {
+          "file": "mte_pdf_016.pdf.gz",
+          "match": {
+            "path": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/inspecao-do-trabalho/areas-de-atuacao/cadastro_de_empregadores.pdf",
+            "params": {},
+            "method": "GET",
+            "skip": 0
+          },
+          "status": 200,
+          "content_type": "application/pdf",
+          "response_headers": {
+            "content-encoding": "gzip"
+          }
+        }
+      ]
+    },
+    {
+      "id": "pdf_wrapped",
+      "resource": "pdf",
+      "r2_id": "empregadores_lista_suja:lista_suja:pdf",
+      "query": {
+        "formato": "pdf",
+        "id_registro": "181"
+      },
+      "expected_positions": [
+        180
+      ],
+      "requests": [
+        {
+          "file": "mte_pdf_015.html.gz",
+          "match": {
+            "path": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/inspecao-do-trabalho/areas-de-atuacao/combate-ao-trabalho-escravo-e-analogo-ao-de-escravo",
+            "params": {},
+            "method": "GET",
+            "skip": 0
+          },
+          "status": 200,
+          "content_type": "text/html;charset=utf-8",
+          "response_headers": {
+            "content-encoding": "gzip"
+          }
+        },
+        {
+          "file": "mte_pdf_016.pdf.gz",
+          "match": {
+            "path": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/inspecao-do-trabalho/areas-de-atuacao/cadastro_de_empregadores.pdf",
+            "params": {},
+            "method": "GET",
+            "skip": 0
+          },
+          "status": 200,
+          "content_type": "application/pdf",
+          "response_headers": {
+            "content-encoding": "gzip"
+          }
+        }
+      ]
+    }
+  ],
+  "publication": {
+    "title": "Cadastro de Empregadores que tenham submetido trabalhadores a condições análogas à escravidão",
+    "registry_updated_at": "2026-09-04",
+    "periodic_update": "2026-04-06",
+    "notes": [
+      "(*1) Incluído no Cadastro em cumprimento à sentença proferida no processo judicial APC 0000820-69.2024.5.08.0118 _ TRT 8ª Região",
+      "(*2), (*3) Incluído no Cadastro em cumprimento à sentença proferida no processo judicial ACPCiv 0000250-28.2025.5.14.0071 - TRT 14ª Região"
+    ]
+  },
+  "statistics": {
+    "rows": 579,
+    "unique_documents": 567,
+    "workers": 4706,
+    "nulls": {
+      "empregador": 0,
+      "cpf_cnpj": 0,
+      "estabelecimento": 3,
+      "uf": 3,
+      "cnae": 3,
+      "data_inclusao": 10,
+      "trabalhadores_resgatados": 2,
+      "ano_acao_fiscal": 3,
+      "id_registro": 0,
+      "data_decisao": 3,
+      "data_atualizacao": 0,
+      "data_inclusao_texto": 0
+    },
+    "compound_ids": [
+      "41",
+      "45",
+      "149",
+      "150",
+      "326",
+      "357",
+      "458",
+      "459",
+      "549",
+      "578"
+    ]
+  },
+  "html_links": [
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/inspecao-do-trabalho/areas-de-atuacao/combate-ao-trabalho-escravo-e-analogo-ao-de-escravo#wrapper",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/inspecao-do-trabalho/areas-de-atuacao/combate-ao-trabalho-escravo-e-analogo-ao-de-escravo#main-navigation",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/inspecao-do-trabalho/areas-de-atuacao/combate-ao-trabalho-escravo-e-analogo-ao-de-escravo#govbr-busca-input",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/inspecao-do-trabalho/areas-de-atuacao/combate-ao-trabalho-escravo-e-analogo-ao-de-escravo#portal-footer",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/inspecao-do-trabalho/areas-de-atuacao/combate-ao-trabalho-escravo-e-analogo-ao-de-escravo#",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/search?origem=termos&SearchableText=assinatura",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/search?origem=termos&SearchableText=Desenrola Brasil",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/search?origem=termos&SearchableText=mei",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/search?origem=termos&SearchableText=imposto de renda",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/search?origem=termos&SearchableText=inss",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/search?origem=termos&SearchableText=assinatura",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/search?origem=termos&SearchableText=Desenrola Brasil",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/search?origem=termos&SearchableText=mei",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/institucional",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/institucional/base-juridica-e-competencias",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/institucional/competencias",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/institucional/horario-de-atendimento",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/institucional/organograma",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/institucional/perfil-profissional",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/institucional/quem-e-quem",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/institucional/regimento-interno",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/acoes-e-programas",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/acoes-e-programas/programas-projetos-acoes-obras-e-atividades",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/acoes-e-programas/governanca",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/acoes-e-programas/concessoes-de-recursos-financeiros-ou-renuncias-de-receitas",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/acoes-e-programas/carta-de-servicos-1",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/participacao-social",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/participacao-social/conselhos-e-orgaos-colegiados",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/participacao-social/ouvidoria",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/participacao-social/conferencias",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/participacao-social/editais-chamamentos-publicos",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/auditorias",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/convenios-e-transferencias",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/convenios-e-transferencias/convenios",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/convenios-e-transferencias/transferencias",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/convenios-e-transferencias/termos-de-execucao-descentralizada",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/receitas-e-despesas",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/receitas-e-despesas/receitas",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/receitas-e-despesas/despesas",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/licitacoes-e-contratos",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/licitacoes-e-contratos/licitacoes",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/licitacoes-e-contratos/ata-de-registro-de-precos",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/licitacoes-e-contratos/contratos",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/licitacoes-e-contratos/pca",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/licitacoes-e-contratos/Plano-de-Logistica-Sustentavel-do-MTE",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/licitacoes-e-contratos/ordem-cronologica-dos-pagamentos",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/servidores",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/servidores/lista-de-servidores",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/servidores/concursos",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/servidores/programa-de-gestao-1",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/servidores/avaliacao-de-desempenho-1",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/informacoes-classificadas",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/servico-de-informacoes-ao-cidadao",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/servico-de-informacoes-ao-cidadao/equipe-sic",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/servico-de-informacoes-ao-cidadao/autoridade-de-monitoramento",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/servico-de-informacoes-ao-cidadao/prazos",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/servico-de-informacoes-ao-cidadao/relatorios",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/servico-de-informacoes-ao-cidadao/painel-de-acesso-a-informacao-cgu",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/servico-de-informacoes-ao-cidadao/fluxos",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/servico-de-informacoes-ao-cidadao/como-utilizar",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/perguntas-frequentes",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/dados-abertos",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/transparencia-e-prestacao-de-contas",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/sei",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/demonstracoes-contabeis",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/guias-de-emendas-parlamentares",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/termos-de-adesao",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/acordos-de-cooperacao-tecnica",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/tratamento-de-dados-pessoais",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/planos-de-tecnologia-mte",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/termos-de-reconhecimento-de-dividas",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/sancoes-administrativas",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/pactos-pelo-trabalho-decente",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/pactos-pelo-trabalho-decente/icons",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/aprendizagem-profissional",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/aprendizagem-profissional/arquivos",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/analise-de-impacto-regulatorio-air",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/analise-de-impacto-regulatorio-air/o-que-e-air",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/analise-de-impacto-regulatorio-air/participacao-social-audiencias-e-consultas-publicas",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/analise-de-impacto-regulatorio-air/relatorios-de-air",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/analise-de-impacto-regulatorio-air/dispensas-de-air",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/cbo",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/cbo/informacoes-gerais",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/cbo/regulamentacao",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/cbo/legislacao",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/cbo/perguntas-frequentes",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/cbo/servicos",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://cbo.mte.gov.br/cbosite/pages/tabua/ConsultasConversao.jsf",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://cbo.mte.gov.br/cbosite/pages/pesquisas/BuscaPorTitulo.jsf",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/credito-do-trabalhador",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/dados-abertos-de-servidores-do-mte",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/dados-abertos-de-servidores-do-mte/servidores-efetivos-e-cargos-de-chefia-do-mte",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/dados-abertos-de-servidores-do-mte/remuneracao-de-servidores-do-mte",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/dados-abertos-de-servidores-do-mte/capacitacao-de-servidores-do-mte",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/economia-solidaria",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/economia-solidaria/cadastro-nacional-de-empreendimentos-economicos-solidarios-cadsol",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/economia-solidaria/editais-e-chamamentos-publicos",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/escola-do-trabalhador-4.0",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/guia-de-prevencao-ao-assedio-moral-e-sexual",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/inspecao-do-trabalho",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/inspecao-do-trabalho/acesso-a-informacao",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/inspecao-do-trabalho/escola",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/inspecao-do-trabalho/fiscalizacao-do-trabalho",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/inspecao-do-trabalho/seguranca-e-saude-no-trabalho",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/inspecao-do-trabalho/gabinete_sit",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/inspecao-do-trabalho/relatorios-anuais",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/inspecao-do-trabalho/alianca-8.7",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/inspecao-do-trabalho/sit",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/inspecao-do-trabalho/mei",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "http://segurancaesaudenasescolas.mte.gov.br/pt",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/protejaotrabalho",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/inspecao-do-trabalho/acordos-celebrados",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/inspecao-do-trabalho/cadastro-de-empregadores-em-ajustamento-de-conduta-ceac-normativos",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/legislacao",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/legislacao/convencoes-e-recomendacoes-da-organizacao-internacional-do-trabalho-oit",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/legislacao/portarias-1",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/legislacao/colegiados-do-trabalho",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/inspecao-do-trabalho/seguranca-e-saude-no-trabalho",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/legislacao/ementas",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/legislacao/orientacoes-tecnicas",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/legislacao/portarias-internas-2",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/legislacao/portarias-de-designacao-de-fiscais-de-ted-act-protocolos-de-intencoes-e-instrumentos-congeneres",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/onmt",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/quadro-brasileiro-de-qualificacoes-qbq",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/quadro-brasileiro-de-qualificacoes-qbq/img",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/quadro-brasileiro-de-qualificacoes-qbq/sobre-o-qbq",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/quadro-brasileiro-de-qualificacoes-qbq/conceitos-e-terminologia",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/quadro-brasileiro-de-qualificacoes-qbq/consultar",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/sistema-nacional-de-emprego-sine",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/conferencia-nacional-do-trabalho",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/conferencia-nacional-do-trabalho/quadro-de-delegados-cnt",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/conferencia-nacional-do-trabalho/documento-base-e-diagnosticos",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/conferencia-nacional-do-trabalho/relacao-das-386-propostas",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/conferencia-nacional-do-trabalho/cronograma-da-conferencia",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/noticias-e-conteudo",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/noticias-e-conteudo/2026",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/noticias-e-conteudo/2026/marco",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/noticias-e-conteudo/2026/maio",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/noticias-e-conteudo/2026/junho",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/noticias-e-conteudo/2026/julho",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/noticias-e-conteudo/2026/agosto",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/noticias-e-conteudo/2026/setembro",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/canais_atendimento",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/servicos/facilita",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/canais_atendimento/unidades-de-atendimento",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/canais_atendimento/envio-de-oficios",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/canais_atendimento/ouvidoria",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/canais_atendimento/ouvidoria/quem-somos",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/canais_atendimento/ouvidoria/base-legal",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/canais_atendimento/ouvidoria/servico-de-informacao-ao-cidadao-sic",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/canais_atendimento/ouvidoria/relatorios",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/canais_atendimento/ouvidoria/simplifique",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/canais_atendimento/ouvidoria/conselho-de-usuarios",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/canais_atendimento/ouvidoria/ouvidoria",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/canais_atendimento/ouvidoria/publicacoes",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/canais_atendimento/imprensa",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/servicos",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/servicos/empregador",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/servicos/empregador/caged",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/servicos/empregador/rais",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/servicos/empregador/e-social",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/servicos/empregador/mediacao",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/servicos/empregador/convencoes-e-acordos-coletivos-de-trabalho",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/servicos/empregador/trabalho-temporario",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/servicos/empregador/programa-de-alimentacao-do-trabalhador-pat",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/servicos/empregador/registro-de-contratante",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/servicos/empregador/domicilio-eletronico-trabalhista-det",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/servicos/trabalhador",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/servicos/trabalhador/abono-salarial",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/servicos/trabalhador/carteira-de-trabalho",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/servicos/trabalhador/fgts",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/servicos/trabalhador/seguro-desemprego",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/servicos/trabalhador/registro-profissional",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/servicos/trabalhador/qualificacao-profissional",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/servicos/trabalhador/mais-acoes",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/servicos/trabalhador/empreendedorismo",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/servicos/sindicatos",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/servicos/sindicatos/cadastro-de-entidades",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/servicos/sindicatos/central-sindical",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/servicos/sindicatos/contribuicao-sindical",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/servicos/sindicatos/mediacao",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/servicos/sindicatos/portal-de-relacoes-do-trabalho",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/servicos/sindicatos/convencoes-e-acordos-coletivos-de-trabalho",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/servicos/carta-de-servicos",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/servicos/facilita",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/servicos/qualificapro",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/composicao",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/composicao/ministro-e-secretarios",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/composicao/quem-e-quem",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/composicao/unidades-descentralizadas",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/canais_atendimento/unidades-de-atendimento",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/composicao/entidades-vinculadas",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/fundacentro/pt-br",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/composicao/orgaos-colegiados",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-empregopt-br/acesso-a-informacao/participacao-social/conselhos-e-orgaos-colegiados/conselho-nacional-do-trabalho",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-empregopt-br/acesso-a-informacao/participacao-social/conselhos-e-orgaos-colegiados/ctpp",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.fgts.gov.br/Paginas/subpaginas/conselho-fgts.aspx",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://portalfat.mte.gov.br/codefat/",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/composicao/orgaos-colegiados/comite-gestor-do-programa-de-produtividade-da-auditoria-fiscal-do-trabalho-cgpp-aft",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/composicao/orgaos-colegiados/comissao-nacional-de-erradicacao-do-trabalho-infantil-conaeti",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/composicao/corregedoria",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/composicao/organograma",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/composicao/coordenacoes",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/composicao/coordenacoes/coordenacao-geral-de-inteligencia-trabalhista-cgint",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/galerias-de-imagem",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/inspecao-do-trabalho/areas-de-atuacao/combate-ao-trabalho-escravo-e-analogo-ao-de-escravo",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/pt-br/servicos",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/pt-br/servicos/buscar-servicos-por",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/pt-br/categorias",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/pt-br/servicos/listar_orgaos",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/pt-br/servicos-estaduais",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/pt-br/servicos/servicos-por-publico-alvo",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/pt-br/servicos/listar_servicos_segmento?segmento=publico_alvo_cidadaos",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/pt-br/servicos/listar_servicos_segmento?segmento=publico_alvo_empresas",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/pt-br/servicos/listar_servicos_segmento?segmento=publico_alvo_orgaos",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/pt-br/servicos/listar_servicos_segmento?segmento=publico_alvo_outros",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/pt-br/servicos/listar_servicos_segmento?segmento=publico_alvo_servidor",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/pt-br/temas-em-destaque",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/pt-br/temas/transparencia-fiscal-orcamento-nacional",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/pt-br/temas/redes-civis-de-unidades-de-atendimento-do-governo-federal",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/pt-br/temas/protecao-de-dados-pessoais",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/pt-br/temas/servicos-para-imigrantes",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/pt-br/temas/politica-e-orcamento-educacional",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/pt-br/temas/educacao-profissional-e-tecnologica-1",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/pt-br/temas/habilidades-online-para-jovens-e-adultos",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/pt-br/temas/trabalho-emprego",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/pt-br/temas/acesso-a-educacao-para-pessoas-com-deficiencia",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/pt-br/temas/politica-e-legislacao-contra-a-discriminacao-racial",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/pt-br/temas/politica-e-orcamento-de-protecao-social",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/pt-br/temas/politica-para-mulheres",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/pt-br/temas/saude-reprodutiva-da-mulher",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/pt-br/temas/desenvolvimento-cuidados-e-educacao-pre-escolar",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/pt-br/temas/habitacao-popular",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/pt-br/temas/controle-da-poluicao-e-outras-medidas-de-precaucao",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/pt-br/noticias",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/pt-br/apps/@@galeria-de-aplicativos",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/planalto",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/pt-br/navegacao",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/governodigital/pt-br/acessibilidade-digital",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/pt-br/sitemap",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/pt-br/termos-de-uso",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/governodigital/pt-br/acessibilidade-e-usuario/atendimento-gov.br/duvidas-na-plataforma-de-automacao/cidadao/consultar-as-minhas-solicitacoes",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/pt-br/orgaos-do-governo",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/pt-br/por-dentro-do-govbr",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/pt-br/por-dentro-do-govbr/perguntas-frequentes",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "http://faq-login-unico.servicos.gov.br/en/latest/",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/pt-br/por-dentro-do-govbr/ajuda-para-navegar-o-portal",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/pt-br/por-dentro-do-govbr/conheca-os-elementos-do-portal",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/participamaisbrasil/sobre",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/pt-br/termos-de-uso",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/governodigital/pt-br",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/pt-br/guia-de-edicao-de-servicos-do-gov.br/bem-vindo-editor",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/pt-br/canais-do-executivo-federal",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/pt-br/dados-da-administracao-publica-federal",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/governodigital/pt-br/dados-abertos",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/gestao/pt-br/acesso-a-informacao/servidores/servidores-publicos/painel-estatistico-de-pessoal",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "http://paineldecompras.economia.gov.br",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/acessoainformacao/pt-br",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/empresas-e-negocios/pt-br",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/pt-br/apps/@@galeria-de-aplicativos",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/pt-br/participacao-social",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/pt-br/apps/@@galeria-de-aplicativos",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/pt-br/participacao-social",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.twitter.com/@mintrabalhobr",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.youtube.com/@canaltrabalho",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.facebook.com/mintrabalhoeemprego",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.instagram.com/mintrabalhoeemprego",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.flickr.com/202858871@N03",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/inspecao-do-trabalho",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/inspecao-do-trabalho/areas-de-atuacao",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "http://www.facebook.com/sharer.php?u=https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/inspecao-do-trabalho/areas-de-atuacao/combate-ao-trabalho-escravo-e-analogo-ao-de-escravo",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://twitter.com/share?text=Combate%20ao%20Trabalho%20Escravo&url=https://www.gov.br/trabalho-e-emprego/resolveuid/ffa3f9a30a094bcbb6729eb4c52ff2cb",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.linkedin.com/shareArticle?mini=true&url=https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/inspecao-do-trabalho/areas-de-atuacao/combate-ao-trabalho-escravo-e-analogo-ao-de-escravo&title=Combate%20ao%20Trabalho%20Escravo",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://api.whatsapp.com/send?text=https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/inspecao-do-trabalho/areas-de-atuacao/combate-ao-trabalho-escravo-e-analogo-ao-de-escravo",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/inspecao-do-trabalho/areas-de-atuacao/combate-ao-trabalho-escravo-e-analogo-ao-de-escravo",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/inspecao-do-trabalho/areas-de-atuacao/imagens/copy_of_1.png",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://ipe.sit.trabalho.gov.br/",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/fiscalizacao/combate-ao-trabalho-escravo/legislacao",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/fiscalizacao/combate-ao-trabalho-escravo/grupo-especial-de-fiscalizacao-movel",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/fiscalizacao/combate-ao-trabalho-escravo/instituicoes-parceiras",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/fiscalizacao/combate-ao-trabalho-escravo/termo-de-cooperacao-do-trabalho-escravo-de-08-11-1994",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/inspecao-do-trabalho/areas-de-atuacao/cadastro_de_empregadores.pdf",
+      "decision": "mapped_publication_resource"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/inspecao-do-trabalho/areas-de-atuacao/cadastro-de-empregadores-em-ajustamento-de-conduta/2026_0015.pdf",
+      "decision": "ignored_separate_ceac_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/inspecao-do-trabalho/areas-de-atuacao/cadastro_de_empregadores.xlsx",
+      "decision": "ignored_alternative_xlsx_format"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/inspecao-do-trabalho/areas-de-atuacao/cadastro-de-empregadores-em-ajustamento-de-conduta/2026_0015.xlsx",
+      "decision": "ignored_separate_ceac_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/inspecao-do-trabalho/areas-de-atuacao/cadastro_de_empregadores.txt",
+      "decision": "mapped_publication_resource"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/inspecao-do-trabalho/areas-de-atuacao/cadastro-de-empregadores-em-ajustamento-de-conduta/2026_0015.txt",
+      "decision": "ignored_separate_ceac_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/inspecao-do-trabalho/areas-de-atuacao/cadastro-de-empregadores-em-ajustamento-de-conduta/2026_0015.txt",
+      "decision": "ignored_separate_ceac_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/inspecao-do-trabalho/areas-de-atuacao/cadastro_de_empregadores.csv",
+      "decision": "mapped_publication_resource"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/inspecao-do-trabalho/areas-de-atuacao/cadastro_de_empregadores.csv",
+      "decision": "mapped_publication_resource"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/inspecao-do-trabalho/areas-de-atuacao/cadastro-de-empregadores-em-ajustamento-de-conduta/2026_0015.csv",
+      "decision": "ignored_separate_ceac_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/inspecao-do-trabalho/areas-de-atuacao/documentos-pdf/tac_jose_tarjado.pdf",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.youtube.com/playlist?list=PLXknSy3x3itlUhJX2hEMs92WJtIubUiXU",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.youtube.com/playlist?list=PLXknSy3x3itlUhJX2hEMs92WJtIubUiXU",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/inspecao-do-trabalho/areas-de-atuacao/documentos-pdf/livro-resgate_homenagem-aos-auditores-fiscais-do-trabalho.pdf",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/inspecao-do-trabalho/areas-de-atuacao/documentos-pdf/relatorio-2020-sit-oit-1.pdf",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/inspecao-do-trabalho/areas-de-atuacao/copy_of_combate-ao-trabalho-escravo-e-analogo-ao-de-escravo",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "http://www.facebook.com/sharer.php?u=https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/inspecao-do-trabalho/areas-de-atuacao/combate-ao-trabalho-escravo-e-analogo-ao-de-escravo",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://twitter.com/share?text=Combate%20ao%20Trabalho%20Escravo&url=https://www.gov.br/trabalho-e-emprego/resolveuid/ffa3f9a30a094bcbb6729eb4c52ff2cb",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.linkedin.com/shareArticle?mini=true&url=https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/inspecao-do-trabalho/areas-de-atuacao/combate-ao-trabalho-escravo-e-analogo-ao-de-escravo&title=Combate%20ao%20Trabalho%20Escravo",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://api.whatsapp.com/send?text=https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/inspecao-do-trabalho/areas-de-atuacao/combate-ao-trabalho-escravo-e-analogo-ao-de-escravo",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/inspecao-do-trabalho/areas-de-atuacao/combate-ao-trabalho-escravo-e-analogo-ao-de-escravo",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/institucional",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/institucional/base-juridica-e-competencias",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/institucional/competencias",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/institucional/horario-de-atendimento",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/institucional/organograma",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/institucional/perfil-profissional",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/institucional/quem-e-quem",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/institucional/regimento-interno",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/acoes-e-programas",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/acoes-e-programas/programas-projetos-acoes-obras-e-atividades",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/acoes-e-programas/governanca",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/acoes-e-programas/concessoes-de-recursos-financeiros-ou-renuncias-de-receitas",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/acoes-e-programas/carta-de-servicos-1",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/participacao-social",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/participacao-social/conselhos-e-orgaos-colegiados",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/participacao-social/ouvidoria",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/participacao-social/conferencias",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/participacao-social/editais-chamamentos-publicos",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/auditorias",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/convenios-e-transferencias",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/convenios-e-transferencias/convenios",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/convenios-e-transferencias/transferencias",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/convenios-e-transferencias/termos-de-execucao-descentralizada",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/receitas-e-despesas",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/receitas-e-despesas/receitas",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/receitas-e-despesas/despesas",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/licitacoes-e-contratos",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/licitacoes-e-contratos/licitacoes",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/licitacoes-e-contratos/ata-de-registro-de-precos",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/licitacoes-e-contratos/contratos",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/licitacoes-e-contratos/pca",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/licitacoes-e-contratos/Plano-de-Logistica-Sustentavel-do-MTE",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/licitacoes-e-contratos/ordem-cronologica-dos-pagamentos",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/servidores",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/servidores/lista-de-servidores",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/servidores/concursos",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/servidores/programa-de-gestao-1",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/servidores/avaliacao-de-desempenho-1",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/informacoes-classificadas",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/servico-de-informacoes-ao-cidadao",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/servico-de-informacoes-ao-cidadao/equipe-sic",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/servico-de-informacoes-ao-cidadao/autoridade-de-monitoramento",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/servico-de-informacoes-ao-cidadao/prazos",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/servico-de-informacoes-ao-cidadao/relatorios",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/servico-de-informacoes-ao-cidadao/painel-de-acesso-a-informacao-cgu",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/servico-de-informacoes-ao-cidadao/fluxos",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/servico-de-informacoes-ao-cidadao/como-utilizar",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/perguntas-frequentes",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/dados-abertos",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/transparencia-e-prestacao-de-contas",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/sei",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/demonstracoes-contabeis",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/guias-de-emendas-parlamentares",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/termos-de-adesao",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/acordos-de-cooperacao-tecnica",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/tratamento-de-dados-pessoais",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/planos-de-tecnologia-mte",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/termos-de-reconhecimento-de-dividas",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/sancoes-administrativas",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/pactos-pelo-trabalho-decente",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/pactos-pelo-trabalho-decente/icons",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/aprendizagem-profissional",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/aprendizagem-profissional/arquivos",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/analise-de-impacto-regulatorio-air",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/analise-de-impacto-regulatorio-air/o-que-e-air",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/analise-de-impacto-regulatorio-air/participacao-social-audiencias-e-consultas-publicas",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/analise-de-impacto-regulatorio-air/relatorios-de-air",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/analise-de-impacto-regulatorio-air/dispensas-de-air",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/cbo",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/cbo/informacoes-gerais",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/cbo/regulamentacao",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/cbo/legislacao",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/cbo/perguntas-frequentes",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/cbo/servicos",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://cbo.mte.gov.br/cbosite/pages/tabua/ConsultasConversao.jsf",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://cbo.mte.gov.br/cbosite/pages/pesquisas/BuscaPorTitulo.jsf",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/credito-do-trabalhador",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/dados-abertos-de-servidores-do-mte",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/dados-abertos-de-servidores-do-mte/servidores-efetivos-e-cargos-de-chefia-do-mte",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/dados-abertos-de-servidores-do-mte/remuneracao-de-servidores-do-mte",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/dados-abertos-de-servidores-do-mte/capacitacao-de-servidores-do-mte",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/economia-solidaria",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/economia-solidaria/cadastro-nacional-de-empreendimentos-economicos-solidarios-cadsol",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/economia-solidaria/editais-e-chamamentos-publicos",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/escola-do-trabalhador-4.0",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/guia-de-prevencao-ao-assedio-moral-e-sexual",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/inspecao-do-trabalho",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/inspecao-do-trabalho/acesso-a-informacao",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/inspecao-do-trabalho/escola",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/inspecao-do-trabalho/fiscalizacao-do-trabalho",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/inspecao-do-trabalho/seguranca-e-saude-no-trabalho",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/inspecao-do-trabalho/gabinete_sit",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/inspecao-do-trabalho/relatorios-anuais",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/inspecao-do-trabalho/alianca-8.7",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/inspecao-do-trabalho/sit",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/inspecao-do-trabalho/mei",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "http://segurancaesaudenasescolas.mte.gov.br/pt",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/protejaotrabalho",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/inspecao-do-trabalho/acordos-celebrados",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/inspecao-do-trabalho/cadastro-de-empregadores-em-ajustamento-de-conduta-ceac-normativos",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/legislacao",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/legislacao/convencoes-e-recomendacoes-da-organizacao-internacional-do-trabalho-oit",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/legislacao/portarias-1",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/legislacao/colegiados-do-trabalho",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/inspecao-do-trabalho/seguranca-e-saude-no-trabalho",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/legislacao/ementas",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/legislacao/orientacoes-tecnicas",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/legislacao/portarias-internas-2",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/legislacao/portarias-de-designacao-de-fiscais-de-ted-act-protocolos-de-intencoes-e-instrumentos-congeneres",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/onmt",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/quadro-brasileiro-de-qualificacoes-qbq",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/quadro-brasileiro-de-qualificacoes-qbq/img",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/quadro-brasileiro-de-qualificacoes-qbq/sobre-o-qbq",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/quadro-brasileiro-de-qualificacoes-qbq/conceitos-e-terminologia",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/quadro-brasileiro-de-qualificacoes-qbq/consultar",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/sistema-nacional-de-emprego-sine",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/conferencia-nacional-do-trabalho",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/conferencia-nacional-do-trabalho/quadro-de-delegados-cnt",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/conferencia-nacional-do-trabalho/documento-base-e-diagnosticos",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/conferencia-nacional-do-trabalho/relacao-das-386-propostas",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/conferencia-nacional-do-trabalho/cronograma-da-conferencia",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/noticias-e-conteudo",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/noticias-e-conteudo/2026",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/noticias-e-conteudo/2026/marco",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/noticias-e-conteudo/2026/maio",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/noticias-e-conteudo/2026/junho",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/noticias-e-conteudo/2026/julho",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/noticias-e-conteudo/2026/agosto",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/noticias-e-conteudo/2026/setembro",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/canais_atendimento",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/servicos/facilita",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/canais_atendimento/unidades-de-atendimento",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/canais_atendimento/envio-de-oficios",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/canais_atendimento/ouvidoria",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/canais_atendimento/ouvidoria/quem-somos",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/canais_atendimento/ouvidoria/base-legal",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/canais_atendimento/ouvidoria/servico-de-informacao-ao-cidadao-sic",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/canais_atendimento/ouvidoria/relatorios",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/canais_atendimento/ouvidoria/simplifique",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/canais_atendimento/ouvidoria/conselho-de-usuarios",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/canais_atendimento/ouvidoria/ouvidoria",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/canais_atendimento/ouvidoria/publicacoes",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/canais_atendimento/imprensa",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/servicos",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/servicos/empregador",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/servicos/empregador/caged",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/servicos/empregador/rais",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/servicos/empregador/e-social",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/servicos/empregador/mediacao",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/servicos/empregador/convencoes-e-acordos-coletivos-de-trabalho",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/servicos/empregador/trabalho-temporario",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/servicos/empregador/programa-de-alimentacao-do-trabalhador-pat",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/servicos/empregador/registro-de-contratante",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/servicos/empregador/domicilio-eletronico-trabalhista-det",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/servicos/trabalhador",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/servicos/trabalhador/abono-salarial",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/servicos/trabalhador/carteira-de-trabalho",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/servicos/trabalhador/fgts",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/servicos/trabalhador/seguro-desemprego",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/servicos/trabalhador/registro-profissional",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/servicos/trabalhador/qualificacao-profissional",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/servicos/trabalhador/mais-acoes",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/servicos/trabalhador/empreendedorismo",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/servicos/sindicatos",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/servicos/sindicatos/cadastro-de-entidades",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/servicos/sindicatos/central-sindical",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/servicos/sindicatos/contribuicao-sindical",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/servicos/sindicatos/mediacao",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/servicos/sindicatos/portal-de-relacoes-do-trabalho",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/servicos/sindicatos/convencoes-e-acordos-coletivos-de-trabalho",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/servicos/carta-de-servicos",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/servicos/facilita",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/servicos/qualificapro",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/composicao",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/composicao/ministro-e-secretarios",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/composicao/quem-e-quem",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/composicao/unidades-descentralizadas",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/canais_atendimento/unidades-de-atendimento",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/composicao/entidades-vinculadas",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/fundacentro/pt-br",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/composicao/orgaos-colegiados",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-empregopt-br/acesso-a-informacao/participacao-social/conselhos-e-orgaos-colegiados/conselho-nacional-do-trabalho",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-empregopt-br/acesso-a-informacao/participacao-social/conselhos-e-orgaos-colegiados/ctpp",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.fgts.gov.br/Paginas/subpaginas/conselho-fgts.aspx",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://portalfat.mte.gov.br/codefat/",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/composicao/orgaos-colegiados/comite-gestor-do-programa-de-produtividade-da-auditoria-fiscal-do-trabalho-cgpp-aft",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/composicao/orgaos-colegiados/comissao-nacional-de-erradicacao-do-trabalho-infantil-conaeti",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/composicao/corregedoria",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/composicao/organograma",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/composicao/coordenacoes",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/composicao/coordenacoes/coordenacao-geral-de-inteligencia-trabalhista-cgint",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/galerias-de-imagem",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/inspecao-do-trabalho/areas-de-atuacao/combate-ao-trabalho-escravo-e-analogo-ao-de-escravo#",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.twitter.com/@mintrabalhobr",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.youtube.com/@canaltrabalho",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.facebook.com/mintrabalhoeemprego",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.instagram.com/mintrabalhoeemprego",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.flickr.com/202858871@N03",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/acessoainformacao/pt-br",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://creativecommons.org/licenses/by-nd/3.0/deed.pt_BR",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/inspecao-do-trabalho/areas-de-atuacao/combate-ao-trabalho-escravo-e-analogo-ao-de-escravo#wrapper",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/inspecao-do-trabalho/areas-de-atuacao/combate-ao-trabalho-escravo-e-analogo-ao-de-escravo#",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/inspecao-do-trabalho/areas-de-atuacao/combate-ao-trabalho-escravo-e-analogo-ao-de-escravo#",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/inspecao-do-trabalho/areas-de-atuacao/combate-ao-trabalho-escravo-e-analogo-ao-de-escravo#",
+      "decision": "ignored_navigation_or_other_publication"
+    },
+    {
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/inspecao-do-trabalho/areas-de-atuacao/combate-ao-trabalho-escravo-e-analogo-ao-de-escravo#",
+      "decision": "ignored_navigation_or_other_publication"
+    }
+  ],
+  "portal_url": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/inspecao-do-trabalho/areas-de-atuacao/combate-ao-trabalho-escravo-e-analogo-ao-de-escravo",
+  "column_decisions": {
+    "ID": {
+      "decision": "mapped",
+      "destination": "id_registro",
+      "transformation": "Collapse whitespace; preserve textual ID and leading zeros"
+    },
+    "Ano da ação fiscal": {
+      "decision": "mapped",
+      "destination": "ano_acao_fiscal",
+      "transformation": "Collapse whitespace; parse integer; blank becomes null"
+    },
+    "UF": {
+      "decision": "mapped",
+      "destination": "uf",
+      "transformation": "Collapse whitespace; blank becomes null"
+    },
+    "Empregador": {
+      "decision": "mapped",
+      "destination": "empregador",
+      "transformation": "Collapse whitespace; require nonempty text"
+    },
+    "CNPJ/CPF": {
+      "decision": "mapped",
+      "destination": "cpf_cnpj",
+      "transformation": "Collapse whitespace; preserve punctuation and leading zeros"
+    },
+    "Estabelecimento": {
+      "decision": "mapped",
+      "destination": "estabelecimento",
+      "transformation": "Collapse whitespace; blank becomes null"
+    },
+    "Trabalhadores envolvidos": {
+      "decision": "mapped",
+      "destination": "trabalhadores_resgatados",
+      "transformation": "Collapse whitespace; parse integer; blank becomes null"
+    },
+    "CNAE": {
+      "decision": "mapped",
+      "destination": "cnae",
+      "transformation": "Collapse whitespace; preserve leading zeros; blank becomes null"
+    },
+    "Decisão administrativa de procedência": {
+      "decision": "mapped",
+      "destination": "data_decisao",
+      "transformation": "Collapse whitespace; parse civil date; blank becomes null"
+    },
+    "Inclusão no Cadastro de Empregadores": {
+      "decision": "mapped",
+      "destination": "data_inclusao/data_inclusao_texto",
+      "transformation": "Copy original inclusion text exactly, including PDF line breaks; scalar date only for one date after whitespace normalization; compound dates become null"
+    }
+  },
+  "publication_decisions": {
+    "registry_updated_at": "data_atualizacao",
+    "periodic_update": "metadata",
+    "title": "metadata",
+    "notes": "metadata",
+    "legal_basis": "context",
+    "reporting_channel": "ignored_footer",
+    "page_number": "ignored_footer"
+  },
+  "csv_pdf_differences": [
+    {
+      "id": "41",
+      "column": "data_inclusao_texto",
+      "csv": "05/04/2024 a 10/05/2024, 09/04/2025",
+      "pdf": "05/04/2024 a\n10/05/2024,\n09/04/2025"
+    },
+    {
+      "id": "45",
+      "column": "data_inclusao_texto",
+      "csv": "09/04/2025 a 12/08/2026, 04/09/2026",
+      "pdf": "09/04/2025 a\n12/08/2026,\n04/09/2026"
+    },
+    {
+      "id": "149",
+      "column": "data_inclusao_texto",
+      "csv": "09/04/2025 a 16/01/2026, 22/05/2026",
+      "pdf": "09/04/2025 a\n16/01/2026,\n22/05/2026"
+    },
+    {
+      "id": "150",
+      "column": "data_inclusao_texto",
+      "csv": "06/10/2025 a 23/12/2025, 30/06/2026",
+      "pdf": "06/10/2025 a\n23/12/2025,\n30/06/2026"
+    },
+    {
+      "id": "181",
+      "column": "estabelecimento",
+      "csv": "FAZENDA HARAYASHIKI, PA 252, KM 02, CANINDÉ, ZONA RURAL, TOMÉ-AÇU/PA",
+      "pdf": "FAZENDA HARAYASHIKI, PA 252, KM 02, CANINDÉ, ZONA RURAL, TOMÉ- AÇU/PA"
+    },
+    {
+      "id": "190",
+      "column": "estabelecimento",
+      "csv": "FAZENDA PCMOR LOTE 20 – PROJETO SUL BRASIL, ZONA RURAL, GUARDA-MOR/MG",
+      "pdf": "FAZENDA PCMOR LOTE 20 – PROJETO SUL BRASIL, ZONA RURAL, GUARDA- MOR/MG"
+    },
+    {
+      "id": "326",
+      "column": "data_inclusao_texto",
+      "csv": "07/10/2024 a 20/01/2025, 04/09/2026",
+      "pdf": "07/10/2024 a\n20/01/2025,\n04/09/2026"
+    },
+    {
+      "id": "357",
+      "column": "data_inclusao_texto",
+      "csv": "05/04/2024 a 10/06/2024, 09/07/2026",
+      "pdf": "05/04/2024 a\n10/06/2024,\n09/07/2026"
+    },
+    {
+      "id": "458",
+      "column": "data_inclusao_texto",
+      "csv": "05/10/2023 a 19/12/2023, 20/05/2025",
+      "pdf": "05/10/2023 a\n19/12/2023,\n20/05/2025"
+    },
+    {
+      "id": "459",
+      "column": "data_inclusao_texto",
+      "csv": "07/10/2024 a 15/08/2025, 10/10/2025",
+      "pdf": "07/10/2024 a\n15/08/2025,\n10/10/2025"
+    },
+    {
+      "id": "549",
+      "column": "data_inclusao_texto",
+      "csv": "09/04/2025 a 07/07/2025, 10/08/2026",
+      "pdf": "09/04/2025 a\n07/07/2025,\n10/08/2026"
+    },
+    {
+      "id": "578",
+      "column": "data_inclusao_texto",
+      "csv": "06/10/2025 a 05/02/2026, 19/08/2026",
+      "pdf": "06/10/2025 a\n05/02/2026,\n19/08/2026"
+    }
+  ],
+  "oracle_method": "CSV/TXT stdlib csv and datetime; PDF glyphs and explicit grid coordinates with pdfminer, no agrobr imports or production table extractor.",
+  "limits": [
+    "Captured on 2026-09-18; the publication identifies update 2026-09-04 and periodic edition 2026-04-06. CSV/TXT/PDF hashes equal the older preserved capture; no new edition is claimed.",
+    "CSV/TXT/PDF are renderings of the same publication, not independent sources for N3.",
+    "PDF oracles use independent glyph/grid reading, but pdfminer is also an underlying dependency of production pdfplumber; extraction-engine independence is not claimed.",
+    "Two wrapped establishment names differ between PDF and CSV; each format has its own exact oracle, with no cross-format repair.",
+    "Capture uses the real client; the HTTP matcher verifies URLs/methods and consumption, not global request order. The independent portal inventory checks all link decisions.",
+    "No cache and no historical edition selector. Current acquisition instants in HTTP replay are replay instants; original capture times remain in receipts.",
+    "Derived text fields collapse whitespace as declared in column_decisions; six captured CSV establishment cells are affected. data_inclusao_texto stays literal: ten PDF inclusion cells retain line breaks, in addition to the two establishment differences."
+  ],
+  "csv_whitespace_normalization": {
+    "rule": "Internal whitespace collapsed as in production compact(); source bodies remain byte-for-byte unchanged",
+    "affected_cells": 6,
+    "cells": [
+      {
+        "id": "170",
+        "source_column": "Estabelecimento",
+        "column": "estabelecimento",
+        "raw": "FAZENDA PIMENTEIRA, S/N, ZONA RURAL,  BEBERIBE/CE",
+        "normalized": "FAZENDA PIMENTEIRA, S/N, ZONA RURAL, BEBERIBE/CE"
+      },
+      {
+        "id": "180",
+        "source_column": "Estabelecimento",
+        "column": "estabelecimento",
+        "raw": "ÁREA DE DESMATAMENTO EM  REGIÃO LIMÍTROFE DOS MUNICÍPIOS RORAIMENSES DE CARACARAÍ/RR E RORAINÓPOLIS/RR",
+        "normalized": "ÁREA DE DESMATAMENTO EM REGIÃO LIMÍTROFE DOS MUNICÍPIOS RORAIMENSES DE CARACARAÍ/RR E RORAINÓPOLIS/RR"
+      },
+      {
+        "id": "356",
+        "source_column": "Estabelecimento",
+        "column": "estabelecimento",
+        "raw": "FAZENDA CANSANÇÃO - ZONA RURAL -  MURICI/AL",
+        "normalized": "FAZENDA CANSANÇÃO - ZONA RURAL - MURICI/AL"
+      },
+      {
+        "id": "368",
+        "source_column": "Estabelecimento",
+        "column": "estabelecimento",
+        "raw": "PEDREIRA DO SÍTIO GRAVATINHO,  KM 21 DA BR 230, ZONA RURAL, CAMPINA GRANDE/PB",
+        "normalized": "PEDREIRA DO SÍTIO GRAVATINHO, KM 21 DA BR 230, ZONA RURAL, CAMPINA GRANDE/PB"
+      },
+      {
+        "id": "410",
+        "source_column": "Estabelecimento",
+        "column": "estabelecimento",
+        "raw": "ROD SP 127 - KM 167,5, S/N,  BAIRRO DA CONCEICAO, ITAPETININGA/SP",
+        "normalized": "ROD SP 127 - KM 167,5, S/N, BAIRRO DA CONCEICAO, ITAPETININGA/SP"
+      },
+      {
+        "id": "525",
+        "source_column": "Estabelecimento",
+        "column": "estabelecimento",
+        "raw": "AV. LUZITANA, 701,  PQ. RIBEIRAO PRETO, RIBEIRÃO PRETO/SP",
+        "normalized": "AV. LUZITANA, 701, PQ. RIBEIRAO PRETO, RIBEIRÃO PRETO/SP"
+      }
+    ]
+  },
+  "csv_pdf_normalized_source_differences": [
+    {
+      "id": "181",
+      "column": "Estabelecimento",
+      "pdf": "FAZENDA HARAYASHIKI, PA 252, KM 02, CANINDÉ, ZONA RURAL, TOMÉ- AÇU/PA",
+      "csv": "FAZENDA HARAYASHIKI, PA 252, KM 02, CANINDÉ, ZONA RURAL, TOMÉ-AÇU/PA"
+    },
+    {
+      "id": "190",
+      "column": "Estabelecimento",
+      "pdf": "FAZENDA PCMOR LOTE 20 – PROJETO SUL BRASIL, ZONA RURAL, GUARDA- MOR/MG",
+      "csv": "FAZENDA PCMOR LOTE 20 – PROJETO SUL BRASIL, ZONA RURAL, GUARDA-MOR/MG"
+    }
+  ],
+  "csv_pdf_comparison_scope": "Exact final oracle values across all twelve columns; no whitespace normalization during comparison. normalized_source_differences is a separate ten-source-field comparison after whitespace normalization.",
+  "masking": {
+    "decisao": "decisão do mantenedor, 25/09/2026",
+    "regra": "decisão do mantenedor (25/09/2026): cópia mascarada. CPF de pessoa física trocado por CPF sintético com DV válido da série fixa 000.000.NNN-DV, na ordem da primeira aparição; nome da pessoa física trocado por 'PESSOA NNN', também onde aparece dentro de Estabelecimento; CPF dentro da razão social de pessoa jurídica trocado pelo CPF sintético, com o resto do nome como publicado; CNPJ e demais dados de pessoa jurídica como publicados. Mesmo layout: no TXT, a largura de cada campo; no PDF, os mesmos glifos (ToUnicode), posições e quebras de linha. Originais fora do repositório, com SHA-256,",
+    "contagens": {
+      "linhas_pessoa_fisica": 389,
+      "cpf_pessoa_fisica_distintos": 383,
+      "nomes_pessoa_fisica_distintos": 383,
+      "estabelecimentos_com_nome_de_pessoa_fisica": 49,
+      "cpf_em_razao_social": 7,
+      "celulas_por_formato": 834
+    },
+    "cpf_em_razao_social_ids": [
+      "77",
+      "136",
+      "201",
+      "223",
+      "275",
+      "304",
+      "430"
+    ],
+    "pdf": {
+      "nomes_em_duas_linhas": 22,
+      "nome_cruzando_quebra_de_linha": 1,
+      "paginas_regravadas": 45
+    },
+    "originais": "(fora do repositório); SHA-256 e bytes originais em files[].original"
+  }
+}

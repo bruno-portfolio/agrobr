@@ -1,0 +1,82 @@
+[
+ {
+  "name": "equiv_pam_soja_uf_2023",
+  "requested_url": "https://servicodados.ibge.gov.br/api/v3/agregados/5457/periodos/2023/variaveis/8331,216,214,112?localidades=N3[all]&classificacao=782[40124]",
+  "final_url": "https://servicodados.ibge.gov.br/api/v3/agregados/5457/periodos/2023/variaveis/8331,216,214,112?localidades=N3[all]&classificacao=782[40124]",
+  "status": 200,
+  "captured_at": "2026-09-18T14:23:32.522161+00:00",
+  "bytes": 14310,
+  "sha256": "ae36b82df15f8a9ce6c115d783db60712607f0a4e878378c0b04dee003f3465d",
+  "sidra_spec": {
+   "t": "5457",
+   "n": "3",
+   "code": "all",
+   "v": "8331,216,214,112",
+   "p": "2023",
+   "c": {
+    "782": "40124"
+   }
+  },
+  "sidra_file": "tests/golden_data/ibge/pam_soja_sample/response.csv"
+ },
+ {
+  "name": "equiv_pevs_extracao_pa_2023",
+  "requested_url": "https://servicodados.ibge.gov.br/api/v3/agregados/289/periodos/2023/variaveis/145?localidades=N3[15]&classificacao=193[3403]",
+  "final_url": "https://servicodados.ibge.gov.br/api/v3/agregados/289/periodos/2023/variaveis/145?localidades=N3[15]&classificacao=193[3403]",
+  "status": 200,
+  "captured_at": "2026-09-18T14:23:32.670802+00:00",
+  "bytes": 350,
+  "sha256": "c74066551f51fc70f26fb93b8f8964ae5f6baf8c130d32cef98785d698ddb12a",
+  "sidra_spec": {
+   "c": {
+    "193": "3403"
+   },
+   "t": "289",
+   "n": "3",
+   "code": "15",
+   "p": "2023",
+   "v": "145"
+  },
+  "sidra_file": "tests/golden_data/ibge/pevs_valor_oficial/extracao_valor.json"
+ },
+ {
+  "name": "equiv_pevs_silvicultura_valor",
+  "requested_url": "https://servicodados.ibge.gov.br/api/v3/agregados/291/periodos/2023/variaveis/143?localidades=N3[41]&classificacao=194[3457]",
+  "final_url": "https://servicodados.ibge.gov.br/api/v3/agregados/291/periodos/2023/variaveis/143?localidades=N3[41]&classificacao=194[3457]",
+  "status": 200,
+  "captured_at": "2026-09-18T14:23:32.795008+00:00",
+  "bytes": 354,
+  "sha256": "76f5c3e0a618c0ae4ea83570ba4b44e2c7bd951d9a6a89c17dc223c2dd189bef",
+  "sidra_spec": {
+   "c": {
+    "194": "3457"
+   },
+   "t": "291",
+   "n": "3",
+   "code": "41",
+   "p": "2023",
+   "v": "143"
+  },
+  "sidra_file": "tests/golden_data/ibge/pevs_valor_oficial/silvicultura_valor.json"
+ },
+ {
+  "name": "equiv_lspa_mt_milho_2023",
+  "requested_url": "https://servicodados.ibge.gov.br/api/v3/agregados/6588/periodos/202301,202302,202303,202304,202305,202306,202307,202308,202309,202310,202311,202312/variaveis/all?localidades=N3[51]&classificacao=48[39441]",
+  "final_url": "https://servicodados.ibge.gov.br/api/v3/agregados/6588/periodos/202301,202302,202303,202304,202305,202306,202307,202308,202309,202310,202311,202312/variaveis/all?localidades=N3[51]&classificacao=48[39441]",
+  "status": 200,
+  "captured_at": "2026-09-18T14:23:32.882007+00:00",
+  "bytes": 2061,
+  "sha256": "2c39c5bbad87d70e283170a5978ee2cdff8a61ccbbd0cf895353a51c744dd995",
+  "sidra_spec": {
+   "t": "6588",
+   "n": "3",
+   "code": "51",
+   "v": null,
+   "p": "202301,202302,202303,202304,202305,202306,202307,202308,202309,202310,202311,202312",
+   "c": {
+    "48": "39441"
+   }
+  },
+  "sidra_file": "tests/golden_data/ibge/lspa_oficial/lspa_client_capture.json"
+ }
+]

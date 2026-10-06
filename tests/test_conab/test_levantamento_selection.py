@@ -19,7 +19,7 @@ from agrobr.models import Safra
 from tests import helpers
 
 _JANUARY_PATH = "4o-levantamento-safra-2025-26/site_previsao_de_safra-por_produto-jan-2026"
-R3 = Path(__file__).parents[1] / "golden_data/reconciliacao_r3_20260918"
+R3 = Path(__file__).parents[1] / "golden_data/reconciliacao_conab_20260918"
 SET_2025 = Path(__file__).parents[1] / "golden_data/conab/levantamento_12_2024_25_20260922"
 SET_2025_URL = json.loads((SET_2025 / "PROVENANCE.json").read_text(encoding="utf-8"))["files"][0][
     "url"

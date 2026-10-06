@@ -2,7 +2,7 @@
   "capture_session": "conferência, rodada 4, reaproveitada, 22/09/2026",
   "source": "CONAB (boletim da safra de grãos, 12º levantamento 2024/25, publicado em 11/09/2025)",
   "method": "Planilha oficial preservada byte a byte, sem reserializar.",
-  "notes": "Par do 12º levantamento 2025/26 (tests/golden_data/reconciliacao_r3_20260918/7cd4df7946e5c57f.xlsx): as duas edições publicam a safra 2024/25 (colunas 'Safra 24/25'); a de set/2026 traz a revisão.",
+  "notes": "Par do 12º levantamento 2025/26 (tests/golden_data/reconciliacao_conab_20260918/7cd4df7946e5c57f.xlsx): as duas edições publicam a safra 2024/25 (colunas 'Safra 24/25'); a de set/2026 traz a revisão.",
   "files": [
     {
       "file": "site_previsao_de_safra-por_produto-set-2025.xlsx",

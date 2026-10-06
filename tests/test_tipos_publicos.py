@@ -79,7 +79,7 @@ def test_cepea_indicador_sem_as_polars_e_so_pandas():
     }
 
 
-def test_fontes_percorridas_incluem_as_do_cr442():
+def test_fontes_percorridas_incluem_apis_com_return_meta():
     nomes = {nome for nome, _ in _funcoes_das_fontes()}
     assert {
         "agrobr.inmet.historico",

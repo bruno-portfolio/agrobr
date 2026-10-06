@@ -17,7 +17,8 @@ def test_produto_invalido_recusado_antes_do_parsing(produto):
 
 def test_produto_acentuado_preserva_valor_unidade_e_praca_publicados():
     arquivo = (
-        Path(__file__).resolve().parents[1] / "golden_data/reconciliacao_r6_20260918/na_cafe.html"
+        Path(__file__).resolve().parents[1]
+        / "golden_data/reconciliacao_precos_diarios_20260918/na_cafe.html"
     )
     indicadores = parser.parse_indicador(arquivo.read_text(encoding="utf-8"), " CAFÉ ")
     primeiro = indicadores[0]

@@ -1,0 +1,11 @@
+{
+ "name": "ptax_usd_dia_20260904",
+ "source": "bcb",
+ "requested_url": "https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/CotacaoMoedaDia(moeda=@m,dataCotacao=@d)?@m='USD'&@d='09-04-2026'&$format=json&$orderby=dataHoraCotacao%20asc,tipoBoletim%20asc&$top=1000&$skip=0",
+ "final_url": "https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/CotacaoMoedaDia(moeda=@m,dataCotacao=@d)?@m='USD'&@d='09-04-2026'&$format=json&$orderby=dataHoraCotacao%20asc,tipoBoletim%20asc&$top=1000&$skip=0",
+ "status": 200,
+ "captured_at": "2026-09-18T12:45:09.670996+00:00",
+ "bytes": 998,
+ "sha256": "fe6c9d7356432e4310ca99840cb6a077a5842aaaea2518e0c151eb1eb8b95a19",
+ "content_type": "application/json;charset=UTF-8;odata.metadata=minimal"
+}

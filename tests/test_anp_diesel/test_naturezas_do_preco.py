@@ -4,7 +4,7 @@ import pytest
 
 from agrobr.alt.anp_diesel import api
 from tests.helpers import assert_replay_served, sem_excecao
-from tests.test_anp_diesel import test_reconciliacao_r11 as r11
+from tests.test_anp_diesel import test_reconciliacao as r11
 
 CASOS = {caso["id"]: caso for caso in r11.MANIFEST["cases"]}
 SEMANA = {"produto": "DIESEL S10", "inicio": "2026-09-06", "fim": "2026-09-06"}

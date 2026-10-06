@@ -18,7 +18,7 @@ from tests.helpers import (
 
 FIXTURE = (
     Path(__file__).parents[1]
-    / "golden_data/reconciliacao_r11_20260918/icmbio/icmbio_national_007.csv"
+    / "golden_data/reconciliacao_registros_precos_zoneamento_seguro_20260918/icmbio/icmbio_national_007.csv"
 )
 
 

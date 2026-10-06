@@ -28,7 +28,7 @@ from agrobr.exceptions import SourceUnavailableError
 from tests import helpers
 
 GOLDEN = Path(__file__).parents[1] / "golden_data"
-R3 = GOLDEN / "reconciliacao_r3_20260918"
+R3 = GOLDEN / "reconciliacao_conab_20260918"
 SET_2025 = GOLDEN / "conab/levantamento_12_2024_25_20260922"
 SET_2025_URL = json.loads((SET_2025 / "PROVENANCE.json").read_text(encoding="utf-8"))["files"][0][
     "url"

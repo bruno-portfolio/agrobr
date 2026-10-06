@@ -6,7 +6,7 @@ em UTF-8. O `manifest.json` traz a URL, o status, os cabeçalhos, os bytes e o S
 
 - **12 páginas novas:** soja Paraná, arroz, açúcar cristal, açúcar refinado, etanol hidratado e anidro (semanais), frango
   congelado e resfriado, suíno (5 praças por dia), leite (10 estados e Brasil por mês) e laranja indústria e in natura.
-- **8 páginas da R6,** por referência a `tests/golden_data/reconciliacao_r6_20260918/`: soja Paranaguá, milho, bezerro, boi,
+- **8 páginas de preços diários,** por referência a `tests/golden_data/reconciliacao_precos_diarios_20260918/`: soja Paranaguá, milho, bezerro, boi,
   café arábica, café robusta, algodão e trigo.
 - **Aliases:** `boi_gordo` e `cafe_arabica` são aliases de `boi` e `cafe`; a página é a mesma.
 

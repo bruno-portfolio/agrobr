@@ -15,7 +15,7 @@ from tests.helpers import install_replay_http, sem_excecao
 
 GOLDEN = Path(__file__).resolve().parents[1] / "golden_data"
 OFICIAL = GOLDEN / "conab_ceasa/prohort_grupos_20260923"
-R9 = GOLDEN / "reconciliacao_r9_20260918"
+R9 = GOLDEN / "reconciliacao_mercados_credito_20260918"
 MANIFESTO = json.loads((OFICIAL / "manifest.json").read_text(encoding="utf-8"))
 CASO_R9 = next(
     caso

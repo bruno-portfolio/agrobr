@@ -239,81 +239,81 @@
   },
   {
    "produto": "soja",
-   "file": "../../reconciliacao_r6_20260918/na_soja.html",
+   "file": "../../reconciliacao_precos_diarios_20260918/na_soja.html",
    "url": "https://www.noticiasagricolas.com.br/cotacoes/soja/soja-indicador-cepea-esalq-porto-paranagua",
    "sha256": "c1095f3eb723960501c91fcd2a49fe1f1703bdb5dd6e9b8e4c91bd9c6283df03",
    "bytes": 131542,
    "captured_at": "2026-09-18T10:54:23.944090+00:00",
-   "reused_from": "tests/golden_data/reconciliacao_r6_20260918 (captura oficial da R6)"
+   "reused_from": "tests/golden_data/reconciliacao_precos_diarios_20260918 (captura oficial de preços diários)"
   },
   {
    "produto": "milho",
-   "file": "../../reconciliacao_r6_20260918/na_milho.html",
+   "file": "../../reconciliacao_precos_diarios_20260918/na_milho.html",
    "url": "https://www.noticiasagricolas.com.br/cotacoes/milho/indicador-cepea-esalq-milho",
    "sha256": "b8153108c48b703e6bb39becdc5ff3d161d4d539ac840498b3f1cf7aa418208e",
    "bytes": 131397,
    "captured_at": "2026-09-18T10:54:27.049259+00:00",
-   "reused_from": "tests/golden_data/reconciliacao_r6_20260918 (captura oficial da R6)"
+   "reused_from": "tests/golden_data/reconciliacao_precos_diarios_20260918 (captura oficial de preços diários)"
   },
   {
    "produto": "bezerro",
-   "file": "../../reconciliacao_r6_20260918/na_bezerro.html",
+   "file": "../../reconciliacao_precos_diarios_20260918/na_bezerro.html",
    "url": "https://www.noticiasagricolas.com.br/cotacoes/boi-gordo/indicador-bezerro-esalq-bmf-bovespa-ms",
    "sha256": "e68800a2216d617f7bd9a3dd76dd230e783667721b53dbb883babd9e536403f7",
    "bytes": 131661,
    "captured_at": "2026-09-18T10:54:33.492643+00:00",
-   "reused_from": "tests/golden_data/reconciliacao_r6_20260918 (captura oficial da R6)"
+   "reused_from": "tests/golden_data/reconciliacao_precos_diarios_20260918 (captura oficial de preços diários)"
   },
   {
    "produto": "boi",
-   "file": "../../reconciliacao_r6_20260918/na_boi.html",
+   "file": "../../reconciliacao_precos_diarios_20260918/na_boi.html",
    "url": "https://www.noticiasagricolas.com.br/cotacoes/boi-gordo/boi-gordo-indicador-esalq-bmf",
    "sha256": "d3be6f258bd6b8f739e348a15b1e8946c82370b39e905f995b147a65c61715bd",
    "bytes": 131598,
    "captured_at": "2026-09-18T10:54:30.128808+00:00",
-   "reused_from": "tests/golden_data/reconciliacao_r6_20260918 (captura oficial da R6)"
+   "reused_from": "tests/golden_data/reconciliacao_precos_diarios_20260918 (captura oficial de preços diários)"
   },
   {
    "produto": "cafe",
-   "file": "../../reconciliacao_r6_20260918/na_cafe.html",
+   "file": "../../reconciliacao_precos_diarios_20260918/na_cafe.html",
    "url": "https://www.noticiasagricolas.com.br/cotacoes/cafe/indicador-cepea-esalq-cafe-arabica",
    "sha256": "e8b375acd73ae4f93bb5534984c12d621e9a595feed8a1802109a14e15f731da",
    "bytes": 131516,
    "captured_at": "2026-09-18T10:54:36.646024+00:00",
-   "reused_from": "tests/golden_data/reconciliacao_r6_20260918 (captura oficial da R6)"
+   "reused_from": "tests/golden_data/reconciliacao_precos_diarios_20260918 (captura oficial de preços diários)"
   },
   {
    "produto": "cafe_robusta",
-   "file": "../../reconciliacao_r6_20260918/na_cafe_robusta.html",
+   "file": "../../reconciliacao_precos_diarios_20260918/na_cafe_robusta.html",
    "url": "https://www.noticiasagricolas.com.br/cotacoes/cafe/indicador-cepea-esalq-cafe-conillon",
    "sha256": "715df5c47f1ac4ad990aae0fe5b15063f6d954b4f33cc53ec5cd712fb21f8335",
    "bytes": 131499,
    "captured_at": "2026-09-18T10:54:39.739612+00:00",
-   "reused_from": "tests/golden_data/reconciliacao_r6_20260918 (captura oficial da R6)"
+   "reused_from": "tests/golden_data/reconciliacao_precos_diarios_20260918 (captura oficial de preços diários)"
   },
   {
    "produto": "algodao",
-   "file": "../../reconciliacao_r6_20260918/na_algodao.html",
+   "file": "../../reconciliacao_precos_diarios_20260918/na_algodao.html",
    "url": "https://www.noticiasagricolas.com.br/cotacoes/algodao/algodao-indicador-cepea-esalq-a-prazo",
    "sha256": "a9ce79f9e57ea64542471eed16cffb162be98e2a297b1dc5fc8e16f2ebc39d8a",
    "bytes": 131675,
    "captured_at": "2026-09-18T10:54:46.022274+00:00",
-   "reused_from": "tests/golden_data/reconciliacao_r6_20260918 (captura oficial da R6)"
+   "reused_from": "tests/golden_data/reconciliacao_precos_diarios_20260918 (captura oficial de preços diários)"
   },
   {
    "produto": "trigo",
-   "file": "../../reconciliacao_r6_20260918/na_trigo.html",
+   "file": "../../reconciliacao_precos_diarios_20260918/na_trigo.html",
    "url": "https://www.noticiasagricolas.com.br/cotacoes/trigo/preco-medio-do-trigo-cepea-esalq",
    "sha256": "81c157a56438cfd21ec2cd6801ea7e3ff8ca834147a8dbf1ff8724c8f8ba8327",
    "bytes": 134837,
    "captured_at": "2026-09-18T10:54:42.954103+00:00",
-   "reused_from": "tests/golden_data/reconciliacao_r6_20260918 (captura oficial da R6)"
+   "reused_from": "tests/golden_data/reconciliacao_precos_diarios_20260918 (captura oficial de preços diários)"
   }
  ],
  "cases": [
   {
    "produto": "soja",
-   "file": "../../reconciliacao_r6_20260918/na_soja.html",
+   "file": "../../reconciliacao_precos_diarios_20260918/na_soja.html",
    "sha256": "c1095f3eb723960501c91fcd2a49fe1f1703bdb5dd6e9b8e4c91bd9c6283df03",
    "fallback_cepea": true,
    "unidade": {
@@ -601,7 +601,7 @@
   },
   {
    "produto": "milho",
-   "file": "../../reconciliacao_r6_20260918/na_milho.html",
+   "file": "../../reconciliacao_precos_diarios_20260918/na_milho.html",
    "sha256": "b8153108c48b703e6bb39becdc5ff3d161d4d539ac840498b3f1cf7aa418208e",
    "fallback_cepea": true,
    "unidade": {
@@ -745,7 +745,7 @@
   },
   {
    "produto": "bezerro",
-   "file": "../../reconciliacao_r6_20260918/na_bezerro.html",
+   "file": "../../reconciliacao_precos_diarios_20260918/na_bezerro.html",
    "sha256": "e68800a2216d617f7bd9a3dd76dd230e783667721b53dbb883babd9e536403f7",
    "fallback_cepea": true,
    "unidade": {
@@ -889,7 +889,7 @@
   },
   {
    "produto": "boi",
-   "file": "../../reconciliacao_r6_20260918/na_boi.html",
+   "file": "../../reconciliacao_precos_diarios_20260918/na_boi.html",
    "sha256": "d3be6f258bd6b8f739e348a15b1e8946c82370b39e905f995b147a65c61715bd",
    "fallback_cepea": true,
    "unidade": {
@@ -1033,7 +1033,7 @@
   },
   {
    "produto": "cafe",
-   "file": "../../reconciliacao_r6_20260918/na_cafe.html",
+   "file": "../../reconciliacao_precos_diarios_20260918/na_cafe.html",
    "sha256": "e8b375acd73ae4f93bb5534984c12d621e9a595feed8a1802109a14e15f731da",
    "fallback_cepea": true,
    "unidade": {
@@ -1177,7 +1177,7 @@
   },
   {
    "produto": "cafe_robusta",
-   "file": "../../reconciliacao_r6_20260918/na_cafe_robusta.html",
+   "file": "../../reconciliacao_precos_diarios_20260918/na_cafe_robusta.html",
    "sha256": "715df5c47f1ac4ad990aae0fe5b15063f6d954b4f33cc53ec5cd712fb21f8335",
    "fallback_cepea": true,
    "unidade": {
@@ -1321,7 +1321,7 @@
   },
   {
    "produto": "algodao",
-   "file": "../../reconciliacao_r6_20260918/na_algodao.html",
+   "file": "../../reconciliacao_precos_diarios_20260918/na_algodao.html",
    "sha256": "a9ce79f9e57ea64542471eed16cffb162be98e2a297b1dc5fc8e16f2ebc39d8a",
    "fallback_cepea": true,
    "unidade": {
@@ -1465,7 +1465,7 @@
   },
   {
    "produto": "trigo",
-   "file": "../../reconciliacao_r6_20260918/na_trigo.html",
+   "file": "../../reconciliacao_precos_diarios_20260918/na_trigo.html",
    "sha256": "81c157a56438cfd21ec2cd6801ea7e3ff8ca834147a8dbf1ff8724c8f8ba8327",
    "fallback_cepea": true,
    "unidade": {
@@ -4986,7 +4986,7 @@
   },
   {
    "produto": "boi_gordo",
-   "file": "../../reconciliacao_r6_20260918/na_boi.html",
+   "file": "../../reconciliacao_precos_diarios_20260918/na_boi.html",
    "sha256": "d3be6f258bd6b8f739e348a15b1e8946c82370b39e905f995b147a65c61715bd",
    "fallback_cepea": true,
    "unidade": {
@@ -5130,7 +5130,7 @@
   },
   {
    "produto": "cafe_arabica",
-   "file": "../../reconciliacao_r6_20260918/na_cafe.html",
+   "file": "../../reconciliacao_precos_diarios_20260918/na_cafe.html",
    "sha256": "e8b375acd73ae4f93bb5534984c12d621e9a595feed8a1802109a14e15f731da",
    "fallback_cepea": true,
    "unidade": {

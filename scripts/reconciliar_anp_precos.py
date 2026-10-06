@@ -13,7 +13,7 @@ from urllib.parse import urljoin, urlsplit
 import pandas as pd
 
 ROOT = Path(__file__).resolve().parents[1]
-GOLDEN = ROOT / "tests/golden_data/reconciliacao_r11_20260918/anp"
+GOLDEN = ROOT / "tests/golden_data/reconciliacao_registros_precos_zoneamento_seguro_20260918/anp"
 
 
 class _WorkbookLinks(HTMLParser):

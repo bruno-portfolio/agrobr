@@ -20,8 +20,8 @@ from tests.test_datasets.test_pecuaria_municipal import _mock_df as pecuaria_moc
 from tests.test_datasets.test_producao_anual import _mock_df as producao_mock
 from tests.test_datasets.test_silvicultura import _mock_df as silvicultura_mock
 from tests.test_ibge.test_censo_total import _servir_sidra
-from tests.test_sicar.test_reconciliacao_r11 import GOLDEN as SICAR
-from tests.test_sicar.test_reconciliacao_r11 import MANIFEST as SICAR_MANIFEST
+from tests.test_sicar.test_reconciliacao import GOLDEN as SICAR
+from tests.test_sicar.test_reconciliacao import MANIFEST as SICAR_MANIFEST
 
 
 @pytest.mark.parametrize(

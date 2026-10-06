@@ -16,7 +16,7 @@ from agrobr.alt.anp_diesel import _catalog, api, client, models, parser
 from agrobr.exceptions import InvalidParameterError, ParseError, SourceUnavailableError
 from scripts import reconciliar_anp_precos as reconciliacao
 from tests.helpers import levanta_exatamente, sem_excecao
-from tests.test_anp_diesel import test_reconciliacao_r11 as r11
+from tests.test_anp_diesel import test_reconciliacao as r11
 from tests.test_anp_diesel.test_catalog import _html
 from tests.test_anp_diesel.test_parser import _make_precos_xlsx, _make_vendas_csv
 

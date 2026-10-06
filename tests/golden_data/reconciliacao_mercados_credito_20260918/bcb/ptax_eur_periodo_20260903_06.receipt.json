@@ -1,0 +1,11 @@
+{
+ "name": "ptax_eur_periodo_20260903_06",
+ "source": "bcb",
+ "requested_url": "https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/CotacaoMoedaPeriodo(moeda=@m,dataInicial=@di,dataFinalCotacao=@df)?@m='EUR'&@di='09-03-2026'&@df='09-06-2026'&$format=json&$orderby=dataHoraCotacao%20asc,tipoBoletim%20asc&$top=1000&$skip=0",
+ "final_url": "https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/CotacaoMoedaPeriodo(moeda=@m,dataInicial=@di,dataFinalCotacao=@df)?@m='EUR'&@di='09-03-2026'&@df='09-06-2026'&$format=json&$orderby=dataHoraCotacao%20asc,tipoBoletim%20asc&$top=1000&$skip=0",
+ "status": 200,
+ "captured_at": "2026-09-18T13:02:11.491718+00:00",
+ "bytes": 1867,
+ "sha256": "1cf2998d38401b1fcd1b560e37b522e11d68d1d8802c16b281328c136b086a7e",
+ "content_type": "application/json;charset=UTF-8;odata.metadata=minimal"
+}

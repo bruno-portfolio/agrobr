@@ -12,7 +12,9 @@ from agrobr.conab import api, client
 from tests.helpers import conferir_corpo
 
 FIXTURE = Path(__file__).parents[1] / "golden_data/conab/safra_2025_26_agosto/response.xlsx"
-SET_2026 = Path(__file__).parents[1] / "golden_data/reconciliacao_r3_20260918/7cd4df7946e5c57f.xlsx"
+SET_2026 = (
+    Path(__file__).parents[1] / "golden_data/reconciliacao_conab_20260918/7cd4df7946e5c57f.xlsx"
+)
 
 
 @pytest.mark.asyncio

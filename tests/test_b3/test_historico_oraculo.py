@@ -29,7 +29,8 @@ GOLDEN = Path(__file__).resolve().parents[1] / "golden_data"
 PREGOES = GOLDEN / "b3/pregoes_20260921_20260922"
 DIAS = [date(2026, 9, 21), date(2026, 9, 22)]
 AJUSTES = {
-    date(2026, 9, 17): GOLDEN / "reconciliacao_r9_20260918/b3/b3_ajustes_PR260917_recorte.zip",
+    date(2026, 9, 17): GOLDEN
+    / "reconciliacao_mercados_credito_20260918/b3/b3_ajustes_PR260917_recorte.zip",
     **{dia: PREGOES / f"b3_ajustes_PR{dia:%y%m%d}_recorte.zip" for dia in DIAS},
 }
 MESES = dict(zip("FGHJKMNQUVXZ", range(1, 13), strict=True))

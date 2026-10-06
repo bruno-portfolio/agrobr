@@ -1,0 +1,11 @@
+{
+ "name": "focus_pib_agro_anual_ge20260828",
+ "source": "bcb",
+ "requested_url": "https://olinda.bcb.gov.br/olinda/servico/Expectativas/versao/v1/odata/ExpectativasMercadoAnuais?$format=json&$filter=Indicador%20eq%20'PIB%20Agropecu%C3%A1ria'%20and%20Data%20ge%20'2026-08-28'&$orderby=Data%20desc,DataReferencia%20asc,baseCalculo%20asc,IndicadorDetalhe%20asc&$top=6&$skip=0",
+ "final_url": "https://olinda.bcb.gov.br/olinda/servico/Expectativas/versao/v1/odata/ExpectativasMercadoAnuais?$format=json&$filter=Indicador%20eq%20'PIB%20Agropecu%C3%A1ria'%20and%20Data%20ge%20'2026-08-28'&$orderby=Data%20desc,DataReferencia%20asc,baseCalculo%20asc,IndicadorDetalhe%20asc&$top=6&$skip=0",
+ "status": 200,
+ "captured_at": "2026-09-18T12:45:10.398619+00:00",
+ "bytes": 1512,
+ "sha256": "79d62456d2b6f9914ab114847ded98a8fdaf37ae69d157bfc202c2d793b55217",
+ "content_type": "application/json;charset=UTF-8;odata.metadata=minimal"
+}

@@ -1,0 +1,946 @@
+{
+  "format": "agrobr.reconciliation.r11.family",
+  "format_version": 1,
+  "oracle": "Independent stdlib csv, int and float conversion over all cells of the complete captured responses; no agrobr imports.",
+  "files": [
+    {
+      "file": "icmbio_national_006.xml",
+      "original": {
+        "case": "icmbio_national",
+        "requested_url": "https://geoservicos.inde.gov.br/geoserver/ICMBio/ows?service=WFS&version=1.1.0&request=GetFeature&typeName=ICMBio%3Alimiteucsfederais_a&resultType=hits",
+        "url": "https://geoservicos.inde.gov.br/geoserver/ICMBio/ows?service=WFS&version=1.1.0&request=GetFeature&typeName=ICMBio%3Alimiteucsfederais_a&resultType=hits",
+        "method": "GET",
+        "status": 200,
+        "fetched_at": "2026-09-18T16:04:31.011094+00:00",
+        "bytes": 512,
+        "sha256": "5c18b41ea6b7e790055f2c1344fc9d9570da67afeb1f8d41b33c72b7fce3c3cc",
+        "file": "icmbio_national_006.xml",
+        "headers": {
+          "content-encoding": "gzip",
+          "content-type": "text/xml",
+          "date": "Fri, 18 Sep 2026 16:04:31 GMT"
+        }
+      }
+    },
+    {
+      "file": "icmbio_national_007.csv",
+      "original": {
+        "case": "icmbio_national",
+        "requested_url": "https://geoservicos.inde.gov.br/geoserver/ICMBio/ows?service=WFS&version=1.1.0&request=GetFeature&typeName=ICMBio:limiteucsfederais_a&outputFormat=csv&propertyName=cnuc,nomeuc,sigla_cate,grupouc,areahaalb,uf,biomas,criacaoano,criacaoato&maxFeatures=500",
+        "url": "https://geoservicos.inde.gov.br/geoserver/ICMBio/ows?service=WFS&version=1.1.0&request=GetFeature&typeName=ICMBio:limiteucsfederais_a&outputFormat=csv&propertyName=cnuc,nomeuc,sigla_cate,grupouc,areahaalb,uf,biomas,criacaoano,criacaoato&maxFeatures=500",
+        "method": "GET",
+        "status": 200,
+        "fetched_at": "2026-09-18T16:04:33.951693+00:00",
+        "bytes": 56205,
+        "sha256": "19d36d130c0baee8fad4d57929045b6e563ed8c84b2e51debe0f0bc2f3f40eef",
+        "file": "icmbio_national_007.csv",
+        "headers": {
+          "content-encoding": "gzip",
+          "content-type": "text/csv;charset=UTF-8",
+          "date": "Fri, 18 Sep 2026 16:04:34 GMT"
+        }
+      }
+    },
+    {
+      "file": "icmbio_cerrado_008.xml",
+      "original": {
+        "case": "icmbio_cerrado",
+        "requested_url": "https://geoservicos.inde.gov.br/geoserver/ICMBio/ows?service=WFS&version=1.1.0&request=GetFeature&typeName=ICMBio%3Alimiteucsfederais_a&resultType=hits&CQL_FILTER=biomas+ILIKE+%27%25Cerrado%25%27",
+        "url": "https://geoservicos.inde.gov.br/geoserver/ICMBio/ows?service=WFS&version=1.1.0&request=GetFeature&typeName=ICMBio%3Alimiteucsfederais_a&resultType=hits&CQL_FILTER=biomas+ILIKE+%27%25Cerrado%25%27",
+        "method": "GET",
+        "status": 200,
+        "fetched_at": "2026-09-18T16:04:36.104282+00:00",
+        "bytes": 511,
+        "sha256": "7c703e2d5d2ff5b898bd926f4eccf13c13652ef62b7bc3f567d19709c47bfaa4",
+        "file": "icmbio_cerrado_008.xml",
+        "headers": {
+          "content-encoding": "gzip",
+          "content-type": "text/xml",
+          "date": "Fri, 18 Sep 2026 16:04:37 GMT"
+        }
+      }
+    },
+    {
+      "file": "icmbio_cerrado_009.csv",
+      "original": {
+        "case": "icmbio_cerrado",
+        "requested_url": "https://geoservicos.inde.gov.br/geoserver/ICMBio/ows?service=WFS&version=1.1.0&request=GetFeature&typeName=ICMBio:limiteucsfederais_a&outputFormat=csv&propertyName=cnuc,nomeuc,sigla_cate,grupouc,areahaalb,uf,biomas,criacaoano,criacaoato&maxFeatures=500&CQL_FILTER=biomas%20ILIKE%20%27%25Cerrado%25%27",
+        "url": "https://geoservicos.inde.gov.br/geoserver/ICMBio/ows?service=WFS&version=1.1.0&request=GetFeature&typeName=ICMBio:limiteucsfederais_a&outputFormat=csv&propertyName=cnuc,nomeuc,sigla_cate,grupouc,areahaalb,uf,biomas,criacaoano,criacaoato&maxFeatures=500&CQL_FILTER=biomas%20ILIKE%20%27%25Cerrado%25%27",
+        "method": "GET",
+        "status": 200,
+        "fetched_at": "2026-09-18T16:04:38.375467+00:00",
+        "bytes": 8470,
+        "sha256": "d076631aec759fbe0e2a51a44f883103e4c161edc3876626798a06f70d1c5b4f",
+        "file": "icmbio_cerrado_009.csv",
+        "headers": {
+          "content-encoding": "gzip",
+          "content-type": "text/csv;charset=UTF-8",
+          "date": "Fri, 18 Sep 2026 16:04:39 GMT"
+        }
+      }
+    },
+    {
+      "file": "icmbio_uf_sp_010.xml",
+      "original": {
+        "case": "icmbio_uf_sp",
+        "requested_url": "https://geoservicos.inde.gov.br/geoserver/ICMBio/ows?service=WFS&version=1.1.0&request=GetFeature&typeName=ICMBio%3Alimiteucsfederais_a&resultType=hits&CQL_FILTER=uf+LIKE+%27%25SP%25%27",
+        "url": "https://geoservicos.inde.gov.br/geoserver/ICMBio/ows?service=WFS&version=1.1.0&request=GetFeature&typeName=ICMBio%3Alimiteucsfederais_a&resultType=hits&CQL_FILTER=uf+LIKE+%27%25SP%25%27",
+        "method": "GET",
+        "status": 200,
+        "fetched_at": "2026-09-18T16:04:40.478643+00:00",
+        "bytes": 511,
+        "sha256": "787de55f650fe53482817e3557f2f3e4b2b637627347334dabec1e3d7d79e15b",
+        "file": "icmbio_uf_sp_010.xml",
+        "headers": {
+          "content-encoding": "gzip",
+          "content-type": "text/xml",
+          "date": "Fri, 18 Sep 2026 16:04:41 GMT"
+        }
+      }
+    },
+    {
+      "file": "icmbio_uf_sp_011.csv",
+      "original": {
+        "case": "icmbio_uf_sp",
+        "requested_url": "https://geoservicos.inde.gov.br/geoserver/ICMBio/ows?service=WFS&version=1.1.0&request=GetFeature&typeName=ICMBio:limiteucsfederais_a&outputFormat=csv&propertyName=cnuc,nomeuc,sigla_cate,grupouc,areahaalb,uf,biomas,criacaoano,criacaoato&maxFeatures=500&CQL_FILTER=uf%20LIKE%20%27%25SP%25%27",
+        "url": "https://geoservicos.inde.gov.br/geoserver/ICMBio/ows?service=WFS&version=1.1.0&request=GetFeature&typeName=ICMBio:limiteucsfederais_a&outputFormat=csv&propertyName=cnuc,nomeuc,sigla_cate,grupouc,areahaalb,uf,biomas,criacaoano,criacaoato&maxFeatures=500&CQL_FILTER=uf%20LIKE%20%27%25SP%25%27",
+        "method": "GET",
+        "status": 200,
+        "fetched_at": "2026-09-18T16:04:42.788730+00:00",
+        "bytes": 3919,
+        "sha256": "641efca953b7c1a49b6291aeb45c8cf9067b92140767a3912470ff8d031081e6",
+        "file": "icmbio_uf_sp_011.csv",
+        "headers": {
+          "content-encoding": "gzip",
+          "content-type": "text/csv;charset=UTF-8",
+          "date": "Fri, 18 Sep 2026 16:04:43 GMT"
+        }
+      }
+    },
+    {
+      "file": "icmbio_schema_044.xml",
+      "original": {
+        "case": "icmbio_schema",
+        "requested_url": "https://geoservicos.inde.gov.br/geoserver/ICMBio/ows?service=WFS&version=1.1.0&request=DescribeFeatureType&typeName=ICMBio:limiteucsfederais_a",
+        "url": "https://geoservicos.inde.gov.br/geoserver/ICMBio/ows?service=WFS&version=1.1.0&request=DescribeFeatureType&typeName=ICMBio:limiteucsfederais_a",
+        "method": "GET",
+        "status": 200,
+        "fetched_at": "2026-09-18T16:05:52.285611+00:00",
+        "bytes": 3077,
+        "sha256": "32455355087fca71d8dd7bbfc06b94e2d8be3583352f401b621c7964f1a6b6c4",
+        "file": "icmbio_schema_044.xml",
+        "headers": {
+          "content-encoding": "gzip",
+          "content-type": "text/xml; subtype=gml/3.1.1",
+          "date": "Fri, 18 Sep 2026 16:05:53 GMT"
+        }
+      }
+    }
+  ],
+  "resources": [
+    {
+      "id": "icmbio_national",
+      "file": "icmbio_national_007.csv",
+      "original": {
+        "case": "icmbio_national",
+        "requested_url": "https://geoservicos.inde.gov.br/geoserver/ICMBio/ows?service=WFS&version=1.1.0&request=GetFeature&typeName=ICMBio:limiteucsfederais_a&outputFormat=csv&propertyName=cnuc,nomeuc,sigla_cate,grupouc,areahaalb,uf,biomas,criacaoano,criacaoato&maxFeatures=500",
+        "url": "https://geoservicos.inde.gov.br/geoserver/ICMBio/ows?service=WFS&version=1.1.0&request=GetFeature&typeName=ICMBio:limiteucsfederais_a&outputFormat=csv&propertyName=cnuc,nomeuc,sigla_cate,grupouc,areahaalb,uf,biomas,criacaoano,criacaoato&maxFeatures=500",
+        "method": "GET",
+        "status": 200,
+        "fetched_at": "2026-09-18T16:04:33.951693+00:00",
+        "bytes": 56205,
+        "sha256": "19d36d130c0baee8fad4d57929045b6e563ed8c84b2e51debe0f0bc2f3f40eef",
+        "file": "icmbio_national_007.csv",
+        "headers": {
+          "content-encoding": "gzip",
+          "content-type": "text/csv;charset=UTF-8",
+          "date": "Fri, 18 Sep 2026 16:04:34 GMT"
+        }
+      },
+      "headers": [
+        "FID",
+        "ogc_fid",
+        "nomeuc",
+        "cnuc",
+        "criacaoano",
+        "areahaalb",
+        "criacaoato",
+        "grupouc",
+        "biomas",
+        "uf",
+        "sigla_cate"
+      ],
+      "source_rows": 347,
+      "oracle": {
+        "file": "icmbio_national_oracle.json",
+        "columns": [
+          "codigo",
+          "nome",
+          "categoria",
+          "grupo",
+          "uf",
+          "bioma",
+          "area_ha",
+          "ano_criacao",
+          "ato_criacao"
+        ],
+        "sha256": "b6a1e11c6ca0dfb6d05f9edad7b8f60e2f89b149b7a4fbfc55842ad8a209c49c"
+      },
+      "column_decisions": {
+        "FID": {
+          "destination": null,
+          "decision": "ignored",
+          "reason": "WFS feature identity; retained in the oracle locator, not a public column"
+        },
+        "ogc_fid": {
+          "destination": null,
+          "decision": "ignored",
+          "reason": "Internal WFS identifier; retained in the locator, CNUC is the public identifier"
+        },
+        "nomeuc": {
+          "destination": "nome",
+          "decision": "mapped",
+          "reason": null
+        },
+        "cnuc": {
+          "destination": "codigo",
+          "decision": "mapped",
+          "reason": null
+        },
+        "criacaoano": {
+          "destination": "ano_criacao",
+          "decision": "mapped",
+          "reason": null
+        },
+        "areahaalb": {
+          "destination": "area_ha",
+          "decision": "mapped",
+          "reason": null
+        },
+        "criacaoato": {
+          "destination": "ato_criacao",
+          "decision": "mapped",
+          "reason": null
+        },
+        "grupouc": {
+          "destination": "grupo",
+          "decision": "mapped",
+          "reason": null
+        },
+        "biomas": {
+          "destination": "bioma",
+          "decision": "mapped",
+          "reason": null
+        },
+        "uf": {
+          "destination": "uf",
+          "decision": "mapped",
+          "reason": null
+        },
+        "sigla_cate": {
+          "destination": "categoria",
+          "decision": "mapped",
+          "reason": null
+        }
+      },
+      "statistics": {
+        "blank_fields": {
+          "FID": 0,
+          "ogc_fid": 0,
+          "nomeuc": 0,
+          "cnuc": 0,
+          "criacaoano": 0,
+          "areahaalb": 0,
+          "criacaoato": 0,
+          "grupouc": 0,
+          "biomas": 0,
+          "uf": 0,
+          "sigla_cate": 0
+        },
+        "group_counts": {
+          "PI": 155,
+          "US": 192
+        },
+        "multiple_states": 43,
+        "first_code": "0000.00.0175",
+        "last_code": "0000.00.5125"
+      }
+    },
+    {
+      "id": "icmbio_cerrado",
+      "file": "icmbio_cerrado_009.csv",
+      "original": {
+        "case": "icmbio_cerrado",
+        "requested_url": "https://geoservicos.inde.gov.br/geoserver/ICMBio/ows?service=WFS&version=1.1.0&request=GetFeature&typeName=ICMBio:limiteucsfederais_a&outputFormat=csv&propertyName=cnuc,nomeuc,sigla_cate,grupouc,areahaalb,uf,biomas,criacaoano,criacaoato&maxFeatures=500&CQL_FILTER=biomas%20ILIKE%20%27%25Cerrado%25%27",
+        "url": "https://geoservicos.inde.gov.br/geoserver/ICMBio/ows?service=WFS&version=1.1.0&request=GetFeature&typeName=ICMBio:limiteucsfederais_a&outputFormat=csv&propertyName=cnuc,nomeuc,sigla_cate,grupouc,areahaalb,uf,biomas,criacaoano,criacaoato&maxFeatures=500&CQL_FILTER=biomas%20ILIKE%20%27%25Cerrado%25%27",
+        "method": "GET",
+        "status": 200,
+        "fetched_at": "2026-09-18T16:04:38.375467+00:00",
+        "bytes": 8470,
+        "sha256": "d076631aec759fbe0e2a51a44f883103e4c161edc3876626798a06f70d1c5b4f",
+        "file": "icmbio_cerrado_009.csv",
+        "headers": {
+          "content-encoding": "gzip",
+          "content-type": "text/csv;charset=UTF-8",
+          "date": "Fri, 18 Sep 2026 16:04:39 GMT"
+        }
+      },
+      "headers": [
+        "FID",
+        "ogc_fid",
+        "nomeuc",
+        "cnuc",
+        "criacaoano",
+        "areahaalb",
+        "criacaoato",
+        "grupouc",
+        "biomas",
+        "uf",
+        "sigla_cate"
+      ],
+      "source_rows": 50,
+      "oracle": {
+        "file": "icmbio_cerrado_oracle.json",
+        "columns": [
+          "codigo",
+          "nome",
+          "categoria",
+          "grupo",
+          "uf",
+          "bioma",
+          "area_ha",
+          "ano_criacao",
+          "ato_criacao"
+        ],
+        "sha256": "8f2e70d24df4807a4f25424512cff8120934cc517a6a03a5fb3bbb4b674abeaf"
+      },
+      "column_decisions": {
+        "FID": {
+          "destination": null,
+          "decision": "ignored",
+          "reason": "WFS feature identity; retained in the oracle locator, not a public column"
+        },
+        "ogc_fid": {
+          "destination": null,
+          "decision": "ignored",
+          "reason": "Internal WFS identifier; retained in the locator, CNUC is the public identifier"
+        },
+        "nomeuc": {
+          "destination": "nome",
+          "decision": "mapped",
+          "reason": null
+        },
+        "cnuc": {
+          "destination": "codigo",
+          "decision": "mapped",
+          "reason": null
+        },
+        "criacaoano": {
+          "destination": "ano_criacao",
+          "decision": "mapped",
+          "reason": null
+        },
+        "areahaalb": {
+          "destination": "area_ha",
+          "decision": "mapped",
+          "reason": null
+        },
+        "criacaoato": {
+          "destination": "ato_criacao",
+          "decision": "mapped",
+          "reason": null
+        },
+        "grupouc": {
+          "destination": "grupo",
+          "decision": "mapped",
+          "reason": null
+        },
+        "biomas": {
+          "destination": "bioma",
+          "decision": "mapped",
+          "reason": null
+        },
+        "uf": {
+          "destination": "uf",
+          "decision": "mapped",
+          "reason": null
+        },
+        "sigla_cate": {
+          "destination": "categoria",
+          "decision": "mapped",
+          "reason": null
+        }
+      },
+      "statistics": {
+        "blank_fields": {
+          "FID": 0,
+          "ogc_fid": 0,
+          "nomeuc": 0,
+          "cnuc": 0,
+          "criacaoano": 0,
+          "areahaalb": 0,
+          "criacaoato": 0,
+          "grupouc": 0,
+          "biomas": 0,
+          "uf": 0,
+          "sigla_cate": 0
+        },
+        "group_counts": {
+          "PI": 21,
+          "US": 29
+        },
+        "multiple_states": 11,
+        "first_code": "0000.00.0168",
+        "last_code": "0000.00.0128"
+      }
+    },
+    {
+      "id": "icmbio_uf_sp",
+      "file": "icmbio_uf_sp_011.csv",
+      "original": {
+        "case": "icmbio_uf_sp",
+        "requested_url": "https://geoservicos.inde.gov.br/geoserver/ICMBio/ows?service=WFS&version=1.1.0&request=GetFeature&typeName=ICMBio:limiteucsfederais_a&outputFormat=csv&propertyName=cnuc,nomeuc,sigla_cate,grupouc,areahaalb,uf,biomas,criacaoano,criacaoato&maxFeatures=500&CQL_FILTER=uf%20LIKE%20%27%25SP%25%27",
+        "url": "https://geoservicos.inde.gov.br/geoserver/ICMBio/ows?service=WFS&version=1.1.0&request=GetFeature&typeName=ICMBio:limiteucsfederais_a&outputFormat=csv&propertyName=cnuc,nomeuc,sigla_cate,grupouc,areahaalb,uf,biomas,criacaoano,criacaoato&maxFeatures=500&CQL_FILTER=uf%20LIKE%20%27%25SP%25%27",
+        "method": "GET",
+        "status": 200,
+        "fetched_at": "2026-09-18T16:04:42.788730+00:00",
+        "bytes": 3919,
+        "sha256": "641efca953b7c1a49b6291aeb45c8cf9067b92140767a3912470ff8d031081e6",
+        "file": "icmbio_uf_sp_011.csv",
+        "headers": {
+          "content-encoding": "gzip",
+          "content-type": "text/csv;charset=UTF-8",
+          "date": "Fri, 18 Sep 2026 16:04:43 GMT"
+        }
+      },
+      "headers": [
+        "FID",
+        "ogc_fid",
+        "nomeuc",
+        "cnuc",
+        "criacaoano",
+        "areahaalb",
+        "criacaoato",
+        "grupouc",
+        "biomas",
+        "uf",
+        "sigla_cate"
+      ],
+      "source_rows": 22,
+      "oracle": {
+        "file": "icmbio_uf_sp_oracle.json",
+        "columns": [
+          "codigo",
+          "nome",
+          "categoria",
+          "grupo",
+          "uf",
+          "bioma",
+          "area_ha",
+          "ano_criacao",
+          "ato_criacao"
+        ],
+        "sha256": "63bdc26cdd400e07b8f80bee2ab35e47a8360e8e90b92b003183f3e101fcfcfc"
+      },
+      "column_decisions": {
+        "FID": {
+          "destination": null,
+          "decision": "ignored",
+          "reason": "WFS feature identity; retained in the oracle locator, not a public column"
+        },
+        "ogc_fid": {
+          "destination": null,
+          "decision": "ignored",
+          "reason": "Internal WFS identifier; retained in the locator, CNUC is the public identifier"
+        },
+        "nomeuc": {
+          "destination": "nome",
+          "decision": "mapped",
+          "reason": null
+        },
+        "cnuc": {
+          "destination": "codigo",
+          "decision": "mapped",
+          "reason": null
+        },
+        "criacaoano": {
+          "destination": "ano_criacao",
+          "decision": "mapped",
+          "reason": null
+        },
+        "areahaalb": {
+          "destination": "area_ha",
+          "decision": "mapped",
+          "reason": null
+        },
+        "criacaoato": {
+          "destination": "ato_criacao",
+          "decision": "mapped",
+          "reason": null
+        },
+        "grupouc": {
+          "destination": "grupo",
+          "decision": "mapped",
+          "reason": null
+        },
+        "biomas": {
+          "destination": "bioma",
+          "decision": "mapped",
+          "reason": null
+        },
+        "uf": {
+          "destination": "uf",
+          "decision": "mapped",
+          "reason": null
+        },
+        "sigla_cate": {
+          "destination": "categoria",
+          "decision": "mapped",
+          "reason": null
+        }
+      },
+      "statistics": {
+        "blank_fields": {
+          "FID": 0,
+          "ogc_fid": 0,
+          "nomeuc": 0,
+          "cnuc": 0,
+          "criacaoano": 0,
+          "areahaalb": 0,
+          "criacaoato": 0,
+          "grupouc": 0,
+          "biomas": 0,
+          "uf": 0,
+          "sigla_cate": 0
+        },
+        "group_counts": {
+          "PI": 6,
+          "US": 16
+        },
+        "multiple_states": 7,
+        "first_code": "0000.00.0178",
+        "last_code": "0000.00.1521"
+      }
+    }
+  ],
+  "cases": [
+    {
+      "id": "icmbio_national",
+      "r2_id": "unidades_conservacao_federais:icmbio:wfs_csv",
+      "query": {},
+      "requests": [
+        {
+          "file": "icmbio_national_006.xml",
+          "match": {
+            "path": "https://geoservicos.inde.gov.br/geoserver/ICMBio/ows",
+            "params": {
+              "service": "WFS",
+              "version": "1.1.0",
+              "request": "GetFeature",
+              "typeName": "ICMBio:limiteucsfederais_a",
+              "resultType": "hits"
+            },
+            "skip": 0
+          },
+          "status": 200,
+          "content_type": "text/xml"
+        },
+        {
+          "file": "icmbio_national_007.csv",
+          "match": {
+            "path": "https://geoservicos.inde.gov.br/geoserver/ICMBio/ows",
+            "params": {
+              "service": "WFS",
+              "version": "1.1.0",
+              "request": "GetFeature",
+              "typeName": "ICMBio:limiteucsfederais_a",
+              "outputFormat": "csv",
+              "propertyName": "cnuc,nomeuc,sigla_cate,grupouc,areahaalb,uf,biomas,criacaoano,criacaoato",
+              "maxFeatures": "500"
+            },
+            "skip": 0
+          },
+          "status": 200,
+          "content_type": "text/csv;charset=UTF-8"
+        }
+      ],
+      "resource": "icmbio_national",
+      "expected_rows": 347
+    },
+    {
+      "id": "icmbio_cerrado",
+      "r2_id": "unidades_conservacao_federais:icmbio:wfs_csv",
+      "query": {
+        "bioma": "Cerrado"
+      },
+      "requests": [
+        {
+          "file": "icmbio_cerrado_008.xml",
+          "match": {
+            "path": "https://geoservicos.inde.gov.br/geoserver/ICMBio/ows",
+            "params": {
+              "service": "WFS",
+              "version": "1.1.0",
+              "request": "GetFeature",
+              "typeName": "ICMBio:limiteucsfederais_a",
+              "resultType": "hits",
+              "CQL_FILTER": "biomas ILIKE '�rrado%'"
+            },
+            "skip": 0
+          },
+          "status": 200,
+          "content_type": "text/xml"
+        },
+        {
+          "file": "icmbio_cerrado_009.csv",
+          "match": {
+            "path": "https://geoservicos.inde.gov.br/geoserver/ICMBio/ows",
+            "params": {
+              "service": "WFS",
+              "version": "1.1.0",
+              "request": "GetFeature",
+              "typeName": "ICMBio:limiteucsfederais_a",
+              "outputFormat": "csv",
+              "propertyName": "cnuc,nomeuc,sigla_cate,grupouc,areahaalb,uf,biomas,criacaoano,criacaoato",
+              "maxFeatures": "500",
+              "CQL_FILTER": "biomas ILIKE '�rrado%'"
+            },
+            "skip": 0
+          },
+          "status": 200,
+          "content_type": "text/csv;charset=UTF-8"
+        }
+      ],
+      "resource": "icmbio_cerrado",
+      "expected_rows": 50
+    },
+    {
+      "id": "icmbio_uf_sp",
+      "r2_id": "unidades_conservacao_federais:icmbio:wfs_csv",
+      "query": {
+        "uf": "SP"
+      },
+      "requests": [
+        {
+          "file": "icmbio_uf_sp_010.xml",
+          "match": {
+            "path": "https://geoservicos.inde.gov.br/geoserver/ICMBio/ows",
+            "params": {
+              "service": "WFS",
+              "version": "1.1.0",
+              "request": "GetFeature",
+              "typeName": "ICMBio:limiteucsfederais_a",
+              "resultType": "hits",
+              "CQL_FILTER": "uf LIKE '%SP%'"
+            },
+            "skip": 0
+          },
+          "status": 200,
+          "content_type": "text/xml"
+        },
+        {
+          "file": "icmbio_uf_sp_011.csv",
+          "match": {
+            "path": "https://geoservicos.inde.gov.br/geoserver/ICMBio/ows",
+            "params": {
+              "service": "WFS",
+              "version": "1.1.0",
+              "request": "GetFeature",
+              "typeName": "ICMBio:limiteucsfederais_a",
+              "outputFormat": "csv",
+              "propertyName": "cnuc,nomeuc,sigla_cate,grupouc,areahaalb,uf,biomas,criacaoano,criacaoato",
+              "maxFeatures": "500",
+              "CQL_FILTER": "uf LIKE '%SP%'"
+            },
+            "skip": 0
+          },
+          "status": 200,
+          "content_type": "text/csv;charset=UTF-8"
+        }
+      ],
+      "resource": "icmbio_uf_sp",
+      "expected_rows": 22
+    }
+  ],
+  "schema": {
+    "file": "icmbio_schema_044.xml",
+    "target_namespace": "https://www.gov.br/icmbio",
+    "elements": [
+      {
+        "maxOccurs": "1",
+        "minOccurs": "1",
+        "name": "ogc_fid",
+        "nillable": "false",
+        "type": "xsd:int"
+      },
+      {
+        "maxOccurs": "1",
+        "minOccurs": "0",
+        "name": "id",
+        "nillable": "true",
+        "type": "xsd:long"
+      },
+      {
+        "maxOccurs": "1",
+        "minOccurs": "0",
+        "name": "nomeuc",
+        "nillable": "true",
+        "type": "xsd:string"
+      },
+      {
+        "maxOccurs": "1",
+        "minOccurs": "0",
+        "name": "cnuc",
+        "nillable": "true",
+        "type": "xsd:string"
+      },
+      {
+        "maxOccurs": "1",
+        "minOccurs": "0",
+        "name": "criacaoano",
+        "nillable": "true",
+        "type": "xsd:string"
+      },
+      {
+        "maxOccurs": "1",
+        "minOccurs": "0",
+        "name": "areahaalb",
+        "nillable": "true",
+        "type": "xsd:double"
+      },
+      {
+        "maxOccurs": "1",
+        "minOccurs": "0",
+        "name": "perimm",
+        "nillable": "true",
+        "type": "xsd:double"
+      },
+      {
+        "maxOccurs": "1",
+        "minOccurs": "0",
+        "name": "criacaoato",
+        "nillable": "true",
+        "type": "xsd:string"
+      },
+      {
+        "maxOccurs": "1",
+        "minOccurs": "0",
+        "name": "esferaadm",
+        "nillable": "true",
+        "type": "xsd:string"
+      },
+      {
+        "maxOccurs": "1",
+        "minOccurs": "0",
+        "name": "grupouc",
+        "nillable": "true",
+        "type": "xsd:string"
+      },
+      {
+        "maxOccurs": "1",
+        "minOccurs": "0",
+        "name": "biomas",
+        "nillable": "true",
+        "type": "xsd:string"
+      },
+      {
+        "maxOccurs": "1",
+        "minOccurs": "0",
+        "name": "gregional",
+        "nillable": "true",
+        "type": "xsd:string"
+      },
+      {
+        "maxOccurs": "1",
+        "minOccurs": "0",
+        "name": "fusoabrang",
+        "nillable": "true",
+        "type": "xsd:string"
+      },
+      {
+        "maxOccurs": "1",
+        "minOccurs": "0",
+        "name": "demarcacao",
+        "nillable": "true",
+        "type": "xsd:string"
+      },
+      {
+        "maxOccurs": "1",
+        "minOccurs": "0",
+        "name": "escalauc",
+        "nillable": "true",
+        "type": "xsd:string"
+      },
+      {
+        "maxOccurs": "1",
+        "minOccurs": "0",
+        "name": "bioma_pred",
+        "nillable": "true",
+        "type": "xsd:string"
+      },
+      {
+        "maxOccurs": "1",
+        "minOccurs": "0",
+        "name": "cat_iucn",
+        "nillable": "true",
+        "type": "xsd:string"
+      },
+      {
+        "maxOccurs": "1",
+        "minOccurs": "0",
+        "name": "uf",
+        "nillable": "true",
+        "type": "xsd:string"
+      },
+      {
+        "maxOccurs": "1",
+        "minOccurs": "0",
+        "name": "categoria_",
+        "nillable": "true",
+        "type": "xsd:string"
+      },
+      {
+        "maxOccurs": "1",
+        "minOccurs": "0",
+        "name": "sigla_cate",
+        "nillable": "true",
+        "type": "xsd:string"
+      },
+      {
+        "maxOccurs": "1",
+        "minOccurs": "0",
+        "name": "dominio",
+        "nillable": "true",
+        "type": "xsd:string"
+      },
+      {
+        "maxOccurs": "1",
+        "minOccurs": "0",
+        "name": "the_geom",
+        "nillable": "true",
+        "type": "gml:MultiSurfacePropertyType"
+      }
+    ],
+    "column_decisions": {
+      "ogc_fid": {
+        "destination": null,
+        "decision": "ignored",
+        "reason": "Internal WFS identifier; retained in the locator, CNUC is the public identifier"
+      },
+      "id": {
+        "destination": null,
+        "decision": "ignored",
+        "reason": "Internal administrative identifier outside the tabular contract"
+      },
+      "nomeuc": {
+        "destination": "nome",
+        "decision": "mapped",
+        "reason": null
+      },
+      "cnuc": {
+        "destination": "codigo",
+        "decision": "mapped",
+        "reason": null
+      },
+      "criacaoano": {
+        "destination": "ano_criacao",
+        "decision": "mapped",
+        "reason": null
+      },
+      "areahaalb": {
+        "destination": "area_ha",
+        "decision": "mapped",
+        "reason": null
+      },
+      "perimm": {
+        "destination": null,
+        "decision": "ignored",
+        "reason": "Perimeter outside the tabular contract"
+      },
+      "criacaoato": {
+        "destination": "ato_criacao",
+        "decision": "mapped",
+        "reason": null
+      },
+      "esferaadm": {
+        "destination": null,
+        "decision": "ignored",
+        "reason": "Administrative sphere outside the tabular contract"
+      },
+      "grupouc": {
+        "destination": "grupo",
+        "decision": "mapped",
+        "reason": null
+      },
+      "biomas": {
+        "destination": "bioma",
+        "decision": "mapped",
+        "reason": null
+      },
+      "gregional": {
+        "destination": null,
+        "decision": "ignored",
+        "reason": "Administrative region outside the tabular contract"
+      },
+      "fusoabrang": {
+        "destination": null,
+        "decision": "ignored",
+        "reason": "Spatial reference metadata outside the tabular contract"
+      },
+      "demarcacao": {
+        "destination": null,
+        "decision": "ignored",
+        "reason": "Demarcation metadata outside the tabular contract"
+      },
+      "escalauc": {
+        "destination": null,
+        "decision": "ignored",
+        "reason": "Cartographic scale outside the tabular contract"
+      },
+      "bioma_pred": {
+        "destination": null,
+        "decision": "ignored",
+        "reason": "Predominant biome is not substituted for the published biomas list"
+      },
+      "cat_iucn": {
+        "destination": null,
+        "decision": "ignored",
+        "reason": "IUCN category is not substituted for the published national category"
+      },
+      "uf": {
+        "destination": "uf",
+        "decision": "mapped",
+        "reason": null
+      },
+      "categoria_": {
+        "destination": null,
+        "decision": "ignored",
+        "reason": "Long category label is not substituted for sigla_cate"
+      },
+      "sigla_cate": {
+        "destination": "categoria",
+        "decision": "mapped",
+        "reason": null
+      },
+      "dominio": {
+        "destination": null,
+        "decision": "ignored",
+        "reason": "Land tenure metadata outside the tabular contract"
+      },
+      "the_geom": {
+        "destination": null,
+        "decision": "ignored",
+        "reason": "Geometry is outside this R2 tabular variant"
+      }
+    }
+  },
+  "numeric_rule": "Exact float64 equality for area; no aggregation or area conversion.",
+  "limits": [
+    "Current WFS layer; creation year does not select a historical edition.",
+    "The pre-acquisition hits count agrees with every response, but does not establish a transactional snapshot.",
+    "Three overlapping queries: 419 expected records, 347 distinct CNUC identifiers; 11 raw CSV fields, 9 output columns.",
+    "The XSD is inventoried in full, including ignored geometry and administrative attributes; N2 is tabular only.",
+    "No blank values occur in the captured CSVs; synthetic absence tests do not establish official null occurrences.",
+    "N3 not applicable: repeated queries from the same layer are not independent sources."
+  ]
+}

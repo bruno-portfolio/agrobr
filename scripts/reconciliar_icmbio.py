@@ -13,7 +13,7 @@ from pathlib import Path
 from typing import Any
 
 ROOT = Path(__file__).resolve().parents[1]
-GOLDEN = ROOT / "tests/golden_data/reconciliacao_r11_20260918/icmbio"
+GOLDEN = ROOT / "tests/golden_data/reconciliacao_registros_precos_zoneamento_seguro_20260918/icmbio"
 SEQUENCE_ELEMENTS = (
     ".//{http://www.w3.org/2001/XMLSchema}sequence/{http://www.w3.org/2001/XMLSchema}element"
 )

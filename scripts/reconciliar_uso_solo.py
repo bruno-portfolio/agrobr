@@ -16,7 +16,7 @@ from agrobr.http.user_agents import UserAgentRotator
 from agrobr.queimadas import models as queimadas_models
 
 ROOT = Path(__file__).resolve().parents[1]
-MANIFEST = ROOT / "tests/golden_data/reconciliacao_r12_20260918/manifest.json"
+MANIFEST = ROOT / "tests/golden_data/reconciliacao_uso_solo_ambiente_20260918/manifest.json"
 GEOSERVER = constants.URLS[constants.Fonte.DESMATAMENTO]["geoserver"]
 FOCOS_BASE = constants.URLS[constants.Fonte.QUEIMADAS]["dados_abertos"]
 MAPBIOMAS_WORKBOOKS = {

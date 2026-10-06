@@ -8,7 +8,7 @@ import pytest
 
 from scripts import reconciliar_boletins as audit
 
-GOLDEN = Path(__file__).parent / "golden_data/reconciliacao_r7_20260918"
+GOLDEN = Path(__file__).parent / "golden_data/reconciliacao_boletins_anec_anda_deral_20260918"
 PROFILES = json.loads((GOLDEN / "structure_profiles.json").read_text(encoding="utf-8"))
 
 

@@ -6,4 +6,4 @@ Os arquivos CSV são artefatos derivados: serialização UTF-8 sem BOM e termina
 
 O `registro_origem` emitido pelo parser sobre estes recortes refere-se à posição local no CSV reduzido, base 1; as posições no CSV integral estão separadamente no manifesto/oráculo. Não confundir os hashes ou atribuir estabilidade entre revisões a esses números.
 
-Em 23/09/2026, `raw_oracles.json` e o golden legado `tabua_risco_sample` foram aposentados: os recortes seguem só como corpos do replay dos testes de comportamento, e o oráculo das tábuas oficiais é o de `../../reconciliacao_r11_20260918/zarc/` e `../edicoes_20260923/`.
+Em 23/09/2026, `raw_oracles.json` e o golden legado `tabua_risco_sample` foram aposentados: os recortes seguem só como corpos do replay dos testes de comportamento, e o oráculo das tábuas oficiais é o de `../../reconciliacao_registros_precos_zoneamento_seguro_20260918/zarc/` e `../edicoes_20260923/`.

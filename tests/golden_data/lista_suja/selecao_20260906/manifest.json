@@ -7,7 +7,7 @@
   "periodic_update": "2026-04-06",
   "registry_updated_at": "2026-09-04",
   "csv_txt_equal_cells_after_strip": 5790,
-  "existing_identical_pdf": "../../reconciliacao_r11_20260918/mte/mte_pdf_016.pdf.gz",
+  "existing_identical_pdf": "../../reconciliacao_registros_precos_zoneamento_seguro_20260918/mte/mte_pdf_016.pdf.gz",
   "pdf_sha256": "41f992fa0f9a83acd0d8199b52820165c1947564815402b1b2b426121f2edae6",
   "artifacts": [
     {

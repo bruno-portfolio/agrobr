@@ -55,7 +55,7 @@ from agrobr.rnc import acquisition as rnc_acquisition
 from agrobr.snapshots import SnapshotManifest
 from agrobr.utils import warnings as source_warnings
 
-RECONCILIACAO_R3_GOLDEN = Path(__file__).parent / "golden_data/reconciliacao_r3_20260918"
+RECONCILIACAO_R3_GOLDEN = Path(__file__).parent / "golden_data/reconciliacao_conab_20260918"
 
 RETRY_SLEEP = "agrobr.http.retry.asyncio.sleep"
 SERIE_HISTORICA_GOLDEN = Path(__file__).parent / "golden_data/conab/serie_historica_20260917"
@@ -1306,7 +1306,7 @@ def sicar_feature_collection(
 
 
 def install_reconciliacao_r4_http(monkeypatch: Any) -> list[str]:
-    golden = Path(__file__).parent / "golden_data/reconciliacao_r4_20260918"
+    golden = Path(__file__).parent / "golden_data/reconciliacao_custos_conab_20260918"
     receipts = json.loads((golden / "receipts.json").read_text(encoding="utf-8"))
     pages = {}
     for receipt in receipts:
@@ -1333,7 +1333,7 @@ def install_reconciliacao_r4_http(monkeypatch: Any) -> list[str]:
 def load_r4_cost_sheet(
     file: str, product: str, name: str
 ) -> tuple[custos_workbook.Aba, custos_models.ContextoCusto]:
-    golden = Path(__file__).parent / "golden_data/reconciliacao_r4_20260918"
+    golden = Path(__file__).parent / "golden_data/reconciliacao_custos_conab_20260918"
     receipts = json.loads((golden / "receipts.json").read_text(encoding="utf-8"))
     receipt = next(item for item in receipts if item["file"] == file)
     raw = (golden / file).read_bytes()
@@ -1393,7 +1393,7 @@ def assert_r4_cost_meta(
 def install_reconciliacao_r5_http(
     monkeypatch: Any, case: dict[str, Any], manifest: dict[str, Any]
 ) -> list[str]:
-    golden = Path(__file__).parent / "golden_data/reconciliacao_r5_20260918"
+    golden = Path(__file__).parent / "golden_data/reconciliacao_censos_producao_ibge_conab_20260918"
     file = next(item for item in manifest["files"] if item["file"] == case["file"])
     raw = (golden / file["file"]).read_bytes()
     assert hashlib.sha256(raw).hexdigest() == file["sha256"]
@@ -1447,7 +1447,9 @@ def install_reconciliacao_r5_conab_http(
     original = httpx.AsyncClient.send
     extra_raw = b""
     if extra_file is not None:
-        golden = Path(__file__).parent / "golden_data/reconciliacao_r5_20260918"
+        golden = (
+            Path(__file__).parent / "golden_data/reconciliacao_censos_producao_ibge_conab_20260918"
+        )
         extra_raw = (golden / extra_file["file"]).read_bytes()
         assert hashlib.sha256(extra_raw).hexdigest() == extra_file["sha256"]
 
@@ -1483,7 +1485,7 @@ def install_reconciliacao_r5_quarter_http(
     manifest: dict[str, Any],
     override: list[dict[str, str]] | None = None,
 ) -> list[str]:
-    golden = Path(__file__).parent / "golden_data/reconciliacao_r5_20260918"
+    golden = Path(__file__).parent / "golden_data/reconciliacao_censos_producao_ibge_conab_20260918"
     receipt = next(file for file in manifest["files"] if file["file"] == case["file"])
     raw = (golden / case["file"]).read_bytes()
     assert hashlib.sha256(raw).hexdigest() == receipt["sha256"]

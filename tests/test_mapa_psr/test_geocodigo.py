@@ -9,8 +9,7 @@ from agrobr.alt.mapa_psr import api, parser
 from tests.helpers import binary_stream, sem_excecao
 
 SEM_GEOCODIGO = (
-    Path(__file__).resolve().parents[1]
-    / "golden_data/mapa_psr/sem_geocodigo_20260918/apolices.csv"
+    Path(__file__).resolve().parents[1] / "golden_data/mapa_psr/sem_geocodigo_20260918/apolices.csv"
 )
 
 

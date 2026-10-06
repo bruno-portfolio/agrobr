@@ -8,7 +8,7 @@ from bs4 import BeautifulSoup, Tag
 
 from scripts import reconciliar_preco_diario as reconciliation
 
-GOLDEN = Path(__file__).parent / "golden_data" / "reconciliacao_r6_20260918"
+GOLDEN = Path(__file__).parent / "golden_data" / "reconciliacao_precos_diarios_20260918"
 MANIFEST = json.loads((GOLDEN / "manifest.json").read_text(encoding="utf-8"))
 CASES = {case["id"]: case for case in MANIFEST["cases"]}
 

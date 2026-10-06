@@ -16,7 +16,7 @@ from tests import helpers
 from tests.helpers import sem_excecao
 
 GOLDEN = Path(__file__).resolve().parents[2] / "golden_data"
-R4 = GOLDEN / "reconciliacao_r4_20260918"
+R4 = GOLDEN / "reconciliacao_custos_conab_20260918"
 ARROZ = GOLDEN / "conab" / "custos_c17_20260925"
 SERIES = {
     "cafe_arabica": ("seriehistoricacustoscafearabica2003a2025.xls", R4 / "feb4999ec69b7274.xls"),

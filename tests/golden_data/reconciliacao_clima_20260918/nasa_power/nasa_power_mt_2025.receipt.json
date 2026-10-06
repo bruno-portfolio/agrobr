@@ -1,0 +1,11 @@
+{
+ "name": "nasa_power_mt_2025",
+ "source": "nasa_power",
+ "requested_url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CPRECTOTCORR%2CRH2M%2CALLSKY_SFC_SW_DWN%2CWS2M&community=AG&longitude=-56.1&latitude=-12.6&start=20250101&end=20251231&format=JSON&time-standard=LST",
+ "final_url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CPRECTOTCORR%2CRH2M%2CALLSKY_SFC_SW_DWN%2CWS2M&community=AG&longitude=-56.1&latitude=-12.6&start=20250101&end=20251231&format=JSON&time-standard=LST",
+ "status": 200,
+ "captured_at": "2026-09-18T13:10:42.198335+00:00",
+ "bytes": 43314,
+ "sha256": "4525411bb68762029a32377cd7fb4d43dba792c157545c841176724818598d3f",
+ "content_type": "application/json"
+}

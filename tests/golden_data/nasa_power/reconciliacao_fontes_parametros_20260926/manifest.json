@@ -1,0 +1,53 @@
+{
+  "origem": "Conferência de fontes e parâmetros (26/09/2026); corpos byte a byte",
+  "url_do_recibo": "a consulta equivalente do agrobr, montada do cabeçalho e da geometria de cada corpo",
+  "doc_oficial": "https://power.larc.nasa.gov/docs/methodology/data/sources/",
+  "corpos": {
+    "merra2_jan2025": {
+      "arquivo": "NASA_m_20250101.json",
+      "sha256": "675ce8ac798e9b3ffe5c86336fe990bc3623171d03073cd5cb0f22fed1500cac",
+      "bytes": 987,
+      "sources": [
+        "MERRA2"
+      ],
+      "recibo": {
+        "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M&community=AG&longitude=-47.71&latitude=-15.6&start=20250101&end=20250131&format=JSON&time-standard=LST"
+      }
+    },
+    "geosit_set2026": {
+      "arquivo": "NASA_m_20260901.json",
+      "sha256": "b680770dab8d3af4fad2cbb30cea4fd2471727164c656b74eab82cfcdf5b6f17",
+      "bytes": 836,
+      "sources": [
+        "GEOSIT"
+      ],
+      "recibo": {
+        "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M&community=AG&longitude=-47.71&latitude=-15.6&start=20260901&end=20260922&format=JSON&time-standard=LST"
+      }
+    },
+    "misto_30_dias": {
+      "arquivo": "NASA_j30d.json",
+      "sha256": "8fb15537972797e0ef32a44c66805d1823e2d843511da7f8d09000955a441f5e",
+      "bytes": 1544,
+      "sources": [
+        "GEOSIT",
+        "MERRA2"
+      ],
+      "recibo": {
+        "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CPRECTOTCORR&community=AG&longitude=-47.71&latitude=-15.6&start=20260827&end=20260925&format=JSON&time-standard=LST"
+      }
+    },
+    "misto_3_meses": {
+      "arquivo": "NASA_j3m.json",
+      "sha256": "4840a63f604f1748ce7fbe90b9e60c4c75059f64960ccbadc04e459af69a24c4",
+      "bytes": 3533,
+      "sources": [
+        "GEOSIT",
+        "MERRA2"
+      ],
+      "recibo": {
+        "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CPRECTOTCORR&community=AG&longitude=-47.71&latitude=-15.6&start=20260626&end=20260925&format=JSON&time-standard=LST"
+      }
+    }
+  }
+}

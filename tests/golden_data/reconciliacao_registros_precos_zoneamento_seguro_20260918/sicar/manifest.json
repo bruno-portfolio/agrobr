@@ -1,0 +1,5715 @@
+{
+  "manifest_schema": "agrobr.reconciliation.r11.family",
+  "format_version": 1,
+  "schema_document": "../FORMAT.md",
+  "oracle": "Independent stdlib json/datetime; all eleven cells, published timestamps normalized to UTC, explicit per-code version choice and literal feature/page coordinates. No agrobr imports.",
+  "files": [
+    {
+      "file": "sicar_df_000.xml.gz",
+      "original": {
+        "case": "sicar_df",
+        "requested_url": "https://geoserver.car.gov.br/geoserver/sicar/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=sicar:sicar_imoveis_df&outputFormat=application/json&propertyName=cod_imovel,status_imovel,dat_criacao,area,condicao,uf,municipio,cod_municipio_ibge,m_fiscal,tipo_imovel,data_atualizacao&sortBy=cod_imovel&count=10000&startIndex=0&resultType=hits&CQL_FILTER=cod_municipio_ibge%3D5300108%20AND%20data_atualizacao%3E%272026-09-01T00%3A00%3A00Z%27",
+        "url": "https://geoserver.car.gov.br/geoserver/sicar/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=sicar:sicar_imoveis_df&outputFormat=application/json&propertyName=cod_imovel,status_imovel,dat_criacao,area,condicao,uf,municipio,cod_municipio_ibge,m_fiscal,tipo_imovel,data_atualizacao&sortBy=cod_imovel&count=10000&startIndex=0&resultType=hits&CQL_FILTER=cod_municipio_ibge%3D5300108%20AND%20data_atualizacao%3E%272026-09-01T00%3A00%3A00Z%27",
+        "method": "GET",
+        "status": 200,
+        "fetched_at": "2026-09-18T16:04:18.731785+00:00",
+        "bytes": 1067,
+        "sha256": "946d800e66a45f97b3576e65be8fd087cd7d6b990ba7208f083091012d7324be",
+        "file": "sicar_df_000.xml",
+        "headers": {
+          "date": "Fri, 18 Sep 2026 16:04:19 GMT",
+          "content-type": "text/xml",
+          "content-encoding": "gzip",
+          "content-length": "709"
+        }
+      },
+      "sha256": "8e3a53a8fd446be76bcf93a63a43c915336a90d1e1c78682f6402b852f4dfec7",
+      "bytes": 574,
+      "storage": "Deterministic gzip of the complete decoded HTTP body; no feature/count changes"
+    },
+    {
+      "file": "sicar_df_001.json.gz",
+      "original": {
+        "case": "sicar_df",
+        "requested_url": "https://geoserver.car.gov.br/geoserver/sicar/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=sicar:sicar_imoveis_df&outputFormat=application/json&propertyName=cod_imovel,status_imovel,dat_criacao,area,condicao,uf,municipio,cod_municipio_ibge,m_fiscal,tipo_imovel,data_atualizacao&sortBy=cod_imovel&count=10000&startIndex=0&CQL_FILTER=cod_municipio_ibge%3D5300108%20AND%20data_atualizacao%3E%272026-09-01T00%3A00%3A00Z%27",
+        "url": "https://geoserver.car.gov.br/geoserver/sicar/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=sicar:sicar_imoveis_df&outputFormat=application/json&propertyName=cod_imovel,status_imovel,dat_criacao,area,condicao,uf,municipio,cod_municipio_ibge,m_fiscal,tipo_imovel,data_atualizacao&sortBy=cod_imovel&count=10000&startIndex=0&CQL_FILTER=cod_municipio_ibge%3D5300108%20AND%20data_atualizacao%3E%272026-09-01T00%3A00%3A00Z%27",
+        "method": "GET",
+        "status": 200,
+        "fetched_at": "2026-09-18T16:04:21.069867+00:00",
+        "bytes": 25777,
+        "sha256": "43ec6fbe7c3735701e69d3df55cdd792e0393236fe81df760f0073c0b7f4f4d0",
+        "file": "sicar_df_001.json",
+        "headers": {
+          "date": "Fri, 18 Sep 2026 16:04:22 GMT",
+          "content-type": "application/json;charset=utf-8",
+          "content-encoding": "gzip",
+          "content-length": "6361"
+        }
+      },
+      "sha256": "a23e727bdd26d23bd6f0dfbb5df571ad92ddd8cfe618fe4add7ac249bd3e176d",
+      "bytes": 4326,
+      "storage": "Deterministic gzip of the complete decoded HTTP body; no feature/count changes"
+    },
+    {
+      "file": "sicar_mt_002.xml.gz",
+      "original": {
+        "case": "sicar_mt",
+        "requested_url": "https://geoserver.car.gov.br/geoserver/sicar/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=sicar:sicar_imoveis_mt&outputFormat=application/json&propertyName=cod_imovel,status_imovel,dat_criacao,area,condicao,uf,municipio,cod_municipio_ibge,m_fiscal,tipo_imovel,data_atualizacao&sortBy=cod_imovel&count=10000&startIndex=0&resultType=hits&CQL_FILTER=cod_municipio_ibge%3D5103403%20AND%20data_atualizacao%3E%272026-09-01T00%3A00%3A00Z%27",
+        "url": "https://geoserver.car.gov.br/geoserver/sicar/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=sicar:sicar_imoveis_mt&outputFormat=application/json&propertyName=cod_imovel,status_imovel,dat_criacao,area,condicao,uf,municipio,cod_municipio_ibge,m_fiscal,tipo_imovel,data_atualizacao&sortBy=cod_imovel&count=10000&startIndex=0&resultType=hits&CQL_FILTER=cod_municipio_ibge%3D5103403%20AND%20data_atualizacao%3E%272026-09-01T00%3A00%3A00Z%27",
+        "method": "GET",
+        "status": 200,
+        "fetched_at": "2026-09-18T16:04:23.536845+00:00",
+        "bytes": 1067,
+        "sha256": "393589d886318a6ebbcae730bf88096358e94996931391970692111a689d7365",
+        "file": "sicar_mt_002.xml",
+        "headers": {
+          "date": "Fri, 18 Sep 2026 16:04:24 GMT",
+          "content-type": "text/xml",
+          "content-encoding": "gzip",
+          "content-length": "709"
+        }
+      },
+      "sha256": "f70bdc2a5fcddd6f6cb503e11a47bc339285b0cf0c942f0d47c4f3bc9cb52b16",
+      "bytes": 574,
+      "storage": "Deterministic gzip of the complete decoded HTTP body; no feature/count changes"
+    },
+    {
+      "file": "sicar_mt_003.json.gz",
+      "original": {
+        "case": "sicar_mt",
+        "requested_url": "https://geoserver.car.gov.br/geoserver/sicar/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=sicar:sicar_imoveis_mt&outputFormat=application/json&propertyName=cod_imovel,status_imovel,dat_criacao,area,condicao,uf,municipio,cod_municipio_ibge,m_fiscal,tipo_imovel,data_atualizacao&sortBy=cod_imovel&count=10000&startIndex=0&CQL_FILTER=cod_municipio_ibge%3D5103403%20AND%20data_atualizacao%3E%272026-09-01T00%3A00%3A00Z%27",
+        "url": "https://geoserver.car.gov.br/geoserver/sicar/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=sicar:sicar_imoveis_mt&outputFormat=application/json&propertyName=cod_imovel,status_imovel,dat_criacao,area,condicao,uf,municipio,cod_municipio_ibge,m_fiscal,tipo_imovel,data_atualizacao&sortBy=cod_imovel&count=10000&startIndex=0&CQL_FILTER=cod_municipio_ibge%3D5103403%20AND%20data_atualizacao%3E%272026-09-01T00%3A00%3A00Z%27",
+        "method": "GET",
+        "status": 200,
+        "fetched_at": "2026-09-18T16:04:25.847251+00:00",
+        "bytes": 33566,
+        "sha256": "1ae4bb274af5fa43d0593fbc9da4a77027763b27e7b59ada01b18a5162230395",
+        "file": "sicar_mt_003.json",
+        "headers": {
+          "date": "Fri, 18 Sep 2026 16:04:26 GMT",
+          "content-type": "application/json;charset=utf-8",
+          "content-encoding": "gzip",
+          "content-length": "7393"
+        }
+      },
+      "sha256": "e9237f46829b48668e97a3c626caa03d9f0126cc8590e4cd028608da6613d8c2",
+      "bytes": 4893,
+      "storage": "Deterministic gzip of the complete decoded HTTP body; no feature/count changes"
+    },
+    {
+      "file": "sicar_sp_004.xml.gz",
+      "original": {
+        "case": "sicar_sp",
+        "requested_url": "https://geoserver.car.gov.br/geoserver/sicar/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=sicar:sicar_imoveis_sp&outputFormat=application/json&propertyName=cod_imovel,status_imovel,dat_criacao,area,condicao,uf,municipio,cod_municipio_ibge,m_fiscal,tipo_imovel&sortBy=cod_imovel&count=10000&startIndex=0&resultType=hits&CQL_FILTER=cod_municipio_ibge%3D3550308%20AND%20dat_criacao%3E%3D%272026-09-01%27",
+        "url": "https://geoserver.car.gov.br/geoserver/sicar/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=sicar:sicar_imoveis_sp&outputFormat=application/json&propertyName=cod_imovel,status_imovel,dat_criacao,area,condicao,uf,municipio,cod_municipio_ibge,m_fiscal,tipo_imovel&sortBy=cod_imovel&count=10000&startIndex=0&resultType=hits&CQL_FILTER=cod_municipio_ibge%3D3550308%20AND%20dat_criacao%3E%3D%272026-09-01%27",
+        "method": "GET",
+        "status": 200,
+        "fetched_at": "2026-09-18T16:04:28.221002+00:00",
+        "bytes": 1032,
+        "sha256": "c5766d5e0a1b46e57032acb76b95106497d440d8cbbfcb664862a7ac9d815a6c",
+        "file": "sicar_sp_004.xml",
+        "headers": {
+          "date": "Fri, 18 Sep 2026 16:04:29 GMT",
+          "content-type": "text/xml",
+          "content-encoding": "gzip",
+          "content-length": "688"
+        }
+      },
+      "sha256": "047e9cc7e3e7c012578f21fa0c7eabda437691f2f84750fd9e97cb5c1e8aa562",
+      "bytes": 558,
+      "storage": "Deterministic gzip of the complete decoded HTTP body; no feature/count changes"
+    },
+    {
+      "file": "sicar_sp_005.json.gz",
+      "original": {
+        "case": "sicar_sp",
+        "requested_url": "https://geoserver.car.gov.br/geoserver/sicar/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=sicar:sicar_imoveis_sp&outputFormat=application/json&propertyName=cod_imovel,status_imovel,dat_criacao,area,condicao,uf,municipio,cod_municipio_ibge,m_fiscal,tipo_imovel&sortBy=cod_imovel&count=10000&startIndex=0&CQL_FILTER=cod_municipio_ibge%3D3550308%20AND%20dat_criacao%3E%3D%272026-09-01%27",
+        "url": "https://geoserver.car.gov.br/geoserver/sicar/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=sicar:sicar_imoveis_sp&outputFormat=application/json&propertyName=cod_imovel,status_imovel,dat_criacao,area,condicao,uf,municipio,cod_municipio_ibge,m_fiscal,tipo_imovel&sortBy=cod_imovel&count=10000&startIndex=0&CQL_FILTER=cod_municipio_ibge%3D3550308%20AND%20dat_criacao%3E%3D%272026-09-01%27",
+        "method": "GET",
+        "status": 200,
+        "fetched_at": "2026-09-18T16:04:30.383247+00:00",
+        "bytes": 11079,
+        "sha256": "e7d9b468d166165c30c183816e94c600688e5b83052e7d90efdefc7d5e417cf1",
+        "file": "sicar_sp_005.json",
+        "headers": {
+          "date": "Fri, 18 Sep 2026 16:04:31 GMT",
+          "content-type": "application/json;charset=utf-8",
+          "content-encoding": "gzip",
+          "content-length": "2551"
+        }
+      },
+      "sha256": "411e3f8927e7ef7a21bff33b1f2e1a6e570dcfdb3961f17715f6d3d1998a99c7",
+      "bytes": 1784,
+      "storage": "Deterministic gzip of the complete decoded HTTP body; no feature/count changes"
+    },
+    {
+      "file": "sicar_schema_ac_017.xml.gz",
+      "original": {
+        "case": "sicar_schema_ac",
+        "requested_url": "https://geoserver.car.gov.br/geoserver/sicar/wfs?service=WFS&version=2.0.0&request=DescribeFeatureType&typeNames=sicar:sicar_imoveis_ac",
+        "url": "https://geoserver.car.gov.br/geoserver/sicar/wfs?service=WFS&version=2.0.0&request=DescribeFeatureType&typeNames=sicar:sicar_imoveis_ac",
+        "method": "GET",
+        "status": 200,
+        "fetched_at": "2026-09-18T16:04:51.957798+00:00",
+        "bytes": 2058,
+        "sha256": "06812fe9d4591fe19bd5c452caf8cc5bf29c31205696ee2bb495a454ff19a758",
+        "file": "sicar_schema_ac_017.xml",
+        "headers": {
+          "date": "Fri, 18 Sep 2026 16:04:53 GMT",
+          "content-type": "application/gml+xml; version=3.2",
+          "content-encoding": "gzip",
+          "content-length": "565"
+        }
+      },
+      "sha256": "d171291221e5529c58dbad4abaaca8ec2aa15695f2c8f5510308e75b65647827",
+      "bytes": 555,
+      "storage": "Deterministic gzip of the complete decoded HTTP body; no feature/count changes"
+    },
+    {
+      "file": "sicar_schema_al_018.xml.gz",
+      "original": {
+        "case": "sicar_schema_al",
+        "requested_url": "https://geoserver.car.gov.br/geoserver/sicar/wfs?service=WFS&version=2.0.0&request=DescribeFeatureType&typeNames=sicar:sicar_imoveis_al",
+        "url": "https://geoserver.car.gov.br/geoserver/sicar/wfs?service=WFS&version=2.0.0&request=DescribeFeatureType&typeNames=sicar:sicar_imoveis_al",
+        "method": "GET",
+        "status": 200,
+        "fetched_at": "2026-09-18T16:04:54.257106+00:00",
+        "bytes": 2067,
+        "sha256": "22f479ac180888cd762bc8fa175902c5f70c901082dc438501e67e36e1ac200d",
+        "file": "sicar_schema_al_018.xml",
+        "headers": {
+          "date": "Fri, 18 Sep 2026 16:04:55 GMT",
+          "content-type": "application/gml+xml; version=3.2",
+          "content-encoding": "gzip",
+          "content-length": "581"
+        }
+      },
+      "sha256": "be34d069a6ca619d58f81f4913e6fb709df72ae982a861674d5a365ff1d60128",
+      "bytes": 571,
+      "storage": "Deterministic gzip of the complete decoded HTTP body; no feature/count changes"
+    },
+    {
+      "file": "sicar_schema_am_019.xml.gz",
+      "original": {
+        "case": "sicar_schema_am",
+        "requested_url": "https://geoserver.car.gov.br/geoserver/sicar/wfs?service=WFS&version=2.0.0&request=DescribeFeatureType&typeNames=sicar:sicar_imoveis_am",
+        "url": "https://geoserver.car.gov.br/geoserver/sicar/wfs?service=WFS&version=2.0.0&request=DescribeFeatureType&typeNames=sicar:sicar_imoveis_am",
+        "method": "GET",
+        "status": 200,
+        "fetched_at": "2026-09-18T16:04:56.558238+00:00",
+        "bytes": 2067,
+        "sha256": "4bf2aa93a256724c1dec7ae245cc1db88846370b56609627d56bde2cdd8814ec",
+        "file": "sicar_schema_am_019.xml",
+        "headers": {
+          "date": "Fri, 18 Sep 2026 16:04:57 GMT",
+          "content-type": "application/gml+xml; version=3.2",
+          "content-encoding": "gzip",
+          "content-length": "581"
+        }
+      },
+      "sha256": "189473303d5cc3c5eea2dd47317a118ddf3817b47e2bc7532a07206f8437dd73",
+      "bytes": 571,
+      "storage": "Deterministic gzip of the complete decoded HTTP body; no feature/count changes"
+    },
+    {
+      "file": "sicar_schema_ap_020.xml.gz",
+      "original": {
+        "case": "sicar_schema_ap",
+        "requested_url": "https://geoserver.car.gov.br/geoserver/sicar/wfs?service=WFS&version=2.0.0&request=DescribeFeatureType&typeNames=sicar:sicar_imoveis_ap",
+        "url": "https://geoserver.car.gov.br/geoserver/sicar/wfs?service=WFS&version=2.0.0&request=DescribeFeatureType&typeNames=sicar:sicar_imoveis_ap",
+        "method": "GET",
+        "status": 200,
+        "fetched_at": "2026-09-18T16:04:58.907457+00:00",
+        "bytes": 2067,
+        "sha256": "200812b5d24f5e49abdaae65f4287e243138f3b45475dcf139aa7b58f3e4d67c",
+        "file": "sicar_schema_ap_020.xml",
+        "headers": {
+          "date": "Fri, 18 Sep 2026 16:05:00 GMT",
+          "content-type": "application/gml+xml; version=3.2",
+          "content-encoding": "gzip",
+          "content-length": "581"
+        }
+      },
+      "sha256": "4f9be5174e85cfec6b498e15d850131da7993dbc0bccb08bc59e7163785dcd7e",
+      "bytes": 571,
+      "storage": "Deterministic gzip of the complete decoded HTTP body; no feature/count changes"
+    },
+    {
+      "file": "sicar_schema_ba_021.xml.gz",
+      "original": {
+        "case": "sicar_schema_ba",
+        "requested_url": "https://geoserver.car.gov.br/geoserver/sicar/wfs?service=WFS&version=2.0.0&request=DescribeFeatureType&typeNames=sicar:sicar_imoveis_ba",
+        "url": "https://geoserver.car.gov.br/geoserver/sicar/wfs?service=WFS&version=2.0.0&request=DescribeFeatureType&typeNames=sicar:sicar_imoveis_ba",
+        "method": "GET",
+        "status": 200,
+        "fetched_at": "2026-09-18T16:05:01.212787+00:00",
+        "bytes": 2067,
+        "sha256": "d717f8fd50daf3056f79a233db84a5a3aeb0ed3063ba9fdfcaddfd36cf0c42be",
+        "file": "sicar_schema_ba_021.xml",
+        "headers": {
+          "date": "Fri, 18 Sep 2026 16:05:02 GMT",
+          "content-type": "application/gml+xml; version=3.2",
+          "content-encoding": "gzip",
+          "content-length": "581"
+        }
+      },
+      "sha256": "73897586904d0cec4f763a6c7483efd858da534c361c105a8b48d8d36e2115e4",
+      "bytes": 571,
+      "storage": "Deterministic gzip of the complete decoded HTTP body; no feature/count changes"
+    },
+    {
+      "file": "sicar_schema_ce_022.xml.gz",
+      "original": {
+        "case": "sicar_schema_ce",
+        "requested_url": "https://geoserver.car.gov.br/geoserver/sicar/wfs?service=WFS&version=2.0.0&request=DescribeFeatureType&typeNames=sicar:sicar_imoveis_ce",
+        "url": "https://geoserver.car.gov.br/geoserver/sicar/wfs?service=WFS&version=2.0.0&request=DescribeFeatureType&typeNames=sicar:sicar_imoveis_ce",
+        "method": "GET",
+        "status": 200,
+        "fetched_at": "2026-09-18T16:05:03.503480+00:00",
+        "bytes": 2067,
+        "sha256": "67336910b654f7477feb8ec1632ab1fe6e8f5b6eefac909c3d8b1f1a23c3d90b",
+        "file": "sicar_schema_ce_022.xml",
+        "headers": {
+          "date": "Fri, 18 Sep 2026 16:05:04 GMT",
+          "content-type": "application/gml+xml; version=3.2",
+          "content-encoding": "gzip",
+          "content-length": "580"
+        }
+      },
+      "sha256": "6e42f2db89d31e0d59449d9a4bb334ee6f26fcf748fe358c1f9bcf5fc90257ae",
+      "bytes": 570,
+      "storage": "Deterministic gzip of the complete decoded HTTP body; no feature/count changes"
+    },
+    {
+      "file": "sicar_schema_df_023.xml.gz",
+      "original": {
+        "case": "sicar_schema_df",
+        "requested_url": "https://geoserver.car.gov.br/geoserver/sicar/wfs?service=WFS&version=2.0.0&request=DescribeFeatureType&typeNames=sicar:sicar_imoveis_df",
+        "url": "https://geoserver.car.gov.br/geoserver/sicar/wfs?service=WFS&version=2.0.0&request=DescribeFeatureType&typeNames=sicar:sicar_imoveis_df",
+        "method": "GET",
+        "status": 200,
+        "fetched_at": "2026-09-18T16:05:05.814835+00:00",
+        "bytes": 2067,
+        "sha256": "746ba0c190691353b2282e05d6dcdb08e9ff36e16c2b903867382c264ac1b091",
+        "file": "sicar_schema_df_023.xml",
+        "headers": {
+          "date": "Fri, 18 Sep 2026 16:05:06 GMT",
+          "content-type": "application/gml+xml; version=3.2",
+          "content-encoding": "gzip",
+          "content-length": "581"
+        }
+      },
+      "sha256": "3fb7801d8e06f4fbebd55619488d4ea9a4ebb0875d0ade705afb3536af50c6fd",
+      "bytes": 571,
+      "storage": "Deterministic gzip of the complete decoded HTTP body; no feature/count changes"
+    },
+    {
+      "file": "sicar_schema_es_024.xml.gz",
+      "original": {
+        "case": "sicar_schema_es",
+        "requested_url": "https://geoserver.car.gov.br/geoserver/sicar/wfs?service=WFS&version=2.0.0&request=DescribeFeatureType&typeNames=sicar:sicar_imoveis_es",
+        "url": "https://geoserver.car.gov.br/geoserver/sicar/wfs?service=WFS&version=2.0.0&request=DescribeFeatureType&typeNames=sicar:sicar_imoveis_es",
+        "method": "GET",
+        "status": 200,
+        "fetched_at": "2026-09-18T16:05:08.115149+00:00",
+        "bytes": 2067,
+        "sha256": "c90eb536c7655af9a497e4a6832a1401e4f3d96176d6d92d0d1c3915a7346bcb",
+        "file": "sicar_schema_es_024.xml",
+        "headers": {
+          "date": "Fri, 18 Sep 2026 16:05:09 GMT",
+          "content-type": "application/gml+xml; version=3.2",
+          "content-encoding": "gzip",
+          "content-length": "581"
+        }
+      },
+      "sha256": "f2162527b5f1f5b882156d35ce6ca5c32c211ea30aa9efaa8dd4842b0475939a",
+      "bytes": 571,
+      "storage": "Deterministic gzip of the complete decoded HTTP body; no feature/count changes"
+    },
+    {
+      "file": "sicar_schema_go_025.xml.gz",
+      "original": {
+        "case": "sicar_schema_go",
+        "requested_url": "https://geoserver.car.gov.br/geoserver/sicar/wfs?service=WFS&version=2.0.0&request=DescribeFeatureType&typeNames=sicar:sicar_imoveis_go",
+        "url": "https://geoserver.car.gov.br/geoserver/sicar/wfs?service=WFS&version=2.0.0&request=DescribeFeatureType&typeNames=sicar:sicar_imoveis_go",
+        "method": "GET",
+        "status": 200,
+        "fetched_at": "2026-09-18T16:05:10.397198+00:00",
+        "bytes": 2067,
+        "sha256": "3f245c564992f442b27ec04077275653e0029a3921eb62d9b2b38e2c155294a2",
+        "file": "sicar_schema_go_025.xml",
+        "headers": {
+          "date": "Fri, 18 Sep 2026 16:05:11 GMT",
+          "content-type": "application/gml+xml; version=3.2",
+          "content-encoding": "gzip",
+          "content-length": "581"
+        }
+      },
+      "sha256": "d62e7da830be9022d9d6fb34b100c420c4722499a07c12930056a6d44275bd49",
+      "bytes": 571,
+      "storage": "Deterministic gzip of the complete decoded HTTP body; no feature/count changes"
+    },
+    {
+      "file": "sicar_schema_ma_026.xml.gz",
+      "original": {
+        "case": "sicar_schema_ma",
+        "requested_url": "https://geoserver.car.gov.br/geoserver/sicar/wfs?service=WFS&version=2.0.0&request=DescribeFeatureType&typeNames=sicar:sicar_imoveis_ma",
+        "url": "https://geoserver.car.gov.br/geoserver/sicar/wfs?service=WFS&version=2.0.0&request=DescribeFeatureType&typeNames=sicar:sicar_imoveis_ma",
+        "method": "GET",
+        "status": 200,
+        "fetched_at": "2026-09-18T16:05:12.754457+00:00",
+        "bytes": 2067,
+        "sha256": "fbefeda15fd50ad072aa5bc4b79231bd139eb4f977f4c993d782e323e5581abb",
+        "file": "sicar_schema_ma_026.xml",
+        "headers": {
+          "date": "Fri, 18 Sep 2026 16:05:13 GMT",
+          "content-type": "application/gml+xml; version=3.2",
+          "content-encoding": "gzip",
+          "content-length": "581"
+        }
+      },
+      "sha256": "6664dc1fbfd6ae5682021787df282733f5ba58036241134a13f5953ed249a399",
+      "bytes": 571,
+      "storage": "Deterministic gzip of the complete decoded HTTP body; no feature/count changes"
+    },
+    {
+      "file": "sicar_schema_mg_027.xml.gz",
+      "original": {
+        "case": "sicar_schema_mg",
+        "requested_url": "https://geoserver.car.gov.br/geoserver/sicar/wfs?service=WFS&version=2.0.0&request=DescribeFeatureType&typeNames=sicar:sicar_imoveis_mg",
+        "url": "https://geoserver.car.gov.br/geoserver/sicar/wfs?service=WFS&version=2.0.0&request=DescribeFeatureType&typeNames=sicar:sicar_imoveis_mg",
+        "method": "GET",
+        "status": 200,
+        "fetched_at": "2026-09-18T16:05:15.053451+00:00",
+        "bytes": 2067,
+        "sha256": "a0e8ed34ec787890338bb6fd57772093bafb7f58a4cfa703c3dd85733445ad87",
+        "file": "sicar_schema_mg_027.xml",
+        "headers": {
+          "date": "Fri, 18 Sep 2026 16:05:16 GMT",
+          "content-type": "application/gml+xml; version=3.2",
+          "content-encoding": "gzip",
+          "content-length": "581"
+        }
+      },
+      "sha256": "4045379d9390af1237f0940bad2f6234aa9b9ba65663bebd8d6be76b7a7a318a",
+      "bytes": 571,
+      "storage": "Deterministic gzip of the complete decoded HTTP body; no feature/count changes"
+    },
+    {
+      "file": "sicar_schema_ms_028.xml.gz",
+      "original": {
+        "case": "sicar_schema_ms",
+        "requested_url": "https://geoserver.car.gov.br/geoserver/sicar/wfs?service=WFS&version=2.0.0&request=DescribeFeatureType&typeNames=sicar:sicar_imoveis_ms",
+        "url": "https://geoserver.car.gov.br/geoserver/sicar/wfs?service=WFS&version=2.0.0&request=DescribeFeatureType&typeNames=sicar:sicar_imoveis_ms",
+        "method": "GET",
+        "status": 200,
+        "fetched_at": "2026-09-18T16:05:17.361449+00:00",
+        "bytes": 2067,
+        "sha256": "97ea383dbcd2a4714ad6c4457adbb3b33e81a9bc9d613879bca3abf2a422b5ea",
+        "file": "sicar_schema_ms_028.xml",
+        "headers": {
+          "date": "Fri, 18 Sep 2026 16:05:18 GMT",
+          "content-type": "application/gml+xml; version=3.2",
+          "content-encoding": "gzip",
+          "content-length": "581"
+        }
+      },
+      "sha256": "9724f6b8d7944e4aa33c4d1ee1cd630417320fa4f702400c60953abccfc4eda2",
+      "bytes": 571,
+      "storage": "Deterministic gzip of the complete decoded HTTP body; no feature/count changes"
+    },
+    {
+      "file": "sicar_schema_mt_029.xml.gz",
+      "original": {
+        "case": "sicar_schema_mt",
+        "requested_url": "https://geoserver.car.gov.br/geoserver/sicar/wfs?service=WFS&version=2.0.0&request=DescribeFeatureType&typeNames=sicar:sicar_imoveis_mt",
+        "url": "https://geoserver.car.gov.br/geoserver/sicar/wfs?service=WFS&version=2.0.0&request=DescribeFeatureType&typeNames=sicar:sicar_imoveis_mt",
+        "method": "GET",
+        "status": 200,
+        "fetched_at": "2026-09-18T16:05:19.683312+00:00",
+        "bytes": 2067,
+        "sha256": "92a2ad9a73244ab93dbdb5d026217917719a684c63aac39420f6d23e06d59179",
+        "file": "sicar_schema_mt_029.xml",
+        "headers": {
+          "date": "Fri, 18 Sep 2026 16:05:20 GMT",
+          "content-type": "application/gml+xml; version=3.2",
+          "content-encoding": "gzip",
+          "content-length": "581"
+        }
+      },
+      "sha256": "394c11b713447952c9df38b90a0e2f75a9e399cde7e3c40d5f566388b2124bba",
+      "bytes": 571,
+      "storage": "Deterministic gzip of the complete decoded HTTP body; no feature/count changes"
+    },
+    {
+      "file": "sicar_schema_pa_030.xml.gz",
+      "original": {
+        "case": "sicar_schema_pa",
+        "requested_url": "https://geoserver.car.gov.br/geoserver/sicar/wfs?service=WFS&version=2.0.0&request=DescribeFeatureType&typeNames=sicar:sicar_imoveis_pa",
+        "url": "https://geoserver.car.gov.br/geoserver/sicar/wfs?service=WFS&version=2.0.0&request=DescribeFeatureType&typeNames=sicar:sicar_imoveis_pa",
+        "method": "GET",
+        "status": 200,
+        "fetched_at": "2026-09-18T16:05:22.036732+00:00",
+        "bytes": 2067,
+        "sha256": "4e40a9ca75f21db41c7793d1a6788b4c9e9859b0bd833df966a06ef600330c63",
+        "file": "sicar_schema_pa_030.xml",
+        "headers": {
+          "date": "Fri, 18 Sep 2026 16:05:23 GMT",
+          "content-type": "application/gml+xml; version=3.2",
+          "content-encoding": "gzip",
+          "content-length": "581"
+        }
+      },
+      "sha256": "7581c6161404bf3511cedd053f9ce4ebac8c42ae4edbdcf0fd5dbe658a3301e1",
+      "bytes": 571,
+      "storage": "Deterministic gzip of the complete decoded HTTP body; no feature/count changes"
+    },
+    {
+      "file": "sicar_schema_pb_031.xml.gz",
+      "original": {
+        "case": "sicar_schema_pb",
+        "requested_url": "https://geoserver.car.gov.br/geoserver/sicar/wfs?service=WFS&version=2.0.0&request=DescribeFeatureType&typeNames=sicar:sicar_imoveis_pb",
+        "url": "https://geoserver.car.gov.br/geoserver/sicar/wfs?service=WFS&version=2.0.0&request=DescribeFeatureType&typeNames=sicar:sicar_imoveis_pb",
+        "method": "GET",
+        "status": 200,
+        "fetched_at": "2026-09-18T16:05:24.329554+00:00",
+        "bytes": 2067,
+        "sha256": "67a2b7b752d06869fe51af263f560484af6250986edd7ac836d98c11ab0ffe09",
+        "file": "sicar_schema_pb_031.xml",
+        "headers": {
+          "date": "Fri, 18 Sep 2026 16:05:25 GMT",
+          "content-type": "application/gml+xml; version=3.2",
+          "content-encoding": "gzip",
+          "content-length": "581"
+        }
+      },
+      "sha256": "641e18cb51d689083013635ebcd75789da45ffaaf4872f9bbfd38d6ef4b9b6b2",
+      "bytes": 571,
+      "storage": "Deterministic gzip of the complete decoded HTTP body; no feature/count changes"
+    },
+    {
+      "file": "sicar_schema_pe_032.xml.gz",
+      "original": {
+        "case": "sicar_schema_pe",
+        "requested_url": "https://geoserver.car.gov.br/geoserver/sicar/wfs?service=WFS&version=2.0.0&request=DescribeFeatureType&typeNames=sicar:sicar_imoveis_pe",
+        "url": "https://geoserver.car.gov.br/geoserver/sicar/wfs?service=WFS&version=2.0.0&request=DescribeFeatureType&typeNames=sicar:sicar_imoveis_pe",
+        "method": "GET",
+        "status": 200,
+        "fetched_at": "2026-09-18T16:05:26.621296+00:00",
+        "bytes": 1954,
+        "sha256": "7b395648564cd77542feae36e132da70edb20d83d63819d0b76e2158cd3a0795",
+        "file": "sicar_schema_pe_032.xml",
+        "headers": {
+          "date": "Fri, 18 Sep 2026 16:05:27 GMT",
+          "content-type": "application/gml+xml; version=3.2",
+          "content-encoding": "gzip",
+          "content-length": "564"
+        }
+      },
+      "sha256": "243df00a66bf1af5fd809f24ad9cbcf2918519a69bc9dd76a3c509803f755509",
+      "bytes": 554,
+      "storage": "Deterministic gzip of the complete decoded HTTP body; no feature/count changes"
+    },
+    {
+      "file": "sicar_schema_pi_033.xml.gz",
+      "original": {
+        "case": "sicar_schema_pi",
+        "requested_url": "https://geoserver.car.gov.br/geoserver/sicar/wfs?service=WFS&version=2.0.0&request=DescribeFeatureType&typeNames=sicar:sicar_imoveis_pi",
+        "url": "https://geoserver.car.gov.br/geoserver/sicar/wfs?service=WFS&version=2.0.0&request=DescribeFeatureType&typeNames=sicar:sicar_imoveis_pi",
+        "method": "GET",
+        "status": 200,
+        "fetched_at": "2026-09-18T16:05:28.921468+00:00",
+        "bytes": 1954,
+        "sha256": "d993a3a58d9d95377049f0d9854ae7cb6b1146a591b4abdc754a46541ecbeb41",
+        "file": "sicar_schema_pi_033.xml",
+        "headers": {
+          "date": "Fri, 18 Sep 2026 16:05:30 GMT",
+          "content-type": "application/gml+xml; version=3.2",
+          "content-encoding": "gzip",
+          "content-length": "565"
+        }
+      },
+      "sha256": "9318338c98f17aee3c28464651b6d9e38b6bfd21fbd391dc10f560c8d1ca8ef0",
+      "bytes": 555,
+      "storage": "Deterministic gzip of the complete decoded HTTP body; no feature/count changes"
+    },
+    {
+      "file": "sicar_schema_pr_034.xml.gz",
+      "original": {
+        "case": "sicar_schema_pr",
+        "requested_url": "https://geoserver.car.gov.br/geoserver/sicar/wfs?service=WFS&version=2.0.0&request=DescribeFeatureType&typeNames=sicar:sicar_imoveis_pr",
+        "url": "https://geoserver.car.gov.br/geoserver/sicar/wfs?service=WFS&version=2.0.0&request=DescribeFeatureType&typeNames=sicar:sicar_imoveis_pr",
+        "method": "GET",
+        "status": 200,
+        "fetched_at": "2026-09-18T16:05:31.237355+00:00",
+        "bytes": 1954,
+        "sha256": "0c9b36fc4b0deba738ce9af71eb71de8231fbad00d68adad826b01649e3fed36",
+        "file": "sicar_schema_pr_034.xml",
+        "headers": {
+          "date": "Fri, 18 Sep 2026 16:05:32 GMT",
+          "content-type": "application/gml+xml; version=3.2",
+          "content-encoding": "gzip",
+          "content-length": "565"
+        }
+      },
+      "sha256": "0c2d1f5cf64c5b74882d1690afcc39b1cc92ec21760431fe7f51b95a534337a1",
+      "bytes": 555,
+      "storage": "Deterministic gzip of the complete decoded HTTP body; no feature/count changes"
+    },
+    {
+      "file": "sicar_schema_rj_035.xml.gz",
+      "original": {
+        "case": "sicar_schema_rj",
+        "requested_url": "https://geoserver.car.gov.br/geoserver/sicar/wfs?service=WFS&version=2.0.0&request=DescribeFeatureType&typeNames=sicar:sicar_imoveis_rj",
+        "url": "https://geoserver.car.gov.br/geoserver/sicar/wfs?service=WFS&version=2.0.0&request=DescribeFeatureType&typeNames=sicar:sicar_imoveis_rj",
+        "method": "GET",
+        "status": 200,
+        "fetched_at": "2026-09-18T16:05:33.526369+00:00",
+        "bytes": 1954,
+        "sha256": "eb24b655a3976d7152b19158b93346c2cbde04d405ee5ea394d698dd6e756950",
+        "file": "sicar_schema_rj_035.xml",
+        "headers": {
+          "date": "Fri, 18 Sep 2026 16:05:34 GMT",
+          "content-type": "application/gml+xml; version=3.2",
+          "content-encoding": "gzip",
+          "content-length": "566"
+        }
+      },
+      "sha256": "340063bca217ed88856749033f00dfd986b54b8bf159e976518229a127504ce0",
+      "bytes": 555,
+      "storage": "Deterministic gzip of the complete decoded HTTP body; no feature/count changes"
+    },
+    {
+      "file": "sicar_schema_rn_036.xml.gz",
+      "original": {
+        "case": "sicar_schema_rn",
+        "requested_url": "https://geoserver.car.gov.br/geoserver/sicar/wfs?service=WFS&version=2.0.0&request=DescribeFeatureType&typeNames=sicar:sicar_imoveis_rn",
+        "url": "https://geoserver.car.gov.br/geoserver/sicar/wfs?service=WFS&version=2.0.0&request=DescribeFeatureType&typeNames=sicar:sicar_imoveis_rn",
+        "method": "GET",
+        "status": 200,
+        "fetched_at": "2026-09-18T16:05:35.817928+00:00",
+        "bytes": 1954,
+        "sha256": "f18a718811060782acf36f13c93b50936085b578101721fd92f8c43bf53b9e5f",
+        "file": "sicar_schema_rn_036.xml",
+        "headers": {
+          "date": "Fri, 18 Sep 2026 16:05:36 GMT",
+          "content-type": "application/gml+xml; version=3.2",
+          "content-encoding": "gzip",
+          "content-length": "565"
+        }
+      },
+      "sha256": "bc8a7b6163de6166e27e1db1c903076baf271741b1840a9f65e3ba8189972275",
+      "bytes": 555,
+      "storage": "Deterministic gzip of the complete decoded HTTP body; no feature/count changes"
+    },
+    {
+      "file": "sicar_schema_ro_037.xml.gz",
+      "original": {
+        "case": "sicar_schema_ro",
+        "requested_url": "https://geoserver.car.gov.br/geoserver/sicar/wfs?service=WFS&version=2.0.0&request=DescribeFeatureType&typeNames=sicar:sicar_imoveis_ro",
+        "url": "https://geoserver.car.gov.br/geoserver/sicar/wfs?service=WFS&version=2.0.0&request=DescribeFeatureType&typeNames=sicar:sicar_imoveis_ro",
+        "method": "GET",
+        "status": 200,
+        "fetched_at": "2026-09-18T16:05:38.114474+00:00",
+        "bytes": 1954,
+        "sha256": "fe76ad950c725c4359d921d087513c428302076522496c1aa8a8cccfdae48bc7",
+        "file": "sicar_schema_ro_037.xml",
+        "headers": {
+          "date": "Fri, 18 Sep 2026 16:05:39 GMT",
+          "content-type": "application/gml+xml; version=3.2",
+          "content-encoding": "gzip",
+          "content-length": "565"
+        }
+      },
+      "sha256": "b1823a5e7334a624ab73a03525ccc20f682bf61691171f24d93720d4b2649786",
+      "bytes": 555,
+      "storage": "Deterministic gzip of the complete decoded HTTP body; no feature/count changes"
+    },
+    {
+      "file": "sicar_schema_rr_038.xml.gz",
+      "original": {
+        "case": "sicar_schema_rr",
+        "requested_url": "https://geoserver.car.gov.br/geoserver/sicar/wfs?service=WFS&version=2.0.0&request=DescribeFeatureType&typeNames=sicar:sicar_imoveis_rr",
+        "url": "https://geoserver.car.gov.br/geoserver/sicar/wfs?service=WFS&version=2.0.0&request=DescribeFeatureType&typeNames=sicar:sicar_imoveis_rr",
+        "method": "GET",
+        "status": 200,
+        "fetched_at": "2026-09-18T16:05:40.414666+00:00",
+        "bytes": 1954,
+        "sha256": "0e01fb15291da07cd63a704478aee1f3b527a72c233d91e945e3880b8bdcedcc",
+        "file": "sicar_schema_rr_038.xml",
+        "headers": {
+          "date": "Fri, 18 Sep 2026 16:05:41 GMT",
+          "content-type": "application/gml+xml; version=3.2",
+          "content-encoding": "gzip",
+          "content-length": "565"
+        }
+      },
+      "sha256": "1b1999fa2964833db002eb732f835e231846c4c5233c20ac319969893adfad56",
+      "bytes": 555,
+      "storage": "Deterministic gzip of the complete decoded HTTP body; no feature/count changes"
+    },
+    {
+      "file": "sicar_schema_rs_039.xml.gz",
+      "original": {
+        "case": "sicar_schema_rs",
+        "requested_url": "https://geoserver.car.gov.br/geoserver/sicar/wfs?service=WFS&version=2.0.0&request=DescribeFeatureType&typeNames=sicar:sicar_imoveis_rs",
+        "url": "https://geoserver.car.gov.br/geoserver/sicar/wfs?service=WFS&version=2.0.0&request=DescribeFeatureType&typeNames=sicar:sicar_imoveis_rs",
+        "method": "GET",
+        "status": 200,
+        "fetched_at": "2026-09-18T16:05:42.725224+00:00",
+        "bytes": 1954,
+        "sha256": "00c2e389ed49db78ff3796ce2e95974954c41a5b96eac6852c51cde93221dbb1",
+        "file": "sicar_schema_rs_039.xml",
+        "headers": {
+          "date": "Fri, 18 Sep 2026 16:05:43 GMT",
+          "content-type": "application/gml+xml; version=3.2",
+          "content-encoding": "gzip",
+          "content-length": "565"
+        }
+      },
+      "sha256": "4f9484ff3116bab5fcc6dd9011717ca53ef3b60efbae689567b8568f8041380e",
+      "bytes": 555,
+      "storage": "Deterministic gzip of the complete decoded HTTP body; no feature/count changes"
+    },
+    {
+      "file": "sicar_schema_sc_040.xml.gz",
+      "original": {
+        "case": "sicar_schema_sc",
+        "requested_url": "https://geoserver.car.gov.br/geoserver/sicar/wfs?service=WFS&version=2.0.0&request=DescribeFeatureType&typeNames=sicar:sicar_imoveis_sc",
+        "url": "https://geoserver.car.gov.br/geoserver/sicar/wfs?service=WFS&version=2.0.0&request=DescribeFeatureType&typeNames=sicar:sicar_imoveis_sc",
+        "method": "GET",
+        "status": 200,
+        "fetched_at": "2026-09-18T16:05:45.011795+00:00",
+        "bytes": 1954,
+        "sha256": "d114f1861b382dff1c396dfc5e71eff17d19ededa6a86cecbf273cb049044da0",
+        "file": "sicar_schema_sc_040.xml",
+        "headers": {
+          "date": "Fri, 18 Sep 2026 16:05:46 GMT",
+          "content-type": "application/gml+xml; version=3.2",
+          "content-encoding": "gzip",
+          "content-length": "565"
+        }
+      },
+      "sha256": "6591f647f4b4544c677436e9e1f442642c7f85a0670f94e194ed2341a33aa98c",
+      "bytes": 555,
+      "storage": "Deterministic gzip of the complete decoded HTTP body; no feature/count changes"
+    },
+    {
+      "file": "sicar_schema_se_041.xml.gz",
+      "original": {
+        "case": "sicar_schema_se",
+        "requested_url": "https://geoserver.car.gov.br/geoserver/sicar/wfs?service=WFS&version=2.0.0&request=DescribeFeatureType&typeNames=sicar:sicar_imoveis_se",
+        "url": "https://geoserver.car.gov.br/geoserver/sicar/wfs?service=WFS&version=2.0.0&request=DescribeFeatureType&typeNames=sicar:sicar_imoveis_se",
+        "method": "GET",
+        "status": 200,
+        "fetched_at": "2026-09-18T16:05:47.306271+00:00",
+        "bytes": 1954,
+        "sha256": "b57db3be35a12f43ad89a9050b4aa52ed2ccc00dd0b83f05c20b11e5f68a913a",
+        "file": "sicar_schema_se_041.xml",
+        "headers": {
+          "date": "Fri, 18 Sep 2026 16:05:48 GMT",
+          "content-type": "application/gml+xml; version=3.2",
+          "content-encoding": "gzip",
+          "content-length": "564"
+        }
+      },
+      "sha256": "d28de7486b9d9b00d030d149d2319858bc14955686c500dcbe62f921afea49e2",
+      "bytes": 554,
+      "storage": "Deterministic gzip of the complete decoded HTTP body; no feature/count changes"
+    },
+    {
+      "file": "sicar_schema_sp_042.xml.gz",
+      "original": {
+        "case": "sicar_schema_sp",
+        "requested_url": "https://geoserver.car.gov.br/geoserver/sicar/wfs?service=WFS&version=2.0.0&request=DescribeFeatureType&typeNames=sicar:sicar_imoveis_sp",
+        "url": "https://geoserver.car.gov.br/geoserver/sicar/wfs?service=WFS&version=2.0.0&request=DescribeFeatureType&typeNames=sicar:sicar_imoveis_sp",
+        "method": "GET",
+        "status": 200,
+        "fetched_at": "2026-09-18T16:05:49.613206+00:00",
+        "bytes": 1954,
+        "sha256": "71cc7b2962b4576da71038d1ca273d75056698999b8b732f6940e27174dc2abe",
+        "file": "sicar_schema_sp_042.xml",
+        "headers": {
+          "date": "Fri, 18 Sep 2026 16:05:50 GMT",
+          "content-type": "application/gml+xml; version=3.2",
+          "content-encoding": "gzip",
+          "content-length": "565"
+        }
+      },
+      "sha256": "411536e2b4c5346aa2a33ae47dc33bc0e7f033bbca342cc3e21179e3fcb2669f",
+      "bytes": 555,
+      "storage": "Deterministic gzip of the complete decoded HTTP body; no feature/count changes"
+    },
+    {
+      "file": "sicar_schema_to_043.xml.gz",
+      "original": {
+        "case": "sicar_schema_to",
+        "requested_url": "https://geoserver.car.gov.br/geoserver/sicar/wfs?service=WFS&version=2.0.0&request=DescribeFeatureType&typeNames=sicar:sicar_imoveis_to",
+        "url": "https://geoserver.car.gov.br/geoserver/sicar/wfs?service=WFS&version=2.0.0&request=DescribeFeatureType&typeNames=sicar:sicar_imoveis_to",
+        "method": "GET",
+        "status": 200,
+        "fetched_at": "2026-09-18T16:05:51.907606+00:00",
+        "bytes": 1954,
+        "sha256": "6788eedd6600b17443deb3ce1b7df8f1708bc19884fb4ef3a463e94fdebdbb39",
+        "file": "sicar_schema_to_043.xml",
+        "headers": {
+          "date": "Fri, 18 Sep 2026 16:05:53 GMT",
+          "content-type": "application/gml+xml; version=3.2",
+          "content-encoding": "gzip",
+          "content-length": "565"
+        }
+      },
+      "sha256": "77d50b1566d1e02188d6299b1cf23da96ea319e56657114631c07f5abf4cbb8e",
+      "bytes": 555,
+      "storage": "Deterministic gzip of the complete decoded HTTP body; no feature/count changes"
+    },
+    {
+      "file": "sicar_df_full_000.xml.gz",
+      "original": {
+        "case": "sicar_df_full",
+        "requested_url": "https://geoserver.car.gov.br/geoserver/sicar/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=sicar:sicar_imoveis_df&outputFormat=application/json&propertyName=cod_imovel,status_imovel,dat_criacao,area,condicao,uf,municipio,cod_municipio_ibge,m_fiscal,tipo_imovel,data_atualizacao&sortBy=cod_imovel&count=10000&startIndex=0&resultType=hits",
+        "url": "https://geoserver.car.gov.br/geoserver/sicar/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=sicar:sicar_imoveis_df&outputFormat=application/json&propertyName=cod_imovel,status_imovel,dat_criacao,area,condicao,uf,municipio,cod_municipio_ibge,m_fiscal,tipo_imovel,data_atualizacao&sortBy=cod_imovel&count=10000&startIndex=0&resultType=hits",
+        "method": "GET",
+        "status": 200,
+        "fetched_at": "2026-09-18T16:06:27.309184+00:00",
+        "bytes": 968,
+        "sha256": "d9940437a7761922369e03e897ff0a3607ac71bc49a1f8d02608bbd8d8b0c734",
+        "file": "sicar_df_full_000.xml",
+        "headers": {
+          "date": "Fri, 18 Sep 2026 16:06:28 GMT",
+          "content-type": "text/xml",
+          "content-encoding": "gzip",
+          "content-length": "650"
+        }
+      },
+      "sha256": "1ba8190278291700898f35ed50ef105322d9065418f4ac2a1cf81989a208d4fa",
+      "bytes": 528,
+      "storage": "Deterministic gzip of the complete decoded HTTP body; no feature/count changes"
+    },
+    {
+      "file": "sicar_df_full_001.xml.gz",
+      "original": {
+        "case": "sicar_df_full",
+        "requested_url": "https://geoserver.car.gov.br/geoserver/sicar/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=sicar:sicar_imoveis_df&outputFormat=application/json&propertyName=cod_imovel,status_imovel,dat_criacao,area,condicao,uf,municipio,cod_municipio_ibge,m_fiscal,tipo_imovel,data_atualizacao&sortBy=cod_imovel&count=10000&startIndex=0&resultType=hits",
+        "url": "https://geoserver.car.gov.br/geoserver/sicar/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=sicar:sicar_imoveis_df&outputFormat=application/json&propertyName=cod_imovel,status_imovel,dat_criacao,area,condicao,uf,municipio,cod_municipio_ibge,m_fiscal,tipo_imovel,data_atualizacao&sortBy=cod_imovel&count=10000&startIndex=0&resultType=hits",
+        "method": "GET",
+        "status": 200,
+        "fetched_at": "2026-09-18T16:06:29.776720+00:00",
+        "bytes": 968,
+        "sha256": "4732f9265010d18d84d3c11cf5ae1ed341a96a917a0cc38e0eacbdd1850544b1",
+        "file": "sicar_df_full_001.xml",
+        "headers": {
+          "date": "Fri, 18 Sep 2026 16:06:30 GMT",
+          "content-type": "text/xml",
+          "content-encoding": "gzip",
+          "content-length": "650"
+        }
+      },
+      "sha256": "0def2b2b524ee9493b1afd795c6fe3b163de6c78a0b511884c3298e6403d6425",
+      "bytes": 528,
+      "storage": "Deterministic gzip of the complete decoded HTTP body; no feature/count changes"
+    },
+    {
+      "file": "sicar_df_full_002.xml.gz",
+      "original": {
+        "case": "sicar_df_full",
+        "requested_url": "https://geoserver.car.gov.br/geoserver/sicar/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=sicar:sicar_imoveis_df&outputFormat=application/json&propertyName=cod_imovel,status_imovel,dat_criacao,area,condicao,uf,municipio,cod_municipio_ibge,m_fiscal,tipo_imovel,data_atualizacao&sortBy=cod_imovel&count=10000&startIndex=0&resultType=hits",
+        "url": "https://geoserver.car.gov.br/geoserver/sicar/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=sicar:sicar_imoveis_df&outputFormat=application/json&propertyName=cod_imovel,status_imovel,dat_criacao,area,condicao,uf,municipio,cod_municipio_ibge,m_fiscal,tipo_imovel,data_atualizacao&sortBy=cod_imovel&count=10000&startIndex=0&resultType=hits",
+        "method": "GET",
+        "status": 200,
+        "fetched_at": "2026-09-18T16:06:32.253227+00:00",
+        "bytes": 968,
+        "sha256": "7452079378909d802dba978a97ecb7d3c7f410e33e3e854703523bcef020c039",
+        "file": "sicar_df_full_002.xml",
+        "headers": {
+          "date": "Fri, 18 Sep 2026 16:06:33 GMT",
+          "content-type": "text/xml",
+          "content-encoding": "gzip",
+          "content-length": "650"
+        }
+      },
+      "sha256": "2f11702ef03b8f137736f5d8d23bbb1ca200e58e84c14ef2e29ef2d22698f487",
+      "bytes": 528,
+      "storage": "Deterministic gzip of the complete decoded HTTP body; no feature/count changes"
+    },
+    {
+      "file": "sicar_df_full_003.json.gz",
+      "original": {
+        "case": "sicar_df_full",
+        "requested_url": "https://geoserver.car.gov.br/geoserver/sicar/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=sicar:sicar_imoveis_df&outputFormat=application/json&propertyName=cod_imovel,status_imovel,dat_criacao,area,condicao,uf,municipio,cod_municipio_ibge,m_fiscal,tipo_imovel,data_atualizacao&sortBy=cod_imovel&count=10000&startIndex=0",
+        "url": "https://geoserver.car.gov.br/geoserver/sicar/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=sicar:sicar_imoveis_df&outputFormat=application/json&propertyName=cod_imovel,status_imovel,dat_criacao,area,condicao,uf,municipio,cod_municipio_ibge,m_fiscal,tipo_imovel,data_atualizacao&sortBy=cod_imovel&count=10000&startIndex=0",
+        "method": "GET",
+        "status": 200,
+        "fetched_at": "2026-09-18T16:06:36.092731+00:00",
+        "bytes": 3987072,
+        "sha256": "2e0a70f6ee66bf91edaff785c37055ae2ad60697e07df34cd2ce5c02b78c4170",
+        "file": "sicar_df_full_003.json",
+        "headers": {
+          "date": "Fri, 18 Sep 2026 16:06:36 GMT",
+          "content-type": "application/json;charset=utf-8",
+          "content-encoding": "gzip"
+        }
+      },
+      "sha256": "f8f33f413dd56f044d598b2485c47f58fa80c3d66a332ecb80de1053b6c15519",
+      "bytes": 549774,
+      "storage": "Deterministic gzip of the complete decoded HTTP body; no feature/count changes"
+    },
+    {
+      "file": "sicar_df_full_004.json.gz",
+      "original": {
+        "case": "sicar_df_full",
+        "requested_url": "https://geoserver.car.gov.br/geoserver/sicar/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=sicar:sicar_imoveis_df&outputFormat=application/json&propertyName=cod_imovel,status_imovel,dat_criacao,area,condicao,uf,municipio,cod_municipio_ibge,m_fiscal,tipo_imovel,data_atualizacao&sortBy=cod_imovel&count=10000&startIndex=10000",
+        "url": "https://geoserver.car.gov.br/geoserver/sicar/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=sicar:sicar_imoveis_df&outputFormat=application/json&propertyName=cod_imovel,status_imovel,dat_criacao,area,condicao,uf,municipio,cod_municipio_ibge,m_fiscal,tipo_imovel,data_atualizacao&sortBy=cod_imovel&count=10000&startIndex=10000",
+        "method": "GET",
+        "status": 200,
+        "fetched_at": "2026-09-18T16:06:39.871481+00:00",
+        "bytes": 3985829,
+        "sha256": "e50aed42af67470c9ad43b8c1b0bd20763d673a36c3b5aad10c2ea69a6d46e39",
+        "file": "sicar_df_full_004.json",
+        "headers": {
+          "date": "Fri, 18 Sep 2026 16:06:40 GMT",
+          "content-type": "application/json;charset=utf-8",
+          "content-encoding": "gzip"
+        }
+      },
+      "sha256": "cee0a0814b9222ee73a85d444d863e6806179ff122048a295f76f10cc8886874",
+      "bytes": 549095,
+      "storage": "Deterministic gzip of the complete decoded HTTP body; no feature/count changes"
+    },
+    {
+      "file": "sicar_df_full_005.json.gz",
+      "original": {
+        "case": "sicar_df_full",
+        "requested_url": "https://geoserver.car.gov.br/geoserver/sicar/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=sicar:sicar_imoveis_df&outputFormat=application/json&propertyName=cod_imovel,status_imovel,dat_criacao,area,condicao,uf,municipio,cod_municipio_ibge,m_fiscal,tipo_imovel,data_atualizacao&sortBy=cod_imovel&count=10000&startIndex=20000",
+        "url": "https://geoserver.car.gov.br/geoserver/sicar/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=sicar:sicar_imoveis_df&outputFormat=application/json&propertyName=cod_imovel,status_imovel,dat_criacao,area,condicao,uf,municipio,cod_municipio_ibge,m_fiscal,tipo_imovel,data_atualizacao&sortBy=cod_imovel&count=10000&startIndex=20000",
+        "method": "GET",
+        "status": 200,
+        "fetched_at": "2026-09-18T16:06:43.191755+00:00",
+        "bytes": 401599,
+        "sha256": "0a6b37633536c39b5017ac2d517c30cdbdabc42b02ce6fee31e06bb2020eb340",
+        "file": "sicar_df_full_005.json",
+        "headers": {
+          "date": "Fri, 18 Sep 2026 16:06:44 GMT",
+          "content-type": "application/json;charset=utf-8",
+          "content-encoding": "gzip",
+          "content-length": "85734"
+        }
+      },
+      "sha256": "1f5b439c5780e6cfc10c69a16f15980f79230c36042788ed03419489c6cfa986",
+      "bytes": 56114,
+      "storage": "Deterministic gzip of the complete decoded HTTP body; no feature/count changes"
+    },
+    {
+      "file": "sicar_versions_go_000.xml.gz",
+      "original": {
+        "case": "sicar_versions_go",
+        "requested_url": "https://geoserver.car.gov.br/geoserver/sicar/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=sicar:sicar_imoveis_go&outputFormat=application/json&propertyName=cod_imovel,status_imovel,dat_criacao,area,condicao,uf,municipio,cod_municipio_ibge,m_fiscal,tipo_imovel,data_atualizacao&sortBy=cod_imovel&count=10000&startIndex=0&resultType=hits&CQL_FILTER=cod_municipio_ibge%3D5205802%20AND%20dat_criacao%3E%3D%272026-09-16%27",
+        "url": "https://geoserver.car.gov.br/geoserver/sicar/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=sicar:sicar_imoveis_go&outputFormat=application/json&propertyName=cod_imovel,status_imovel,dat_criacao,area,condicao,uf,municipio,cod_municipio_ibge,m_fiscal,tipo_imovel,data_atualizacao&sortBy=cod_imovel&count=10000&startIndex=0&resultType=hits&CQL_FILTER=cod_municipio_ibge%3D5205802%20AND%20dat_criacao%3E%3D%272026-09-16%27",
+        "method": "GET",
+        "status": 200,
+        "fetched_at": "2026-09-18T16:19:50.751724+00:00",
+        "bytes": 1050,
+        "sha256": "c63b8c2a797843db3e6897a043630dc8fd417df7a19515061332e1f7d053c799",
+        "file": "sicar_versions_go_000.xml",
+        "headers": {
+          "date": "Fri, 18 Sep 2026 16:19:51 GMT",
+          "content-type": "text/xml",
+          "content-encoding": "gzip",
+          "content-length": "697"
+        }
+      },
+      "sha256": "87c05d585178854166acb68b0699ad3f65cdee26b3e98931fce09cfd3f36983b",
+      "bytes": 566,
+      "storage": "Deterministic gzip of the complete decoded HTTP body; no feature/count changes"
+    },
+    {
+      "file": "sicar_versions_go_001.json.gz",
+      "original": {
+        "case": "sicar_versions_go",
+        "requested_url": "https://geoserver.car.gov.br/geoserver/sicar/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=sicar:sicar_imoveis_go&outputFormat=application/json&propertyName=cod_imovel,status_imovel,dat_criacao,area,condicao,uf,municipio,cod_municipio_ibge,m_fiscal,tipo_imovel,data_atualizacao&sortBy=cod_imovel&count=10000&startIndex=0&CQL_FILTER=cod_municipio_ibge%3D5205802%20AND%20dat_criacao%3E%3D%272026-09-16%27",
+        "url": "https://geoserver.car.gov.br/geoserver/sicar/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=sicar:sicar_imoveis_go&outputFormat=application/json&propertyName=cod_imovel,status_imovel,dat_criacao,area,condicao,uf,municipio,cod_municipio_ibge,m_fiscal,tipo_imovel,data_atualizacao&sortBy=cod_imovel&count=10000&startIndex=0&CQL_FILTER=cod_municipio_ibge%3D5205802%20AND%20dat_criacao%3E%3D%272026-09-16%27",
+        "method": "GET",
+        "status": 200,
+        "fetched_at": "2026-09-18T16:19:52.869881+00:00",
+        "bytes": 1771,
+        "sha256": "6beacfe6683bb17b7ed684d0fbf22115b7d47bb0a556ffc1df4a92dd206d0471",
+        "file": "sicar_versions_go_001.json",
+        "headers": {
+          "date": "Fri, 18 Sep 2026 16:19:54 GMT",
+          "content-type": "application/json;charset=utf-8",
+          "content-encoding": "gzip",
+          "content-length": "731"
+        }
+      },
+      "sha256": "6a03632ef84371280a7ed83c97ba27a70fb2c8fda9041003dd7c880bba901249",
+      "bytes": 577,
+      "storage": "Deterministic gzip of the complete decoded HTTP body; no feature/count changes"
+    },
+    {
+      "file": "sicar_versions_rs_002.xml.gz",
+      "original": {
+        "case": "sicar_versions_rs",
+        "requested_url": "https://geoserver.car.gov.br/geoserver/sicar/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=sicar:sicar_imoveis_rs&outputFormat=application/json&propertyName=cod_imovel,status_imovel,dat_criacao,area,condicao,uf,municipio,cod_municipio_ibge,m_fiscal,tipo_imovel&sortBy=cod_imovel&count=10000&startIndex=0&resultType=hits&CQL_FILTER=cod_municipio_ibge%3D4306734%20AND%20dat_criacao%3E%3D%272026-09-16%27",
+        "url": "https://geoserver.car.gov.br/geoserver/sicar/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=sicar:sicar_imoveis_rs&outputFormat=application/json&propertyName=cod_imovel,status_imovel,dat_criacao,area,condicao,uf,municipio,cod_municipio_ibge,m_fiscal,tipo_imovel&sortBy=cod_imovel&count=10000&startIndex=0&resultType=hits&CQL_FILTER=cod_municipio_ibge%3D4306734%20AND%20dat_criacao%3E%3D%272026-09-16%27",
+        "method": "GET",
+        "status": 200,
+        "fetched_at": "2026-09-18T16:19:55.191160+00:00",
+        "bytes": 1031,
+        "sha256": "b4d44227a01cef23e29b69315a1883fc8e94a09a7bfe38c5b6c22ba84b229bee",
+        "file": "sicar_versions_rs_002.xml",
+        "headers": {
+          "date": "Fri, 18 Sep 2026 16:19:56 GMT",
+          "content-type": "text/xml",
+          "content-encoding": "gzip",
+          "content-length": "686"
+        }
+      },
+      "sha256": "93996fdb48903487661028b7211b695f2b9a802e7171ce6d5545bbfe1dcfe834",
+      "bytes": 556,
+      "storage": "Deterministic gzip of the complete decoded HTTP body; no feature/count changes"
+    },
+    {
+      "file": "sicar_versions_rs_003.json.gz",
+      "original": {
+        "case": "sicar_versions_rs",
+        "requested_url": "https://geoserver.car.gov.br/geoserver/sicar/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=sicar:sicar_imoveis_rs&outputFormat=application/json&propertyName=cod_imovel,status_imovel,dat_criacao,area,condicao,uf,municipio,cod_municipio_ibge,m_fiscal,tipo_imovel&sortBy=cod_imovel&count=10000&startIndex=0&CQL_FILTER=cod_municipio_ibge%3D4306734%20AND%20dat_criacao%3E%3D%272026-09-16%27",
+        "url": "https://geoserver.car.gov.br/geoserver/sicar/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=sicar:sicar_imoveis_rs&outputFormat=application/json&propertyName=cod_imovel,status_imovel,dat_criacao,area,condicao,uf,municipio,cod_municipio_ibge,m_fiscal,tipo_imovel&sortBy=cod_imovel&count=10000&startIndex=0&CQL_FILTER=cod_municipio_ibge%3D4306734%20AND%20dat_criacao%3E%3D%272026-09-16%27",
+        "method": "GET",
+        "status": 200,
+        "fetched_at": "2026-09-18T16:19:57.302194+00:00",
+        "bytes": 513,
+        "sha256": "91fae5cf6468e8e511c21f99513536b3991dd1c111d1be4983296ef117704250",
+        "file": "sicar_versions_rs_003.json",
+        "headers": {
+          "date": "Fri, 18 Sep 2026 16:19:58 GMT",
+          "content-type": "application/json;charset=utf-8",
+          "content-encoding": "gzip",
+          "content-length": "441"
+        }
+      },
+      "sha256": "2b95ac49a79fa1b144b790b8c6f730aab1b855660cabc2f4d23dac38543225d4",
+      "bytes": 362,
+      "storage": "Deterministic gzip of the complete decoded HTTP body; no feature/count changes"
+    },
+    {
+      "file": "historical_go_page.json.gz",
+      "sha256": "c408de029cd22d163ee68ae3172e98f6195a69e826425c022ece9fb44d1e5d70",
+      "bytes": 599071,
+      "decoded_sha256": "7d796907a1f57f4328c779aaf1ff24b913fee289f015ee79d9a5248175b08d19",
+      "original": {
+        "file": "go_duplicates.json",
+        "sha256": "777b4b10b8185d2bce4f28331a3847a82962fecc09fa600b9a6f35bb9f9ff462",
+        "source_url": "https://geoserver.car.gov.br/geoserver/sicar/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=sicar:sicar_imoveis_go&outputFormat=application/json&propertyName=cod_imovel,status_imovel,dat_criacao,area,condicao,uf,municipio,cod_municipio_ibge,m_fiscal,tipo_imovel,data_atualizacao&sortBy=cod_imovel&count=10000&startIndex=0&CQL_FILTER=dat_criacao%3E%3D%272025-01-01%27",
+        "fetched_at": "2026-09-16T18:14:53.756734-03:00",
+        "source_sha256": "7d796907a1f57f4328c779aaf1ff24b913fee289f015ee79d9a5248175b08d19",
+        "source_number_matched": 42391,
+        "source_feature_indices_zero_based": [
+          9423,
+          9424
+        ],
+        "features": [
+          "sicar_imoveis_go.16341629",
+          "sicar_imoveis_go.16341644"
+        ],
+        "source_body": "GO_1_request_009.body.gz"
+      }
+    },
+    {
+      "file": "historical_rs_page.json.gz",
+      "sha256": "f3b058649c68a25747a98ff99016cd0b217966353ebf281f6c8ef0e89bc3d1db",
+      "bytes": 502292,
+      "decoded_sha256": "9295dd99a0a99e46d210ce16aa99a804e14b8abfa52c097e9f87fe839853d3ca",
+      "original": {
+        "file": "rs_duplicates.json",
+        "sha256": "3d41076081f07875ed0ec3ef69aad48ebcca30cf12eb94f19c3e7562421e32b7",
+        "source_url": "https://geoserver.car.gov.br/geoserver/sicar/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=sicar:sicar_imoveis_rs&outputFormat=application/json&propertyName=cod_imovel,status_imovel,dat_criacao,area,condicao,uf,municipio,cod_municipio_ibge,m_fiscal,tipo_imovel&sortBy=cod_imovel&count=10000&startIndex=20000&CQL_FILTER=dat_criacao%3E%3D%272025-01-01%27",
+        "fetched_at": "2026-09-16T18:18:23.156738-03:00",
+        "source_sha256": "9295dd99a0a99e46d210ce16aa99a804e14b8abfa52c097e9f87fe839853d3ca",
+        "source_number_matched": 82550,
+        "source_feature_indices_zero_based": [
+          3847,
+          3848
+        ],
+        "features": [
+          "sicar_imoveis_rs.16343473",
+          "sicar_imoveis_rs.16343592"
+        ],
+        "source_body": "RS_1_request_036.body.gz"
+      }
+    }
+  ],
+  "resources": [
+    {
+      "id": "sicar_df",
+      "pages": [
+        "sicar_df_001.json.gz"
+      ],
+      "oracle": {
+        "file": "sicar_df_oracle.jsonl.gz",
+        "sha256": "4aa3f038d51319854c57f76f36b25049de9bb7b238ed493d9b7641eeb077e3e9",
+        "bytes": 4434,
+        "rows": 62,
+        "columns": [
+          "cod_imovel",
+          "status",
+          "data_criacao",
+          "data_atualizacao",
+          "area_ha",
+          "condicao",
+          "uf",
+          "municipio",
+          "cod_municipio_ibge",
+          "modulos_fiscais",
+          "tipo"
+        ]
+      },
+      "statistics": {
+        "features": 62,
+        "rows": 62,
+        "repeated_codes": 0,
+        "discarded": [],
+        "criteria": {
+          "data_atualizacao": 0,
+          "data_criacao": 0,
+          "feature_id": 0
+        },
+        "nulls": {
+          "cod_imovel": 0,
+          "status": 0,
+          "data_criacao": 0,
+          "data_atualizacao": 0,
+          "area_ha": 0,
+          "condicao": 0,
+          "uf": 0,
+          "municipio": 0,
+          "cod_municipio_ibge": 0,
+          "modulos_fiscais": 0,
+          "tipo": 0
+        },
+        "zero_area": 0,
+        "zero_fiscal_modules": 0
+      }
+    },
+    {
+      "id": "sicar_mt",
+      "pages": [
+        "sicar_mt_003.json.gz"
+      ],
+      "oracle": {
+        "file": "sicar_mt_oracle.jsonl.gz",
+        "sha256": "44eeb202c70433821e6ab7981d6089af2f763b865bd3b02f05c0ad14e3f28307",
+        "bytes": 5024,
+        "rows": 79,
+        "columns": [
+          "cod_imovel",
+          "status",
+          "data_criacao",
+          "data_atualizacao",
+          "area_ha",
+          "condicao",
+          "uf",
+          "municipio",
+          "cod_municipio_ibge",
+          "modulos_fiscais",
+          "tipo"
+        ]
+      },
+      "statistics": {
+        "features": 79,
+        "rows": 79,
+        "repeated_codes": 0,
+        "discarded": [],
+        "criteria": {
+          "data_atualizacao": 0,
+          "data_criacao": 0,
+          "feature_id": 0
+        },
+        "nulls": {
+          "cod_imovel": 0,
+          "status": 0,
+          "data_criacao": 0,
+          "data_atualizacao": 0,
+          "area_ha": 0,
+          "condicao": 0,
+          "uf": 0,
+          "municipio": 0,
+          "cod_municipio_ibge": 0,
+          "modulos_fiscais": 0,
+          "tipo": 0
+        },
+        "zero_area": 0,
+        "zero_fiscal_modules": 1
+      }
+    },
+    {
+      "id": "sicar_sp",
+      "pages": [
+        "sicar_sp_005.json.gz"
+      ],
+      "oracle": {
+        "file": "sicar_sp_oracle.jsonl.gz",
+        "sha256": "d495b67216e01e3a0cf73015f1aa60cba0fc63b717f1611d79a8fc5719253214",
+        "bytes": 1814,
+        "rows": 31,
+        "columns": [
+          "cod_imovel",
+          "status",
+          "data_criacao",
+          "data_atualizacao",
+          "area_ha",
+          "condicao",
+          "uf",
+          "municipio",
+          "cod_municipio_ibge",
+          "modulos_fiscais",
+          "tipo"
+        ]
+      },
+      "statistics": {
+        "features": 31,
+        "rows": 31,
+        "repeated_codes": 0,
+        "discarded": [],
+        "criteria": {
+          "data_atualizacao": 0,
+          "data_criacao": 0,
+          "feature_id": 0
+        },
+        "nulls": {
+          "cod_imovel": 0,
+          "status": 0,
+          "data_criacao": 0,
+          "data_atualizacao": 31,
+          "area_ha": 0,
+          "condicao": 0,
+          "uf": 0,
+          "municipio": 0,
+          "cod_municipio_ibge": 0,
+          "modulos_fiscais": 0,
+          "tipo": 0
+        },
+        "zero_area": 0,
+        "zero_fiscal_modules": 0
+      }
+    },
+    {
+      "id": "sicar_df_full",
+      "pages": [
+        "sicar_df_full_003.json.gz",
+        "sicar_df_full_004.json.gz",
+        "sicar_df_full_005.json.gz"
+      ],
+      "oracle": {
+        "file": "sicar_df_full_oracle.jsonl.gz",
+        "sha256": "510552af47867fad30d6b2ec861414b0314bd9ba9fe004c308d8f939a6b7437c",
+        "bytes": 1220710,
+        "rows": 21006,
+        "columns": [
+          "cod_imovel",
+          "status",
+          "data_criacao",
+          "data_atualizacao",
+          "area_ha",
+          "condicao",
+          "uf",
+          "municipio",
+          "cod_municipio_ibge",
+          "modulos_fiscais",
+          "tipo"
+        ]
+      },
+      "statistics": {
+        "features": 21006,
+        "rows": 21006,
+        "repeated_codes": 0,
+        "discarded": [],
+        "criteria": {
+          "data_atualizacao": 0,
+          "data_criacao": 0,
+          "feature_id": 0
+        },
+        "nulls": {
+          "cod_imovel": 0,
+          "status": 0,
+          "data_criacao": 0,
+          "data_atualizacao": 513,
+          "area_ha": 0,
+          "condicao": 0,
+          "uf": 0,
+          "municipio": 0,
+          "cod_municipio_ibge": 0,
+          "modulos_fiscais": 0,
+          "tipo": 0
+        },
+        "zero_area": 0,
+        "zero_fiscal_modules": 0
+      }
+    },
+    {
+      "id": "sicar_versions_go",
+      "pages": [
+        "sicar_versions_go_001.json.gz"
+      ],
+      "oracle": {
+        "file": "sicar_versions_go_oracle.jsonl.gz",
+        "sha256": "79843ed89c2c38f3ad00a696d2a18eb3f2f9631d49efcf73cedb90c8ec174a62",
+        "bytes": 533,
+        "rows": 4,
+        "columns": [
+          "cod_imovel",
+          "status",
+          "data_criacao",
+          "data_atualizacao",
+          "area_ha",
+          "condicao",
+          "uf",
+          "municipio",
+          "cod_municipio_ibge",
+          "modulos_fiscais",
+          "tipo"
+        ]
+      },
+      "statistics": {
+        "features": 4,
+        "rows": 4,
+        "repeated_codes": 0,
+        "discarded": [],
+        "criteria": {
+          "data_atualizacao": 0,
+          "data_criacao": 0,
+          "feature_id": 0
+        },
+        "nulls": {
+          "cod_imovel": 0,
+          "status": 0,
+          "data_criacao": 0,
+          "data_atualizacao": 0,
+          "area_ha": 0,
+          "condicao": 0,
+          "uf": 0,
+          "municipio": 0,
+          "cod_municipio_ibge": 0,
+          "modulos_fiscais": 0,
+          "tipo": 0
+        },
+        "zero_area": 0,
+        "zero_fiscal_modules": 0
+      }
+    },
+    {
+      "id": "sicar_versions_rs",
+      "pages": [
+        "sicar_versions_rs_003.json.gz"
+      ],
+      "oracle": {
+        "file": "sicar_versions_rs_oracle.jsonl.gz",
+        "sha256": "2cf38232bf9aeb4104f383ab34d6800edc0f8273bb2fc43edcc2461708f567f9",
+        "bytes": 325,
+        "rows": 1,
+        "columns": [
+          "cod_imovel",
+          "status",
+          "data_criacao",
+          "data_atualizacao",
+          "area_ha",
+          "condicao",
+          "uf",
+          "municipio",
+          "cod_municipio_ibge",
+          "modulos_fiscais",
+          "tipo"
+        ]
+      },
+      "statistics": {
+        "features": 1,
+        "rows": 1,
+        "repeated_codes": 0,
+        "discarded": [],
+        "criteria": {
+          "data_atualizacao": 0,
+          "data_criacao": 0,
+          "feature_id": 0
+        },
+        "nulls": {
+          "cod_imovel": 0,
+          "status": 0,
+          "data_criacao": 0,
+          "data_atualizacao": 1,
+          "area_ha": 0,
+          "condicao": 0,
+          "uf": 0,
+          "municipio": 0,
+          "cod_municipio_ibge": 0,
+          "modulos_fiscais": 0,
+          "tipo": 0
+        },
+        "zero_area": 0,
+        "zero_fiscal_modules": 0
+      }
+    },
+    {
+      "id": "historical_go_page",
+      "pages": [
+        "historical_go_page.json.gz"
+      ],
+      "oracle": {
+        "file": "historical_go_page_oracle.jsonl.gz",
+        "sha256": "76fb597b036c9dcc6c347a15b2dbac9231e93c6b3ea241bcbf478e0a4a348401",
+        "bytes": 627533,
+        "rows": 9999,
+        "columns": [
+          "cod_imovel",
+          "status",
+          "data_criacao",
+          "data_atualizacao",
+          "area_ha",
+          "condicao",
+          "uf",
+          "municipio",
+          "cod_municipio_ibge",
+          "modulos_fiscais",
+          "tipo"
+        ]
+      },
+      "statistics": {
+        "features": 10000,
+        "rows": 9999,
+        "repeated_codes": 1,
+        "discarded": [
+          {
+            "code": "GO-5205802-FC2998F99E054829B0D529A91448F4DD",
+            "discarded_feature": "sicar_imoveis_go.16341629",
+            "retained_feature": "sicar_imoveis_go.16341644",
+            "criterion": "data_atualizacao"
+          }
+        ],
+        "criteria": {
+          "data_atualizacao": 1,
+          "data_criacao": 0,
+          "feature_id": 0
+        },
+        "nulls": {
+          "cod_imovel": 0,
+          "status": 0,
+          "data_criacao": 0,
+          "data_atualizacao": 36,
+          "area_ha": 0,
+          "condicao": 0,
+          "uf": 0,
+          "municipio": 0,
+          "cod_municipio_ibge": 0,
+          "modulos_fiscais": 0,
+          "tipo": 0
+        },
+        "zero_area": 0,
+        "zero_fiscal_modules": 17
+      },
+      "original": {
+        "file": "go_duplicates.json",
+        "sha256": "777b4b10b8185d2bce4f28331a3847a82962fecc09fa600b9a6f35bb9f9ff462",
+        "source_url": "https://geoserver.car.gov.br/geoserver/sicar/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=sicar:sicar_imoveis_go&outputFormat=application/json&propertyName=cod_imovel,status_imovel,dat_criacao,area,condicao,uf,municipio,cod_municipio_ibge,m_fiscal,tipo_imovel,data_atualizacao&sortBy=cod_imovel&count=10000&startIndex=0&CQL_FILTER=dat_criacao%3E%3D%272025-01-01%27",
+        "fetched_at": "2026-09-16T18:14:53.756734-03:00",
+        "source_sha256": "7d796907a1f57f4328c779aaf1ff24b913fee289f015ee79d9a5248175b08d19",
+        "source_number_matched": 42391,
+        "source_feature_indices_zero_based": [
+          9423,
+          9424
+        ],
+        "features": [
+          "sicar_imoveis_go.16341629",
+          "sicar_imoveis_go.16341644"
+        ],
+        "source_body": "GO_1_request_009.body.gz"
+      },
+      "scope": "Complete historical page, not complete filtered population. Parser-only supplement; no invented hits or public HTTP completeness claim."
+    },
+    {
+      "id": "historical_rs_page",
+      "pages": [
+        "historical_rs_page.json.gz"
+      ],
+      "oracle": {
+        "file": "historical_rs_page_oracle.jsonl.gz",
+        "sha256": "4db91d165ea443b574f9a786863ecb0a0b0779f2ae28cf726644ccfbd35577f6",
+        "bytes": 531991,
+        "rows": 9999,
+        "columns": [
+          "cod_imovel",
+          "status",
+          "data_criacao",
+          "data_atualizacao",
+          "area_ha",
+          "condicao",
+          "uf",
+          "municipio",
+          "cod_municipio_ibge",
+          "modulos_fiscais",
+          "tipo"
+        ]
+      },
+      "statistics": {
+        "features": 10000,
+        "rows": 9999,
+        "repeated_codes": 1,
+        "discarded": [
+          {
+            "code": "RS-4306734-9D840534104D45F4B8D6EFDDBCFECAAA",
+            "discarded_feature": "sicar_imoveis_rs.16343473",
+            "retained_feature": "sicar_imoveis_rs.16343592",
+            "criterion": "data_criacao"
+          }
+        ],
+        "criteria": {
+          "data_atualizacao": 0,
+          "data_criacao": 1,
+          "feature_id": 0
+        },
+        "nulls": {
+          "cod_imovel": 0,
+          "status": 0,
+          "data_criacao": 0,
+          "data_atualizacao": 9999,
+          "area_ha": 0,
+          "condicao": 0,
+          "uf": 0,
+          "municipio": 0,
+          "cod_municipio_ibge": 0,
+          "modulos_fiscais": 0,
+          "tipo": 0
+        },
+        "zero_area": 0,
+        "zero_fiscal_modules": 0
+      },
+      "original": {
+        "file": "rs_duplicates.json",
+        "sha256": "3d41076081f07875ed0ec3ef69aad48ebcca30cf12eb94f19c3e7562421e32b7",
+        "source_url": "https://geoserver.car.gov.br/geoserver/sicar/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=sicar:sicar_imoveis_rs&outputFormat=application/json&propertyName=cod_imovel,status_imovel,dat_criacao,area,condicao,uf,municipio,cod_municipio_ibge,m_fiscal,tipo_imovel&sortBy=cod_imovel&count=10000&startIndex=20000&CQL_FILTER=dat_criacao%3E%3D%272025-01-01%27",
+        "fetched_at": "2026-09-16T18:18:23.156738-03:00",
+        "source_sha256": "9295dd99a0a99e46d210ce16aa99a804e14b8abfa52c097e9f87fe839853d3ca",
+        "source_number_matched": 82550,
+        "source_feature_indices_zero_based": [
+          3847,
+          3848
+        ],
+        "features": [
+          "sicar_imoveis_rs.16343473",
+          "sicar_imoveis_rs.16343592"
+        ],
+        "source_body": "RS_1_request_036.body.gz"
+      },
+      "scope": "Complete historical page, not complete filtered population. Parser-only supplement; no invented hits or public HTTP completeness claim."
+    }
+  ],
+  "cases": [
+    {
+      "id": "sicar_df",
+      "r2_id": "cadastro_rural:sicar:wfs_tabular",
+      "query": {
+        "uf": "DF",
+        "cod_municipio": 5300108,
+        "atualizado_apos": "2026-09-01"
+      },
+      "resource": "sicar_df",
+      "requests": [
+        {
+          "file": "sicar_df_000.xml.gz",
+          "match": {
+            "path": "https://geoserver.car.gov.br/geoserver/sicar/wfs",
+            "params": {
+              "service": "WFS",
+              "version": "2.0.0",
+              "request": "GetFeature",
+              "typeNames": "sicar:sicar_imoveis_df",
+              "outputFormat": "application/json",
+              "propertyName": "cod_imovel,status_imovel,dat_criacao,area,condicao,uf,municipio,cod_municipio_ibge,m_fiscal,tipo_imovel,data_atualizacao",
+              "sortBy": "cod_imovel",
+              "count": "10000",
+              "startIndex": "0",
+              "resultType": "hits",
+              "CQL_FILTER": "cod_municipio_ibge=5300108 AND data_atualizacao>'2026-09-01T00:00:00Z'"
+            },
+            "skip": 0,
+            "method": "GET",
+            "occurrence": 1
+          },
+          "content_type": "text/xml",
+          "status": 200,
+          "response_headers": {
+            "content-encoding": "gzip"
+          }
+        },
+        {
+          "file": "sicar_df_001.json.gz",
+          "match": {
+            "path": "https://geoserver.car.gov.br/geoserver/sicar/wfs",
+            "params": {
+              "service": "WFS",
+              "version": "2.0.0",
+              "request": "GetFeature",
+              "typeNames": "sicar:sicar_imoveis_df",
+              "outputFormat": "application/json",
+              "propertyName": "cod_imovel,status_imovel,dat_criacao,area,condicao,uf,municipio,cod_municipio_ibge,m_fiscal,tipo_imovel,data_atualizacao",
+              "sortBy": "cod_imovel",
+              "count": "10000",
+              "startIndex": "0",
+              "CQL_FILTER": "cod_municipio_ibge=5300108 AND data_atualizacao>'2026-09-01T00:00:00Z'"
+            },
+            "skip": 0,
+            "method": "GET"
+          },
+          "content_type": "application/json;charset=utf-8",
+          "status": 200,
+          "response_headers": {
+            "content-encoding": "gzip"
+          }
+        }
+      ],
+      "expected_rows": 62,
+      "announced_features": 62
+    },
+    {
+      "id": "sicar_mt",
+      "r2_id": "cadastro_rural:sicar:wfs_tabular",
+      "query": {
+        "uf": "MT",
+        "cod_municipio": 5103403,
+        "atualizado_apos": "2026-09-01"
+      },
+      "resource": "sicar_mt",
+      "requests": [
+        {
+          "file": "sicar_mt_002.xml.gz",
+          "match": {
+            "path": "https://geoserver.car.gov.br/geoserver/sicar/wfs",
+            "params": {
+              "service": "WFS",
+              "version": "2.0.0",
+              "request": "GetFeature",
+              "typeNames": "sicar:sicar_imoveis_mt",
+              "outputFormat": "application/json",
+              "propertyName": "cod_imovel,status_imovel,dat_criacao,area,condicao,uf,municipio,cod_municipio_ibge,m_fiscal,tipo_imovel,data_atualizacao",
+              "sortBy": "cod_imovel",
+              "count": "10000",
+              "startIndex": "0",
+              "resultType": "hits",
+              "CQL_FILTER": "cod_municipio_ibge=5103403 AND data_atualizacao>'2026-09-01T00:00:00Z'"
+            },
+            "skip": 0,
+            "method": "GET",
+            "occurrence": 1
+          },
+          "content_type": "text/xml",
+          "status": 200,
+          "response_headers": {
+            "content-encoding": "gzip"
+          }
+        },
+        {
+          "file": "sicar_mt_003.json.gz",
+          "match": {
+            "path": "https://geoserver.car.gov.br/geoserver/sicar/wfs",
+            "params": {
+              "service": "WFS",
+              "version": "2.0.0",
+              "request": "GetFeature",
+              "typeNames": "sicar:sicar_imoveis_mt",
+              "outputFormat": "application/json",
+              "propertyName": "cod_imovel,status_imovel,dat_criacao,area,condicao,uf,municipio,cod_municipio_ibge,m_fiscal,tipo_imovel,data_atualizacao",
+              "sortBy": "cod_imovel",
+              "count": "10000",
+              "startIndex": "0",
+              "CQL_FILTER": "cod_municipio_ibge=5103403 AND data_atualizacao>'2026-09-01T00:00:00Z'"
+            },
+            "skip": 0,
+            "method": "GET"
+          },
+          "content_type": "application/json;charset=utf-8",
+          "status": 200,
+          "response_headers": {
+            "content-encoding": "gzip"
+          }
+        }
+      ],
+      "expected_rows": 79,
+      "announced_features": 79
+    },
+    {
+      "id": "sicar_sp",
+      "r2_id": "cadastro_rural:sicar:wfs_tabular",
+      "query": {
+        "uf": "SP",
+        "cod_municipio": 3550308,
+        "criado_apos": "2026-09-01"
+      },
+      "resource": "sicar_sp",
+      "requests": [
+        {
+          "file": "sicar_sp_004.xml.gz",
+          "match": {
+            "path": "https://geoserver.car.gov.br/geoserver/sicar/wfs",
+            "params": {
+              "service": "WFS",
+              "version": "2.0.0",
+              "request": "GetFeature",
+              "typeNames": "sicar:sicar_imoveis_sp",
+              "outputFormat": "application/json",
+              "propertyName": "cod_imovel,status_imovel,dat_criacao,area,condicao,uf,municipio,cod_municipio_ibge,m_fiscal,tipo_imovel",
+              "sortBy": "cod_imovel",
+              "count": "10000",
+              "startIndex": "0",
+              "resultType": "hits",
+              "CQL_FILTER": "cod_municipio_ibge=3550308 AND dat_criacao>='2026-09-01'"
+            },
+            "skip": 0,
+            "method": "GET",
+            "occurrence": 1
+          },
+          "content_type": "text/xml",
+          "status": 200,
+          "response_headers": {
+            "content-encoding": "gzip"
+          }
+        },
+        {
+          "file": "sicar_sp_005.json.gz",
+          "match": {
+            "path": "https://geoserver.car.gov.br/geoserver/sicar/wfs",
+            "params": {
+              "service": "WFS",
+              "version": "2.0.0",
+              "request": "GetFeature",
+              "typeNames": "sicar:sicar_imoveis_sp",
+              "outputFormat": "application/json",
+              "propertyName": "cod_imovel,status_imovel,dat_criacao,area,condicao,uf,municipio,cod_municipio_ibge,m_fiscal,tipo_imovel",
+              "sortBy": "cod_imovel",
+              "count": "10000",
+              "startIndex": "0",
+              "CQL_FILTER": "cod_municipio_ibge=3550308 AND dat_criacao>='2026-09-01'"
+            },
+            "skip": 0,
+            "method": "GET"
+          },
+          "content_type": "application/json;charset=utf-8",
+          "status": 200,
+          "response_headers": {
+            "content-encoding": "gzip"
+          }
+        }
+      ],
+      "expected_rows": 31,
+      "announced_features": 31
+    },
+    {
+      "id": "sicar_df_full",
+      "r2_id": "cadastro_rural:sicar:wfs_tabular",
+      "query": {
+        "uf": "DF"
+      },
+      "resource": "sicar_df_full",
+      "requests": [
+        {
+          "file": "sicar_df_full_001.xml.gz",
+          "match": {
+            "path": "https://geoserver.car.gov.br/geoserver/sicar/wfs",
+            "params": {
+              "service": "WFS",
+              "version": "2.0.0",
+              "request": "GetFeature",
+              "typeNames": "sicar:sicar_imoveis_df",
+              "outputFormat": "application/json",
+              "propertyName": "cod_imovel,status_imovel,dat_criacao,area,condicao,uf,municipio,cod_municipio_ibge,m_fiscal,tipo_imovel,data_atualizacao",
+              "sortBy": "cod_imovel",
+              "count": "10000",
+              "startIndex": "0",
+              "resultType": "hits"
+            },
+            "skip": 0,
+            "method": "GET",
+            "occurrence": 1
+          },
+          "content_type": "text/xml",
+          "status": 200,
+          "response_headers": {
+            "content-encoding": "gzip"
+          }
+        },
+        {
+          "file": "sicar_df_full_002.xml.gz",
+          "match": {
+            "path": "https://geoserver.car.gov.br/geoserver/sicar/wfs",
+            "params": {
+              "service": "WFS",
+              "version": "2.0.0",
+              "request": "GetFeature",
+              "typeNames": "sicar:sicar_imoveis_df",
+              "outputFormat": "application/json",
+              "propertyName": "cod_imovel,status_imovel,dat_criacao,area,condicao,uf,municipio,cod_municipio_ibge,m_fiscal,tipo_imovel,data_atualizacao",
+              "sortBy": "cod_imovel",
+              "count": "10000",
+              "startIndex": "0",
+              "resultType": "hits"
+            },
+            "skip": 0,
+            "method": "GET",
+            "occurrence": 2
+          },
+          "content_type": "text/xml",
+          "status": 200,
+          "response_headers": {
+            "content-encoding": "gzip"
+          }
+        },
+        {
+          "file": "sicar_df_full_003.json.gz",
+          "match": {
+            "path": "https://geoserver.car.gov.br/geoserver/sicar/wfs",
+            "params": {
+              "service": "WFS",
+              "version": "2.0.0",
+              "request": "GetFeature",
+              "typeNames": "sicar:sicar_imoveis_df",
+              "outputFormat": "application/json",
+              "propertyName": "cod_imovel,status_imovel,dat_criacao,area,condicao,uf,municipio,cod_municipio_ibge,m_fiscal,tipo_imovel,data_atualizacao",
+              "sortBy": "cod_imovel",
+              "count": "10000",
+              "startIndex": "0"
+            },
+            "skip": 0,
+            "method": "GET"
+          },
+          "content_type": "application/json;charset=utf-8",
+          "status": 200,
+          "response_headers": {
+            "content-encoding": "gzip"
+          }
+        },
+        {
+          "file": "sicar_df_full_004.json.gz",
+          "match": {
+            "path": "https://geoserver.car.gov.br/geoserver/sicar/wfs",
+            "params": {
+              "service": "WFS",
+              "version": "2.0.0",
+              "request": "GetFeature",
+              "typeNames": "sicar:sicar_imoveis_df",
+              "outputFormat": "application/json",
+              "propertyName": "cod_imovel,status_imovel,dat_criacao,area,condicao,uf,municipio,cod_municipio_ibge,m_fiscal,tipo_imovel,data_atualizacao",
+              "sortBy": "cod_imovel",
+              "count": "10000",
+              "startIndex": "10000"
+            },
+            "skip": 0,
+            "method": "GET"
+          },
+          "content_type": "application/json;charset=utf-8",
+          "status": 200,
+          "response_headers": {
+            "content-encoding": "gzip"
+          }
+        },
+        {
+          "file": "sicar_df_full_005.json.gz",
+          "match": {
+            "path": "https://geoserver.car.gov.br/geoserver/sicar/wfs",
+            "params": {
+              "service": "WFS",
+              "version": "2.0.0",
+              "request": "GetFeature",
+              "typeNames": "sicar:sicar_imoveis_df",
+              "outputFormat": "application/json",
+              "propertyName": "cod_imovel,status_imovel,dat_criacao,area,condicao,uf,municipio,cod_municipio_ibge,m_fiscal,tipo_imovel,data_atualizacao",
+              "sortBy": "cod_imovel",
+              "count": "10000",
+              "startIndex": "20000"
+            },
+            "skip": 0,
+            "method": "GET"
+          },
+          "content_type": "application/json;charset=utf-8",
+          "status": 200,
+          "response_headers": {
+            "content-encoding": "gzip"
+          }
+        }
+      ],
+      "expected_rows": 21006,
+      "announced_features": 21006
+    },
+    {
+      "id": "sicar_versions_go",
+      "r2_id": "cadastro_rural:sicar:wfs_tabular",
+      "query": {
+        "uf": "GO",
+        "cod_municipio": 5205802,
+        "criado_apos": "2026-09-16"
+      },
+      "resource": "sicar_versions_go",
+      "requests": [
+        {
+          "file": "sicar_versions_go_000.xml.gz",
+          "match": {
+            "path": "https://geoserver.car.gov.br/geoserver/sicar/wfs",
+            "params": {
+              "service": "WFS",
+              "version": "2.0.0",
+              "request": "GetFeature",
+              "typeNames": "sicar:sicar_imoveis_go",
+              "outputFormat": "application/json",
+              "propertyName": "cod_imovel,status_imovel,dat_criacao,area,condicao,uf,municipio,cod_municipio_ibge,m_fiscal,tipo_imovel,data_atualizacao",
+              "sortBy": "cod_imovel",
+              "count": "10000",
+              "startIndex": "0",
+              "resultType": "hits",
+              "CQL_FILTER": "cod_municipio_ibge=5205802 AND dat_criacao>='2026-09-16'"
+            },
+            "skip": 0,
+            "method": "GET",
+            "occurrence": 1
+          },
+          "content_type": "text/xml",
+          "status": 200,
+          "response_headers": {
+            "content-encoding": "gzip"
+          }
+        },
+        {
+          "file": "sicar_versions_go_001.json.gz",
+          "match": {
+            "path": "https://geoserver.car.gov.br/geoserver/sicar/wfs",
+            "params": {
+              "service": "WFS",
+              "version": "2.0.0",
+              "request": "GetFeature",
+              "typeNames": "sicar:sicar_imoveis_go",
+              "outputFormat": "application/json",
+              "propertyName": "cod_imovel,status_imovel,dat_criacao,area,condicao,uf,municipio,cod_municipio_ibge,m_fiscal,tipo_imovel,data_atualizacao",
+              "sortBy": "cod_imovel",
+              "count": "10000",
+              "startIndex": "0",
+              "CQL_FILTER": "cod_municipio_ibge=5205802 AND dat_criacao>='2026-09-16'"
+            },
+            "skip": 0,
+            "method": "GET"
+          },
+          "content_type": "application/json;charset=utf-8",
+          "status": 200,
+          "response_headers": {
+            "content-encoding": "gzip"
+          }
+        }
+      ],
+      "expected_rows": 4,
+      "announced_features": 4
+    },
+    {
+      "id": "sicar_versions_rs",
+      "r2_id": "cadastro_rural:sicar:wfs_tabular",
+      "query": {
+        "uf": "RS",
+        "cod_municipio": 4306734,
+        "criado_apos": "2026-09-16"
+      },
+      "resource": "sicar_versions_rs",
+      "requests": [
+        {
+          "file": "sicar_versions_rs_002.xml.gz",
+          "match": {
+            "path": "https://geoserver.car.gov.br/geoserver/sicar/wfs",
+            "params": {
+              "service": "WFS",
+              "version": "2.0.0",
+              "request": "GetFeature",
+              "typeNames": "sicar:sicar_imoveis_rs",
+              "outputFormat": "application/json",
+              "propertyName": "cod_imovel,status_imovel,dat_criacao,area,condicao,uf,municipio,cod_municipio_ibge,m_fiscal,tipo_imovel",
+              "sortBy": "cod_imovel",
+              "count": "10000",
+              "startIndex": "0",
+              "resultType": "hits",
+              "CQL_FILTER": "cod_municipio_ibge=4306734 AND dat_criacao>='2026-09-16'"
+            },
+            "skip": 0,
+            "method": "GET",
+            "occurrence": 1
+          },
+          "content_type": "text/xml",
+          "status": 200,
+          "response_headers": {
+            "content-encoding": "gzip"
+          }
+        },
+        {
+          "file": "sicar_versions_rs_003.json.gz",
+          "match": {
+            "path": "https://geoserver.car.gov.br/geoserver/sicar/wfs",
+            "params": {
+              "service": "WFS",
+              "version": "2.0.0",
+              "request": "GetFeature",
+              "typeNames": "sicar:sicar_imoveis_rs",
+              "outputFormat": "application/json",
+              "propertyName": "cod_imovel,status_imovel,dat_criacao,area,condicao,uf,municipio,cod_municipio_ibge,m_fiscal,tipo_imovel",
+              "sortBy": "cod_imovel",
+              "count": "10000",
+              "startIndex": "0",
+              "CQL_FILTER": "cod_municipio_ibge=4306734 AND dat_criacao>='2026-09-16'"
+            },
+            "skip": 0,
+            "method": "GET"
+          },
+          "content_type": "application/json;charset=utf-8",
+          "status": 200,
+          "response_headers": {
+            "content-encoding": "gzip"
+          }
+        }
+      ],
+      "expected_rows": 1,
+      "announced_features": 1
+    }
+  ],
+  "schemas": [
+    {
+      "uf": "AC",
+      "file": "sicar_schema_ac_017.xml.gz",
+      "target_namespace": "/sicar",
+      "elements": [
+        {
+          "maxOccurs": "1",
+          "minOccurs": "0",
+          "name": "cod_imovel",
+          "nillable": "true",
+          "type": "xsd:string"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "0",
+          "name": "status_imovel",
+          "nillable": "true",
+          "type": "xsd:string"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "0",
+          "name": "dat_criacao",
+          "nillable": "true",
+          "type": "xsd:dateTime"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "0",
+          "name": "data_atualizacao",
+          "nillable": "true",
+          "type": "xsd:dateTime"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "0",
+          "name": "area",
+          "nillable": "true",
+          "type": "xsd:decimal"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "0",
+          "name": "condicao",
+          "nillable": "true",
+          "type": "xsd:string"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "0",
+          "name": "uf",
+          "nillable": "true",
+          "type": "xsd:string"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "0",
+          "name": "municipio",
+          "nillable": "true",
+          "type": "xsd:string"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "0",
+          "name": "cod_municipio_ibge",
+          "nillable": "true",
+          "type": "xsd:int"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "0",
+          "name": "m_fiscal",
+          "nillable": "true",
+          "type": "xsd:decimal"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "0",
+          "name": "tipo_imovel",
+          "nillable": "true",
+          "type": "xsd:string"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "0",
+          "name": "geo_area_imovel",
+          "nillable": "true",
+          "type": "gml:MultiSurfacePropertyType"
+        }
+      ],
+      "decisions": {
+        "cod_imovel": {
+          "destination": "cod_imovel",
+          "decision": "mapped"
+        },
+        "status_imovel": {
+          "destination": "status",
+          "decision": "mapped"
+        },
+        "dat_criacao": {
+          "destination": "data_criacao",
+          "decision": "mapped"
+        },
+        "data_atualizacao": {
+          "destination": "data_atualizacao",
+          "decision": "mapped"
+        },
+        "area": {
+          "destination": "area_ha",
+          "decision": "mapped"
+        },
+        "condicao": {
+          "destination": "condicao",
+          "decision": "mapped"
+        },
+        "uf": {
+          "destination": "uf",
+          "decision": "mapped"
+        },
+        "municipio": {
+          "destination": "municipio",
+          "decision": "mapped"
+        },
+        "cod_municipio_ibge": {
+          "destination": "cod_municipio_ibge",
+          "decision": "mapped"
+        },
+        "m_fiscal": {
+          "destination": "modulos_fiscais",
+          "decision": "mapped"
+        },
+        "tipo_imovel": {
+          "destination": "tipo",
+          "decision": "mapped"
+        },
+        "geo_area_imovel": {
+          "destination": null,
+          "decision": "ignored_geometry"
+        }
+      }
+    },
+    {
+      "uf": "AL",
+      "file": "sicar_schema_al_018.xml.gz",
+      "target_namespace": "/sicar",
+      "elements": [
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "cod_imovel",
+          "nillable": "false",
+          "type": "xsd:string"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "status_imovel",
+          "nillable": "false",
+          "type": "xsd:string"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "dat_criacao",
+          "nillable": "false",
+          "type": "xsd:dateTime"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "0",
+          "name": "data_atualizacao",
+          "nillable": "true",
+          "type": "xsd:dateTime"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "area",
+          "nillable": "false",
+          "type": "xsd:decimal"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "0",
+          "name": "condicao",
+          "nillable": "true",
+          "type": "xsd:string"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "uf",
+          "nillable": "false",
+          "type": "xsd:string"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "municipio",
+          "nillable": "false",
+          "type": "xsd:string"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "cod_municipio_ibge",
+          "nillable": "false",
+          "type": "xsd:int"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "m_fiscal",
+          "nillable": "false",
+          "type": "xsd:decimal"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "tipo_imovel",
+          "nillable": "false",
+          "type": "xsd:string"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "0",
+          "name": "geo_area_imovel",
+          "nillable": "true",
+          "type": "gml:MultiSurfacePropertyType"
+        }
+      ],
+      "decisions": {
+        "cod_imovel": {
+          "destination": "cod_imovel",
+          "decision": "mapped"
+        },
+        "status_imovel": {
+          "destination": "status",
+          "decision": "mapped"
+        },
+        "dat_criacao": {
+          "destination": "data_criacao",
+          "decision": "mapped"
+        },
+        "data_atualizacao": {
+          "destination": "data_atualizacao",
+          "decision": "mapped"
+        },
+        "area": {
+          "destination": "area_ha",
+          "decision": "mapped"
+        },
+        "condicao": {
+          "destination": "condicao",
+          "decision": "mapped"
+        },
+        "uf": {
+          "destination": "uf",
+          "decision": "mapped"
+        },
+        "municipio": {
+          "destination": "municipio",
+          "decision": "mapped"
+        },
+        "cod_municipio_ibge": {
+          "destination": "cod_municipio_ibge",
+          "decision": "mapped"
+        },
+        "m_fiscal": {
+          "destination": "modulos_fiscais",
+          "decision": "mapped"
+        },
+        "tipo_imovel": {
+          "destination": "tipo",
+          "decision": "mapped"
+        },
+        "geo_area_imovel": {
+          "destination": null,
+          "decision": "ignored_geometry"
+        }
+      }
+    },
+    {
+      "uf": "AM",
+      "file": "sicar_schema_am_019.xml.gz",
+      "target_namespace": "/sicar",
+      "elements": [
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "cod_imovel",
+          "nillable": "false",
+          "type": "xsd:string"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "status_imovel",
+          "nillable": "false",
+          "type": "xsd:string"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "dat_criacao",
+          "nillable": "false",
+          "type": "xsd:dateTime"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "0",
+          "name": "data_atualizacao",
+          "nillable": "true",
+          "type": "xsd:dateTime"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "area",
+          "nillable": "false",
+          "type": "xsd:decimal"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "0",
+          "name": "condicao",
+          "nillable": "true",
+          "type": "xsd:string"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "uf",
+          "nillable": "false",
+          "type": "xsd:string"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "municipio",
+          "nillable": "false",
+          "type": "xsd:string"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "cod_municipio_ibge",
+          "nillable": "false",
+          "type": "xsd:int"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "m_fiscal",
+          "nillable": "false",
+          "type": "xsd:decimal"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "tipo_imovel",
+          "nillable": "false",
+          "type": "xsd:string"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "0",
+          "name": "geo_area_imovel",
+          "nillable": "true",
+          "type": "gml:MultiSurfacePropertyType"
+        }
+      ],
+      "decisions": {
+        "cod_imovel": {
+          "destination": "cod_imovel",
+          "decision": "mapped"
+        },
+        "status_imovel": {
+          "destination": "status",
+          "decision": "mapped"
+        },
+        "dat_criacao": {
+          "destination": "data_criacao",
+          "decision": "mapped"
+        },
+        "data_atualizacao": {
+          "destination": "data_atualizacao",
+          "decision": "mapped"
+        },
+        "area": {
+          "destination": "area_ha",
+          "decision": "mapped"
+        },
+        "condicao": {
+          "destination": "condicao",
+          "decision": "mapped"
+        },
+        "uf": {
+          "destination": "uf",
+          "decision": "mapped"
+        },
+        "municipio": {
+          "destination": "municipio",
+          "decision": "mapped"
+        },
+        "cod_municipio_ibge": {
+          "destination": "cod_municipio_ibge",
+          "decision": "mapped"
+        },
+        "m_fiscal": {
+          "destination": "modulos_fiscais",
+          "decision": "mapped"
+        },
+        "tipo_imovel": {
+          "destination": "tipo",
+          "decision": "mapped"
+        },
+        "geo_area_imovel": {
+          "destination": null,
+          "decision": "ignored_geometry"
+        }
+      }
+    },
+    {
+      "uf": "AP",
+      "file": "sicar_schema_ap_020.xml.gz",
+      "target_namespace": "/sicar",
+      "elements": [
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "cod_imovel",
+          "nillable": "false",
+          "type": "xsd:string"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "status_imovel",
+          "nillable": "false",
+          "type": "xsd:string"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "dat_criacao",
+          "nillable": "false",
+          "type": "xsd:dateTime"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "0",
+          "name": "data_atualizacao",
+          "nillable": "true",
+          "type": "xsd:dateTime"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "area",
+          "nillable": "false",
+          "type": "xsd:decimal"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "0",
+          "name": "condicao",
+          "nillable": "true",
+          "type": "xsd:string"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "uf",
+          "nillable": "false",
+          "type": "xsd:string"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "municipio",
+          "nillable": "false",
+          "type": "xsd:string"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "cod_municipio_ibge",
+          "nillable": "false",
+          "type": "xsd:int"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "m_fiscal",
+          "nillable": "false",
+          "type": "xsd:decimal"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "tipo_imovel",
+          "nillable": "false",
+          "type": "xsd:string"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "0",
+          "name": "geo_area_imovel",
+          "nillable": "true",
+          "type": "gml:MultiSurfacePropertyType"
+        }
+      ],
+      "decisions": {
+        "cod_imovel": {
+          "destination": "cod_imovel",
+          "decision": "mapped"
+        },
+        "status_imovel": {
+          "destination": "status",
+          "decision": "mapped"
+        },
+        "dat_criacao": {
+          "destination": "data_criacao",
+          "decision": "mapped"
+        },
+        "data_atualizacao": {
+          "destination": "data_atualizacao",
+          "decision": "mapped"
+        },
+        "area": {
+          "destination": "area_ha",
+          "decision": "mapped"
+        },
+        "condicao": {
+          "destination": "condicao",
+          "decision": "mapped"
+        },
+        "uf": {
+          "destination": "uf",
+          "decision": "mapped"
+        },
+        "municipio": {
+          "destination": "municipio",
+          "decision": "mapped"
+        },
+        "cod_municipio_ibge": {
+          "destination": "cod_municipio_ibge",
+          "decision": "mapped"
+        },
+        "m_fiscal": {
+          "destination": "modulos_fiscais",
+          "decision": "mapped"
+        },
+        "tipo_imovel": {
+          "destination": "tipo",
+          "decision": "mapped"
+        },
+        "geo_area_imovel": {
+          "destination": null,
+          "decision": "ignored_geometry"
+        }
+      }
+    },
+    {
+      "uf": "BA",
+      "file": "sicar_schema_ba_021.xml.gz",
+      "target_namespace": "/sicar",
+      "elements": [
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "cod_imovel",
+          "nillable": "false",
+          "type": "xsd:string"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "status_imovel",
+          "nillable": "false",
+          "type": "xsd:string"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "dat_criacao",
+          "nillable": "false",
+          "type": "xsd:dateTime"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "0",
+          "name": "data_atualizacao",
+          "nillable": "true",
+          "type": "xsd:dateTime"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "area",
+          "nillable": "false",
+          "type": "xsd:decimal"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "0",
+          "name": "condicao",
+          "nillable": "true",
+          "type": "xsd:string"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "uf",
+          "nillable": "false",
+          "type": "xsd:string"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "municipio",
+          "nillable": "false",
+          "type": "xsd:string"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "cod_municipio_ibge",
+          "nillable": "false",
+          "type": "xsd:int"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "m_fiscal",
+          "nillable": "false",
+          "type": "xsd:decimal"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "tipo_imovel",
+          "nillable": "false",
+          "type": "xsd:string"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "0",
+          "name": "geo_area_imovel",
+          "nillable": "true",
+          "type": "gml:MultiSurfacePropertyType"
+        }
+      ],
+      "decisions": {
+        "cod_imovel": {
+          "destination": "cod_imovel",
+          "decision": "mapped"
+        },
+        "status_imovel": {
+          "destination": "status",
+          "decision": "mapped"
+        },
+        "dat_criacao": {
+          "destination": "data_criacao",
+          "decision": "mapped"
+        },
+        "data_atualizacao": {
+          "destination": "data_atualizacao",
+          "decision": "mapped"
+        },
+        "area": {
+          "destination": "area_ha",
+          "decision": "mapped"
+        },
+        "condicao": {
+          "destination": "condicao",
+          "decision": "mapped"
+        },
+        "uf": {
+          "destination": "uf",
+          "decision": "mapped"
+        },
+        "municipio": {
+          "destination": "municipio",
+          "decision": "mapped"
+        },
+        "cod_municipio_ibge": {
+          "destination": "cod_municipio_ibge",
+          "decision": "mapped"
+        },
+        "m_fiscal": {
+          "destination": "modulos_fiscais",
+          "decision": "mapped"
+        },
+        "tipo_imovel": {
+          "destination": "tipo",
+          "decision": "mapped"
+        },
+        "geo_area_imovel": {
+          "destination": null,
+          "decision": "ignored_geometry"
+        }
+      }
+    },
+    {
+      "uf": "CE",
+      "file": "sicar_schema_ce_022.xml.gz",
+      "target_namespace": "/sicar",
+      "elements": [
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "cod_imovel",
+          "nillable": "false",
+          "type": "xsd:string"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "status_imovel",
+          "nillable": "false",
+          "type": "xsd:string"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "dat_criacao",
+          "nillable": "false",
+          "type": "xsd:dateTime"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "0",
+          "name": "data_atualizacao",
+          "nillable": "true",
+          "type": "xsd:dateTime"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "area",
+          "nillable": "false",
+          "type": "xsd:decimal"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "0",
+          "name": "condicao",
+          "nillable": "true",
+          "type": "xsd:string"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "uf",
+          "nillable": "false",
+          "type": "xsd:string"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "municipio",
+          "nillable": "false",
+          "type": "xsd:string"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "cod_municipio_ibge",
+          "nillable": "false",
+          "type": "xsd:int"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "m_fiscal",
+          "nillable": "false",
+          "type": "xsd:decimal"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "tipo_imovel",
+          "nillable": "false",
+          "type": "xsd:string"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "0",
+          "name": "geo_area_imovel",
+          "nillable": "true",
+          "type": "gml:MultiSurfacePropertyType"
+        }
+      ],
+      "decisions": {
+        "cod_imovel": {
+          "destination": "cod_imovel",
+          "decision": "mapped"
+        },
+        "status_imovel": {
+          "destination": "status",
+          "decision": "mapped"
+        },
+        "dat_criacao": {
+          "destination": "data_criacao",
+          "decision": "mapped"
+        },
+        "data_atualizacao": {
+          "destination": "data_atualizacao",
+          "decision": "mapped"
+        },
+        "area": {
+          "destination": "area_ha",
+          "decision": "mapped"
+        },
+        "condicao": {
+          "destination": "condicao",
+          "decision": "mapped"
+        },
+        "uf": {
+          "destination": "uf",
+          "decision": "mapped"
+        },
+        "municipio": {
+          "destination": "municipio",
+          "decision": "mapped"
+        },
+        "cod_municipio_ibge": {
+          "destination": "cod_municipio_ibge",
+          "decision": "mapped"
+        },
+        "m_fiscal": {
+          "destination": "modulos_fiscais",
+          "decision": "mapped"
+        },
+        "tipo_imovel": {
+          "destination": "tipo",
+          "decision": "mapped"
+        },
+        "geo_area_imovel": {
+          "destination": null,
+          "decision": "ignored_geometry"
+        }
+      }
+    },
+    {
+      "uf": "DF",
+      "file": "sicar_schema_df_023.xml.gz",
+      "target_namespace": "/sicar",
+      "elements": [
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "cod_imovel",
+          "nillable": "false",
+          "type": "xsd:string"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "status_imovel",
+          "nillable": "false",
+          "type": "xsd:string"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "dat_criacao",
+          "nillable": "false",
+          "type": "xsd:dateTime"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "0",
+          "name": "data_atualizacao",
+          "nillable": "true",
+          "type": "xsd:dateTime"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "area",
+          "nillable": "false",
+          "type": "xsd:decimal"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "0",
+          "name": "condicao",
+          "nillable": "true",
+          "type": "xsd:string"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "uf",
+          "nillable": "false",
+          "type": "xsd:string"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "municipio",
+          "nillable": "false",
+          "type": "xsd:string"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "cod_municipio_ibge",
+          "nillable": "false",
+          "type": "xsd:int"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "m_fiscal",
+          "nillable": "false",
+          "type": "xsd:decimal"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "tipo_imovel",
+          "nillable": "false",
+          "type": "xsd:string"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "0",
+          "name": "geo_area_imovel",
+          "nillable": "true",
+          "type": "gml:MultiSurfacePropertyType"
+        }
+      ],
+      "decisions": {
+        "cod_imovel": {
+          "destination": "cod_imovel",
+          "decision": "mapped"
+        },
+        "status_imovel": {
+          "destination": "status",
+          "decision": "mapped"
+        },
+        "dat_criacao": {
+          "destination": "data_criacao",
+          "decision": "mapped"
+        },
+        "data_atualizacao": {
+          "destination": "data_atualizacao",
+          "decision": "mapped"
+        },
+        "area": {
+          "destination": "area_ha",
+          "decision": "mapped"
+        },
+        "condicao": {
+          "destination": "condicao",
+          "decision": "mapped"
+        },
+        "uf": {
+          "destination": "uf",
+          "decision": "mapped"
+        },
+        "municipio": {
+          "destination": "municipio",
+          "decision": "mapped"
+        },
+        "cod_municipio_ibge": {
+          "destination": "cod_municipio_ibge",
+          "decision": "mapped"
+        },
+        "m_fiscal": {
+          "destination": "modulos_fiscais",
+          "decision": "mapped"
+        },
+        "tipo_imovel": {
+          "destination": "tipo",
+          "decision": "mapped"
+        },
+        "geo_area_imovel": {
+          "destination": null,
+          "decision": "ignored_geometry"
+        }
+      }
+    },
+    {
+      "uf": "ES",
+      "file": "sicar_schema_es_024.xml.gz",
+      "target_namespace": "/sicar",
+      "elements": [
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "cod_imovel",
+          "nillable": "false",
+          "type": "xsd:string"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "status_imovel",
+          "nillable": "false",
+          "type": "xsd:string"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "dat_criacao",
+          "nillable": "false",
+          "type": "xsd:dateTime"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "0",
+          "name": "data_atualizacao",
+          "nillable": "true",
+          "type": "xsd:dateTime"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "area",
+          "nillable": "false",
+          "type": "xsd:decimal"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "0",
+          "name": "condicao",
+          "nillable": "true",
+          "type": "xsd:string"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "uf",
+          "nillable": "false",
+          "type": "xsd:string"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "municipio",
+          "nillable": "false",
+          "type": "xsd:string"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "cod_municipio_ibge",
+          "nillable": "false",
+          "type": "xsd:int"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "m_fiscal",
+          "nillable": "false",
+          "type": "xsd:decimal"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "tipo_imovel",
+          "nillable": "false",
+          "type": "xsd:string"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "0",
+          "name": "geo_area_imovel",
+          "nillable": "true",
+          "type": "gml:MultiSurfacePropertyType"
+        }
+      ],
+      "decisions": {
+        "cod_imovel": {
+          "destination": "cod_imovel",
+          "decision": "mapped"
+        },
+        "status_imovel": {
+          "destination": "status",
+          "decision": "mapped"
+        },
+        "dat_criacao": {
+          "destination": "data_criacao",
+          "decision": "mapped"
+        },
+        "data_atualizacao": {
+          "destination": "data_atualizacao",
+          "decision": "mapped"
+        },
+        "area": {
+          "destination": "area_ha",
+          "decision": "mapped"
+        },
+        "condicao": {
+          "destination": "condicao",
+          "decision": "mapped"
+        },
+        "uf": {
+          "destination": "uf",
+          "decision": "mapped"
+        },
+        "municipio": {
+          "destination": "municipio",
+          "decision": "mapped"
+        },
+        "cod_municipio_ibge": {
+          "destination": "cod_municipio_ibge",
+          "decision": "mapped"
+        },
+        "m_fiscal": {
+          "destination": "modulos_fiscais",
+          "decision": "mapped"
+        },
+        "tipo_imovel": {
+          "destination": "tipo",
+          "decision": "mapped"
+        },
+        "geo_area_imovel": {
+          "destination": null,
+          "decision": "ignored_geometry"
+        }
+      }
+    },
+    {
+      "uf": "GO",
+      "file": "sicar_schema_go_025.xml.gz",
+      "target_namespace": "/sicar",
+      "elements": [
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "cod_imovel",
+          "nillable": "false",
+          "type": "xsd:string"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "status_imovel",
+          "nillable": "false",
+          "type": "xsd:string"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "dat_criacao",
+          "nillable": "false",
+          "type": "xsd:dateTime"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "0",
+          "name": "data_atualizacao",
+          "nillable": "true",
+          "type": "xsd:dateTime"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "area",
+          "nillable": "false",
+          "type": "xsd:decimal"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "0",
+          "name": "condicao",
+          "nillable": "true",
+          "type": "xsd:string"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "uf",
+          "nillable": "false",
+          "type": "xsd:string"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "municipio",
+          "nillable": "false",
+          "type": "xsd:string"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "cod_municipio_ibge",
+          "nillable": "false",
+          "type": "xsd:int"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "m_fiscal",
+          "nillable": "false",
+          "type": "xsd:decimal"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "tipo_imovel",
+          "nillable": "false",
+          "type": "xsd:string"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "0",
+          "name": "geo_area_imovel",
+          "nillable": "true",
+          "type": "gml:MultiSurfacePropertyType"
+        }
+      ],
+      "decisions": {
+        "cod_imovel": {
+          "destination": "cod_imovel",
+          "decision": "mapped"
+        },
+        "status_imovel": {
+          "destination": "status",
+          "decision": "mapped"
+        },
+        "dat_criacao": {
+          "destination": "data_criacao",
+          "decision": "mapped"
+        },
+        "data_atualizacao": {
+          "destination": "data_atualizacao",
+          "decision": "mapped"
+        },
+        "area": {
+          "destination": "area_ha",
+          "decision": "mapped"
+        },
+        "condicao": {
+          "destination": "condicao",
+          "decision": "mapped"
+        },
+        "uf": {
+          "destination": "uf",
+          "decision": "mapped"
+        },
+        "municipio": {
+          "destination": "municipio",
+          "decision": "mapped"
+        },
+        "cod_municipio_ibge": {
+          "destination": "cod_municipio_ibge",
+          "decision": "mapped"
+        },
+        "m_fiscal": {
+          "destination": "modulos_fiscais",
+          "decision": "mapped"
+        },
+        "tipo_imovel": {
+          "destination": "tipo",
+          "decision": "mapped"
+        },
+        "geo_area_imovel": {
+          "destination": null,
+          "decision": "ignored_geometry"
+        }
+      }
+    },
+    {
+      "uf": "MA",
+      "file": "sicar_schema_ma_026.xml.gz",
+      "target_namespace": "/sicar",
+      "elements": [
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "cod_imovel",
+          "nillable": "false",
+          "type": "xsd:string"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "status_imovel",
+          "nillable": "false",
+          "type": "xsd:string"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "dat_criacao",
+          "nillable": "false",
+          "type": "xsd:dateTime"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "0",
+          "name": "data_atualizacao",
+          "nillable": "true",
+          "type": "xsd:dateTime"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "area",
+          "nillable": "false",
+          "type": "xsd:decimal"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "0",
+          "name": "condicao",
+          "nillable": "true",
+          "type": "xsd:string"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "uf",
+          "nillable": "false",
+          "type": "xsd:string"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "municipio",
+          "nillable": "false",
+          "type": "xsd:string"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "cod_municipio_ibge",
+          "nillable": "false",
+          "type": "xsd:int"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "m_fiscal",
+          "nillable": "false",
+          "type": "xsd:decimal"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "tipo_imovel",
+          "nillable": "false",
+          "type": "xsd:string"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "0",
+          "name": "geo_area_imovel",
+          "nillable": "true",
+          "type": "gml:MultiSurfacePropertyType"
+        }
+      ],
+      "decisions": {
+        "cod_imovel": {
+          "destination": "cod_imovel",
+          "decision": "mapped"
+        },
+        "status_imovel": {
+          "destination": "status",
+          "decision": "mapped"
+        },
+        "dat_criacao": {
+          "destination": "data_criacao",
+          "decision": "mapped"
+        },
+        "data_atualizacao": {
+          "destination": "data_atualizacao",
+          "decision": "mapped"
+        },
+        "area": {
+          "destination": "area_ha",
+          "decision": "mapped"
+        },
+        "condicao": {
+          "destination": "condicao",
+          "decision": "mapped"
+        },
+        "uf": {
+          "destination": "uf",
+          "decision": "mapped"
+        },
+        "municipio": {
+          "destination": "municipio",
+          "decision": "mapped"
+        },
+        "cod_municipio_ibge": {
+          "destination": "cod_municipio_ibge",
+          "decision": "mapped"
+        },
+        "m_fiscal": {
+          "destination": "modulos_fiscais",
+          "decision": "mapped"
+        },
+        "tipo_imovel": {
+          "destination": "tipo",
+          "decision": "mapped"
+        },
+        "geo_area_imovel": {
+          "destination": null,
+          "decision": "ignored_geometry"
+        }
+      }
+    },
+    {
+      "uf": "MG",
+      "file": "sicar_schema_mg_027.xml.gz",
+      "target_namespace": "/sicar",
+      "elements": [
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "cod_imovel",
+          "nillable": "false",
+          "type": "xsd:string"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "status_imovel",
+          "nillable": "false",
+          "type": "xsd:string"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "dat_criacao",
+          "nillable": "false",
+          "type": "xsd:dateTime"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "0",
+          "name": "data_atualizacao",
+          "nillable": "true",
+          "type": "xsd:dateTime"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "area",
+          "nillable": "false",
+          "type": "xsd:decimal"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "0",
+          "name": "condicao",
+          "nillable": "true",
+          "type": "xsd:string"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "uf",
+          "nillable": "false",
+          "type": "xsd:string"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "municipio",
+          "nillable": "false",
+          "type": "xsd:string"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "cod_municipio_ibge",
+          "nillable": "false",
+          "type": "xsd:int"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "m_fiscal",
+          "nillable": "false",
+          "type": "xsd:decimal"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "tipo_imovel",
+          "nillable": "false",
+          "type": "xsd:string"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "0",
+          "name": "geo_area_imovel",
+          "nillable": "true",
+          "type": "gml:MultiSurfacePropertyType"
+        }
+      ],
+      "decisions": {
+        "cod_imovel": {
+          "destination": "cod_imovel",
+          "decision": "mapped"
+        },
+        "status_imovel": {
+          "destination": "status",
+          "decision": "mapped"
+        },
+        "dat_criacao": {
+          "destination": "data_criacao",
+          "decision": "mapped"
+        },
+        "data_atualizacao": {
+          "destination": "data_atualizacao",
+          "decision": "mapped"
+        },
+        "area": {
+          "destination": "area_ha",
+          "decision": "mapped"
+        },
+        "condicao": {
+          "destination": "condicao",
+          "decision": "mapped"
+        },
+        "uf": {
+          "destination": "uf",
+          "decision": "mapped"
+        },
+        "municipio": {
+          "destination": "municipio",
+          "decision": "mapped"
+        },
+        "cod_municipio_ibge": {
+          "destination": "cod_municipio_ibge",
+          "decision": "mapped"
+        },
+        "m_fiscal": {
+          "destination": "modulos_fiscais",
+          "decision": "mapped"
+        },
+        "tipo_imovel": {
+          "destination": "tipo",
+          "decision": "mapped"
+        },
+        "geo_area_imovel": {
+          "destination": null,
+          "decision": "ignored_geometry"
+        }
+      }
+    },
+    {
+      "uf": "MS",
+      "file": "sicar_schema_ms_028.xml.gz",
+      "target_namespace": "/sicar",
+      "elements": [
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "cod_imovel",
+          "nillable": "false",
+          "type": "xsd:string"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "status_imovel",
+          "nillable": "false",
+          "type": "xsd:string"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "dat_criacao",
+          "nillable": "false",
+          "type": "xsd:dateTime"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "0",
+          "name": "data_atualizacao",
+          "nillable": "true",
+          "type": "xsd:dateTime"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "area",
+          "nillable": "false",
+          "type": "xsd:decimal"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "0",
+          "name": "condicao",
+          "nillable": "true",
+          "type": "xsd:string"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "uf",
+          "nillable": "false",
+          "type": "xsd:string"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "municipio",
+          "nillable": "false",
+          "type": "xsd:string"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "cod_municipio_ibge",
+          "nillable": "false",
+          "type": "xsd:int"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "m_fiscal",
+          "nillable": "false",
+          "type": "xsd:decimal"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "tipo_imovel",
+          "nillable": "false",
+          "type": "xsd:string"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "0",
+          "name": "geo_area_imovel",
+          "nillable": "true",
+          "type": "gml:MultiSurfacePropertyType"
+        }
+      ],
+      "decisions": {
+        "cod_imovel": {
+          "destination": "cod_imovel",
+          "decision": "mapped"
+        },
+        "status_imovel": {
+          "destination": "status",
+          "decision": "mapped"
+        },
+        "dat_criacao": {
+          "destination": "data_criacao",
+          "decision": "mapped"
+        },
+        "data_atualizacao": {
+          "destination": "data_atualizacao",
+          "decision": "mapped"
+        },
+        "area": {
+          "destination": "area_ha",
+          "decision": "mapped"
+        },
+        "condicao": {
+          "destination": "condicao",
+          "decision": "mapped"
+        },
+        "uf": {
+          "destination": "uf",
+          "decision": "mapped"
+        },
+        "municipio": {
+          "destination": "municipio",
+          "decision": "mapped"
+        },
+        "cod_municipio_ibge": {
+          "destination": "cod_municipio_ibge",
+          "decision": "mapped"
+        },
+        "m_fiscal": {
+          "destination": "modulos_fiscais",
+          "decision": "mapped"
+        },
+        "tipo_imovel": {
+          "destination": "tipo",
+          "decision": "mapped"
+        },
+        "geo_area_imovel": {
+          "destination": null,
+          "decision": "ignored_geometry"
+        }
+      }
+    },
+    {
+      "uf": "MT",
+      "file": "sicar_schema_mt_029.xml.gz",
+      "target_namespace": "/sicar",
+      "elements": [
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "cod_imovel",
+          "nillable": "false",
+          "type": "xsd:string"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "status_imovel",
+          "nillable": "false",
+          "type": "xsd:string"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "dat_criacao",
+          "nillable": "false",
+          "type": "xsd:dateTime"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "0",
+          "name": "data_atualizacao",
+          "nillable": "true",
+          "type": "xsd:dateTime"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "area",
+          "nillable": "false",
+          "type": "xsd:decimal"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "0",
+          "name": "condicao",
+          "nillable": "true",
+          "type": "xsd:string"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "uf",
+          "nillable": "false",
+          "type": "xsd:string"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "municipio",
+          "nillable": "false",
+          "type": "xsd:string"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "cod_municipio_ibge",
+          "nillable": "false",
+          "type": "xsd:int"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "m_fiscal",
+          "nillable": "false",
+          "type": "xsd:decimal"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "tipo_imovel",
+          "nillable": "false",
+          "type": "xsd:string"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "0",
+          "name": "geo_area_imovel",
+          "nillable": "true",
+          "type": "gml:MultiSurfacePropertyType"
+        }
+      ],
+      "decisions": {
+        "cod_imovel": {
+          "destination": "cod_imovel",
+          "decision": "mapped"
+        },
+        "status_imovel": {
+          "destination": "status",
+          "decision": "mapped"
+        },
+        "dat_criacao": {
+          "destination": "data_criacao",
+          "decision": "mapped"
+        },
+        "data_atualizacao": {
+          "destination": "data_atualizacao",
+          "decision": "mapped"
+        },
+        "area": {
+          "destination": "area_ha",
+          "decision": "mapped"
+        },
+        "condicao": {
+          "destination": "condicao",
+          "decision": "mapped"
+        },
+        "uf": {
+          "destination": "uf",
+          "decision": "mapped"
+        },
+        "municipio": {
+          "destination": "municipio",
+          "decision": "mapped"
+        },
+        "cod_municipio_ibge": {
+          "destination": "cod_municipio_ibge",
+          "decision": "mapped"
+        },
+        "m_fiscal": {
+          "destination": "modulos_fiscais",
+          "decision": "mapped"
+        },
+        "tipo_imovel": {
+          "destination": "tipo",
+          "decision": "mapped"
+        },
+        "geo_area_imovel": {
+          "destination": null,
+          "decision": "ignored_geometry"
+        }
+      }
+    },
+    {
+      "uf": "PA",
+      "file": "sicar_schema_pa_030.xml.gz",
+      "target_namespace": "/sicar",
+      "elements": [
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "cod_imovel",
+          "nillable": "false",
+          "type": "xsd:string"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "status_imovel",
+          "nillable": "false",
+          "type": "xsd:string"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "dat_criacao",
+          "nillable": "false",
+          "type": "xsd:dateTime"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "0",
+          "name": "data_atualizacao",
+          "nillable": "true",
+          "type": "xsd:dateTime"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "area",
+          "nillable": "false",
+          "type": "xsd:decimal"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "0",
+          "name": "condicao",
+          "nillable": "true",
+          "type": "xsd:string"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "uf",
+          "nillable": "false",
+          "type": "xsd:string"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "municipio",
+          "nillable": "false",
+          "type": "xsd:string"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "cod_municipio_ibge",
+          "nillable": "false",
+          "type": "xsd:int"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "m_fiscal",
+          "nillable": "false",
+          "type": "xsd:decimal"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "tipo_imovel",
+          "nillable": "false",
+          "type": "xsd:string"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "0",
+          "name": "geo_area_imovel",
+          "nillable": "true",
+          "type": "gml:MultiSurfacePropertyType"
+        }
+      ],
+      "decisions": {
+        "cod_imovel": {
+          "destination": "cod_imovel",
+          "decision": "mapped"
+        },
+        "status_imovel": {
+          "destination": "status",
+          "decision": "mapped"
+        },
+        "dat_criacao": {
+          "destination": "data_criacao",
+          "decision": "mapped"
+        },
+        "data_atualizacao": {
+          "destination": "data_atualizacao",
+          "decision": "mapped"
+        },
+        "area": {
+          "destination": "area_ha",
+          "decision": "mapped"
+        },
+        "condicao": {
+          "destination": "condicao",
+          "decision": "mapped"
+        },
+        "uf": {
+          "destination": "uf",
+          "decision": "mapped"
+        },
+        "municipio": {
+          "destination": "municipio",
+          "decision": "mapped"
+        },
+        "cod_municipio_ibge": {
+          "destination": "cod_municipio_ibge",
+          "decision": "mapped"
+        },
+        "m_fiscal": {
+          "destination": "modulos_fiscais",
+          "decision": "mapped"
+        },
+        "tipo_imovel": {
+          "destination": "tipo",
+          "decision": "mapped"
+        },
+        "geo_area_imovel": {
+          "destination": null,
+          "decision": "ignored_geometry"
+        }
+      }
+    },
+    {
+      "uf": "PB",
+      "file": "sicar_schema_pb_031.xml.gz",
+      "target_namespace": "/sicar",
+      "elements": [
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "cod_imovel",
+          "nillable": "false",
+          "type": "xsd:string"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "status_imovel",
+          "nillable": "false",
+          "type": "xsd:string"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "dat_criacao",
+          "nillable": "false",
+          "type": "xsd:dateTime"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "0",
+          "name": "data_atualizacao",
+          "nillable": "true",
+          "type": "xsd:dateTime"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "area",
+          "nillable": "false",
+          "type": "xsd:decimal"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "0",
+          "name": "condicao",
+          "nillable": "true",
+          "type": "xsd:string"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "uf",
+          "nillable": "false",
+          "type": "xsd:string"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "municipio",
+          "nillable": "false",
+          "type": "xsd:string"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "cod_municipio_ibge",
+          "nillable": "false",
+          "type": "xsd:int"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "m_fiscal",
+          "nillable": "false",
+          "type": "xsd:decimal"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "tipo_imovel",
+          "nillable": "false",
+          "type": "xsd:string"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "0",
+          "name": "geo_area_imovel",
+          "nillable": "true",
+          "type": "gml:MultiSurfacePropertyType"
+        }
+      ],
+      "decisions": {
+        "cod_imovel": {
+          "destination": "cod_imovel",
+          "decision": "mapped"
+        },
+        "status_imovel": {
+          "destination": "status",
+          "decision": "mapped"
+        },
+        "dat_criacao": {
+          "destination": "data_criacao",
+          "decision": "mapped"
+        },
+        "data_atualizacao": {
+          "destination": "data_atualizacao",
+          "decision": "mapped"
+        },
+        "area": {
+          "destination": "area_ha",
+          "decision": "mapped"
+        },
+        "condicao": {
+          "destination": "condicao",
+          "decision": "mapped"
+        },
+        "uf": {
+          "destination": "uf",
+          "decision": "mapped"
+        },
+        "municipio": {
+          "destination": "municipio",
+          "decision": "mapped"
+        },
+        "cod_municipio_ibge": {
+          "destination": "cod_municipio_ibge",
+          "decision": "mapped"
+        },
+        "m_fiscal": {
+          "destination": "modulos_fiscais",
+          "decision": "mapped"
+        },
+        "tipo_imovel": {
+          "destination": "tipo",
+          "decision": "mapped"
+        },
+        "geo_area_imovel": {
+          "destination": null,
+          "decision": "ignored_geometry"
+        }
+      }
+    },
+    {
+      "uf": "PE",
+      "file": "sicar_schema_pe_032.xml.gz",
+      "target_namespace": "/sicar",
+      "elements": [
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "cod_imovel",
+          "nillable": "false",
+          "type": "xsd:string"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "status_imovel",
+          "nillable": "false",
+          "type": "xsd:string"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "dat_criacao",
+          "nillable": "false",
+          "type": "xsd:dateTime"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "area",
+          "nillable": "false",
+          "type": "xsd:decimal"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "0",
+          "name": "condicao",
+          "nillable": "true",
+          "type": "xsd:string"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "uf",
+          "nillable": "false",
+          "type": "xsd:string"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "municipio",
+          "nillable": "false",
+          "type": "xsd:string"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "cod_municipio_ibge",
+          "nillable": "false",
+          "type": "xsd:int"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "m_fiscal",
+          "nillable": "false",
+          "type": "xsd:decimal"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "tipo_imovel",
+          "nillable": "false",
+          "type": "xsd:string"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "0",
+          "name": "geo_area_imovel",
+          "nillable": "true",
+          "type": "gml:MultiSurfacePropertyType"
+        }
+      ],
+      "decisions": {
+        "cod_imovel": {
+          "destination": "cod_imovel",
+          "decision": "mapped"
+        },
+        "status_imovel": {
+          "destination": "status",
+          "decision": "mapped"
+        },
+        "dat_criacao": {
+          "destination": "data_criacao",
+          "decision": "mapped"
+        },
+        "area": {
+          "destination": "area_ha",
+          "decision": "mapped"
+        },
+        "condicao": {
+          "destination": "condicao",
+          "decision": "mapped"
+        },
+        "uf": {
+          "destination": "uf",
+          "decision": "mapped"
+        },
+        "municipio": {
+          "destination": "municipio",
+          "decision": "mapped"
+        },
+        "cod_municipio_ibge": {
+          "destination": "cod_municipio_ibge",
+          "decision": "mapped"
+        },
+        "m_fiscal": {
+          "destination": "modulos_fiscais",
+          "decision": "mapped"
+        },
+        "tipo_imovel": {
+          "destination": "tipo",
+          "decision": "mapped"
+        },
+        "geo_area_imovel": {
+          "destination": null,
+          "decision": "ignored_geometry"
+        }
+      }
+    },
+    {
+      "uf": "PI",
+      "file": "sicar_schema_pi_033.xml.gz",
+      "target_namespace": "/sicar",
+      "elements": [
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "cod_imovel",
+          "nillable": "false",
+          "type": "xsd:string"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "status_imovel",
+          "nillable": "false",
+          "type": "xsd:string"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "dat_criacao",
+          "nillable": "false",
+          "type": "xsd:dateTime"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "area",
+          "nillable": "false",
+          "type": "xsd:decimal"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "0",
+          "name": "condicao",
+          "nillable": "true",
+          "type": "xsd:string"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "uf",
+          "nillable": "false",
+          "type": "xsd:string"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "municipio",
+          "nillable": "false",
+          "type": "xsd:string"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "cod_municipio_ibge",
+          "nillable": "false",
+          "type": "xsd:int"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "m_fiscal",
+          "nillable": "false",
+          "type": "xsd:decimal"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "tipo_imovel",
+          "nillable": "false",
+          "type": "xsd:string"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "0",
+          "name": "geo_area_imovel",
+          "nillable": "true",
+          "type": "gml:MultiSurfacePropertyType"
+        }
+      ],
+      "decisions": {
+        "cod_imovel": {
+          "destination": "cod_imovel",
+          "decision": "mapped"
+        },
+        "status_imovel": {
+          "destination": "status",
+          "decision": "mapped"
+        },
+        "dat_criacao": {
+          "destination": "data_criacao",
+          "decision": "mapped"
+        },
+        "area": {
+          "destination": "area_ha",
+          "decision": "mapped"
+        },
+        "condicao": {
+          "destination": "condicao",
+          "decision": "mapped"
+        },
+        "uf": {
+          "destination": "uf",
+          "decision": "mapped"
+        },
+        "municipio": {
+          "destination": "municipio",
+          "decision": "mapped"
+        },
+        "cod_municipio_ibge": {
+          "destination": "cod_municipio_ibge",
+          "decision": "mapped"
+        },
+        "m_fiscal": {
+          "destination": "modulos_fiscais",
+          "decision": "mapped"
+        },
+        "tipo_imovel": {
+          "destination": "tipo",
+          "decision": "mapped"
+        },
+        "geo_area_imovel": {
+          "destination": null,
+          "decision": "ignored_geometry"
+        }
+      }
+    },
+    {
+      "uf": "PR",
+      "file": "sicar_schema_pr_034.xml.gz",
+      "target_namespace": "/sicar",
+      "elements": [
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "cod_imovel",
+          "nillable": "false",
+          "type": "xsd:string"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "status_imovel",
+          "nillable": "false",
+          "type": "xsd:string"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "dat_criacao",
+          "nillable": "false",
+          "type": "xsd:dateTime"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "area",
+          "nillable": "false",
+          "type": "xsd:decimal"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "0",
+          "name": "condicao",
+          "nillable": "true",
+          "type": "xsd:string"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "uf",
+          "nillable": "false",
+          "type": "xsd:string"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "municipio",
+          "nillable": "false",
+          "type": "xsd:string"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "cod_municipio_ibge",
+          "nillable": "false",
+          "type": "xsd:int"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "m_fiscal",
+          "nillable": "false",
+          "type": "xsd:decimal"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "tipo_imovel",
+          "nillable": "false",
+          "type": "xsd:string"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "0",
+          "name": "geo_area_imovel",
+          "nillable": "true",
+          "type": "gml:MultiSurfacePropertyType"
+        }
+      ],
+      "decisions": {
+        "cod_imovel": {
+          "destination": "cod_imovel",
+          "decision": "mapped"
+        },
+        "status_imovel": {
+          "destination": "status",
+          "decision": "mapped"
+        },
+        "dat_criacao": {
+          "destination": "data_criacao",
+          "decision": "mapped"
+        },
+        "area": {
+          "destination": "area_ha",
+          "decision": "mapped"
+        },
+        "condicao": {
+          "destination": "condicao",
+          "decision": "mapped"
+        },
+        "uf": {
+          "destination": "uf",
+          "decision": "mapped"
+        },
+        "municipio": {
+          "destination": "municipio",
+          "decision": "mapped"
+        },
+        "cod_municipio_ibge": {
+          "destination": "cod_municipio_ibge",
+          "decision": "mapped"
+        },
+        "m_fiscal": {
+          "destination": "modulos_fiscais",
+          "decision": "mapped"
+        },
+        "tipo_imovel": {
+          "destination": "tipo",
+          "decision": "mapped"
+        },
+        "geo_area_imovel": {
+          "destination": null,
+          "decision": "ignored_geometry"
+        }
+      }
+    },
+    {
+      "uf": "RJ",
+      "file": "sicar_schema_rj_035.xml.gz",
+      "target_namespace": "/sicar",
+      "elements": [
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "cod_imovel",
+          "nillable": "false",
+          "type": "xsd:string"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "status_imovel",
+          "nillable": "false",
+          "type": "xsd:string"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "dat_criacao",
+          "nillable": "false",
+          "type": "xsd:dateTime"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "area",
+          "nillable": "false",
+          "type": "xsd:decimal"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "0",
+          "name": "condicao",
+          "nillable": "true",
+          "type": "xsd:string"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "uf",
+          "nillable": "false",
+          "type": "xsd:string"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "municipio",
+          "nillable": "false",
+          "type": "xsd:string"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "cod_municipio_ibge",
+          "nillable": "false",
+          "type": "xsd:int"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "m_fiscal",
+          "nillable": "false",
+          "type": "xsd:decimal"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "tipo_imovel",
+          "nillable": "false",
+          "type": "xsd:string"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "0",
+          "name": "geo_area_imovel",
+          "nillable": "true",
+          "type": "gml:MultiSurfacePropertyType"
+        }
+      ],
+      "decisions": {
+        "cod_imovel": {
+          "destination": "cod_imovel",
+          "decision": "mapped"
+        },
+        "status_imovel": {
+          "destination": "status",
+          "decision": "mapped"
+        },
+        "dat_criacao": {
+          "destination": "data_criacao",
+          "decision": "mapped"
+        },
+        "area": {
+          "destination": "area_ha",
+          "decision": "mapped"
+        },
+        "condicao": {
+          "destination": "condicao",
+          "decision": "mapped"
+        },
+        "uf": {
+          "destination": "uf",
+          "decision": "mapped"
+        },
+        "municipio": {
+          "destination": "municipio",
+          "decision": "mapped"
+        },
+        "cod_municipio_ibge": {
+          "destination": "cod_municipio_ibge",
+          "decision": "mapped"
+        },
+        "m_fiscal": {
+          "destination": "modulos_fiscais",
+          "decision": "mapped"
+        },
+        "tipo_imovel": {
+          "destination": "tipo",
+          "decision": "mapped"
+        },
+        "geo_area_imovel": {
+          "destination": null,
+          "decision": "ignored_geometry"
+        }
+      }
+    },
+    {
+      "uf": "RN",
+      "file": "sicar_schema_rn_036.xml.gz",
+      "target_namespace": "/sicar",
+      "elements": [
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "cod_imovel",
+          "nillable": "false",
+          "type": "xsd:string"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "status_imovel",
+          "nillable": "false",
+          "type": "xsd:string"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "dat_criacao",
+          "nillable": "false",
+          "type": "xsd:dateTime"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "area",
+          "nillable": "false",
+          "type": "xsd:decimal"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "0",
+          "name": "condicao",
+          "nillable": "true",
+          "type": "xsd:string"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "uf",
+          "nillable": "false",
+          "type": "xsd:string"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "municipio",
+          "nillable": "false",
+          "type": "xsd:string"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "cod_municipio_ibge",
+          "nillable": "false",
+          "type": "xsd:int"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "m_fiscal",
+          "nillable": "false",
+          "type": "xsd:decimal"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "tipo_imovel",
+          "nillable": "false",
+          "type": "xsd:string"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "0",
+          "name": "geo_area_imovel",
+          "nillable": "true",
+          "type": "gml:MultiSurfacePropertyType"
+        }
+      ],
+      "decisions": {
+        "cod_imovel": {
+          "destination": "cod_imovel",
+          "decision": "mapped"
+        },
+        "status_imovel": {
+          "destination": "status",
+          "decision": "mapped"
+        },
+        "dat_criacao": {
+          "destination": "data_criacao",
+          "decision": "mapped"
+        },
+        "area": {
+          "destination": "area_ha",
+          "decision": "mapped"
+        },
+        "condicao": {
+          "destination": "condicao",
+          "decision": "mapped"
+        },
+        "uf": {
+          "destination": "uf",
+          "decision": "mapped"
+        },
+        "municipio": {
+          "destination": "municipio",
+          "decision": "mapped"
+        },
+        "cod_municipio_ibge": {
+          "destination": "cod_municipio_ibge",
+          "decision": "mapped"
+        },
+        "m_fiscal": {
+          "destination": "modulos_fiscais",
+          "decision": "mapped"
+        },
+        "tipo_imovel": {
+          "destination": "tipo",
+          "decision": "mapped"
+        },
+        "geo_area_imovel": {
+          "destination": null,
+          "decision": "ignored_geometry"
+        }
+      }
+    },
+    {
+      "uf": "RO",
+      "file": "sicar_schema_ro_037.xml.gz",
+      "target_namespace": "/sicar",
+      "elements": [
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "cod_imovel",
+          "nillable": "false",
+          "type": "xsd:string"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "status_imovel",
+          "nillable": "false",
+          "type": "xsd:string"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "dat_criacao",
+          "nillable": "false",
+          "type": "xsd:dateTime"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "area",
+          "nillable": "false",
+          "type": "xsd:decimal"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "0",
+          "name": "condicao",
+          "nillable": "true",
+          "type": "xsd:string"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "uf",
+          "nillable": "false",
+          "type": "xsd:string"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "municipio",
+          "nillable": "false",
+          "type": "xsd:string"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "cod_municipio_ibge",
+          "nillable": "false",
+          "type": "xsd:int"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "m_fiscal",
+          "nillable": "false",
+          "type": "xsd:decimal"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "tipo_imovel",
+          "nillable": "false",
+          "type": "xsd:string"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "0",
+          "name": "geo_area_imovel",
+          "nillable": "true",
+          "type": "gml:MultiSurfacePropertyType"
+        }
+      ],
+      "decisions": {
+        "cod_imovel": {
+          "destination": "cod_imovel",
+          "decision": "mapped"
+        },
+        "status_imovel": {
+          "destination": "status",
+          "decision": "mapped"
+        },
+        "dat_criacao": {
+          "destination": "data_criacao",
+          "decision": "mapped"
+        },
+        "area": {
+          "destination": "area_ha",
+          "decision": "mapped"
+        },
+        "condicao": {
+          "destination": "condicao",
+          "decision": "mapped"
+        },
+        "uf": {
+          "destination": "uf",
+          "decision": "mapped"
+        },
+        "municipio": {
+          "destination": "municipio",
+          "decision": "mapped"
+        },
+        "cod_municipio_ibge": {
+          "destination": "cod_municipio_ibge",
+          "decision": "mapped"
+        },
+        "m_fiscal": {
+          "destination": "modulos_fiscais",
+          "decision": "mapped"
+        },
+        "tipo_imovel": {
+          "destination": "tipo",
+          "decision": "mapped"
+        },
+        "geo_area_imovel": {
+          "destination": null,
+          "decision": "ignored_geometry"
+        }
+      }
+    },
+    {
+      "uf": "RR",
+      "file": "sicar_schema_rr_038.xml.gz",
+      "target_namespace": "/sicar",
+      "elements": [
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "cod_imovel",
+          "nillable": "false",
+          "type": "xsd:string"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "status_imovel",
+          "nillable": "false",
+          "type": "xsd:string"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "dat_criacao",
+          "nillable": "false",
+          "type": "xsd:dateTime"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "area",
+          "nillable": "false",
+          "type": "xsd:decimal"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "0",
+          "name": "condicao",
+          "nillable": "true",
+          "type": "xsd:string"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "uf",
+          "nillable": "false",
+          "type": "xsd:string"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "municipio",
+          "nillable": "false",
+          "type": "xsd:string"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "cod_municipio_ibge",
+          "nillable": "false",
+          "type": "xsd:int"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "m_fiscal",
+          "nillable": "false",
+          "type": "xsd:decimal"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "tipo_imovel",
+          "nillable": "false",
+          "type": "xsd:string"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "0",
+          "name": "geo_area_imovel",
+          "nillable": "true",
+          "type": "gml:MultiSurfacePropertyType"
+        }
+      ],
+      "decisions": {
+        "cod_imovel": {
+          "destination": "cod_imovel",
+          "decision": "mapped"
+        },
+        "status_imovel": {
+          "destination": "status",
+          "decision": "mapped"
+        },
+        "dat_criacao": {
+          "destination": "data_criacao",
+          "decision": "mapped"
+        },
+        "area": {
+          "destination": "area_ha",
+          "decision": "mapped"
+        },
+        "condicao": {
+          "destination": "condicao",
+          "decision": "mapped"
+        },
+        "uf": {
+          "destination": "uf",
+          "decision": "mapped"
+        },
+        "municipio": {
+          "destination": "municipio",
+          "decision": "mapped"
+        },
+        "cod_municipio_ibge": {
+          "destination": "cod_municipio_ibge",
+          "decision": "mapped"
+        },
+        "m_fiscal": {
+          "destination": "modulos_fiscais",
+          "decision": "mapped"
+        },
+        "tipo_imovel": {
+          "destination": "tipo",
+          "decision": "mapped"
+        },
+        "geo_area_imovel": {
+          "destination": null,
+          "decision": "ignored_geometry"
+        }
+      }
+    },
+    {
+      "uf": "RS",
+      "file": "sicar_schema_rs_039.xml.gz",
+      "target_namespace": "/sicar",
+      "elements": [
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "cod_imovel",
+          "nillable": "false",
+          "type": "xsd:string"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "status_imovel",
+          "nillable": "false",
+          "type": "xsd:string"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "dat_criacao",
+          "nillable": "false",
+          "type": "xsd:dateTime"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "area",
+          "nillable": "false",
+          "type": "xsd:decimal"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "0",
+          "name": "condicao",
+          "nillable": "true",
+          "type": "xsd:string"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "uf",
+          "nillable": "false",
+          "type": "xsd:string"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "municipio",
+          "nillable": "false",
+          "type": "xsd:string"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "cod_municipio_ibge",
+          "nillable": "false",
+          "type": "xsd:int"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "m_fiscal",
+          "nillable": "false",
+          "type": "xsd:decimal"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "tipo_imovel",
+          "nillable": "false",
+          "type": "xsd:string"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "0",
+          "name": "geo_area_imovel",
+          "nillable": "true",
+          "type": "gml:MultiSurfacePropertyType"
+        }
+      ],
+      "decisions": {
+        "cod_imovel": {
+          "destination": "cod_imovel",
+          "decision": "mapped"
+        },
+        "status_imovel": {
+          "destination": "status",
+          "decision": "mapped"
+        },
+        "dat_criacao": {
+          "destination": "data_criacao",
+          "decision": "mapped"
+        },
+        "area": {
+          "destination": "area_ha",
+          "decision": "mapped"
+        },
+        "condicao": {
+          "destination": "condicao",
+          "decision": "mapped"
+        },
+        "uf": {
+          "destination": "uf",
+          "decision": "mapped"
+        },
+        "municipio": {
+          "destination": "municipio",
+          "decision": "mapped"
+        },
+        "cod_municipio_ibge": {
+          "destination": "cod_municipio_ibge",
+          "decision": "mapped"
+        },
+        "m_fiscal": {
+          "destination": "modulos_fiscais",
+          "decision": "mapped"
+        },
+        "tipo_imovel": {
+          "destination": "tipo",
+          "decision": "mapped"
+        },
+        "geo_area_imovel": {
+          "destination": null,
+          "decision": "ignored_geometry"
+        }
+      }
+    },
+    {
+      "uf": "SC",
+      "file": "sicar_schema_sc_040.xml.gz",
+      "target_namespace": "/sicar",
+      "elements": [
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "cod_imovel",
+          "nillable": "false",
+          "type": "xsd:string"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "status_imovel",
+          "nillable": "false",
+          "type": "xsd:string"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "dat_criacao",
+          "nillable": "false",
+          "type": "xsd:dateTime"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "area",
+          "nillable": "false",
+          "type": "xsd:decimal"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "0",
+          "name": "condicao",
+          "nillable": "true",
+          "type": "xsd:string"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "uf",
+          "nillable": "false",
+          "type": "xsd:string"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "municipio",
+          "nillable": "false",
+          "type": "xsd:string"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "cod_municipio_ibge",
+          "nillable": "false",
+          "type": "xsd:int"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "m_fiscal",
+          "nillable": "false",
+          "type": "xsd:decimal"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "tipo_imovel",
+          "nillable": "false",
+          "type": "xsd:string"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "0",
+          "name": "geo_area_imovel",
+          "nillable": "true",
+          "type": "gml:MultiSurfacePropertyType"
+        }
+      ],
+      "decisions": {
+        "cod_imovel": {
+          "destination": "cod_imovel",
+          "decision": "mapped"
+        },
+        "status_imovel": {
+          "destination": "status",
+          "decision": "mapped"
+        },
+        "dat_criacao": {
+          "destination": "data_criacao",
+          "decision": "mapped"
+        },
+        "area": {
+          "destination": "area_ha",
+          "decision": "mapped"
+        },
+        "condicao": {
+          "destination": "condicao",
+          "decision": "mapped"
+        },
+        "uf": {
+          "destination": "uf",
+          "decision": "mapped"
+        },
+        "municipio": {
+          "destination": "municipio",
+          "decision": "mapped"
+        },
+        "cod_municipio_ibge": {
+          "destination": "cod_municipio_ibge",
+          "decision": "mapped"
+        },
+        "m_fiscal": {
+          "destination": "modulos_fiscais",
+          "decision": "mapped"
+        },
+        "tipo_imovel": {
+          "destination": "tipo",
+          "decision": "mapped"
+        },
+        "geo_area_imovel": {
+          "destination": null,
+          "decision": "ignored_geometry"
+        }
+      }
+    },
+    {
+      "uf": "SE",
+      "file": "sicar_schema_se_041.xml.gz",
+      "target_namespace": "/sicar",
+      "elements": [
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "cod_imovel",
+          "nillable": "false",
+          "type": "xsd:string"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "status_imovel",
+          "nillable": "false",
+          "type": "xsd:string"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "dat_criacao",
+          "nillable": "false",
+          "type": "xsd:dateTime"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "area",
+          "nillable": "false",
+          "type": "xsd:decimal"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "0",
+          "name": "condicao",
+          "nillable": "true",
+          "type": "xsd:string"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "uf",
+          "nillable": "false",
+          "type": "xsd:string"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "municipio",
+          "nillable": "false",
+          "type": "xsd:string"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "cod_municipio_ibge",
+          "nillable": "false",
+          "type": "xsd:int"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "m_fiscal",
+          "nillable": "false",
+          "type": "xsd:decimal"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "tipo_imovel",
+          "nillable": "false",
+          "type": "xsd:string"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "0",
+          "name": "geo_area_imovel",
+          "nillable": "true",
+          "type": "gml:MultiSurfacePropertyType"
+        }
+      ],
+      "decisions": {
+        "cod_imovel": {
+          "destination": "cod_imovel",
+          "decision": "mapped"
+        },
+        "status_imovel": {
+          "destination": "status",
+          "decision": "mapped"
+        },
+        "dat_criacao": {
+          "destination": "data_criacao",
+          "decision": "mapped"
+        },
+        "area": {
+          "destination": "area_ha",
+          "decision": "mapped"
+        },
+        "condicao": {
+          "destination": "condicao",
+          "decision": "mapped"
+        },
+        "uf": {
+          "destination": "uf",
+          "decision": "mapped"
+        },
+        "municipio": {
+          "destination": "municipio",
+          "decision": "mapped"
+        },
+        "cod_municipio_ibge": {
+          "destination": "cod_municipio_ibge",
+          "decision": "mapped"
+        },
+        "m_fiscal": {
+          "destination": "modulos_fiscais",
+          "decision": "mapped"
+        },
+        "tipo_imovel": {
+          "destination": "tipo",
+          "decision": "mapped"
+        },
+        "geo_area_imovel": {
+          "destination": null,
+          "decision": "ignored_geometry"
+        }
+      }
+    },
+    {
+      "uf": "SP",
+      "file": "sicar_schema_sp_042.xml.gz",
+      "target_namespace": "/sicar",
+      "elements": [
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "cod_imovel",
+          "nillable": "false",
+          "type": "xsd:string"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "status_imovel",
+          "nillable": "false",
+          "type": "xsd:string"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "dat_criacao",
+          "nillable": "false",
+          "type": "xsd:dateTime"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "area",
+          "nillable": "false",
+          "type": "xsd:decimal"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "0",
+          "name": "condicao",
+          "nillable": "true",
+          "type": "xsd:string"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "uf",
+          "nillable": "false",
+          "type": "xsd:string"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "municipio",
+          "nillable": "false",
+          "type": "xsd:string"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "cod_municipio_ibge",
+          "nillable": "false",
+          "type": "xsd:int"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "m_fiscal",
+          "nillable": "false",
+          "type": "xsd:decimal"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "tipo_imovel",
+          "nillable": "false",
+          "type": "xsd:string"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "0",
+          "name": "geo_area_imovel",
+          "nillable": "true",
+          "type": "gml:MultiSurfacePropertyType"
+        }
+      ],
+      "decisions": {
+        "cod_imovel": {
+          "destination": "cod_imovel",
+          "decision": "mapped"
+        },
+        "status_imovel": {
+          "destination": "status",
+          "decision": "mapped"
+        },
+        "dat_criacao": {
+          "destination": "data_criacao",
+          "decision": "mapped"
+        },
+        "area": {
+          "destination": "area_ha",
+          "decision": "mapped"
+        },
+        "condicao": {
+          "destination": "condicao",
+          "decision": "mapped"
+        },
+        "uf": {
+          "destination": "uf",
+          "decision": "mapped"
+        },
+        "municipio": {
+          "destination": "municipio",
+          "decision": "mapped"
+        },
+        "cod_municipio_ibge": {
+          "destination": "cod_municipio_ibge",
+          "decision": "mapped"
+        },
+        "m_fiscal": {
+          "destination": "modulos_fiscais",
+          "decision": "mapped"
+        },
+        "tipo_imovel": {
+          "destination": "tipo",
+          "decision": "mapped"
+        },
+        "geo_area_imovel": {
+          "destination": null,
+          "decision": "ignored_geometry"
+        }
+      }
+    },
+    {
+      "uf": "TO",
+      "file": "sicar_schema_to_043.xml.gz",
+      "target_namespace": "/sicar",
+      "elements": [
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "cod_imovel",
+          "nillable": "false",
+          "type": "xsd:string"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "status_imovel",
+          "nillable": "false",
+          "type": "xsd:string"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "dat_criacao",
+          "nillable": "false",
+          "type": "xsd:dateTime"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "area",
+          "nillable": "false",
+          "type": "xsd:decimal"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "0",
+          "name": "condicao",
+          "nillable": "true",
+          "type": "xsd:string"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "uf",
+          "nillable": "false",
+          "type": "xsd:string"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "municipio",
+          "nillable": "false",
+          "type": "xsd:string"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "cod_municipio_ibge",
+          "nillable": "false",
+          "type": "xsd:int"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "m_fiscal",
+          "nillable": "false",
+          "type": "xsd:decimal"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "1",
+          "name": "tipo_imovel",
+          "nillable": "false",
+          "type": "xsd:string"
+        },
+        {
+          "maxOccurs": "1",
+          "minOccurs": "0",
+          "name": "geo_area_imovel",
+          "nillable": "true",
+          "type": "gml:MultiSurfacePropertyType"
+        }
+      ],
+      "decisions": {
+        "cod_imovel": {
+          "destination": "cod_imovel",
+          "decision": "mapped"
+        },
+        "status_imovel": {
+          "destination": "status",
+          "decision": "mapped"
+        },
+        "dat_criacao": {
+          "destination": "data_criacao",
+          "decision": "mapped"
+        },
+        "area": {
+          "destination": "area_ha",
+          "decision": "mapped"
+        },
+        "condicao": {
+          "destination": "condicao",
+          "decision": "mapped"
+        },
+        "uf": {
+          "destination": "uf",
+          "decision": "mapped"
+        },
+        "municipio": {
+          "destination": "municipio",
+          "decision": "mapped"
+        },
+        "cod_municipio_ibge": {
+          "destination": "cod_municipio_ibge",
+          "decision": "mapped"
+        },
+        "m_fiscal": {
+          "destination": "modulos_fiscais",
+          "decision": "mapped"
+        },
+        "tipo_imovel": {
+          "destination": "tipo",
+          "decision": "mapped"
+        },
+        "geo_area_imovel": {
+          "destination": null,
+          "decision": "ignored_geometry"
+        }
+      }
+    }
+  ],
+  "column_decisions": {
+    "cod_imovel": {
+      "destination": "cod_imovel",
+      "decision": "mapped",
+      "unit": null
+    },
+    "status_imovel": {
+      "destination": "status",
+      "decision": "mapped",
+      "unit": null
+    },
+    "dat_criacao": {
+      "destination": "data_criacao",
+      "decision": "mapped",
+      "unit": "UTC instant"
+    },
+    "data_atualizacao": {
+      "destination": "data_atualizacao",
+      "decision": "mapped",
+      "unit": "UTC instant"
+    },
+    "area": {
+      "destination": "area_ha",
+      "decision": "mapped",
+      "unit": "ha"
+    },
+    "condicao": {
+      "destination": "condicao",
+      "decision": "mapped",
+      "unit": null
+    },
+    "uf": {
+      "destination": "uf",
+      "decision": "mapped",
+      "unit": null
+    },
+    "municipio": {
+      "destination": "municipio",
+      "decision": "mapped",
+      "unit": null
+    },
+    "cod_municipio_ibge": {
+      "destination": "cod_municipio_ibge",
+      "decision": "mapped",
+      "unit": null
+    },
+    "m_fiscal": {
+      "destination": "modulos_fiscais",
+      "decision": "mapped",
+      "unit": "fiscal modules"
+    },
+    "tipo_imovel": {
+      "destination": "tipo",
+      "decision": "mapped",
+      "unit": null
+    }
+  },
+  "limits": [
+    "Current complete selection replays do not reconstruct historical registry snapshots.",
+    "The full DF capture includes a preflight hits outside the public request flow; the replay serves the next two independently captured hits for the API warning and acquisition checks.",
+    "Historical GO and RS pages contain duplicated property versions but do not contain every page of those selections. Their all-cell/version oracles exercise the parser only, with original numberMatched retained.",
+    "Current GO/RS complete queries no longer contain those duplicated versions; no cause is inferred.",
+    "No geometry N2, no cache in this API, no N3 between pages, dates or UFs.",
+    "Source MetaInfo currently lacks raw page hashes/sizes; acquisition receipts and the replay manifest retain them. fetch_timestamp convention is left for the cross-cutting RG review.",
+    "A single dataset route uses attempted_sources=['sicar'] and selected_source='sicar'; the direct source uses ['sicar_wfs'] and 'sicar_wfs'. Both retain source_details['sicar'].",
+    "The HTTP replay checks signatures and occurrence selectors and verifies response consumption, not global request ordering; the two DF hits publish the same count."
+  ]
+}

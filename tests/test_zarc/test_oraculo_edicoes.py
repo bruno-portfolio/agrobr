@@ -10,7 +10,7 @@ import pytest
 from agrobr.exceptions import InvalidParameterError
 from agrobr.zarc import api, cache, models
 from tests import helpers
-from tests.test_zarc import test_reconciliacao_r11 as r11
+from tests.test_zarc import test_reconciliacao as r11
 
 GOLDEN = r11.ROOT / "tests/golden_data/zarc/edicoes_20260923"
 MANIFEST = json.loads((GOLDEN / "manifest.json").read_bytes())

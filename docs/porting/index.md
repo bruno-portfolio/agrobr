@@ -276,7 +276,7 @@ para validar parsers em qualquer linguagem:
 | Fonte | Caso de teste | Arquivos |
 |-------|--------------|----------|
 | ABIOVE | `exportacao_sample` | response.xlsx, expected.json |
-| ANDA | `reconciliacao_r7_20260918` | anda/anda_Principais_Indicadores_2024.pdf, anda_manifest.json (`anda_2024`) |
+| ANDA | `reconciliacao_boletins_anec_anda_deral_20260918` | anda/anda_Principais_Indicadores_2024.pdf, anda_manifest.json (`anda_2024`) |
 | B3 | `posicoes_sample` | response.csv, expected.json |
 | BCB | `custeio_sample` | response.json, expected.json |
 | CEPEA | `soja_sample` | response.html, expected.json |
@@ -292,7 +292,7 @@ para validar parsers em qualquer linguagem:
 | IBGE | `abate_bovino_sample` | response.csv, expected.json |
 | IBGE | `censo_agro_efetivo_sample` | response.csv, expected.json |
 | IBGE | `pam_soja_sample` | response.csv, expected.json |
-| IBGE | `reconciliacao_r15_20260918` (PPM, PEVS) | agregados/*.json, manifest.json |
+| IBGE | `reconciliacao_canais_ibge_20260918` (PPM, PEVS) | agregados/*.json, manifest.json |
 | IBGE | `leite_trimestral_sample` | response.csv, expected.json |
 | IBGE | `pib_agro_sample` | response.csv, expected.json |
 | IMEA | `oficial_20260923` | cadeias.json, cotacoes_{id}.json e indicadores_{id}.json (8 cadeias), manifest.json |

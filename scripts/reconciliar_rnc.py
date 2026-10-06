@@ -15,7 +15,7 @@ from urllib.parse import urljoin
 from bs4 import BeautifulSoup
 
 ROOT = Path(__file__).resolve().parents[1]
-GOLDEN = ROOT / "tests/golden_data/reconciliacao_r11_20260918/rnc"
+GOLDEN = ROOT / "tests/golden_data/reconciliacao_registros_precos_zoneamento_seguro_20260918/rnc"
 DATE_COLUMNS = {
     "DATA DO REGISTRO",
     "DATA DE VALIDADE DO REGISTRO",

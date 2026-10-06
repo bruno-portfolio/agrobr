@@ -1,0 +1,1141 @@
+{
+ "file": "b3_ajustes_PR260917_recorte.zip",
+ "bytes": 9114,
+ "sha256": "cdd9c91e3275c2f4a887aad6d2ccd4507cb3779461b581c2060ef28c76f66f04",
+ "origem": {
+  "name": "b3_ajustes_PR260917",
+  "source": "b3",
+  "requested_url": "https://www.b3.com.br/pesquisapregao/download?filelist=PR260917.zip",
+  "final_url": "https://www.b3.com.br/pesquisapregao/download?filelist=PR260917.zip",
+  "status": 200,
+  "captured_at": "2026-09-18T12:44:13.710394+00:00",
+  "bytes": 13153407,
+  "sha256": "d5cb1a57a56a96f99376d103fcbf45dec6446cd1c8db65ad410a4a054b53f9c8",
+  "content_type": "application/octet-stream",
+  "zip_interno": "PR260917.zip",
+  "xmls_internos": [
+   "BVBG.086.01_BV000328202609170328000001838212849.xml",
+   "BVBG.086.01_BV000328202609170328000001906117645.xml",
+   "BVBG.086.01_BV000328202609170328000001920209067.xml",
+   "BVBG.086.01_BV000328202609170328000002034082401.xml"
+  ],
+  "xml_lido_pelo_parser": "BVBG.086.01_BV000328202609170328000002034082401.xml",
+  "xml_bytes": 154415299,
+  "xml_sha256": "aebab7db07bc21339b940f89308a3193a7f7bb122f388bc877db7de2331d6e46",
+  "blocos_bizgrp_total": 67420
+ },
+ "recorte": {
+  "metodo": "cabeçalho (bytes 0..first) + blocos <BizGrp> de futuros agro selecionados por regex no TckrSymb + rodapé, reempacotado em ZIP externo/interno com os mesmos nomes",
+  "header_bytes": [
+   0,
+   1430
+  ],
+  "footer_bytes": [
+   154415256,
+   154415299
+  ],
+  "blocos_mantidos": 61,
+  "offsets": [
+   {
+    "start": 3357675,
+    "end": 3361024,
+    "sha256": "4b7c7c0624acc79dd6df231444c0d87f57e6d152aee2f00a6b6953f58b430d39"
+   },
+   {
+    "start": 4545455,
+    "end": 4548818,
+    "sha256": "d834b966330a58c0bd1ba3964e636c26167bd7383088f562e319009082c6d173"
+   },
+   {
+    "start": 5584984,
+    "end": 5587449,
+    "sha256": "8730d2be5aa8ed265ff474d40bd653f7066e2f436d5af6ecea897bb46b35e377"
+   },
+   {
+    "start": 6306181,
+    "end": 6309609,
+    "sha256": "02762addba910d26e16bbb1cf2f356b5111ce6198b145f428228cbb1f7df276a"
+   },
+   {
+    "start": 13895233,
+    "end": 13897705,
+    "sha256": "5a468c915e07e48c12bec64b0a44c21146d05c1bd9732f9128083890811ee7bf"
+   },
+   {
+    "start": 16038944,
+    "end": 16042232,
+    "sha256": "53c5da521254c10197d785ce140c4d4a5ec7dac87007e87ca75ff3a617d22fe7"
+   },
+   {
+    "start": 19896224,
+    "end": 19898846,
+    "sha256": "a218571bef5015c63ca82df4bf92934394e2bf701d353a5d3da35a78912f1791"
+   },
+   {
+    "start": 21958184,
+    "end": 21960709,
+    "sha256": "86cbc924f586eff00d9fcd1ef786f7d30f12792de6af5aa46c47f0a4e35c4598"
+   },
+   {
+    "start": 24157426,
+    "end": 24159839,
+    "sha256": "7466da7e8d63cd1242e43d99b4dfbd62926c32e7d128d0b6443e1b8147dff28b"
+   },
+   {
+    "start": 24387667,
+    "end": 24391032,
+    "sha256": "a82a8bdfb5f6332e4569f61c6839a92fd7aa0abb529a8f8b3ba5b7ceb89e67e4"
+   },
+   {
+    "start": 28218435,
+    "end": 28221729,
+    "sha256": "51f608d218c84d193200b7e27dbec69f940164f393c3d8df95fd1e066c223fa1"
+   },
+   {
+    "start": 28303453,
+    "end": 28306755,
+    "sha256": "aa7a7019d8964df931b5979fdf72ac4e7f6d6fb2ec2fdd9d30c7829dba02c96a"
+   },
+   {
+    "start": 29885175,
+    "end": 29888465,
+    "sha256": "a5b152cdef6ffc939de32ed8b6c8b4306105d5ad14bb1c96455c03320c7d257a"
+   },
+   {
+    "start": 42541895,
+    "end": 42544300,
+    "sha256": "3a400cdfff2b91c5d8de8db38b83713cd5d19bf2af4b6aaf4bb3304b35dbd0d6"
+   },
+   {
+    "start": 47258495,
+    "end": 47260900,
+    "sha256": "722d194f44b323ed96a7758fea37ef2b016f57490f23e899e81e918962507084"
+   },
+   {
+    "start": 51423815,
+    "end": 51426228,
+    "sha256": "63020af6f1aad9fae06447008d3123eeefc38f9cf4ee267791cb697a0bc84d1a"
+   },
+   {
+    "start": 57055953,
+    "end": 57059332,
+    "sha256": "eaf56a86594381362e806147d09bbefb1a2878181e498cab0757549e261093b1"
+   },
+   {
+    "start": 59828509,
+    "end": 59831801,
+    "sha256": "58fd01e6422f91d90dfb7e2b327bcedca3397a24f14c012a8488a0793dfec11e"
+   },
+   {
+    "start": 61525667,
+    "end": 61529028,
+    "sha256": "393888fb788414fc0de30edcdf24a832aeb836367cb4daea3f702402134a3bba"
+   },
+   {
+    "start": 61533158,
+    "end": 61536455,
+    "sha256": "d2bd63efcc9848bfb0f37b830e70060ed747d469de17b3589a41536e9534b2cc"
+   },
+   {
+    "start": 61628311,
+    "end": 61631732,
+    "sha256": "24d6d20210225aa17323296cb988f4060b1c2c578dc150622be33a5538cc1517"
+   },
+   {
+    "start": 63252694,
+    "end": 63256126,
+    "sha256": "53bf4248a39ef8da5f7cd83b283c5f6a51c39363a486cb3d19193a27dff8c834"
+   },
+   {
+    "start": 74738305,
+    "end": 74740836,
+    "sha256": "d493ca88b3c04a6d87f1e290ff7c8de482bc3065859ae772f1acdfc042ce68a3"
+   },
+   {
+    "start": 74933301,
+    "end": 74935714,
+    "sha256": "e29d08f7ef1d57a098b624e8ee6c4eaf108ddaf0e3f8f9987fe52f58634b999a"
+   },
+   {
+    "start": 75089574,
+    "end": 75092037,
+    "sha256": "a985b6de63b2e78b992fbff047796d053365faae9d36241fb406b4f5c9e35ad3"
+   },
+   {
+    "start": 83021987,
+    "end": 83025249,
+    "sha256": "d4356bb5f0cdb18b06f738ecc5744c519c15ce9622cf6537215b10ce8c2bb7dc"
+   },
+   {
+    "start": 87373639,
+    "end": 87377013,
+    "sha256": "4875550a828c9fb1f47d9794e196271844231843a7c2f5730030b76ffb31ec3d"
+   },
+   {
+    "start": 92204738,
+    "end": 92208117,
+    "sha256": "fc2b4b1effa84caa8ae48da481c651e37e21fe06aced535f673128ee373ee73d"
+   },
+   {
+    "start": 98766582,
+    "end": 98768987,
+    "sha256": "07405264b00ff160f4dd03d076f8c606c3468085d48bb26b584609a09c1eb974"
+   },
+   {
+    "start": 105905296,
+    "end": 105907808,
+    "sha256": "d3778fccb406652bfc8c1ef2995d46139d6d701da2b4fe6690ac82d28e66b543"
+   },
+   {
+    "start": 106342911,
+    "end": 106346273,
+    "sha256": "c69a81b3eeb9898ce39372b0ccbad9a185b85de2aa06b4c2a60dfd0da2f1f3e4"
+   },
+   {
+    "start": 107168974,
+    "end": 107172397,
+    "sha256": "3204e0871e4456b8a534491819bc8b81bb2e3d03cec52a1d46b6450c3b38aaf3"
+   },
+   {
+    "start": 107828784,
+    "end": 107832155,
+    "sha256": "36e69b0f52c86d2a73746b32e005fc598757d9b5bebfbff41ce67c5815bcfe2e"
+   },
+   {
+    "start": 107894837,
+    "end": 107897250,
+    "sha256": "da25b8f675097a1125de3817de7efa9ceba00535a04d2b63d4b235accb79f321"
+   },
+   {
+    "start": 108164884,
+    "end": 108167346,
+    "sha256": "99164e995ef5032f52c1cd48f98726e0418cab118d9ee935d6ede60b85a1ccfd"
+   },
+   {
+    "start": 112466697,
+    "end": 112469989,
+    "sha256": "2e4f835ea51b03850a40af02fdaf5d667aaa00b4a24b2734b2a9cfc5a0be70e9"
+   },
+   {
+    "start": 112985349,
+    "end": 112988717,
+    "sha256": "7ce9a6b1798fb703bf0e17d205191dfb6d869e285977fbc78e937c247d5eee0f"
+   },
+   {
+    "start": 114000430,
+    "end": 114003057,
+    "sha256": "2703502c5f2ae1a2e839c409d5e33abb0f30443d6cf269c14602a52325c4420a"
+   },
+   {
+    "start": 114415870,
+    "end": 114418441,
+    "sha256": "49de126b7d43abfe82b3cc9cada017b03a7ab42e240e2d92617ef9a34f9f7a80"
+   },
+   {
+    "start": 120469035,
+    "end": 120472420,
+    "sha256": "9453e6e6c4fbb383f6939b4104223e2aad6f57e617ad82dd754ce99b1bba7ab2"
+   },
+   {
+    "start": 120700924,
+    "end": 120703337,
+    "sha256": "0be98e47d117641d377f923bacd287b69a5546c890a040a10168e88e6a7e8d33"
+   },
+   {
+    "start": 126127643,
+    "end": 126131010,
+    "sha256": "38d0873b3e40d9df685a3dc3d90e624d6b0b307b3c1038dcb8d7c447ffe42334"
+   },
+   {
+    "start": 128860477,
+    "end": 128863891,
+    "sha256": "720ff4f4d46ccddb4dcf135411c967d4f59bafd02478f2b2a4e64612096f62d7"
+   },
+   {
+    "start": 128980023,
+    "end": 128982483,
+    "sha256": "8503af5385d9500436451eca153948af1698fa299046772cc9b552aea9067458"
+   },
+   {
+    "start": 134778793,
+    "end": 134781198,
+    "sha256": "563971c56c997990142b12bac8ce0620150fed2da027c1ddafb2a69e0f9fef92"
+   },
+   {
+    "start": 135325783,
+    "end": 135329154,
+    "sha256": "0683677bfce95f9dd1b1ac82d274ebfc4e7cdcd2ecbbf2ca70de71b344cadfc0"
+   },
+   {
+    "start": 137858727,
+    "end": 137862101,
+    "sha256": "73acdf6f76ef7107ba0f68d586cad1aa4ddbb04f7349f30278349f3ec235f42d"
+   },
+   {
+    "start": 139447414,
+    "end": 139450733,
+    "sha256": "353183c2efe31bcb607338fdfe630a1543f6db96c032c1aa61023739a938090e"
+   },
+   {
+    "start": 147698312,
+    "end": 147701609,
+    "sha256": "ad368c6c6588a0c74b6d91aace0bcf5c42c06c00098dcf863910f213c5698520"
+   },
+   {
+    "start": 152374759,
+    "end": 152377228,
+    "sha256": "5712ab51cd9acc485556aef6ea04457d6d478ba5a7311ea345c8f6c87379e6b9"
+   },
+   {
+    "start": 154306269,
+    "end": 154309691,
+    "sha256": "d0d11e06cc8af09d9ac051d2c4e04fc77a96b11f31a7338401a9bd989687a140"
+   },
+   {
+    "start": 154381692,
+    "end": 154385053,
+    "sha256": "5a22dd1236a6b31d6ec51824ca7196ca145164c57859a2c863988c55d6f99385"
+   },
+   {
+    "start": 154385061,
+    "end": 154388425,
+    "sha256": "2d0fb9b3f22f3d4bad9b4a08b8a1c2b67ff833832ab0e4fc08577f4329d316a2"
+   },
+   {
+    "start": 154388433,
+    "end": 154391783,
+    "sha256": "8147e4090cd309e8f5b9ed8ff3425cbab1822cbbccbcd0b22bafed44300b2edf"
+   },
+   {
+    "start": 154391791,
+    "end": 154395146,
+    "sha256": "6d934f08e4ee22eba2d0eedcb87a677a9d4d3d2cb929bdad2e94b7a89f191be9"
+   },
+   {
+    "start": 154395154,
+    "end": 154398517,
+    "sha256": "5a1f90e5506206856674b2b736b3919cf5a92d91eba593a357e730de1b13fa34"
+   },
+   {
+    "start": 154398525,
+    "end": 154401880,
+    "sha256": "8c41e9ed2a474db3debcb37adcc00d8b4e3cfb75736152caf9d0252689846927"
+   },
+   {
+    "start": 154401888,
+    "end": 154405236,
+    "sha256": "991912de20c88d7c8464f9a3f3ebda0c59be362283422904a1368b3bcfb148c1"
+   },
+   {
+    "start": 154405244,
+    "end": 154408535,
+    "sha256": "a9be24ce0f3a4f01d639df5cbf93b369e1cf2fdb516fdd35447af80d783da3fa"
+   },
+   {
+    "start": 154408543,
+    "end": 154411838,
+    "sha256": "fb8574e9398be12d7d322bb0fb3c47b58e62e139a2c563b2c859bdc0bf426284"
+   },
+   {
+    "start": 154411846,
+    "end": 154415256,
+    "sha256": "e614248ea019870ba49207ec16c83c74d303e30f6bb5bb3eb020ae48794b4c1b"
+   }
+  ]
+ },
+ "registros": [
+  {
+   "ticker": "CCM",
+   "vencimento_codigo": "X27",
+   "block_index": 0,
+   "offset": 3357675,
+   "TradDt": "2026-09-17",
+   "has_FinInstrmAttrbts": true,
+   "PrvsAdjstdQt": "81.92",
+   "AdjstdQt": "81.75",
+   "VartnPts": "-0.17",
+   "AdjstdValCtrct": "-76.5",
+   "Ccy_AdjstdQt": "BRL"
+  },
+  {
+   "ticker": "CCM",
+   "vencimento_codigo": "K27",
+   "block_index": 1,
+   "offset": 4545455,
+   "TradDt": "2026-09-17",
+   "has_FinInstrmAttrbts": true,
+   "PrvsAdjstdQt": "80.3",
+   "AdjstdQt": "80.42",
+   "VartnPts": "0.12",
+   "AdjstdValCtrct": "54",
+   "Ccy_AdjstdQt": "BRL"
+  },
+  {
+   "ticker": "ICF",
+   "vencimento_codigo": "K27",
+   "block_index": 2,
+   "offset": 5584984,
+   "TradDt": "2026-09-17",
+   "has_FinInstrmAttrbts": true,
+   "PrvsAdjstdQt": "304.3",
+   "AdjstdQt": "298.35",
+   "VartnPts": "-5.95",
+   "AdjstdValCtrct": "-3063.7145",
+   "Ccy_AdjstdQt": "USD"
+  },
+  {
+   "ticker": "SJC",
+   "vencimento_codigo": "X26",
+   "block_index": 3,
+   "offset": 6306181,
+   "TradDt": "2026-09-17",
+   "has_FinInstrmAttrbts": true,
+   "PrvsAdjstdQt": "29.1116",
+   "AdjstdQt": "29.095",
+   "VartnPts": "-0.0166",
+   "AdjstdValCtrct": "-38.463777",
+   "Ccy_AdjstdQt": "USD"
+  },
+  {
+   "ticker": "SJC",
+   "vencimento_codigo": "U27",
+   "block_index": 4,
+   "offset": 13895233,
+   "TradDt": "2026-09-17",
+   "has_FinInstrmAttrbts": true,
+   "PrvsAdjstdQt": "28.5108",
+   "AdjstdQt": "28.5163",
+   "VartnPts": "0.0055",
+   "AdjstdValCtrct": "12.7440225",
+   "Ccy_AdjstdQt": "USD"
+  },
+  {
+   "ticker": "ETH",
+   "vencimento_codigo": "Z26",
+   "block_index": 5,
+   "offset": 16038944,
+   "TradDt": "2026-09-17",
+   "has_FinInstrmAttrbts": true,
+   "PrvsAdjstdQt": "2767.5",
+   "AdjstdQt": "2761",
+   "VartnPts": "-6.5",
+   "AdjstdValCtrct": "-195",
+   "Ccy_AdjstdQt": "BRL"
+  },
+  {
+   "ticker": "ICF",
+   "vencimento_codigo": "Z27",
+   "block_index": 6,
+   "offset": 19896224,
+   "TradDt": "2026-09-17",
+   "has_FinInstrmAttrbts": true,
+   "PrvsAdjstdQt": "317.6",
+   "AdjstdQt": "312.35",
+   "VartnPts": "-5.25",
+   "AdjstdValCtrct": "-2703.2775",
+   "Ccy_AdjstdQt": "USD"
+  },
+  {
+   "ticker": "ICF",
+   "vencimento_codigo": "H28",
+   "block_index": 7,
+   "offset": 21958184,
+   "TradDt": "2026-09-17",
+   "has_FinInstrmAttrbts": true,
+   "PrvsAdjstdQt": "315.1",
+   "AdjstdQt": "310.15",
+   "VartnPts": "-4.95",
+   "AdjstdValCtrct": "-2548.8045",
+   "Ccy_AdjstdQt": "USD"
+  },
+  {
+   "ticker": "CNL",
+   "vencimento_codigo": "H27",
+   "block_index": 8,
+   "offset": 24157426,
+   "TradDt": "2026-09-17",
+   "has_FinInstrmAttrbts": true,
+   "PrvsAdjstdQt": "970.71",
+   "AdjstdQt": "962.38",
+   "VartnPts": "-8.33",
+   "AdjstdValCtrct": "-833",
+   "Ccy_AdjstdQt": "BRL"
+  },
+  {
+   "ticker": "CCM",
+   "vencimento_codigo": "F27",
+   "block_index": 9,
+   "offset": 24387667,
+   "TradDt": "2026-09-17",
+   "has_FinInstrmAttrbts": true,
+   "PrvsAdjstdQt": "80.23",
+   "AdjstdQt": "80.3",
+   "VartnPts": "0.07",
+   "AdjstdValCtrct": "31.5",
+   "Ccy_AdjstdQt": "BRL"
+  },
+  {
+   "ticker": "ETH",
+   "vencimento_codigo": "V26",
+   "block_index": 10,
+   "offset": 28218435,
+   "TradDt": "2026-09-17",
+   "has_FinInstrmAttrbts": true,
+   "PrvsAdjstdQt": "2740",
+   "AdjstdQt": "2733.5",
+   "VartnPts": "-6.5",
+   "AdjstdValCtrct": "-195",
+   "Ccy_AdjstdQt": "BRL"
+  },
+  {
+   "ticker": "ETH",
+   "vencimento_codigo": "U26",
+   "block_index": 11,
+   "offset": 28303453,
+   "TradDt": "2026-09-17",
+   "has_FinInstrmAttrbts": true,
+   "PrvsAdjstdQt": "2730",
+   "AdjstdQt": "2723.5",
+   "VartnPts": "-6.5",
+   "AdjstdValCtrct": "-195",
+   "Ccy_AdjstdQt": "BRL"
+  },
+  {
+   "ticker": "ETH",
+   "vencimento_codigo": "X26",
+   "block_index": 12,
+   "offset": 29885175,
+   "TradDt": "2026-09-17",
+   "has_FinInstrmAttrbts": true,
+   "PrvsAdjstdQt": "2742.5",
+   "AdjstdQt": "2736",
+   "VartnPts": "-6.5",
+   "AdjstdValCtrct": "-195",
+   "Ccy_AdjstdQt": "BRL"
+  },
+  {
+   "ticker": "ETH",
+   "vencimento_codigo": "F28",
+   "block_index": 13,
+   "offset": 42541895,
+   "TradDt": "2026-09-17",
+   "has_FinInstrmAttrbts": true,
+   "PrvsAdjstdQt": "2801.5",
+   "AdjstdQt": "2795",
+   "VartnPts": "-6.5",
+   "AdjstdValCtrct": "-195",
+   "Ccy_AdjstdQt": "BRL"
+  },
+  {
+   "ticker": "ETH",
+   "vencimento_codigo": "J27",
+   "block_index": 14,
+   "offset": 47258495,
+   "TradDt": "2026-09-17",
+   "has_FinInstrmAttrbts": true,
+   "PrvsAdjstdQt": "2801.5",
+   "AdjstdQt": "2795",
+   "VartnPts": "-6.5",
+   "AdjstdValCtrct": "-195",
+   "Ccy_AdjstdQt": "BRL"
+  },
+  {
+   "ticker": "CNL",
+   "vencimento_codigo": "U26",
+   "block_index": 15,
+   "offset": 51423815,
+   "TradDt": "2026-09-17",
+   "has_FinInstrmAttrbts": true,
+   "PrvsAdjstdQt": "974.34",
+   "AdjstdQt": "965.98",
+   "VartnPts": "-8.36",
+   "AdjstdValCtrct": "-836",
+   "Ccy_AdjstdQt": "BRL"
+  },
+  {
+   "ticker": "BGI",
+   "vencimento_codigo": "U26",
+   "block_index": 16,
+   "offset": 57055953,
+   "TradDt": "2026-09-17",
+   "has_FinInstrmAttrbts": true,
+   "PrvsAdjstdQt": "361.3",
+   "AdjstdQt": "359.75",
+   "VartnPts": "-1.55",
+   "AdjstdValCtrct": "-511.5",
+   "Ccy_AdjstdQt": "BRL"
+  },
+  {
+   "ticker": "ETH",
+   "vencimento_codigo": "F27",
+   "block_index": 17,
+   "offset": 59828509,
+   "TradDt": "2026-09-17",
+   "has_FinInstrmAttrbts": true,
+   "PrvsAdjstdQt": "2800",
+   "AdjstdQt": "2790",
+   "VartnPts": "-10",
+   "AdjstdValCtrct": "-300",
+   "Ccy_AdjstdQt": "BRL"
+  },
+  {
+   "ticker": "BGI",
+   "vencimento_codigo": "H27",
+   "block_index": 18,
+   "offset": 61525667,
+   "TradDt": "2026-09-17",
+   "has_FinInstrmAttrbts": true,
+   "PrvsAdjstdQt": "387.05",
+   "AdjstdQt": "386.55",
+   "VartnPts": "-0.5",
+   "AdjstdValCtrct": "-165",
+   "Ccy_AdjstdQt": "BRL"
+  },
+  {
+   "ticker": "ETH",
+   "vencimento_codigo": "H27",
+   "block_index": 19,
+   "offset": 61533158,
+   "TradDt": "2026-09-17",
+   "has_FinInstrmAttrbts": true,
+   "PrvsAdjstdQt": "2722.5",
+   "AdjstdQt": "2710",
+   "VartnPts": "-12.5",
+   "AdjstdValCtrct": "-375",
+   "Ccy_AdjstdQt": "BRL"
+  },
+  {
+   "ticker": "SJC",
+   "vencimento_codigo": "H27",
+   "block_index": 20,
+   "offset": 61628311,
+   "TradDt": "2026-09-17",
+   "has_FinInstrmAttrbts": true,
+   "PrvsAdjstdQt": "29.6572",
+   "AdjstdQt": "29.6682",
+   "VartnPts": "0.011",
+   "AdjstdValCtrct": "25.488045",
+   "Ccy_AdjstdQt": "USD"
+  },
+  {
+   "ticker": "SJC",
+   "vencimento_codigo": "F27",
+   "block_index": 21,
+   "offset": 63252694,
+   "TradDt": "2026-09-17",
+   "has_FinInstrmAttrbts": true,
+   "PrvsAdjstdQt": "29.4808",
+   "AdjstdQt": "29.4753",
+   "VartnPts": "-0.0055",
+   "AdjstdValCtrct": "-12.7440225",
+   "Ccy_AdjstdQt": "USD"
+  },
+  {
+   "ticker": "BGI",
+   "vencimento_codigo": "J27",
+   "block_index": 22,
+   "offset": 74738305,
+   "TradDt": "2026-09-17",
+   "has_FinInstrmAttrbts": true,
+   "PrvsAdjstdQt": "386.5",
+   "AdjstdQt": "386.05",
+   "VartnPts": "-0.45",
+   "AdjstdValCtrct": "-148.5",
+   "Ccy_AdjstdQt": "BRL"
+  },
+  {
+   "ticker": "CNL",
+   "vencimento_codigo": "K27",
+   "block_index": 23,
+   "offset": 74933301,
+   "TradDt": "2026-09-17",
+   "has_FinInstrmAttrbts": true,
+   "PrvsAdjstdQt": "970.71",
+   "AdjstdQt": "962.38",
+   "VartnPts": "-8.33",
+   "AdjstdValCtrct": "-833",
+   "Ccy_AdjstdQt": "BRL"
+  },
+  {
+   "ticker": "SOY",
+   "vencimento_codigo": "H27",
+   "block_index": 24,
+   "offset": 75089574,
+   "TradDt": "2026-09-17",
+   "has_FinInstrmAttrbts": true,
+   "PrvsAdjstdQt": "489.6",
+   "AdjstdQt": "490.8",
+   "VartnPts": "1.2",
+   "AdjstdValCtrct": "210.20568",
+   "Ccy_AdjstdQt": "USD"
+  },
+  {
+   "ticker": "BGI",
+   "vencimento_codigo": "M27",
+   "block_index": 25,
+   "offset": 83021987,
+   "TradDt": "2026-09-17",
+   "has_FinInstrmAttrbts": true,
+   "PrvsAdjstdQt": "385.7",
+   "AdjstdQt": "385.25",
+   "VartnPts": "-0.45",
+   "AdjstdValCtrct": "-148.5",
+   "Ccy_AdjstdQt": "BRL"
+  },
+  {
+   "ticker": "BGI",
+   "vencimento_codigo": "F27",
+   "block_index": 26,
+   "offset": 87373639,
+   "TradDt": "2026-09-17",
+   "has_FinInstrmAttrbts": true,
+   "PrvsAdjstdQt": "387.9",
+   "AdjstdQt": "387.45",
+   "VartnPts": "-0.45",
+   "AdjstdValCtrct": "-148.5",
+   "Ccy_AdjstdQt": "BRL"
+  },
+  {
+   "ticker": "BGI",
+   "vencimento_codigo": "X26",
+   "block_index": 27,
+   "offset": 92204738,
+   "TradDt": "2026-09-17",
+   "has_FinInstrmAttrbts": true,
+   "PrvsAdjstdQt": "386.9",
+   "AdjstdQt": "385.55",
+   "VartnPts": "-1.35",
+   "AdjstdValCtrct": "-445.5",
+   "Ccy_AdjstdQt": "BRL"
+  },
+  {
+   "ticker": "ETH",
+   "vencimento_codigo": "K27",
+   "block_index": 28,
+   "offset": 98766582,
+   "TradDt": "2026-09-17",
+   "has_FinInstrmAttrbts": true,
+   "PrvsAdjstdQt": "2801.5",
+   "AdjstdQt": "2795",
+   "VartnPts": "-6.5",
+   "AdjstdValCtrct": "-195",
+   "Ccy_AdjstdQt": "BRL"
+  },
+  {
+   "ticker": "SJC",
+   "vencimento_codigo": "N27",
+   "block_index": 29,
+   "offset": 105905296,
+   "TradDt": "2026-09-17",
+   "has_FinInstrmAttrbts": true,
+   "PrvsAdjstdQt": "29.8776",
+   "AdjstdQt": "29.8942",
+   "VartnPts": "0.0166",
+   "AdjstdValCtrct": "38.463777",
+   "Ccy_AdjstdQt": "USD"
+  },
+  {
+   "ticker": "CCM",
+   "vencimento_codigo": "H27",
+   "block_index": 30,
+   "offset": 106342911,
+   "TradDt": "2026-09-17",
+   "has_FinInstrmAttrbts": true,
+   "PrvsAdjstdQt": "81.79",
+   "AdjstdQt": "81.89",
+   "VartnPts": "0.1",
+   "AdjstdValCtrct": "45",
+   "Ccy_AdjstdQt": "BRL"
+  },
+  {
+   "ticker": "ICF",
+   "vencimento_codigo": "H27",
+   "block_index": 31,
+   "offset": 107168974,
+   "TradDt": "2026-09-17",
+   "has_FinInstrmAttrbts": true,
+   "PrvsAdjstdQt": "336.7",
+   "AdjstdQt": "332.5",
+   "VartnPts": "-4.2",
+   "AdjstdValCtrct": "-2162.622",
+   "Ccy_AdjstdQt": "USD"
+  },
+  {
+   "ticker": "BGI",
+   "vencimento_codigo": "Z26",
+   "block_index": 32,
+   "offset": 107828784,
+   "TradDt": "2026-09-17",
+   "has_FinInstrmAttrbts": true,
+   "PrvsAdjstdQt": "387.2",
+   "AdjstdQt": "386.3",
+   "VartnPts": "-0.9",
+   "AdjstdValCtrct": "-297",
+   "Ccy_AdjstdQt": "BRL"
+  },
+  {
+   "ticker": "CNL",
+   "vencimento_codigo": "X26",
+   "block_index": 33,
+   "offset": 107894837,
+   "TradDt": "2026-09-17",
+   "has_FinInstrmAttrbts": true,
+   "PrvsAdjstdQt": "970.71",
+   "AdjstdQt": "962.38",
+   "VartnPts": "-8.33",
+   "AdjstdValCtrct": "-833",
+   "Ccy_AdjstdQt": "BRL"
+  },
+  {
+   "ticker": "SOY",
+   "vencimento_codigo": "X26",
+   "block_index": 34,
+   "offset": 108164884,
+   "TradDt": "2026-09-17",
+   "has_FinInstrmAttrbts": true,
+   "PrvsAdjstdQt": "540.2",
+   "AdjstdQt": "540",
+   "VartnPts": "-0.2",
+   "AdjstdValCtrct": "-35.03428",
+   "Ccy_AdjstdQt": "USD"
+  },
+  {
+   "ticker": "ETH",
+   "vencimento_codigo": "G27",
+   "block_index": 35,
+   "offset": 112466697,
+   "TradDt": "2026-09-17",
+   "has_FinInstrmAttrbts": true,
+   "PrvsAdjstdQt": "2800",
+   "AdjstdQt": "2780",
+   "VartnPts": "-20",
+   "AdjstdValCtrct": "-600",
+   "Ccy_AdjstdQt": "BRL"
+  },
+  {
+   "ticker": "CCM",
+   "vencimento_codigo": "U27",
+   "block_index": 36,
+   "offset": 112985349,
+   "TradDt": "2026-09-17",
+   "has_FinInstrmAttrbts": true,
+   "PrvsAdjstdQt": "79.14",
+   "AdjstdQt": "78.97",
+   "VartnPts": "-0.17",
+   "AdjstdValCtrct": "-76.5",
+   "Ccy_AdjstdQt": "BRL"
+  },
+  {
+   "ticker": "ICF",
+   "vencimento_codigo": "U27",
+   "block_index": 37,
+   "offset": 114000430,
+   "TradDt": "2026-09-17",
+   "has_FinInstrmAttrbts": true,
+   "PrvsAdjstdQt": "321.45",
+   "AdjstdQt": "316.6",
+   "VartnPts": "-4.85",
+   "AdjstdValCtrct": "-2497.3135",
+   "Ccy_AdjstdQt": "USD"
+  },
+  {
+   "ticker": "BGI",
+   "vencimento_codigo": "K27",
+   "block_index": 38,
+   "offset": 114415870,
+   "TradDt": "2026-09-17",
+   "has_FinInstrmAttrbts": true,
+   "PrvsAdjstdQt": "385.8",
+   "AdjstdQt": "385.35",
+   "VartnPts": "-0.45",
+   "AdjstdValCtrct": "-148.5",
+   "Ccy_AdjstdQt": "BRL"
+  },
+  {
+   "ticker": "BGI",
+   "vencimento_codigo": "V26",
+   "block_index": 39,
+   "offset": 120469035,
+   "TradDt": "2026-09-17",
+   "has_FinInstrmAttrbts": true,
+   "PrvsAdjstdQt": "381.3",
+   "AdjstdQt": "379.75",
+   "VartnPts": "-1.55",
+   "AdjstdValCtrct": "-511.5",
+   "Ccy_AdjstdQt": "BRL"
+  },
+  {
+   "ticker": "CNL",
+   "vencimento_codigo": "F27",
+   "block_index": 40,
+   "offset": 120700924,
+   "TradDt": "2026-09-17",
+   "has_FinInstrmAttrbts": true,
+   "PrvsAdjstdQt": "970.71",
+   "AdjstdQt": "962.38",
+   "VartnPts": "-8.33",
+   "AdjstdValCtrct": "-833",
+   "Ccy_AdjstdQt": "BRL"
+  },
+  {
+   "ticker": "BGI",
+   "vencimento_codigo": "G27",
+   "block_index": 41,
+   "offset": 126127643,
+   "TradDt": "2026-09-17",
+   "has_FinInstrmAttrbts": true,
+   "PrvsAdjstdQt": "387.15",
+   "AdjstdQt": "386.45",
+   "VartnPts": "-0.7",
+   "AdjstdValCtrct": "-231",
+   "Ccy_AdjstdQt": "BRL"
+  },
+  {
+   "ticker": "SJC",
+   "vencimento_codigo": "K27",
+   "block_index": 42,
+   "offset": 128860477,
+   "TradDt": "2026-09-17",
+   "has_FinInstrmAttrbts": true,
+   "PrvsAdjstdQt": "29.795",
+   "AdjstdQt": "29.817",
+   "VartnPts": "0.022",
+   "AdjstdValCtrct": "50.97609",
+   "Ccy_AdjstdQt": "USD"
+  },
+  {
+   "ticker": "SOY",
+   "vencimento_codigo": "K27",
+   "block_index": 43,
+   "offset": 128980023,
+   "TradDt": "2026-09-17",
+   "has_FinInstrmAttrbts": true,
+   "PrvsAdjstdQt": "498",
+   "AdjstdQt": "498.2",
+   "VartnPts": "0.2",
+   "AdjstdValCtrct": "35.03428",
+   "Ccy_AdjstdQt": "USD"
+  },
+  {
+   "ticker": "ETH",
+   "vencimento_codigo": "Z27",
+   "block_index": 44,
+   "offset": 134778793,
+   "TradDt": "2026-09-17",
+   "has_FinInstrmAttrbts": true,
+   "PrvsAdjstdQt": "2801.5",
+   "AdjstdQt": "2795",
+   "VartnPts": "-6.5",
+   "AdjstdValCtrct": "-195",
+   "Ccy_AdjstdQt": "BRL"
+  },
+  {
+   "ticker": "CCM",
+   "vencimento_codigo": "N27",
+   "block_index": 45,
+   "offset": 135325783,
+   "TradDt": "2026-09-17",
+   "has_FinInstrmAttrbts": true,
+   "PrvsAdjstdQt": "79.2",
+   "AdjstdQt": "79.03",
+   "VartnPts": "-0.17",
+   "AdjstdValCtrct": "-76.5",
+   "Ccy_AdjstdQt": "BRL"
+  },
+  {
+   "ticker": "CCM",
+   "vencimento_codigo": "X26",
+   "block_index": 46,
+   "offset": 137858727,
+   "TradDt": "2026-09-17",
+   "has_FinInstrmAttrbts": true,
+   "PrvsAdjstdQt": "76.2",
+   "AdjstdQt": "76.42",
+   "VartnPts": "0.22",
+   "AdjstdValCtrct": "99",
+   "Ccy_AdjstdQt": "BRL"
+  },
+  {
+   "ticker": "BGI",
+   "vencimento_codigo": "V27",
+   "block_index": 47,
+   "offset": 139447414,
+   "TradDt": "2026-09-17",
+   "has_FinInstrmAttrbts": true,
+   "PrvsAdjstdQt": "385.7",
+   "AdjstdQt": "385.25",
+   "VartnPts": "-0.45",
+   "AdjstdValCtrct": "-148.5",
+   "Ccy_AdjstdQt": "BRL"
+  },
+  {
+   "ticker": "ICF",
+   "vencimento_codigo": "U26",
+   "block_index": 48,
+   "offset": 147698312,
+   "TradDt": "2026-09-17",
+   "has_FinInstrmAttrbts": true,
+   "PrvsAdjstdQt": "343.05",
+   "AdjstdQt": "336.05",
+   "VartnPts": "-7",
+   "AdjstdValCtrct": "-3604.37",
+   "Ccy_AdjstdQt": "USD"
+  },
+  {
+   "ticker": "SJC",
+   "vencimento_codigo": "Q27",
+   "block_index": 49,
+   "offset": 152374759,
+   "TradDt": "2026-09-17",
+   "has_FinInstrmAttrbts": true,
+   "PrvsAdjstdQt": "29.4533",
+   "AdjstdQt": "29.4753",
+   "VartnPts": "0.022",
+   "AdjstdValCtrct": "50.97609",
+   "Ccy_AdjstdQt": "USD"
+  },
+  {
+   "ticker": "ICF",
+   "vencimento_codigo": "Z26",
+   "block_index": 50,
+   "offset": 154306269,
+   "TradDt": "2026-09-17",
+   "has_FinInstrmAttrbts": true,
+   "PrvsAdjstdQt": "338",
+   "AdjstdQt": "333.25",
+   "VartnPts": "-4.75",
+   "AdjstdValCtrct": "-2445.8225",
+   "Ccy_AdjstdQt": "USD"
+  },
+  {
+   "ticker": "BGI",
+   "vencimento_codigo": "V26",
+   "block_index": 51,
+   "offset": 154381692,
+   "TradDt": "2026-09-18",
+   "has_FinInstrmAttrbts": true,
+   "PrvsAdjstdQt": "381.3",
+   "AdjstdQt": "379.75",
+   "VartnPts": "-1.55",
+   "AdjstdValCtrct": "-511.5",
+   "Ccy_AdjstdQt": "BRL"
+  },
+  {
+   "ticker": "BGI",
+   "vencimento_codigo": "X26",
+   "block_index": 52,
+   "offset": 154385061,
+   "TradDt": "2026-09-18",
+   "has_FinInstrmAttrbts": true,
+   "PrvsAdjstdQt": "386.9",
+   "AdjstdQt": "385.55",
+   "VartnPts": "-1.35",
+   "AdjstdValCtrct": "-445.5",
+   "Ccy_AdjstdQt": "BRL"
+  },
+  {
+   "ticker": "BGI",
+   "vencimento_codigo": "Z26",
+   "block_index": 53,
+   "offset": 154388433,
+   "TradDt": "2026-09-18",
+   "has_FinInstrmAttrbts": true,
+   "PrvsAdjstdQt": "387.2",
+   "AdjstdQt": "386.3",
+   "VartnPts": "-0.9",
+   "AdjstdValCtrct": "-297",
+   "Ccy_AdjstdQt": "BRL"
+  },
+  {
+   "ticker": "CCM",
+   "vencimento_codigo": "F27",
+   "block_index": 54,
+   "offset": 154391791,
+   "TradDt": "2026-09-18",
+   "has_FinInstrmAttrbts": true,
+   "PrvsAdjstdQt": "80.23",
+   "AdjstdQt": "80.3",
+   "VartnPts": "0.07",
+   "AdjstdValCtrct": "31.5",
+   "Ccy_AdjstdQt": "BRL"
+  },
+  {
+   "ticker": "CCM",
+   "vencimento_codigo": "U27",
+   "block_index": 55,
+   "offset": 154395154,
+   "TradDt": "2026-09-18",
+   "has_FinInstrmAttrbts": true,
+   "PrvsAdjstdQt": "79.14",
+   "AdjstdQt": "78.97",
+   "VartnPts": "-0.17",
+   "AdjstdValCtrct": "-76.5",
+   "Ccy_AdjstdQt": "BRL"
+  },
+  {
+   "ticker": "CCM",
+   "vencimento_codigo": "X26",
+   "block_index": 56,
+   "offset": 154398525,
+   "TradDt": "2026-09-18",
+   "has_FinInstrmAttrbts": true,
+   "PrvsAdjstdQt": "76.2",
+   "AdjstdQt": "76.42",
+   "VartnPts": "0.22",
+   "AdjstdValCtrct": "99",
+   "Ccy_AdjstdQt": "BRL"
+  },
+  {
+   "ticker": "ETH",
+   "vencimento_codigo": "U26",
+   "block_index": 57,
+   "offset": 154401888,
+   "TradDt": "2026-09-18",
+   "has_FinInstrmAttrbts": true,
+   "PrvsAdjstdQt": "2730",
+   "AdjstdQt": "2723.5",
+   "VartnPts": "-6.5",
+   "AdjstdValCtrct": "-195",
+   "Ccy_AdjstdQt": "BRL"
+  },
+  {
+   "ticker": "ETH",
+   "vencimento_codigo": "X26",
+   "block_index": 58,
+   "offset": 154405244,
+   "TradDt": "2026-09-18",
+   "has_FinInstrmAttrbts": true,
+   "PrvsAdjstdQt": "2742.5",
+   "AdjstdQt": "2736",
+   "VartnPts": "-6.5",
+   "AdjstdValCtrct": "-195",
+   "Ccy_AdjstdQt": "BRL"
+  },
+  {
+   "ticker": "ETH",
+   "vencimento_codigo": "Z26",
+   "block_index": 59,
+   "offset": 154408543,
+   "TradDt": "2026-09-18",
+   "has_FinInstrmAttrbts": true,
+   "PrvsAdjstdQt": "2767.5",
+   "AdjstdQt": "2761",
+   "VartnPts": "-6.5",
+   "AdjstdValCtrct": "-195",
+   "Ccy_AdjstdQt": "BRL"
+  },
+  {
+   "ticker": "ICF",
+   "vencimento_codigo": "Z26",
+   "block_index": 60,
+   "offset": 154411846,
+   "TradDt": "2026-09-18",
+   "has_FinInstrmAttrbts": true,
+   "PrvsAdjstdQt": "338",
+   "AdjstdQt": "333.25",
+   "VartnPts": "-4.75",
+   "AdjstdValCtrct": "-2445.8225",
+   "Ccy_AdjstdQt": "USD"
+  }
+ ]
+}

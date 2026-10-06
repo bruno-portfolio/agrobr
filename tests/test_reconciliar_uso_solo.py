@@ -11,9 +11,9 @@ from agrobr.queimadas import models as queimadas_models
 from scripts import reconciliar_uso_solo as reconciliation
 
 MANIFEST = json.loads(
-    (Path(__file__).parent / "golden_data/reconciliacao_r12_20260918/manifest.json").read_text(
-        encoding="utf-8"
-    )
+    (
+        Path(__file__).parent / "golden_data/reconciliacao_uso_solo_ambiente_20260918/manifest.json"
+    ).read_text(encoding="utf-8")
 )
 
 

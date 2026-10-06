@@ -29,7 +29,9 @@ def cache(tmp_path, monkeypatch):
 
 @pytest.mark.usefixtures("cache")
 async def test_produto_acentuado_preserva_preco_e_unidade_da_fonte(monkeypatch):
-    html = (GOLDEN / "reconciliacao_r6_20260918/na_cafe.html").read_text(encoding="utf-8")
+    html = (GOLDEN / "reconciliacao_precos_diarios_20260918/na_cafe.html").read_text(
+        encoding="utf-8"
+    )
     download = AsyncMock(return_value=client.FetchResult(html, "noticias_agricolas"))
     monkeypatch.setattr(client, "fetch_indicador_page", download)
     frame = await api.indicador(" CAFÉ ", inicio="2026-09-17", fim="2026-09-17", force_refresh=True)

@@ -68,6 +68,18 @@ tests/golden_data/mapbiomas/municipal10_official/** -text
 tests/golden_data/mapbiomas/municipal11_official/** -text
 tests/golden_data/mapbiomas/legenda_20260918/** -text
 tests/golden_data/na/leite_publicacao_20260906/** -text
+tests/golden_data/reconciliacao_clima_20260918/** -text
+tests/golden_data/reconciliacao_registros_precos_zoneamento_seguro_20260918/** -text
+tests/golden_data/reconciliacao_uso_solo_ambiente_20260918/** -text
+tests/golden_data/reconciliacao_movimentacao_portuaria_20260918/** -text
+tests/golden_data/reconciliacao_canais_ibge_20260918/** -text
+tests/golden_data/reconciliacao_conab_20260918/** -text
+tests/golden_data/reconciliacao_custos_conab_20260918/** -text
+tests/golden_data/reconciliacao_censos_producao_ibge_conab_20260918/** -text
+tests/golden_data/reconciliacao_precos_diarios_20260918/** -text
+tests/golden_data/reconciliacao_boletins_anec_anda_deral_20260918/** -text
+tests/golden_data/reconciliacao_comercio_exterior_20260918/** -text
+tests/golden_data/reconciliacao_mercados_credito_20260918/** -text
 tests/golden_data/rnc/selecao_20260907/** -text
 tests/golden_data/sicar/geo_20260922/** -text
 tests/golden_data/sicar/selecao_20260906/** -text
@@ -97,6 +109,9 @@ tests/golden_data/queimadas/r48_202408/** -text
 tests/golden_data/queimadas/mes_corrente_202609/** -text
 tests/golden_data/queimadas/dia_corrente_20260926/** -text
 tests/golden_data/ibge/periodos_20260926/** -text
+tests/golden_data/mapa_psr/sem_geocodigo_20260918/** -text
+tests/golden_data/mapa_psr/seguradoras_20260918/** -text
+tests/golden_data/mapa_psr/caxias_do_sul_2024_20260918/** -text
 tests/golden_data/noticias_agricolas/paginas_20260925/** -text
 tests/golden_data/cftc/spreads_20260925/** -text
 tests/golden_data/ibge/pam_localidade_cod_20260925/** -text
@@ -110,6 +125,7 @@ tests/golden_data/anec/linha_total_20260926/** -text
 tests/golden_data/cepea/trigo_duas_pracas_20260925/** -text
 tests/golden_data/imea/duplicatas_20260926/** -text
 tests/golden_data/usda/psd_gateway_20260926/** -text
+tests/golden_data/nasa_power/reconciliacao_fontes_parametros_20260926/** -text
 tests/golden_data/mapbiomas_alerta/oficial_20260926/** -text
 tests/golden_data/abiove/exportacao_sample/** -text
 tests/golden_data/cepea/soja_sample/** -text

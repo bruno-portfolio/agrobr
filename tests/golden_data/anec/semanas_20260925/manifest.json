@@ -5,7 +5,7 @@
   "metodo": "Manual transcription from independently downloaded PDF, pages 2 and 3; rendered PNGs visually inspected. No production parser used.",
   "boletins": {
    "36": {
-    "pdf": "../../reconciliacao_r7_20260918/anec/weekly_w36_2026.pdf",
+    "pdf": "../../reconciliacao_boletins_anec_anda_deral_20260918/anec/weekly_w36_2026.pdf",
     "recibo": {
      "url": "https://www.anec.com.br/uploads/cmu47h0m500016vtxg76q4eeb.pdf",
      "final_url": "https://www.anec.com.br/uploads/cmu47h0m500016vtxg76q4eeb.pdf",

@@ -16,7 +16,7 @@ from agrobr.cepea import client as cepea_client
 from agrobr.noticias_agricolas import client as na_client
 
 ROOT = Path(__file__).resolve().parents[1]
-MANIFEST = ROOT / "tests/golden_data/reconciliacao_r6_20260918/manifest.json"
+MANIFEST = ROOT / "tests/golden_data/reconciliacao_precos_diarios_20260918/manifest.json"
 PRODUTOS = ["soja", "milho", "boi", "bezerro", "cafe", "cafe_robusta", "trigo", "algodao"]
 
 

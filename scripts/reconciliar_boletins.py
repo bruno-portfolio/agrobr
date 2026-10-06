@@ -19,7 +19,10 @@ from agrobr.anda import client as anda_client
 from agrobr.anec import client as anec_client
 from agrobr.deral import client as deral_client
 
-GOLDEN = Path(__file__).resolve().parents[1] / "tests/golden_data/reconciliacao_r7_20260918"
+GOLDEN = (
+    Path(__file__).resolve().parents[1]
+    / "tests/golden_data/reconciliacao_boletins_anec_anda_deral_20260918"
+)
 PROFILES = GOLDEN / "structure_profiles.json"
 
 

@@ -22,7 +22,7 @@ from tests.helpers import (
     sem_excecao,
 )
 
-GOLDEN = Path(__file__).resolve().parents[1] / "golden_data/reconciliacao_r15_20260918"
+GOLDEN = Path(__file__).resolve().parents[1] / "golden_data/reconciliacao_canais_ibge_20260918"
 RECEIPTS = json.loads((GOLDEN / "agregados/receipts.json").read_text(encoding="utf-8"))
 SUMMARY = {
     entry["call"]: entry

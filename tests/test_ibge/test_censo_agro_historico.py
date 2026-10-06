@@ -17,7 +17,7 @@ from tests import helpers
 SINTETICO = json.loads(
     (
         Path(__file__).resolve().parents[1]
-        / "golden_data/reconciliacao_r5_20260918/lot3_synthetic_regressions.json"
+        / "golden_data/reconciliacao_censos_producao_ibge_conab_20260918/lot3_synthetic_regressions.json"
     ).read_text(encoding="utf-8")
 )
 

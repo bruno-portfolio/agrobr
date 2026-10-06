@@ -12,7 +12,9 @@ from pathlib import Path
 from typing import Any
 
 ROOT = Path(__file__).resolve().parents[1]
-GOLDEN = ROOT / "tests/golden_data/reconciliacao_r11_20260918/agrofit"
+GOLDEN = (
+    ROOT / "tests/golden_data/reconciliacao_registros_precos_zoneamento_seguro_20260918/agrofit"
+)
 TAIL = re.compile(r"\(([^()]*)\)(?=\s*(?:\+|$))")
 
 

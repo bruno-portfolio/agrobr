@@ -14,7 +14,9 @@ from agrobr.noticias_agricolas import parser as na_parser
 
 RAIZ = Path(__file__).resolve().parents[2]
 PAGINA = RAIZ / "tests" / "golden_data" / "cepea" / "cache_ttl_20260923" / "soja_20260923.html"
-PAGINA_NA = RAIZ / "tests" / "golden_data" / "reconciliacao_r6_20260918" / "na_soja.html"
+PAGINA_NA = (
+    RAIZ / "tests" / "golden_data" / "reconciliacao_precos_diarios_20260918" / "na_soja.html"
+)
 MOTIVO_NA = "Fingerprint não comparado: a página veio de noticias_agricolas, e não do CEPEA"
 
 

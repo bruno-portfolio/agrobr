@@ -1,0 +1,34 @@
+{
+ "pam_soja_uf_2023": {
+  "status": "divergente",
+  "linhas_sidra": 107,
+  "linhas_agregados": 108,
+  "chaves_comuns": 107,
+  "valores_iguais": 107,
+  "exemplos_diferentes": []
+ },
+ "pevs_extracao_pa_2023": {
+  "status": "divergente",
+  "linhas_sidra": 2,
+  "linhas_agregados": 1,
+  "chaves_comuns": 1,
+  "valores_iguais": 1,
+  "exemplos_diferentes": []
+ },
+ "pevs_silvicultura_valor": {
+  "status": "divergente",
+  "linhas_sidra": 2,
+  "linhas_agregados": 1,
+  "chaves_comuns": 1,
+  "valores_iguais": 1,
+  "exemplos_diferentes": []
+ },
+ "lspa_mt_milho_2023": {
+  "status": "ok",
+  "linhas_sidra": 48,
+  "linhas_agregados": 48,
+  "chaves_comuns": 48,
+  "valores_iguais": 48,
+  "exemplos_diferentes": []
+ }
+}

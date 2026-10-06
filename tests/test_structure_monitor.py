@@ -34,7 +34,7 @@ async def test_monitor_com_a_pagina_da_na_nao_acusa_drift(monkeypatch, tmp_path)
     drift, relatorio = await _monitorar(
         monkeypatch,
         tmp_path,
-        GOLDEN / "reconciliacao_r6_20260918" / "na_soja.html",
+        GOLDEN / "reconciliacao_precos_diarios_20260918" / "na_soja.html",
         "noticias_agricolas",
     )
 

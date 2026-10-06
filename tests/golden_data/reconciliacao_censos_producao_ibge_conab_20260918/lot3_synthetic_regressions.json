@@ -1,0 +1,176 @@
+{
+  "provenance": "synthetic fixtures for behavioral regressions, not official observations or N1/N2 acquisition proof",
+  "preparo_2017": [
+    {
+      "NC": "3",
+      "NN": "Unidade da Federação",
+      "MC": "1020",
+      "MN": "Unidades",
+      "V": "10",
+      "D1C": "35",
+      "D1N": "São Paulo",
+      "D2C": "9562",
+      "D2N": "Não utiliza preparo",
+      "D3C": "2017",
+      "D3N": "2017",
+      "D4C": "46302",
+      "D4N": "Total"
+    },
+    {
+      "NC": "3",
+      "NN": "Unidade da Federação",
+      "MC": "1020",
+      "MN": "Unidades",
+      "V": "20",
+      "D1C": "35",
+      "D1N": "São Paulo",
+      "D2C": "9563",
+      "D2N": "Utiliza preparo",
+      "D3C": "2017",
+      "D3N": "2017",
+      "D4C": "46302",
+      "D4N": "Total"
+    },
+    {
+      "NC": "3",
+      "NN": "Unidade da Federação",
+      "MC": "1020",
+      "MN": "Unidades",
+      "V": "30",
+      "D1C": "35",
+      "D1N": "São Paulo",
+      "D2C": "9564",
+      "D2N": "Cultivo convencional",
+      "D3C": "2017",
+      "D3N": "2017",
+      "D4C": "46302",
+      "D4N": "Total"
+    },
+    {
+      "NC": "3",
+      "NN": "Unidade da Federação",
+      "MC": "1020",
+      "MN": "Unidades",
+      "V": "40",
+      "D1C": "35",
+      "D1N": "São Paulo",
+      "D2C": "9565",
+      "D2N": "Cultivo mínimo",
+      "D3C": "2017",
+      "D3N": "2017",
+      "D4C": "46302",
+      "D4N": "Total"
+    },
+    {
+      "NC": "3",
+      "NN": "Unidade da Federação",
+      "MC": "1020",
+      "MN": "Unidades",
+      "V": "50",
+      "D1C": "35",
+      "D1N": "São Paulo",
+      "D2C": "2016",
+      "D2N": "Plantio direto na palha",
+      "D3C": "2017",
+      "D3N": "2017",
+      "D4C": "46302",
+      "D4N": "Total"
+    },
+    {
+      "NC": "3",
+      "NN": "Unidade da Federação",
+      "MC": "1020",
+      "MN": "Hectares",
+      "V": "60",
+      "D1C": "35",
+      "D1N": "São Paulo",
+      "D2C": "2018",
+      "D2N": "Área de plantio direto na palha",
+      "D3C": "2017",
+      "D3N": "2017",
+      "D4C": "46302",
+      "D4N": "Total"
+    }
+  ],
+  "historico_1970": [
+    {
+      "NC": "3",
+      "NN": "Unidade da Federação",
+      "MC": "1020",
+      "MN": "Pessoas",
+      "V": "120",
+      "D1C": "35",
+      "D1N": "São Paulo",
+      "D2C": "185",
+      "D2N": "Pessoal ocupado",
+      "D3C": "1970",
+      "D3N": "1970"
+    },
+    {
+      "NC": "3",
+      "NN": "Unidade da Federação",
+      "MC": "1020",
+      "MN": "Unidades",
+      "V": "5",
+      "D1C": "35",
+      "D1N": "São Paulo",
+      "D2C": "1862",
+      "D2N": "Tratores",
+      "D3C": "1970",
+      "D3N": "1970"
+    }
+  ],
+  "lavoura_1995": {
+    "497": [
+      {
+        "NC": "3",
+        "NN": "Unidade da Federação",
+        "MC": "1020",
+        "MN": "Toneladas",
+        "V": "100",
+        "D1C": "35",
+        "D1N": "São Paulo",
+        "D2C": "214",
+        "D2N": "Quantidade produzida",
+        "D3C": "31631",
+        "D3N": "Milho",
+        "D4C": "0",
+        "D4N": "Total"
+      }
+    ],
+    "492": [
+      {
+        "NC": "3",
+        "NN": "Unidade da Federação",
+        "MC": "1020",
+        "MN": "Unidades",
+        "V": "5",
+        "D1C": "35",
+        "D1N": "São Paulo",
+        "D2C": "151",
+        "D2N": "Número de estabelecimentos",
+        "D3C": "31631",
+        "D3N": "Milho",
+        "D4C": "0",
+        "D4N": "Total"
+      }
+    ],
+    "503": [
+      {
+        "NC": "3",
+        "NN": "Unidade da Federação",
+        "MC": "1020",
+        "MN": "Hectares",
+        "V": "20",
+        "D1C": "35",
+        "D1N": "São Paulo",
+        "D2C": "216",
+        "D2N": "Área colhida",
+        "D3C": "31631",
+        "D3N": "Milho",
+        "D4C": "0",
+        "D4N": "Total"
+      }
+    ]
+  }
+}

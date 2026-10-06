@@ -1,0 +1,11 @@
+{
+ "name": "cftc_soja_202606",
+ "source": "cftc",
+ "requested_url": "https://publicreporting.cftc.gov/resource/72hh-3qpy.json?%24where=cftc_contract_market_code+in%28%27005602%27%29+AND+report_date_as_yyyy_mm_dd+%3E%3D+%272026-06-01T00%3A00%3A00.000%27+AND+report_date_as_yyyy_mm_dd+%3C%3D+%272026-06-30T00%3A00%3A00.000%27&%24order=report_date_as_yyyy_mm_dd%2Ccftc_contract_market_code&%24limit=50000",
+ "final_url": "https://publicreporting.cftc.gov/resource/72hh-3qpy.json?%24where=cftc_contract_market_code+in%28%27005602%27%29+AND+report_date_as_yyyy_mm_dd+%3E%3D+%272026-06-01T00%3A00%3A00.000%27+AND+report_date_as_yyyy_mm_dd+%3C%3D+%272026-06-30T00%3A00%3A00.000%27&%24order=report_date_as_yyyy_mm_dd%2Ccftc_contract_market_code&%24limit=50000",
+ "status": 200,
+ "captured_at": "2026-09-18T12:45:11.511288+00:00",
+ "bytes": 34607,
+ "sha256": "3a32a370d01da8c17f53b6864bce689589ca548ec53dab368f7f5dc32edc42b6",
+ "content_type": "application/json;charset=utf-8"
+}

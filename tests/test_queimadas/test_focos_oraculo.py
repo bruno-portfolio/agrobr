@@ -22,7 +22,7 @@ from tests.helpers import (
     sem_excecao,
 )
 
-R12 = Path(__file__).parents[1] / "golden_data/reconciliacao_r12_20260918"
+R12 = Path(__file__).parents[1] / "golden_data/reconciliacao_uso_solo_ambiente_20260918"
 CASO = next(
     case
     for case in json.loads((R12 / "manifest.json").read_text(encoding="utf-8"))["cases"]

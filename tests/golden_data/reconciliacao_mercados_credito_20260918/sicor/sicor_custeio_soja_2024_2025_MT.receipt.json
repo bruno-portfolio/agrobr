@@ -1,0 +1,11 @@
+{
+ "name": "sicor_custeio_soja_2024_2025_MT",
+ "source": "bcb_sicor",
+ "requested_url": "https://olinda.bcb.gov.br/olinda/servico/SICOR/versao/v2/odata/CusteioRegiaoUFProduto?$format=json&$top=100000&$filter=nomeProduto%20eq%20'%22SOJA%22'%20and%20nomeUF%20eq%20'MT'%20and%20((AnoEmissao%20eq%20'2024'%20and%20MesEmissao%20ge%20'07')%20or%20(AnoEmissao%20eq%20'2025'%20and%20MesEmissao%20lt%20'07'))&$select=nomeProduto,nomeRegiao,nomeUF,MesEmissao,AnoEmissao,cdPrograma,cdSubPrograma,cdFonteRecurso,cdTipoSeguro,Atividade,cdModalidade,QtdCusteio,VlCusteio,AreaCusteio",
+ "final_url": "https://olinda.bcb.gov.br/olinda/servico/SICOR/versao/v2/odata/CusteioRegiaoUFProduto?$format=json&$top=100000&$filter=nomeProduto%20eq%20'%22SOJA%22'%20and%20nomeUF%20eq%20'MT'%20and%20((AnoEmissao%20eq%20'2024'%20and%20MesEmissao%20ge%20'07')%20or%20(AnoEmissao%20eq%20'2025'%20and%20MesEmissao%20lt%20'07'))&$select=nomeProduto,nomeRegiao,nomeUF,MesEmissao,AnoEmissao,cdPrograma,cdSubPrograma,cdFonteRecurso,cdTipoSeguro,Atividade,cdModalidade,QtdCusteio,VlCusteio,AreaCusteio",
+ "status": 200,
+ "captured_at": "2026-09-18T12:45:37.234925+00:00",
+ "bytes": 78782,
+ "sha256": "7b1c3f1942c4d44fd809ca8e72407d99ff81dbc5f7fa16e0824bfe393237ff20",
+ "content_type": "application/json;charset=UTF-8;odata.metadata=minimal"
+}

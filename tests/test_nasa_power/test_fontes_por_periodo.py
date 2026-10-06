@@ -10,7 +10,7 @@ from agrobr import nasa_power
 from tests.helpers import assert_replay_served, install_replay_http, replay_signature, sem_excecao
 
 GOLDEN = Path(__file__).resolve().parents[1] / "golden_data/nasa_power"
-R45 = GOLDEN / "fontes_r45_20260926"
+R45 = GOLDEN / "reconciliacao_fontes_parametros_20260926"
 COBERTURA = GOLDEN / "cobertura_mensal_20260925"
 
 

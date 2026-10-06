@@ -1,0 +1,19 @@
+{
+ "file": "2026_A001_recorte.zip",
+ "bytes": 152089,
+ "sha256": "d8cc39f0562202481a91c33ba41199cd3bc8d6c52caee91e47be4d8ffba05a91",
+ "origem": {
+  "url": "https://portal.inmet.gov.br/uploads/dadoshistoricos/2026.zip",
+  "method": "HTTP ranges of original ZIP; one original CSV extracted",
+  "member": "INMET_CO_DF_A001_BRASILIA_01-01-2026_A_31-08-2026.CSV",
+  "member_sha256": "4b58ca2031e5405b4e972a7a5efa977c26f7813e0354875fa0139e7a1ab8c59a",
+  "member_bytes": 541834,
+  "member_crc32": 1445330270,
+  "capture_date": "2026-09-06",
+  "captura": "inmet/selecao_20260906/manifest.json extracted_members[0]"
+ },
+ "recorte": {
+  "metodo": "ZIP reempacotado com o único membro CSV extraído (bytes idênticos ao original, prefixo de pasta '2026/' como nos ZIPs anuais); o ZIP anual completo de 2026 não foi capturado",
+  "built_at": "2026-09-18T13:12:05.605282+00:00"
+ }
+}

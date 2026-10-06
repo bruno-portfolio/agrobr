@@ -14,7 +14,7 @@ from tests import helpers
 
 LEVANTAMENTO_SET_2026 = (
     Path(__file__).resolve().parents[2]
-    / "golden_data/reconciliacao_r3_20260918/7cd4df7946e5c57f.xlsx"
+    / "golden_data/reconciliacao_conab_20260918/7cd4df7946e5c57f.xlsx"
 )
 MANIFEST = helpers.load_serie_historica_manifest()
 

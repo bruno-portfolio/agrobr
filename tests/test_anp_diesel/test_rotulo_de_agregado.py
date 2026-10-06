@@ -10,7 +10,7 @@ import pandas as pd
 from agrobr import datasets
 from agrobr.alt.anp_diesel import api, parser
 from tests.helpers import sem_excecao
-from tests.test_anp_diesel import test_reconciliacao_r11 as r11
+from tests.test_anp_diesel import test_reconciliacao as r11
 
 CONSULTA = {
     "nivel": "municipio",

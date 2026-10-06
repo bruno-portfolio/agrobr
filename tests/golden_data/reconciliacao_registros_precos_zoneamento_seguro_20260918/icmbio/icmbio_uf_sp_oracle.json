@@ -1,0 +1,354 @@
+[
+ {
+  "original_record": 1,
+  "fid": "limiteucsfederais_a.12",
+  "ogc_fid": "12",
+  "values": {
+   "codigo": "0000.00.0178",
+   "nome": "PARQUE NACIONAL DO SUPERAGUI",
+   "categoria": "PARNA",
+   "grupo": "PI",
+   "uf": "SP/PR",
+   "bioma": "MATA ATLÂNTICA",
+   "area_ha": 33860.4028186,
+   "ano_criacao": 1989,
+   "ato_criacao": "DEC 97.688 de 25/04/1989; DEC 9.513 de 20/11/1997"
+  }
+ },
+ {
+  "original_record": 2,
+  "fid": "limiteucsfederais_a.13",
+  "ogc_fid": "13",
+  "values": {
+   "codigo": "0000.00.0064",
+   "nome": "ESTAÇÃO ECOLÓGICA TUPINAMBÁS",
+   "categoria": "ESEC",
+   "grupo": "PI",
+   "uf": "SP",
+   "bioma": "SISTEMA COSTEIRO-MARINHO",
+   "area_ha": 2463.59756769,
+   "ano_criacao": 1987,
+   "ato_criacao": "DEC  94.656, de 20/07/1987"
+  }
+ },
+ {
+  "original_record": 3,
+  "fid": "limiteucsfederais_a.27",
+  "ogc_fid": "27",
+  "values": {
+   "codigo": "0000.00.0073",
+   "nome": "ESTAÇÃO ECOLÓGICA MICO-LEÃO-PRETO",
+   "categoria": "ESEC",
+   "grupo": "PI",
+   "uf": "SP",
+   "bioma": "MATA ATLÂNTICA",
+   "area_ha": 6680.63024424,
+   "ano_criacao": 2002,
+   "ato_criacao": "DEC S/N de 16/07/2002; DEC S/N de 14/05/2004"
+  }
+ },
+ {
+  "original_record": 4,
+  "fid": "limiteucsfederais_a.73",
+  "ogc_fid": "73",
+  "values": {
+   "codigo": "0000.00.0079",
+   "nome": "FLORESTA NACIONAL DE CAPÃO BONITO",
+   "categoria": "FLONA",
+   "grupo": "US",
+   "uf": "SP",
+   "bioma": "CERRADO E MATA ATLÂNTICA",
+   "area_ha": 4316.87006011,
+   "ano_criacao": 1968,
+   "ato_criacao": "Portaria 558 de 25/10/1968"
+  }
+ },
+ {
+  "original_record": 5,
+  "fid": "limiteucsfederais_a.82",
+  "ogc_fid": "82",
+  "values": {
+   "codigo": "0000.00.0025",
+   "nome": "ÁREA DE PROTEÇÃO AMBIENTAL DAS ILHAS E VÁRZEAS DO RIO PARANÁ",
+   "categoria": "APA",
+   "grupo": "US",
+   "uf": "SP/PR/MS",
+   "bioma": "MATA ATLÂNTICA",
+   "area_ha": 1005180.9397252,
+   "ano_criacao": 1997,
+   "ato_criacao": "DEC S/N de 30/09/1997"
+  }
+ },
+ {
+  "original_record": 6,
+  "fid": "limiteucsfederais_a.84",
+  "ogc_fid": "84",
+  "values": {
+   "codigo": "0000.00.0013",
+   "nome": "ÁREA DE PROTEÇÃO AMBIENTAL DE CAIRUÇU",
+   "categoria": "APA",
+   "grupo": "US",
+   "uf": "RJ/SP",
+   "bioma": "MATA ATLÂNTICA E SISTEMA COSTEIRO-MARINHO",
+   "area_ha": 32610.54638012,
+   "ano_criacao": 1983,
+   "ato_criacao": "DEC 89.242 de 27/12/1983"
+  }
+ },
+ {
+  "original_record": 7,
+  "fid": "limiteucsfederais_a.85",
+  "ogc_fid": "85",
+  "values": {
+   "codigo": "0000.00.0014",
+   "nome": "ÁREA DE PROTEÇÃO AMBIENTAL DE CANANÉIA-IGUAPE-PERUÍBE",
+   "categoria": "APA",
+   "grupo": "US",
+   "uf": "SP",
+   "bioma": "MATA ATLÂNTICA E SISTEMA COSTEIRO-MARINHO",
+   "area_ha": 202308.14358001,
+   "ano_criacao": 1984,
+   "ato_criacao": "DEC 90.347 de 23/10/1984; DEC  91.892 de 6/11/1985"
+  }
+ },
+ {
+  "original_record": 8,
+  "fid": "limiteucsfederais_a.105",
+  "ogc_fid": "105",
+  "values": {
+   "codigo": "0000.00.0041",
+   "nome": "ÁREA DE RELEVANTE INTERESSE ECOLÓGICO MATÃO DE COSMÓPOLIS",
+   "categoria": "ARIE",
+   "grupo": "US",
+   "uf": "SP",
+   "bioma": "MATA ATLÂNTICA",
+   "area_ha": 173.08822507,
+   "ano_criacao": 1985,
+   "ato_criacao": "DEC  90.791 de 09/01/1985"
+  }
+ },
+ {
+  "original_record": 9,
+  "fid": "limiteucsfederais_a.115",
+  "ogc_fid": "115",
+  "values": {
+   "codigo": "0000.00.0037",
+   "nome": "ÁREA DE RELEVANTE INTERESSE ECOLÓGICO ILHAS DA QUEIMADA PEQUENA E QUEIMADA GRANDE",
+   "categoria": "ARIE",
+   "grupo": "US",
+   "uf": "SP",
+   "bioma": "SISTEMA COSTEIRO-MARINHO",
+   "area_ha": 65.17439531,
+   "ano_criacao": 1985,
+   "ato_criacao": "DEC  91.887 de 05/11/1985"
+  }
+ },
+ {
+  "original_record": 10,
+  "fid": "limiteucsfederais_a.121",
+  "ogc_fid": "121",
+  "values": {
+   "codigo": "0000.00.0040",
+   "nome": "ÁREA DE RELEVANTE INTERESSE ECOLÓGICO DA MATA DE SANTA GENEBRA",
+   "categoria": "ARIE",
+   "grupo": "US",
+   "uf": "SP",
+   "bioma": "MATA ATLÂNTICA",
+   "area_ha": 241.55191585,
+   "ano_criacao": 1985,
+   "ato_criacao": "DEC  91.885 de 05/11/1985"
+  }
+ },
+ {
+  "original_record": 11,
+  "fid": "limiteucsfederais_a.124",
+  "ogc_fid": "124",
+  "values": {
+   "codigo": "0000.00.0030",
+   "nome": "ÁREA DE RELEVANTE INTERESSE ECOLÓGICO BURITI DE VASSUNUNGA",
+   "categoria": "ARIE",
+   "grupo": "US",
+   "uf": "SP",
+   "bioma": "CERRADO E MATA ATLÂNTICA (LEI 11.428)",
+   "area_ha": 150.97439883,
+   "ano_criacao": 1990,
+   "ato_criacao": "DEC  99.276/1990"
+  }
+ },
+ {
+  "original_record": 12,
+  "fid": "limiteucsfederais_a.127",
+  "ogc_fid": "127",
+  "values": {
+   "codigo": "0000.00.0234",
+   "nome": "RESERVA EXTRATIVISTA DO MANDIRA",
+   "categoria": "RESEX",
+   "grupo": "US",
+   "uf": "SP",
+   "bioma": "MATA ATLÂNTICA",
+   "area_ha": 1177.80540617,
+   "ano_criacao": 2002,
+   "ato_criacao": "DEC S/N, de 13/12/2002"
+  }
+ },
+ {
+  "original_record": 13,
+  "fid": "limiteucsfederais_a.172",
+  "ogc_fid": "172",
+  "values": {
+   "codigo": "0000.00.0094",
+   "nome": "FLORESTA NACIONAL DE IPANEMA",
+   "categoria": "FLONA",
+   "grupo": "US",
+   "uf": "SP",
+   "bioma": "MATA ATLÂNTICA",
+   "area_ha": 5064.88340801,
+   "ano_criacao": 1992,
+   "ato_criacao": "DEC 530, de 20/05/1992"
+  }
+ },
+ {
+  "original_record": 14,
+  "fid": "limiteucsfederais_a.183",
+  "ogc_fid": "183",
+  "values": {
+   "codigo": "0000.00.0036",
+   "nome": "ÁREA DE RELEVANTE INTERESSE ECOLÓGICO ILHA DO AMEIXAL",
+   "categoria": "ARIE",
+   "grupo": "US",
+   "uf": "SP",
+   "bioma": "MATA ATLÂNTICA",
+   "area_ha": 358.88549118,
+   "ano_criacao": 1984,
+   "ato_criacao": "DEC  91.889 de 05/11/1985"
+  }
+ },
+ {
+  "original_record": 15,
+  "fid": "limiteucsfederais_a.202",
+  "ogc_fid": "202",
+  "values": {
+   "codigo": "0000.00.0071",
+   "nome": "ESTAÇÃO ECOLÓGICA DOS TUPINIQUINS",
+   "categoria": "ESEC",
+   "grupo": "PI",
+   "uf": "SP",
+   "bioma": "SISTEMA COSTEIRO-MARINHO",
+   "area_ha": 1727.7019032,
+   "ano_criacao": 1986,
+   "ato_criacao": "DEC 92.964, de 21/07/1986"
+  }
+ },
+ {
+  "original_record": 16,
+  "fid": "limiteucsfederais_a.203",
+  "ogc_fid": "203",
+  "values": {
+   "codigo": "0000.00.0032",
+   "nome": "ÁREA DE RELEVANTE INTERESSE ECOLÓGICO CERRADO PÉ-DE-GIGANTE",
+   "categoria": "ARIE",
+   "grupo": "US",
+   "uf": "SP",
+   "bioma": "CERRADO",
+   "area_ha": 1199.04579894,
+   "ano_criacao": 1990,
+   "ato_criacao": "DEC  99.275 de 06/06/1990"
+  }
+ },
+ {
+  "original_record": 17,
+  "fid": "limiteucsfederais_a.228",
+  "ogc_fid": "228",
+  "values": {
+   "codigo": "0000.00.3432",
+   "nome": "REFÚGIO DE VIDA SILVESTRE DO ARQUIPÉLAGO DE ALCATRAZES",
+   "categoria": "REVIS",
+   "grupo": "PI",
+   "uf": "SP",
+   "bioma": "SISTEMA COSTEIRO-MARINHO",
+   "area_ha": 67480.46816717,
+   "ano_criacao": 2016,
+   "ato_criacao": "DEC S/N de 02/08/2016"
+  }
+ },
+ {
+  "original_record": 18,
+  "fid": "limiteucsfederais_a.231",
+  "ogc_fid": "231",
+  "values": {
+   "codigo": "0000.00.0142",
+   "nome": "PARQUE NACIONAL DA SERRA DA BOCAINA",
+   "categoria": "PARNA",
+   "grupo": "PI",
+   "uf": "RJ/SP",
+   "bioma": "MATA ATLÂNTICA",
+   "area_ha": 106565.64871067,
+   "ano_criacao": 1971,
+   "ato_criacao": "DEC 68.172, de 04/02/1971; DEC 70.694, de 08/06/1972"
+  }
+ },
+ {
+  "original_record": 19,
+  "fid": "limiteucsfederais_a.246",
+  "ogc_fid": "246",
+  "values": {
+   "codigo": "0000.00.0017",
+   "nome": "ÁREA DE PROTEÇÃO AMBIENTAL DE GUARAQUEÇABA",
+   "categoria": "APA",
+   "grupo": "US",
+   "uf": "SP/PR",
+   "bioma": "MATA ATLÂNTICA",
+   "area_ha": 245640.62908822,
+   "ano_criacao": 1985,
+   "ato_criacao": "DEC 90.883 de 31/01/1985"
+  }
+ },
+ {
+  "original_record": 20,
+  "fid": "limiteucsfederais_a.250",
+  "ogc_fid": "250",
+  "values": {
+   "codigo": "0000.00.0098",
+   "nome": "FLORESTA NACIONAL DE LORENA",
+   "categoria": "FLONA",
+   "grupo": "US",
+   "uf": "SP",
+   "bioma": "MATA ATLÂNTICA",
+   "area_ha": 274.48634749,
+   "ano_criacao": 2001,
+   "ato_criacao": "Portaria 246 de 18/07/2001"
+  }
+ },
+ {
+  "original_record": 21,
+  "fid": "limiteucsfederais_a.322",
+  "ogc_fid": "322",
+  "values": {
+   "codigo": "0000.00.0011",
+   "nome": "ÁREA DE PROTEÇÃO AMBIENTAL DA SERRA DA MANTIQUEIRA",
+   "categoria": "APA",
+   "grupo": "US",
+   "uf": "MG/RJ/SP",
+   "bioma": "MATA ATLÂNTICA",
+   "area_ha": 437521.96842479,
+   "ano_criacao": 1985,
+   "ato_criacao": "DEC 91.304 de 03/06/1985; LEI 9.097 de 19/09/1995"
+  }
+ },
+ {
+  "original_record": 22,
+  "fid": "limiteucsfederais_a.334",
+  "ogc_fid": "334",
+  "values": {
+   "codigo": "0000.00.1521",
+   "nome": "ÁREA DE PROTEÇÃO AMBIENTAL MANANCIAIS DO RIO PARAÍBA DO SUL",
+   "categoria": "APA",
+   "grupo": "US",
+   "uf": "MG/RJ/SP",
+   "bioma": "MATA ATLÂNTICA",
+   "area_ha": 604508.65823008,
+   "ano_criacao": 1982,
+   "ato_criacao": "DEC 87.561 de 13/09/1982"
+  }
+ }
+]

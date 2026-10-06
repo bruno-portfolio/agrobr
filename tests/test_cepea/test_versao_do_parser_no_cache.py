@@ -19,7 +19,7 @@ from agrobr.exceptions import ParseError
 from agrobr.models import Indicador
 from tests.helpers import levanta_exatamente, sem_excecao
 
-R6 = Path(__file__).parents[1] / "golden_data" / "reconciliacao_r6_20260918"
+R6 = Path(__file__).parents[1] / "golden_data" / "reconciliacao_precos_diarios_20260918"
 CASO = next(
     caso
     for caso in json.loads((R6 / "manifest.json").read_text(encoding="utf-8"))["cases"]

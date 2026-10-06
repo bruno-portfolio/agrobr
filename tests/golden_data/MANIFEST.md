@@ -62,9 +62,9 @@ continuam válidos, inclusive quando o manifesto reutiliza seu corpo por referê
 
 | Caso aposentado | Corpo e oráculo canônicos | Equivalência |
 |---|---|---|
-| `anda/entregas_sample` | `reconciliacao_r7_20260918/anda/anda_Principais_Indicadores_2024.pdf` e `anda_manifest.json`, caso `anda_2024` | Mesma tabela extraída; 12 meses, valores e rótulos conferidos. Replay exige `[pdf]`. |
-| `icmbio/ucs_20260908` | `reconciliacao_r11_20260918/icmbio/icmbio_national_007.csv` e seu `manifest.json`, caso `icmbio_national` | Corpo idêntico; 347 registros com todas as nove colunas. |
-| `lista_suja/official_20260905` | `reconciliacao_r11_20260918/mte/mte_pdf_016.pdf.gz` e seu `manifest.json`, caso `pdf_all` | PDF descompactado idêntico; 579 registros com todas as 12 colunas. SHA do gzip e do PDF são distintos. |
+| `anda/entregas_sample` | `reconciliacao_boletins_anec_anda_deral_20260918/anda/anda_Principais_Indicadores_2024.pdf` e `anda_manifest.json`, caso `anda_2024` | Mesma tabela extraída; 12 meses, valores e rótulos conferidos. Replay exige `[pdf]`. |
+| `icmbio/ucs_20260908` | `reconciliacao_registros_precos_zoneamento_seguro_20260918/icmbio/icmbio_national_007.csv` e seu `manifest.json`, caso `icmbio_national` | Corpo idêntico; 347 registros com todas as nove colunas. |
+| `lista_suja/official_20260905` | `reconciliacao_registros_precos_zoneamento_seguro_20260918/mte/mte_pdf_016.pdf.gz` e seu `manifest.json`, caso `pdf_all` | PDF descompactado idêntico; 579 registros com todas as 12 colunas. SHA do gzip e do PDF são distintos. |
 
-Os manifestos R11 usam o formato próprio family v1 descrito em
-`reconciliacao_r11_20260918/FORMAT.md`; a retirada não altera sua versão.
+Os manifestos de registros, preços, zoneamento e seguro usam o formato próprio family v1 descrito em
+`reconciliacao_registros_precos_zoneamento_seguro_20260918/FORMAT.md`; a retirada não altera sua versão.

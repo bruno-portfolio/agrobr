@@ -1,0 +1,17 @@
+{
+  "synthetic_source_mutation": true,
+  "source_sha256": "f48596676f1d395fab73ca941b02ab88e4cf51a67ec8bc83d705c0fb5e22e283",
+  "changes": [
+    {
+      "before": "Fertilizantes Entregues ao Mercado (em toneladas de produto) ",
+      "after": "Fertilizantes Produzidos ao Mercado (em toneladas de produto) ",
+      "bounds": [
+        189.0727996826172,
+        765.6351928710938,
+        406.1816101074219,
+        772.381591796875
+      ]
+    }
+  ],
+  "sha256": "ed67e70b1ad28145362bb798c9f23a18fe966f2ea59b2b9693228c53c1e7a9be"
+}

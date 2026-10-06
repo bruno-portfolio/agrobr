@@ -62,7 +62,10 @@ async def test_credito_vazio_tem_tipos_e_colunas_do_recorte_oficial(
 ):
     if as_polars:
         pl = pytest.importorskip("polars")
-    path = GOLDEN.parent / "reconciliacao_r9_20260918/sicor/sicor_custeio_soja_2024_2025_MT.json"
+    path = (
+        GOLDEN.parent
+        / "reconciliacao_mercados_credito_20260918/sicor/sicor_custeio_soja_2024_2025_MT.json"
+    )
     payload = json.loads(path.read_bytes())
     servir(monkeypatch, payload)
     cheio = await consulta(

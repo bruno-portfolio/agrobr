@@ -1,0 +1,982 @@
+{
+ "format_version": 2,
+ "oracle": "json da stdlib sobre os corpos HTTP originais da API de agregados (recapturados byte a byte na conferência em 18/09/2026, JSON idêntico à captura anterior); sem importar agrobr; chaves da saída pública transcritas dos campos localidade/período/variável/categoria; mapeamento variável→coluna declarado por consulta",
+ "coordinate_system": "JSON: ponteiro RFC 6901 no corpo capturado",
+ "replay": "requisição casada por caminho + parâmetros; SIDRA respondendo 403 (corpo Cloudflare real) ou recusando por transporte",
+ "built_at": "2026-09-18T14:31:52.049048+00:00",
+ "files": [
+  {
+   "file": "agregados/agregados_001.json",
+   "requested_url": "https://servicodados.ibge.gov.br/api/v3/agregados/5457/periodos/2023/variaveis/8331,216,214,112?localidades=N3[all]&classificacao=782[40124]",
+   "captured_at": "2026-09-18T14:17:16.738737+00:00",
+   "status": 200,
+   "sha256": "ae36b82df15f8a9ce6c115d783db60712607f0a4e878378c0b04dee003f3465d",
+   "bytes": 14310,
+   "origem": "corpo HTTP original recapturado na conferência (JSON idêntico à captura reserializada de 18/09 10:45)"
+  },
+  {
+   "file": "agregados/agregados_002.json",
+   "requested_url": "https://servicodados.ibge.gov.br/api/v3/agregados/5457/periodos",
+   "captured_at": "2026-09-18T14:17:17.779993+00:00",
+   "status": 200,
+   "sha256": "293a41ac923ee2a59831cbc3b7289750b42cf0855ca80167b665f664f1be51e8",
+   "bytes": 3173,
+   "origem": "corpo HTTP original recapturado na conferência (JSON idêntico à captura reserializada de 18/09 10:45)"
+  },
+  {
+   "file": "agregados/agregados_003.json",
+   "requested_url": "https://servicodados.ibge.gov.br/api/v3/agregados/5457/periodos/2022,2023/variaveis/8331,216,214,112?localidades=N1[all]&classificacao=782[40122]",
+   "captured_at": "2026-09-18T14:17:18.839707+00:00",
+   "status": 200,
+   "sha256": "b4e15c6066ef8c18871674710cb124d6adde3f9986a89421c2eb9c7ace84f509",
+   "bytes": 1435,
+   "origem": "corpo HTTP original recapturado na conferência (JSON idêntico à captura reserializada de 18/09 10:45)"
+  },
+  {
+   "file": "agregados/agregados_004.json",
+   "requested_url": "https://servicodados.ibge.gov.br/api/v3/agregados/6588/periodos/202607/variaveis/all?localidades=N1[all]&classificacao=48[39443]",
+   "captured_at": "2026-09-18T14:17:19.889616+00:00",
+   "status": 200,
+   "sha256": "058acb953d12d98681d8018eacb3169dc18a08bb9e4f3c41daec0c86fa629a41",
+   "bytes": 1182,
+   "origem": "corpo HTTP original recapturado na conferência (JSON idêntico à captura reserializada de 18/09 10:45)"
+  },
+  {
+   "file": "agregados/agregados_005.json",
+   "requested_url": "https://servicodados.ibge.gov.br/api/v3/agregados/6588/periodos",
+   "captured_at": "2026-09-18T14:17:20.919221+00:00",
+   "status": 200,
+   "sha256": "126a3d553317d0625ede0de5e0540549a560e5fbc52e5dfd181135d2aa514783",
+   "bytes": 21121,
+   "origem": "corpo HTTP original recapturado na conferência (JSON idêntico à captura reserializada de 18/09 10:45)"
+  },
+  {
+   "file": "agregados/agregados_006.json",
+   "requested_url": "https://servicodados.ibge.gov.br/api/v3/agregados/3939/periodos/2023/variaveis/105?localidades=N3[all]&classificacao=79[2670]",
+   "captured_at": "2026-09-18T14:17:21.963080+00:00",
+   "status": 200,
+   "sha256": "de5a5e3e44acd068bd4a45b8d0d9d53832026cb7f37c19dbd87c20123ab37cd3",
+   "bytes": 3587,
+   "origem": "corpo HTTP original recapturado na conferência (JSON idêntico à captura reserializada de 18/09 10:45)"
+  },
+  {
+   "file": "agregados/agregados_007.json",
+   "requested_url": "https://servicodados.ibge.gov.br/api/v3/agregados/3939/periodos",
+   "captured_at": "2026-09-18T14:17:22.998106+00:00",
+   "status": 200,
+   "sha256": "81b0abe8f01c0e38b9abbcd3a79c29951209d82193edf154e18fa6df7a2db7ed",
+   "bytes": 3112,
+   "origem": "corpo HTTP original recapturado na conferência (JSON idêntico à captura reserializada de 18/09 10:45)"
+  },
+  {
+   "file": "agregados/agregados_008.json",
+   "requested_url": "https://servicodados.ibge.gov.br/api/v3/agregados/1092/periodos/202401/variaveis/284,285?localidades=N3[all]&classificacao=12716[115236]|12529[118225]|18[992]",
+   "captured_at": "2026-09-18T14:17:24.073132+00:00",
+   "status": 200,
+   "sha256": "c935946d3bac75b921b85e8d35c225e2b7c9c2df041917dbfa224dfa76574b02",
+   "bytes": 7575,
+   "origem": "corpo HTTP original recapturado na conferência (JSON idêntico à captura reserializada de 18/09 10:45)"
+  },
+  {
+   "file": "agregados/agregados_009.json",
+   "requested_url": "https://servicodados.ibge.gov.br/api/v3/agregados/1092/periodos",
+   "captured_at": "2026-09-18T14:17:25.101862+00:00",
+   "status": 200,
+   "sha256": "123cfabc6a3f31b491b872eced9d4ddf7ab8ab06547380d19acd1bef840cf133",
+   "bytes": 11919,
+   "origem": "corpo HTTP original recapturado na conferência (JSON idêntico à captura reserializada de 18/09 10:45)"
+  },
+  {
+   "file": "agregados/agregados_010.json",
+   "requested_url": "https://servicodados.ibge.gov.br/api/v3/agregados/291/periodos/2023/variaveis/142?localidades=N3[all]&classificacao=194[3455]",
+   "captured_at": "2026-09-18T14:17:26.143049+00:00",
+   "status": 200,
+   "sha256": "90fd503d7d6f2c70831400e81578b85c7989c57f129fc968ef981bc87d11b268",
+   "bytes": 3416,
+   "origem": "corpo HTTP original recapturado na conferência (JSON idêntico à captura reserializada de 18/09 10:45)"
+  },
+  {
+   "file": "agregados/agregados_011.json",
+   "requested_url": "https://servicodados.ibge.gov.br/api/v3/agregados/291/periodos",
+   "captured_at": "2026-09-18T14:17:27.186903+00:00",
+   "status": 200,
+   "sha256": "25fa921d5a351e993d724d50d3c93be3124df6d2a95c5d48f1b0344cfc68d7ab",
+   "bytes": 2380,
+   "origem": "corpo HTTP original recapturado na conferência (JSON idêntico à captura reserializada de 18/09 10:45)"
+  },
+  {
+   "file": "agregados/agregados_012.json",
+   "requested_url": "https://servicodados.ibge.gov.br/api/v3/agregados/289/periodos/2023/variaveis/144?localidades=N3[all]&classificacao=193[3403]",
+   "captured_at": "2026-09-18T14:17:28.228225+00:00",
+   "status": 200,
+   "sha256": "3b4ce68d2e22c1b7484d39f0a3e366b22734bfd7dc593ef7a554a0bb9b3ac70f",
+   "bytes": 3490,
+   "origem": "corpo HTTP original recapturado na conferência (JSON idêntico à captura reserializada de 18/09 10:45)"
+  },
+  {
+   "file": "agregados/agregados_013.json",
+   "requested_url": "https://servicodados.ibge.gov.br/api/v3/agregados/289/periodos",
+   "captured_at": "2026-09-18T14:17:29.263366+00:00",
+   "status": 200,
+   "sha256": "b709e2c3dfb43ae9b52f538b35b209ca8e208c23e4cdee97a0f6b0e9f03bd6a0",
+   "bytes": 2380,
+   "origem": "corpo HTTP original recapturado na conferência (JSON idêntico à captura reserializada de 18/09 10:45)"
+  },
+  {
+   "file": "agregados/agregados_014.json",
+   "requested_url": "https://servicodados.ibge.gov.br/api/v3/agregados/1086/periodos/202401/variaveis/282,283,2522?localidades=N3[all]",
+   "captured_at": "2026-09-18T14:17:30.309990+00:00",
+   "status": 200,
+   "sha256": "9cac29c645c8bcf74804fb944dd9bbf58d22206d474bb25e8fdc3744b3d447a5",
+   "bytes": 10709,
+   "origem": "corpo HTTP original recapturado na conferência (JSON idêntico à captura reserializada de 18/09 10:45)"
+  },
+  {
+   "file": "agregados/agregados_015.json",
+   "requested_url": "https://servicodados.ibge.gov.br/api/v3/agregados/1086/periodos",
+   "captured_at": "2026-09-18T14:17:31.350577+00:00",
+   "status": 200,
+   "sha256": "183e002b95e39ecf835d1098642aa52a62fc02d226606ebda2983216ed0299e1",
+   "bytes": 11919,
+   "origem": "corpo HTTP original recapturado na conferência (JSON idêntico à captura reserializada de 18/09 10:45)"
+  },
+  {
+   "file": "agregados/agregados_016.json",
+   "requested_url": "https://servicodados.ibge.gov.br/api/v3/agregados/1846/periodos/202401/variaveis/585?localidades=N1[all]&classificacao=11255[90687]",
+   "captured_at": "2026-09-18T14:17:32.401255+00:00",
+   "status": 200,
+   "sha256": "ca5420e2f2c48b5f16bd9eab1910a30acc3ab2a2c10c7274603c22c90ef18a7e",
+   "bytes": 329,
+   "origem": "corpo HTTP original recapturado na conferência (JSON idêntico à captura reserializada de 18/09 10:45)"
+  },
+  {
+   "file": "agregados/agregados_017.json",
+   "requested_url": "https://servicodados.ibge.gov.br/api/v3/agregados/1846/periodos",
+   "captured_at": "2026-09-18T14:17:33.430597+00:00",
+   "status": 200,
+   "sha256": "26f9819a3c562e91a41b4d74713dc9c9edb569c42eeb45130b3f6dfefdb6104c",
+   "bytes": 12323,
+   "origem": "corpo HTTP original recapturado na conferência (JSON idêntico à captura reserializada de 18/09 10:45)"
+  },
+  {
+   "file": "agregados/agregados_018.json",
+   "requested_url": "https://servicodados.ibge.gov.br/api/v3/agregados/6907/periodos/all/variaveis/10010,2209?localidades=N3[all]&classificacao=829[46302]|12443[all]|218[46502]",
+   "captured_at": "2026-09-18T14:17:34.588963+00:00",
+   "status": 200,
+   "sha256": "a75cc11ebdcedf2977f5f8f676b493f72b232e8d573f528bb98f1dc5481164bb",
+   "bytes": 108530,
+   "origem": "corpo HTTP original recapturado na conferência (JSON idêntico à captura reserializada de 18/09 10:45)"
+  },
+  {
+   "file": "agregados/agregados_019.json",
+   "requested_url": "https://servicodados.ibge.gov.br/api/v3/agregados/6907/periodos",
+   "captured_at": "2026-09-18T14:17:35.614245+00:00",
+   "status": 200,
+   "sha256": "74fb172c2f7c033cabbe25cdc09caed6fa5b63461bfa87f27e2d912b45612098",
+   "bytes": 62,
+   "origem": "corpo HTTP original recapturado na conferência (JSON idêntico à captura reserializada de 18/09 10:45)"
+  },
+  {
+   "file": "agregados/agregados_020.json",
+   "requested_url": "https://servicodados.ibge.gov.br/api/v3/agregados/263/periodos/2006/variaveis/183,1000183,184,1000184?localidades=N3[all]&classificacao=220[all]",
+   "captured_at": "2026-09-18T14:17:36.698102+00:00",
+   "status": 200,
+   "sha256": "a5e42a26c0ea2e344584cfaa2597a6782b50209361201cea941f34568db677aa",
+   "bytes": 83749,
+   "origem": "corpo HTTP original recapturado na conferência (JSON idêntico à captura reserializada de 18/09 10:45)"
+  },
+  {
+   "file": "agregados/agregados_021.json",
+   "requested_url": "https://servicodados.ibge.gov.br/api/v3/agregados/263/periodos",
+   "captured_at": "2026-09-18T14:17:37.756952+00:00",
+   "status": 200,
+   "sha256": "c376d6d5d75b1d71b19d11c4af887a77aee19866a109962bb3c80c9f45036d48",
+   "bytes": 611,
+   "origem": "corpo HTTP original recapturado na conferência (JSON idêntico à captura reserializada de 18/09 10:45)"
+  }
+ ],
+ "cases": [
+  {
+   "id": "pam_soja_uf_2023",
+   "dataset": "pam",
+   "requests": [
+    "agregados_001",
+    "agregados_002"
+   ],
+   "rows": 27,
+   "columns": [
+    "localidade",
+    "localidade_cod",
+    "ano",
+    "area_colhida",
+    "area_plantada",
+    "producao",
+    "rendimento",
+    "produto",
+    "fonte",
+    "unidade_producao",
+    "unidade_rendimento",
+    "unidade_valor_producao",
+    "condicao_produto"
+   ],
+   "samples": [
+    {
+     "key": {
+      "ano": 2023,
+      "localidade": "Rondônia"
+     },
+     "column": "area_colhida",
+     "value": 589263.0,
+     "locator": {
+      "file": "agregados/agregados_001.json",
+      "pointer": "/1/resultados/0/series/0/serie/2023"
+     },
+     "conversion": "V do JSON de agregados -> float64; '-' = zero absoluto (legenda SIDRA), '..'/'...'/'X' = nulo"
+    },
+    {
+     "key": {
+      "ano": 2023,
+      "localidade": "Rondônia"
+     },
+     "column": "area_plantada",
+     "value": 589983.0,
+     "locator": {
+      "file": "agregados/agregados_001.json",
+      "pointer": "/0/resultados/0/series/0/serie/2023"
+     },
+     "conversion": "V do JSON de agregados -> float64; '-' = zero absoluto (legenda SIDRA), '..'/'...'/'X' = nulo"
+    },
+    {
+     "key": {
+      "ano": 2023,
+      "localidade": "Rondônia"
+     },
+     "column": "producao",
+     "value": 2131535.0,
+     "locator": {
+      "file": "agregados/agregados_001.json",
+      "pointer": "/2/resultados/0/series/0/serie/2023"
+     },
+     "conversion": "V do JSON de agregados -> float64; '-' = zero absoluto (legenda SIDRA), '..'/'...'/'X' = nulo"
+    },
+    {
+     "key": {
+      "ano": 2023,
+      "localidade": "Rondônia"
+     },
+     "column": "rendimento",
+     "value": 3617.0,
+     "locator": {
+      "file": "agregados/agregados_001.json",
+      "pointer": "/3/resultados/0/series/0/serie/2023"
+     },
+     "conversion": "V do JSON de agregados -> float64; '-' = zero absoluto (legenda SIDRA), '..'/'...'/'X' = nulo"
+    },
+    {
+     "key": {
+      "ano": 2023,
+      "localidade": "Distrito Federal"
+     },
+     "column": "area_colhida",
+     "value": 85000.0,
+     "locator": {
+      "file": "agregados/agregados_001.json",
+      "pointer": "/1/resultados/0/series/26/serie/2023"
+     },
+     "conversion": "V do JSON de agregados -> float64; '-' = zero absoluto (legenda SIDRA), '..'/'...'/'X' = nulo"
+    },
+    {
+     "key": {
+      "ano": 2023,
+      "localidade": "Distrito Federal"
+     },
+     "column": "area_plantada",
+     "value": 85000.0,
+     "locator": {
+      "file": "agregados/agregados_001.json",
+      "pointer": "/0/resultados/0/series/26/serie/2023"
+     },
+     "conversion": "V do JSON de agregados -> float64; '-' = zero absoluto (legenda SIDRA), '..'/'...'/'X' = nulo"
+    },
+    {
+     "key": {
+      "ano": 2023,
+      "localidade": "Distrito Federal"
+     },
+     "column": "producao",
+     "value": 306000.0,
+     "locator": {
+      "file": "agregados/agregados_001.json",
+      "pointer": "/2/resultados/0/series/26/serie/2023"
+     },
+     "conversion": "V do JSON de agregados -> float64; '-' = zero absoluto (legenda SIDRA), '..'/'...'/'X' = nulo"
+    },
+    {
+     "key": {
+      "ano": 2023,
+      "localidade": "Distrito Federal"
+     },
+     "column": "rendimento",
+     "value": 3600.0,
+     "locator": {
+      "file": "agregados/agregados_001.json",
+      "pointer": "/3/resultados/0/series/26/serie/2023"
+     },
+     "conversion": "V do JSON de agregados -> float64; '-' = zero absoluto (legenda SIDRA), '..'/'...'/'X' = nulo"
+    }
+   ]
+  },
+  {
+   "id": "pam_milho_brasil_2022_2023",
+   "dataset": "pam",
+   "requests": [
+    "agregados_003"
+   ],
+   "rows": 2,
+   "columns": [
+    "localidade",
+    "localidade_cod",
+    "ano",
+    "area_colhida",
+    "area_plantada",
+    "producao",
+    "rendimento",
+    "produto",
+    "fonte",
+    "unidade_producao",
+    "unidade_rendimento",
+    "unidade_valor_producao",
+    "condicao_produto"
+   ],
+   "samples": [
+    {
+     "key": {
+      "ano": 2022,
+      "localidade": "Brasil"
+     },
+     "column": "area_colhida",
+     "value": 21066401.0,
+     "locator": {
+      "file": "agregados/agregados_003.json",
+      "pointer": "/1/resultados/0/series/0/serie/2022"
+     },
+     "conversion": "V do JSON de agregados -> float64; '-' = zero absoluto (legenda SIDRA), '..'/'...'/'X' = nulo"
+    },
+    {
+     "key": {
+      "ano": 2022,
+      "localidade": "Brasil"
+     },
+     "column": "area_plantada",
+     "value": 21310449.0,
+     "locator": {
+      "file": "agregados/agregados_003.json",
+      "pointer": "/0/resultados/0/series/0/serie/2022"
+     },
+     "conversion": "V do JSON de agregados -> float64; '-' = zero absoluto (legenda SIDRA), '..'/'...'/'X' = nulo"
+    },
+    {
+     "key": {
+      "ano": 2022,
+      "localidade": "Brasil"
+     },
+     "column": "producao",
+     "value": 109739898.0,
+     "locator": {
+      "file": "agregados/agregados_003.json",
+      "pointer": "/2/resultados/0/series/0/serie/2022"
+     },
+     "conversion": "V do JSON de agregados -> float64; '-' = zero absoluto (legenda SIDRA), '..'/'...'/'X' = nulo"
+    },
+    {
+     "key": {
+      "ano": 2022,
+      "localidade": "Brasil"
+     },
+     "column": "rendimento",
+     "value": 5209.0,
+     "locator": {
+      "file": "agregados/agregados_003.json",
+      "pointer": "/3/resultados/0/series/0/serie/2022"
+     },
+     "conversion": "V do JSON de agregados -> float64; '-' = zero absoluto (legenda SIDRA), '..'/'...'/'X' = nulo"
+    },
+    {
+     "key": {
+      "ano": 2023,
+      "localidade": "Brasil"
+     },
+     "column": "area_colhida",
+     "value": 22315010.0,
+     "locator": {
+      "file": "agregados/agregados_003.json",
+      "pointer": "/1/resultados/0/series/0/serie/2023"
+     },
+     "conversion": "V do JSON de agregados -> float64; '-' = zero absoluto (legenda SIDRA), '..'/'...'/'X' = nulo"
+    },
+    {
+     "key": {
+      "ano": 2023,
+      "localidade": "Brasil"
+     },
+     "column": "area_plantada",
+     "value": 22546782.0,
+     "locator": {
+      "file": "agregados/agregados_003.json",
+      "pointer": "/0/resultados/0/series/0/serie/2023"
+     },
+     "conversion": "V do JSON de agregados -> float64; '-' = zero absoluto (legenda SIDRA), '..'/'...'/'X' = nulo"
+    },
+    {
+     "key": {
+      "ano": 2023,
+      "localidade": "Brasil"
+     },
+     "column": "producao",
+     "value": 131949711.0,
+     "locator": {
+      "file": "agregados/agregados_003.json",
+      "pointer": "/2/resultados/0/series/0/serie/2023"
+     },
+     "conversion": "V do JSON de agregados -> float64; '-' = zero absoluto (legenda SIDRA), '..'/'...'/'X' = nulo"
+    },
+    {
+     "key": {
+      "ano": 2023,
+      "localidade": "Brasil"
+     },
+     "column": "rendimento",
+     "value": 5913.0,
+     "locator": {
+      "file": "agregados/agregados_003.json",
+      "pointer": "/3/resultados/0/series/0/serie/2023"
+     },
+     "conversion": "V do JSON de agregados -> float64; '-' = zero absoluto (legenda SIDRA), '..'/'...'/'X' = nulo"
+    }
+   ]
+  },
+  {
+   "id": "lspa_soja_202607",
+   "requests": [
+    "agregados_004",
+    "agregados_005"
+   ],
+   "rows": 4,
+   "columns": [
+    "ano",
+    "mes",
+    "localidade",
+    "localidade_cod",
+    "produto",
+    "variavel",
+    "variavel_cod",
+    "valor",
+    "unidade",
+    "fonte"
+   ],
+   "samples": [
+    {
+     "key": {
+      "localidade_cod": 1,
+      "ano": 2026,
+      "mes": 7,
+      "variavel_cod": 109
+     },
+     "column": "valor",
+     "value": 48391709.0,
+     "locator": {
+      "file": "agregados/agregados_004.json",
+      "pointer": "/0/resultados/0/series/0/serie/202607"
+     },
+     "conversion": "V do JSON de agregados -> float64; '-' = zero absoluto (legenda SIDRA), '..'/'...'/'X' = nulo"
+    },
+    {
+     "key": {
+      "localidade_cod": 1,
+      "ano": 2026,
+      "mes": 7,
+      "variavel_cod": 36
+     },
+     "column": "valor",
+     "value": 3618.0,
+     "locator": {
+      "file": "agregados/agregados_004.json",
+      "pointer": "/3/resultados/0/series/0/serie/202607"
+     },
+     "conversion": "V do JSON de agregados -> float64; '-' = zero absoluto (legenda SIDRA), '..'/'...'/'X' = nulo"
+    }
+   ]
+  },
+  {
+   "id": "ppm_bovino_uf_2023",
+   "requests": [
+    "agregados_006",
+    "agregados_007"
+   ],
+   "rows": 27,
+   "columns": [
+    "ano",
+    "localidade",
+    "localidade_cod",
+    "especie",
+    "valor",
+    "unidade",
+    "fonte"
+   ],
+   "samples": [
+    {
+     "key": {
+      "localidade_cod": 11,
+      "ano": 2023
+     },
+     "column": "valor",
+     "value": 18162632.0,
+     "locator": {
+      "file": "agregados/agregados_006.json",
+      "pointer": "/0/resultados/0/series/0/serie/2023"
+     },
+     "conversion": "V do JSON de agregados -> float64; '-' = zero absoluto (legenda SIDRA), '..'/'...'/'X' = nulo"
+    },
+    {
+     "key": {
+      "localidade_cod": 53,
+      "ano": 2023
+     },
+     "column": "valor",
+     "value": 83061.0,
+     "locator": {
+      "file": "agregados/agregados_006.json",
+      "pointer": "/0/resultados/0/series/26/serie/2023"
+     },
+     "conversion": "V do JSON de agregados -> float64; '-' = zero absoluto (legenda SIDRA), '..'/'...'/'X' = nulo"
+    }
+   ]
+  },
+  {
+   "id": "abate_bovino_2024T1",
+   "dataset": "abate",
+   "requests": [
+    "agregados_008",
+    "agregados_009"
+   ],
+   "rows": 27,
+   "columns": [
+    "trimestre",
+    "localidade",
+    "localidade_cod",
+    "especie",
+    "animais_abatidos",
+    "peso_carcacas",
+    "fonte"
+   ],
+   "samples": [
+    {
+     "key": {
+      "localidade_cod": 11,
+      "trimestre": "202401"
+     },
+     "column": "animais_abatidos",
+     "value": 793855.0,
+     "locator": {
+      "file": "agregados/agregados_008.json",
+      "pointer": "/0/resultados/0/series/0/serie/202401"
+     },
+     "conversion": "V do JSON de agregados -> float64; '-' = zero absoluto (legenda SIDRA), '..'/'...'/'X' = nulo"
+    },
+    {
+     "key": {
+      "localidade_cod": 11,
+      "trimestre": "202401"
+     },
+     "column": "peso_carcacas",
+     "value": 196020210.0,
+     "locator": {
+      "file": "agregados/agregados_008.json",
+      "pointer": "/1/resultados/0/series/0/serie/202401"
+     },
+     "conversion": "V do JSON de agregados -> float64; '-' = zero absoluto (legenda SIDRA), '..'/'...'/'X' = nulo"
+    },
+    {
+     "key": {
+      "localidade_cod": 53,
+      "trimestre": "202401"
+     },
+     "column": "animais_abatidos",
+     "value": null,
+     "locator": {
+      "file": "agregados/agregados_008.json",
+      "pointer": "/0/resultados/0/series/26/serie/202401"
+     },
+     "conversion": "V do JSON de agregados -> float64; '-' = zero absoluto (legenda SIDRA), '..'/'...'/'X' = nulo"
+    },
+    {
+     "key": {
+      "localidade_cod": 53,
+      "trimestre": "202401"
+     },
+     "column": "peso_carcacas",
+     "value": null,
+     "locator": {
+      "file": "agregados/agregados_008.json",
+      "pointer": "/1/resultados/0/series/26/serie/202401"
+     },
+     "conversion": "V do JSON de agregados -> float64; '-' = zero absoluto (legenda SIDRA), '..'/'...'/'X' = nulo"
+    }
+   ]
+  },
+  {
+   "id": "silvicultura_2023",
+   "requests": [
+    "agregados_010",
+    "agregados_011"
+   ],
+   "rows": 26,
+   "columns": [
+    "ano",
+    "localidade",
+    "localidade_cod",
+    "produto",
+    "valor",
+    "unidade",
+    "fonte"
+   ],
+   "samples": [
+    {
+     "key": {
+      "localidade_cod": 11,
+      "ano": 2023
+     },
+     "column": "valor",
+     "value": 0.0,
+     "locator": {
+      "file": "agregados/agregados_010.json",
+      "pointer": "/0/resultados/0/series/0/serie/2023"
+     },
+     "conversion": "V do JSON de agregados -> float64; '-' = zero absoluto (legenda SIDRA), '..'/'...'/'X' = nulo"
+    },
+    {
+     "key": {
+      "localidade_cod": 53,
+      "ano": 2023
+     },
+     "column": "valor",
+     "value": 0.0,
+     "locator": {
+      "file": "agregados/agregados_010.json",
+      "pointer": "/0/resultados/0/series/25/serie/2023"
+     },
+     "conversion": "V do JSON de agregados -> float64; '-' = zero absoluto (legenda SIDRA), '..'/'...'/'X' = nulo"
+    }
+   ]
+  },
+  {
+   "id": "extracao_vegetal_2023",
+   "requests": [
+    "agregados_012",
+    "agregados_013"
+   ],
+   "rows": 27,
+   "columns": [
+    "ano",
+    "localidade",
+    "localidade_cod",
+    "produto",
+    "valor",
+    "unidade",
+    "fonte"
+   ],
+   "samples": [
+    {
+     "key": {
+      "localidade_cod": 11,
+      "ano": 2023
+     },
+     "column": "valor",
+     "value": 1189.0,
+     "locator": {
+      "file": "agregados/agregados_012.json",
+      "pointer": "/0/resultados/0/series/0/serie/2023"
+     },
+     "conversion": "V do JSON de agregados -> float64; '-' = zero absoluto (legenda SIDRA), '..'/'...'/'X' = nulo"
+    },
+    {
+     "key": {
+      "localidade_cod": 53,
+      "ano": 2023
+     },
+     "column": "valor",
+     "value": 0.0,
+     "locator": {
+      "file": "agregados/agregados_012.json",
+      "pointer": "/0/resultados/0/series/26/serie/2023"
+     },
+     "conversion": "V do JSON de agregados -> float64; '-' = zero absoluto (legenda SIDRA), '..'/'...'/'X' = nulo"
+    }
+   ]
+  },
+  {
+   "id": "leite_2024T1",
+   "dataset": "leite",
+   "requests": [
+    "agregados_014",
+    "agregados_015"
+   ],
+   "rows": 26,
+   "columns": [
+    "trimestre",
+    "localidade",
+    "localidade_cod",
+    "leite_adquirido",
+    "leite_industrializado",
+    "preco_medio",
+    "fonte"
+   ],
+   "samples": [
+    {
+     "key": {
+      "localidade_cod": 11,
+      "trimestre": "202401"
+     },
+     "column": "leite_adquirido",
+     "value": 157598.0,
+     "locator": {
+      "file": "agregados/agregados_014.json",
+      "pointer": "/0/resultados/0/series/0/serie/202401"
+     },
+     "conversion": "V do JSON de agregados -> float64; '-' = zero absoluto (legenda SIDRA), '..'/'...'/'X' = nulo"
+    },
+    {
+     "key": {
+      "localidade_cod": 11,
+      "trimestre": "202401"
+     },
+     "column": "leite_industrializado",
+     "value": 157575.0,
+     "locator": {
+      "file": "agregados/agregados_014.json",
+      "pointer": "/1/resultados/0/series/0/serie/202401"
+     },
+     "conversion": "V do JSON de agregados -> float64; '-' = zero absoluto (legenda SIDRA), '..'/'...'/'X' = nulo"
+    },
+    {
+     "key": {
+      "localidade_cod": 11,
+      "trimestre": "202401"
+     },
+     "column": "preco_medio",
+     "value": 2.16,
+     "locator": {
+      "file": "agregados/agregados_014.json",
+      "pointer": "/2/resultados/0/series/0/serie/202401"
+     },
+     "conversion": "V do JSON de agregados -> float64; '-' = zero absoluto (legenda SIDRA), '..'/'...'/'X' = nulo"
+    },
+    {
+     "key": {
+      "localidade_cod": 53,
+      "trimestre": "202401"
+     },
+     "column": "leite_adquirido",
+     "value": null,
+     "locator": {
+      "file": "agregados/agregados_014.json",
+      "pointer": "/0/resultados/0/series/25/serie/202401"
+     },
+     "conversion": "V do JSON de agregados -> float64; '-' = zero absoluto (legenda SIDRA), '..'/'...'/'X' = nulo"
+    },
+    {
+     "key": {
+      "localidade_cod": 53,
+      "trimestre": "202401"
+     },
+     "column": "leite_industrializado",
+     "value": null,
+     "locator": {
+      "file": "agregados/agregados_014.json",
+      "pointer": "/1/resultados/0/series/25/serie/202401"
+     },
+     "conversion": "V do JSON de agregados -> float64; '-' = zero absoluto (legenda SIDRA), '..'/'...'/'X' = nulo"
+    },
+    {
+     "key": {
+      "localidade_cod": 53,
+      "trimestre": "202401"
+     },
+     "column": "preco_medio",
+     "value": null,
+     "locator": {
+      "file": "agregados/agregados_014.json",
+      "pointer": "/2/resultados/0/series/25/serie/202401"
+     },
+     "conversion": "V do JSON de agregados -> float64; '-' = zero absoluto (legenda SIDRA), '..'/'...'/'X' = nulo"
+    }
+   ]
+  },
+  {
+   "id": "pib_agro_2024T1",
+   "requests": [
+    "agregados_016",
+    "agregados_017"
+   ],
+   "rows": 1,
+   "columns": [
+    "trimestre",
+    "valor",
+    "unidade",
+    "setor",
+    "fonte"
+   ],
+   "samples": [
+    {
+     "key": {
+      "trimestre": "202401"
+     },
+     "column": "valor",
+     "value": 190749.0,
+     "locator": {
+      "file": "agregados/agregados_016.json",
+      "pointer": "/0/resultados/0/series/0/serie/202401"
+     },
+     "conversion": "V do JSON de agregados -> float64; '-' = zero absoluto (legenda SIDRA), '..'/'...'/'X' = nulo"
+    },
+    {
+     "key": {
+      "trimestre": "202401"
+     },
+     "column": "valor",
+     "value": 190749.0,
+     "locator": {
+      "file": "agregados/agregados_016.json",
+      "pointer": "/0/resultados/0/series/0/serie/202401"
+     },
+     "conversion": "V do JSON de agregados -> float64; '-' = zero absoluto (legenda SIDRA), '..'/'...'/'X' = nulo"
+    }
+   ]
+  },
+  {
+   "id": "censo_efetivo_2017_uf",
+   "requests": [
+    "agregados_018",
+    "agregados_019"
+   ],
+   "rows": 810,
+   "columns": [
+    "ano",
+    "localidade",
+    "localidade_cod",
+    "tema",
+    "categoria",
+    "variavel",
+    "valor",
+    "unidade",
+    "fonte"
+   ],
+   "samples": [
+    {
+     "key": {
+      "localidade_cod": 11,
+      "ano": 2017,
+      "categoria": "Bovinos",
+      "variavel": "estabelecimentos"
+     },
+     "column": "valor",
+     "value": 72855.0,
+     "locator": {
+      "file": "agregados/agregados_018.json",
+      "pointer": "/0/resultados/1/series/0/serie/2017"
+     },
+     "conversion": "V do JSON de agregados -> float64; '-' = zero absoluto (legenda SIDRA), '..'/'...'/'X' = nulo"
+    },
+    {
+     "key": {
+      "localidade_cod": 53,
+      "ano": 2017,
+      "categoria": "Coelhos",
+      "variavel": "cabecas"
+     },
+     "column": "valor",
+     "value": 924.0,
+     "locator": {
+      "file": "agregados/agregados_018.json",
+      "pointer": "/1/resultados/14/series/26/serie/2017"
+     },
+     "conversion": "V do JSON de agregados -> float64; '-' = zero absoluto (legenda SIDRA), '..'/'...'/'X' = nulo"
+    }
+   ]
+  },
+  {
+   "id": "censo_historico_estab",
+   "requests": [
+    "agregados_020",
+    "agregados_021"
+   ],
+   "rows": 648,
+   "columns": [
+    "ano",
+    "localidade",
+    "localidade_cod",
+    "tema",
+    "categoria",
+    "variavel",
+    "valor",
+    "unidade",
+    "fonte"
+   ],
+   "samples": [
+    {
+     "key": {
+      "localidade_cod": 11,
+      "ano": 2006,
+      "categoria": "total",
+      "variavel": "estabelecimentos"
+     },
+     "column": "valor",
+     "value": 87078.0,
+     "locator": {
+      "file": "agregados/agregados_020.json",
+      "pointer": "/0/resultados/0/series/0/serie/2006"
+     },
+     "conversion": "V do JSON de agregados -> float64; '-' = zero absoluto (legenda SIDRA), '..'/'...'/'X' = nulo"
+    },
+    {
+     "key": {
+      "localidade_cod": 53,
+      "ano": 2006,
+      "categoria": "1000ha_mais",
+      "variavel": "area_pct"
+     },
+     "column": "valor",
+     "value": 26.01,
+     "locator": {
+      "file": "agregados/agregados_020.json",
+      "pointer": "/3/resultados/5/series/26/serie/2006"
+     },
+     "conversion": "V do JSON de agregados -> float64; '-' = zero absoluto (legenda SIDRA), '..'/'...'/'X' = nulo"
+    }
+   ]
+  }
+ ],
+ "mapeamentos_declarados": {
+  "censo_2017_variaveis": {
+   "10010": "estabelecimentos",
+   "2209": "cabecas"
+  },
+  "censo_historico_variaveis": {
+   "183": "estabelecimentos",
+   "1000183": "estabelecimentos_pct",
+   "184": "area",
+   "1000184": "area_pct"
+  },
+  "censo_historico_categorias": {
+   "Total": "total",
+   "1.000 ha e mais": "1000ha_mais"
+  },
+  "nota": "nomes internos de variável/categoria do censo são decisão do parser; o oráculo confere os valores por chave, não a regra de slug"
+ },
+ "sentinelas": {
+  "-": 0.0,
+  "..": null,
+  "...": null,
+  "X": null
+ }
+}

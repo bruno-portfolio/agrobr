@@ -15,7 +15,7 @@ from typing import Any
 from urllib import parse
 
 ROOT = Path(__file__).resolve().parents[1]
-GOLDEN = ROOT / "tests/golden_data/reconciliacao_r11_20260918/mte"
+GOLDEN = ROOT / "tests/golden_data/reconciliacao_registros_precos_zoneamento_seguro_20260918/mte"
 
 
 class LinkInventory(html_parser.HTMLParser):

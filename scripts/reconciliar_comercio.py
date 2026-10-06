@@ -26,7 +26,7 @@ from agrobr.comtrade import models as comtrade_models
 from agrobr.http.user_agents import UserAgentRotator
 
 ROOT = Path(__file__).resolve().parents[1]
-MANIFEST = ROOT / "tests/golden_data/reconciliacao_r8_20260918/manifest.json"
+MANIFEST = ROOT / "tests/golden_data/reconciliacao_comercio_exterior_20260918/manifest.json"
 PRODUTOS_COMEX = ["soja", "milho", "cafe", "algodao", "acucar", "farelo_soja", "oleo_soja"]
 NCM_DICTIONARY_URL = constants.COMEXSTAT_DICTIONARY_URLS["unidades"].replace(
     "NCM_UNIDADE.csv", "NCM.csv"

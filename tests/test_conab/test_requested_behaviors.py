@@ -22,7 +22,8 @@ from tests import helpers
 
 R4_MANIFEST = json.loads(
     (
-        Path(helpers.__file__).parent / "golden_data/reconciliacao_r4_20260918/manifest.json"
+        Path(helpers.__file__).parent
+        / "golden_data/reconciliacao_custos_conab_20260918/manifest.json"
     ).read_text(encoding="utf-8")
 )
 

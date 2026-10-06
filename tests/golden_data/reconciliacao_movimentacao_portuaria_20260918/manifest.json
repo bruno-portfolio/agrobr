@@ -1,0 +1,1819 @@
+{
+ "format_version": 2,
+ "oracle": "csv/decimal/datetime/zipfile da stdlib sobre os TXT preservados de tests/golden_data/antaq/movimentacao_sample; sem importar agrobr",
+ "coordinate_system": "TXT separado por ';': registro logico a partir de 1 depois do cabecalho; campo pelo nome publicado; posicao da saida a partir de 0 na ordem final do parser",
+ "replay": "requests.get casado pela URL exata do client; o container de transporte e montado no replay a partir dos TXT preservados; qualquer outra URL recebe 404",
+ "numeric_rule": "igualdade exata: peso lido em Decimal do texto publicado (ponto de milhar removido, virgula decimal) e convertido para float64 uma unica vez",
+ "units": {
+  "peso_bruto_ton": "toneladas, conforme VLPesoCargaBruta",
+  "qt_carga": "sem unidade publicada pela ANTAQ nem informada no corpo; a escala sugere kg em 3102 e unidades em CA01 (inferencia, nao publicada)",
+  "teu": "TEU (conteineres equivalentes de 20 pes); ausente convertido em 0"
+ },
+ "built_at": "2026-09-18T19:58:37.899244+00:00",
+ "transport_container": {
+  "motivo": "o ZIP oficial nao foi preservado em 2026-02; a fonte esta fora do ar desde 2026-06-23",
+  "montagem": "zipfile.ZipFile(ZIP_DEFLATED) com os TXT preservados nos nomes de membro abaixo",
+  "membros": {
+   "atracacao.txt": "2024Atracacao.txt",
+   "carga.txt": "2024Carga.txt",
+   "mercadoria.txt": "Mercadoria.txt"
+  },
+  "declaracao": "container de transporte derivado, NAO o ZIP oficial da ANTAQ"
+ },
+ "files": [
+  {
+   "file": "../antaq/movimentacao_sample/atracacao.txt",
+   "sha256": "f94ae152844a5203e4c12aadd27d4bb35b49880a5f61be563d47649390a9d00d",
+   "bytes": 3713,
+   "requested_url": "https://web3.antaq.gov.br/ea/txt/2024.zip",
+   "replay_url": "https://estatistica.antaq.gov.br/ea/txt/2024.zip",
+   "archive_member": "2024Atracacao.txt",
+   "captured_at": "2026-02-21T08:35:17Z",
+   "nota": "TXT ja extraido do ZIP oficial; o ZIP original nao foi preservado",
+   "url_note": "requested_url e a URL documentada em metadata.json da extracao de 21/02/2026; replay_url e a URL que o client atual pede e que o replay serve"
+  },
+  {
+   "file": "../antaq/movimentacao_sample/carga.txt",
+   "sha256": "f3b725d655a41ae777ca0242138fcb2406c996b5f5979eeea28fb7aaa534611a",
+   "bytes": 2110,
+   "requested_url": "https://web3.antaq.gov.br/ea/txt/2024.zip",
+   "replay_url": "https://estatistica.antaq.gov.br/ea/txt/2024.zip",
+   "archive_member": "2024Carga.txt",
+   "captured_at": "2026-02-21T08:35:17Z",
+   "nota": "TXT ja extraido do ZIP oficial; o ZIP original nao foi preservado",
+   "url_note": "requested_url e a URL documentada em metadata.json da extracao de 21/02/2026; replay_url e a URL que o client atual pede e que o replay serve"
+  },
+  {
+   "file": "../antaq/movimentacao_sample/mercadoria.txt",
+   "sha256": "7a251622703021ab80f2ef0cd6e8e09c46a8bb0141c41d9cf066fad0edbd9d3f",
+   "bytes": 318472,
+   "requested_url": null,
+   "replay_url": "https://estatistica.antaq.gov.br/ea/txt/Mercadoria.zip",
+   "archive_member": "Mercadoria.txt",
+   "captured_at": "2026-02-21T08:35:17Z",
+   "nota": "TXT ja extraido; metadata.json da extracao nao tem recibo proprio da tabela Mercadoria, logo a URL historica nao e comprovada",
+   "url_note": "requested_url e a URL documentada em metadata.json da extracao de 21/02/2026; replay_url e a URL que o client atual pede e que o replay serve"
+  },
+  {
+   "file": "oracle.json",
+   "sha256": "9f88358735e7fce2167dc7c4f21fecacb0c82ba5f05652c6de1dd697237652bd",
+   "bytes": 26399,
+   "requested_url": null,
+   "captured_at": "2026-09-18T19:58:37.899244+00:00",
+   "nota": "oraculo independente gerado por build_oracle.py"
+  }
+ ],
+ "cases": [
+  {
+   "id": "fonte_2024_completo",
+   "dataset": "antaq.movimentacao",
+   "r2_id": "movimentacao_portuaria:antaq:zip_relacional",
+   "source": "antaq",
+   "selection": {
+    "ano": 2024
+   },
+   "layout": "zip_relacional_txt_atracacao_carga_mercadoria",
+   "files": [
+    "../antaq/movimentacao_sample/atracacao.txt",
+    "../antaq/movimentacao_sample/carga.txt",
+    "../antaq/movimentacao_sample/mercadoria.txt"
+   ],
+   "columns": [
+    "ano",
+    "mes",
+    "data_atracacao",
+    "tipo_navegacao",
+    "tipo_operacao",
+    "natureza_carga",
+    "sentido",
+    "porto",
+    "complexo_portuario",
+    "terminal",
+    "municipio",
+    "uf",
+    "regiao",
+    "cd_mercadoria",
+    "mercadoria",
+    "grupo_mercadoria",
+    "origem",
+    "destino",
+    "peso_bruto_ton",
+    "qt_carga",
+    "teu"
+   ],
+   "period": {
+    "rotulo_publicado": {
+     "Ano": "2024",
+     "Mes": "jan"
+    },
+    "rotulo_normalizado": {
+     "ano": 2024,
+     "mes": 1
+    },
+    "rows": 10,
+    "atracacoes": 10,
+    "atracacoes_distintas": 10,
+    "cargas": 10,
+    "atracacoes_referenciadas": 6,
+    "atracacoes_sem_carga": 4,
+    "maior_fanout_atracacao": 5,
+    "atracacao_do_maior_fanout": "1406197",
+    "cargas_orfas_sem_atracacao": 0,
+    "cargas_orfas_sem_mercadoria": 0,
+    "mercadorias": 1403,
+    "mercadorias_distintas": 1403,
+    "linhas_de_saida": 10,
+    "ultima_linha_atracacao": "1406473",
+    "ultima_linha_carga": "35454468",
+    "ultima_linha_mercadoria": "20T0",
+    "ultimo_registro_saida": "35452566"
+   },
+   "structure": [
+    {
+     "kind": "column",
+     "locator": {
+      "archive_member": "2024Atracacao.txt",
+      "campo": "IDAtracacao"
+     },
+     "campo": "IDAtracacao",
+     "estado": "join",
+     "destino": null,
+     "motivo": "chave do join carga->atracacao; nao vira coluna de saida"
+    },
+    {
+     "kind": "column",
+     "locator": {
+      "archive_member": "2024Atracacao.txt",
+      "campo": "CDTUP"
+     },
+     "campo": "CDTUP",
+     "estado": "ignorada",
+     "destino": null,
+     "motivo": "codigo da instalacao portuaria; porto e terminal ja identificam"
+    },
+    {
+     "kind": "column",
+     "locator": {
+      "archive_member": "2024Atracacao.txt",
+      "campo": "IDBerco"
+     },
+     "campo": "IDBerco",
+     "estado": "ignorada",
+     "destino": null,
+     "motivo": "berco fora do contrato 1.0"
+    },
+    {
+     "kind": "column",
+     "locator": {
+      "archive_member": "2024Atracacao.txt",
+      "campo": "Berço"
+     },
+     "campo": "Berço",
+     "estado": "ignorada",
+     "destino": null,
+     "motivo": "berco fora do contrato 1.0"
+    },
+    {
+     "kind": "column",
+     "locator": {
+      "archive_member": "2024Atracacao.txt",
+      "campo": "Porto Atracação"
+     },
+     "campo": "Porto Atracação",
+     "estado": "mapeada",
+     "destino": "porto",
+     "motivo": "nome do porto; filtro publico porto (substring)"
+    },
+    {
+     "kind": "column",
+     "locator": {
+      "archive_member": "2024Atracacao.txt",
+      "campo": "Coordenadas"
+     },
+     "campo": "Coordenadas",
+     "estado": "ignorada",
+     "destino": null,
+     "motivo": "par lon,lat textual; contrato tabular sem geometria"
+    },
+    {
+     "kind": "column",
+     "locator": {
+      "archive_member": "2024Atracacao.txt",
+      "campo": "Apelido Instalação Portuária"
+     },
+     "campo": "Apelido Instalação Portuária",
+     "estado": "ignorada",
+     "destino": null,
+     "motivo": "apelido livre; terminal ja identifica"
+    },
+    {
+     "kind": "column",
+     "locator": {
+      "archive_member": "2024Atracacao.txt",
+      "campo": "Complexo Portuário"
+     },
+     "campo": "Complexo Portuário",
+     "estado": "mapeada",
+     "destino": "complexo_portuario",
+     "motivo": "copiado sem conversao"
+    },
+    {
+     "kind": "column",
+     "locator": {
+      "archive_member": "2024Atracacao.txt",
+      "campo": "Tipo da Autoridade Portuária"
+     },
+     "campo": "Tipo da Autoridade Portuária",
+     "estado": "ignorada",
+     "destino": null,
+     "motivo": "regime da autoridade fora do contrato 1.0"
+    },
+    {
+     "kind": "column",
+     "locator": {
+      "archive_member": "2024Atracacao.txt",
+      "campo": "Data Atracação"
+     },
+     "campo": "Data Atracação",
+     "estado": "mapeada",
+     "destino": "data_atracacao",
+     "motivo": "string dd/mm/aaaa hh:mm:ss publicada, sem conversao para datetime"
+    },
+    {
+     "kind": "column",
+     "locator": {
+      "archive_member": "2024Atracacao.txt",
+      "campo": "Data Chegada"
+     },
+     "campo": "Data Chegada",
+     "estado": "ignorada",
+     "destino": null,
+     "motivo": "fora do contrato 1.0; so a atracacao e exposta"
+    },
+    {
+     "kind": "column",
+     "locator": {
+      "archive_member": "2024Atracacao.txt",
+      "campo": "Data Desatracação"
+     },
+     "campo": "Data Desatracação",
+     "estado": "ignorada",
+     "destino": null,
+     "motivo": "lida em parse_atracacao (COLUNAS_ATRACACAO) e descartada na projecao de join_movimentacao"
+    },
+    {
+     "kind": "column",
+     "locator": {
+      "archive_member": "2024Atracacao.txt",
+      "campo": "Data Início Operação"
+     },
+     "campo": "Data Início Operação",
+     "estado": "ignorada",
+     "destino": null,
+     "motivo": "fora do contrato 1.0"
+    },
+    {
+     "kind": "column",
+     "locator": {
+      "archive_member": "2024Atracacao.txt",
+      "campo": "Data Término Operação"
+     },
+     "campo": "Data Término Operação",
+     "estado": "ignorada",
+     "destino": null,
+     "motivo": "fora do contrato 1.0"
+    },
+    {
+     "kind": "column",
+     "locator": {
+      "archive_member": "2024Atracacao.txt",
+      "campo": "Ano"
+     },
+     "campo": "Ano",
+     "estado": "mapeada",
+     "destino": "ano",
+     "motivo": "to_numeric -> Int64; ano de referencia da atracacao"
+    },
+    {
+     "kind": "column",
+     "locator": {
+      "archive_member": "2024Atracacao.txt",
+      "campo": "Mes"
+     },
+     "campo": "Mes",
+     "estado": "mapeada",
+     "destino": "mes",
+     "motivo": "texto pt-BR ('jan') resolvido por month_to_number -> Int64"
+    },
+    {
+     "kind": "column",
+     "locator": {
+      "archive_member": "2024Atracacao.txt",
+      "campo": "Tipo de Operação"
+     },
+     "campo": "Tipo de Operação",
+     "estado": "ignorada",
+     "destino": null,
+     "motivo": "operacao da atracacao; tipo_operacao vem de 'Tipo Operação da Carga'"
+    },
+    {
+     "kind": "column",
+     "locator": {
+      "archive_member": "2024Atracacao.txt",
+      "campo": "Tipo de Navegação da Atracação"
+     },
+     "campo": "Tipo de Navegação da Atracação",
+     "estado": "ignorada",
+     "destino": null,
+     "motivo": "lida em parse_atracacao e descartada na projecao do join; tipo_navegacao vem da carga (granularidade por carga; divergem na atracacao 1406197)"
+    },
+    {
+     "kind": "column",
+     "locator": {
+      "archive_member": "2024Atracacao.txt",
+      "campo": "Nacionalidade do Armador"
+     },
+     "campo": "Nacionalidade do Armador",
+     "estado": "ignorada",
+     "destino": null,
+     "motivo": "fora do contrato 1.0"
+    },
+    {
+     "kind": "column",
+     "locator": {
+      "archive_member": "2024Atracacao.txt",
+      "campo": "FlagMCOperacaoAtracacao"
+     },
+     "campo": "FlagMCOperacaoAtracacao",
+     "estado": "ignorada",
+     "destino": null,
+     "motivo": "flag de controle interno da ANTAQ"
+    },
+    {
+     "kind": "column",
+     "locator": {
+      "archive_member": "2024Atracacao.txt",
+      "campo": "Terminal"
+     },
+     "campo": "Terminal",
+     "estado": "mapeada",
+     "destino": "terminal",
+     "motivo": "copiado sem conversao"
+    },
+    {
+     "kind": "column",
+     "locator": {
+      "archive_member": "2024Atracacao.txt",
+      "campo": "Município"
+     },
+     "campo": "Município",
+     "estado": "mapeada",
+     "destino": "municipio",
+     "motivo": "copiado sem conversao"
+    },
+    {
+     "kind": "column",
+     "locator": {
+      "archive_member": "2024Atracacao.txt",
+      "campo": "UF"
+     },
+     "campo": "UF",
+     "estado": "ignorada",
+     "destino": null,
+     "motivo": "nome por extenso; o contrato publica a sigla de SGUF"
+    },
+    {
+     "kind": "column",
+     "locator": {
+      "archive_member": "2024Atracacao.txt",
+      "campo": "SGUF"
+     },
+     "campo": "SGUF",
+     "estado": "mapeada",
+     "destino": "uf",
+     "motivo": "sigla da UF; filtro publico uf (igualdade em maiusculas)"
+    },
+    {
+     "kind": "column",
+     "locator": {
+      "archive_member": "2024Atracacao.txt",
+      "campo": "Região Geográfica"
+     },
+     "campo": "Região Geográfica",
+     "estado": "mapeada",
+     "destino": "regiao",
+     "motivo": "copiado sem conversao"
+    },
+    {
+     "kind": "column",
+     "locator": {
+      "archive_member": "2024Atracacao.txt",
+      "campo": "Região Hidrográfica"
+     },
+     "campo": "Região Hidrográfica",
+     "estado": "ignorada",
+     "destino": null,
+     "motivo": "recorte hidrografico fora do contrato 1.0"
+    },
+    {
+     "kind": "column",
+     "locator": {
+      "archive_member": "2024Atracacao.txt",
+      "campo": "Instalação Portuária em Rio"
+     },
+     "campo": "Instalação Portuária em Rio",
+     "estado": "ignorada",
+     "destino": null,
+     "motivo": "fora do contrato 1.0"
+    },
+    {
+     "kind": "column",
+     "locator": {
+      "archive_member": "2024Atracacao.txt",
+      "campo": "Nº da Capitania"
+     },
+     "campo": "Nº da Capitania",
+     "estado": "ignorada",
+     "destino": null,
+     "motivo": "registro da capitania fora do contrato 1.0"
+    },
+    {
+     "kind": "column",
+     "locator": {
+      "archive_member": "2024Atracacao.txt",
+      "campo": "Nº do IMO"
+     },
+     "campo": "Nº do IMO",
+     "estado": "ignorada",
+     "destino": null,
+     "motivo": "identificador da embarcacao fora do contrato 1.0"
+    },
+    {
+     "kind": "column",
+     "locator": {
+      "archive_member": "2024Carga.txt",
+      "campo": "IDCarga"
+     },
+     "campo": "IDCarga",
+     "estado": "ignorada",
+     "destino": null,
+     "motivo": "identificador da carga nao sobrevive a agregacao do dataset"
+    },
+    {
+     "kind": "column",
+     "locator": {
+      "archive_member": "2024Carga.txt",
+      "campo": "IDAtracacao"
+     },
+     "campo": "IDAtracacao",
+     "estado": "join",
+     "destino": null,
+     "motivo": "chave do join carga->atracacao"
+    },
+    {
+     "kind": "column",
+     "locator": {
+      "archive_member": "2024Carga.txt",
+      "campo": "Origem"
+     },
+     "campo": "Origem",
+     "estado": "mapeada",
+     "destino": "origem",
+     "motivo": "codigo UN/LOCODE publicado, copiado sem conversao"
+    },
+    {
+     "kind": "column",
+     "locator": {
+      "archive_member": "2024Carga.txt",
+      "campo": "Destino"
+     },
+     "campo": "Destino",
+     "estado": "mapeada",
+     "destino": "destino",
+     "motivo": "codigo UN/LOCODE publicado, copiado sem conversao"
+    },
+    {
+     "kind": "column",
+     "locator": {
+      "archive_member": "2024Carga.txt",
+      "campo": "CDMercadoria"
+     },
+     "campo": "CDMercadoria",
+     "estado": "mapeada",
+     "destino": "cd_mercadoria",
+     "motivo": "copiado como texto e usado como chave do join carga->mercadoria"
+    },
+    {
+     "kind": "column",
+     "locator": {
+      "archive_member": "2024Carga.txt",
+      "campo": "Tipo Operação da Carga"
+     },
+     "campo": "Tipo Operação da Carga",
+     "estado": "mapeada",
+     "destino": "tipo_operacao",
+     "motivo": "copiado sem conversao"
+    },
+    {
+     "kind": "column",
+     "locator": {
+      "archive_member": "2024Carga.txt",
+      "campo": "Carga Geral Acondicionamento"
+     },
+     "campo": "Carga Geral Acondicionamento",
+     "estado": "ignorada",
+     "destino": null,
+     "motivo": "acondicionamento fora do contrato 1.0"
+    },
+    {
+     "kind": "column",
+     "locator": {
+      "archive_member": "2024Carga.txt",
+      "campo": "ConteinerEstado"
+     },
+     "campo": "ConteinerEstado",
+     "estado": "ignorada",
+     "destino": null,
+     "motivo": "cheio/vazio fora do contrato 1.0"
+    },
+    {
+     "kind": "column",
+     "locator": {
+      "archive_member": "2024Carga.txt",
+      "campo": "Tipo Navegação"
+     },
+     "campo": "Tipo Navegação",
+     "estado": "mapeada",
+     "destino": "tipo_navegacao",
+     "motivo": "copiado sem conversao; filtro publico tipo_navegacao pelo rotulo resolvido"
+    },
+    {
+     "kind": "column",
+     "locator": {
+      "archive_member": "2024Carga.txt",
+      "campo": "FlagAutorizacao"
+     },
+     "campo": "FlagAutorizacao",
+     "estado": "ignorada",
+     "destino": null,
+     "motivo": "flag de controle interno da ANTAQ"
+    },
+    {
+     "kind": "column",
+     "locator": {
+      "archive_member": "2024Carga.txt",
+      "campo": "FlagCabotagem"
+     },
+     "campo": "FlagCabotagem",
+     "estado": "ignorada",
+     "destino": null,
+     "motivo": "flag de controle interno da ANTAQ"
+    },
+    {
+     "kind": "column",
+     "locator": {
+      "archive_member": "2024Carga.txt",
+      "campo": "FlagCabotagemMovimentacao"
+     },
+     "campo": "FlagCabotagemMovimentacao",
+     "estado": "ignorada",
+     "destino": null,
+     "motivo": "flag de controle interno da ANTAQ"
+    },
+    {
+     "kind": "column",
+     "locator": {
+      "archive_member": "2024Carga.txt",
+      "campo": "FlagConteinerTamanho"
+     },
+     "campo": "FlagConteinerTamanho",
+     "estado": "ignorada",
+     "destino": null,
+     "motivo": "flag de controle interno da ANTAQ"
+    },
+    {
+     "kind": "column",
+     "locator": {
+      "archive_member": "2024Carga.txt",
+      "campo": "FlagLongoCurso"
+     },
+     "campo": "FlagLongoCurso",
+     "estado": "ignorada",
+     "destino": null,
+     "motivo": "flag de controle interno da ANTAQ"
+    },
+    {
+     "kind": "column",
+     "locator": {
+      "archive_member": "2024Carga.txt",
+      "campo": "FlagMCOperacaoCarga"
+     },
+     "campo": "FlagMCOperacaoCarga",
+     "estado": "ignorada",
+     "destino": null,
+     "motivo": "flag de controle interno da ANTAQ"
+    },
+    {
+     "kind": "column",
+     "locator": {
+      "archive_member": "2024Carga.txt",
+      "campo": "FlagOffshore"
+     },
+     "campo": "FlagOffshore",
+     "estado": "ignorada",
+     "destino": null,
+     "motivo": "flag de controle interno da ANTAQ"
+    },
+    {
+     "kind": "column",
+     "locator": {
+      "archive_member": "2024Carga.txt",
+      "campo": "FlagTransporteViaInterioir"
+     },
+     "campo": "FlagTransporteViaInterioir",
+     "estado": "ignorada",
+     "destino": null,
+     "motivo": "flag de controle interno da ANTAQ (grafia publicada com erro)"
+    },
+    {
+     "kind": "column",
+     "locator": {
+      "archive_member": "2024Carga.txt",
+      "campo": "Percurso Transporte em vias Interiores"
+     },
+     "campo": "Percurso Transporte em vias Interiores",
+     "estado": "ignorada",
+     "destino": null,
+     "motivo": "percurso fora do contrato 1.0"
+    },
+    {
+     "kind": "column",
+     "locator": {
+      "archive_member": "2024Carga.txt",
+      "campo": "Percurso Transporte Interiores"
+     },
+     "campo": "Percurso Transporte Interiores",
+     "estado": "ignorada",
+     "destino": null,
+     "motivo": "percurso fora do contrato 1.0"
+    },
+    {
+     "kind": "column",
+     "locator": {
+      "archive_member": "2024Carga.txt",
+      "campo": "STNaturezaCarga"
+     },
+     "campo": "STNaturezaCarga",
+     "estado": "ignorada",
+     "destino": null,
+     "motivo": "marcador exclusivo/compartilhado de rateio"
+    },
+    {
+     "kind": "column",
+     "locator": {
+      "archive_member": "2024Carga.txt",
+      "campo": "STSH2"
+     },
+     "campo": "STSH2",
+     "estado": "ignorada",
+     "destino": null,
+     "motivo": "marcador exclusivo/compartilhado de rateio"
+    },
+    {
+     "kind": "column",
+     "locator": {
+      "archive_member": "2024Carga.txt",
+      "campo": "STSH4"
+     },
+     "campo": "STSH4",
+     "estado": "ignorada",
+     "destino": null,
+     "motivo": "marcador exclusivo/compartilhado de rateio"
+    },
+    {
+     "kind": "column",
+     "locator": {
+      "archive_member": "2024Carga.txt",
+      "campo": "Natureza da Carga"
+     },
+     "campo": "Natureza da Carga",
+     "estado": "mapeada",
+     "destino": "natureza_carga",
+     "motivo": "copiado sem conversao; filtro publico natureza_carga pelo rotulo resolvido"
+    },
+    {
+     "kind": "column",
+     "locator": {
+      "archive_member": "2024Carga.txt",
+      "campo": "Sentido"
+     },
+     "campo": "Sentido",
+     "estado": "mapeada",
+     "destino": "sentido",
+     "motivo": "copiado sem conversao; filtro publico sentido via embarque/desembarque"
+    },
+    {
+     "kind": "column",
+     "locator": {
+      "archive_member": "2024Carga.txt",
+      "campo": "TEU"
+     },
+     "campo": "TEU",
+     "estado": "mapeada",
+     "destino": "teu",
+     "motivo": "to_numeric, ausente -> 0, astype(int)"
+    },
+    {
+     "kind": "column",
+     "locator": {
+      "archive_member": "2024Carga.txt",
+      "campo": "QTCarga"
+     },
+     "campo": "QTCarga",
+     "estado": "mapeada",
+     "destino": "qt_carga",
+     "motivo": "virgula -> ponto e to_numeric; sem remocao de ponto de milhar; unidade varia por carga"
+    },
+    {
+     "kind": "column",
+     "locator": {
+      "archive_member": "2024Carga.txt",
+      "campo": "VLPesoCargaBruta"
+     },
+     "campo": "VLPesoCargaBruta",
+     "estado": "mapeada",
+     "destino": "peso_bruto_ton",
+     "motivo": "ponto de milhar removido, virgula -> ponto, to_numeric; toneladas"
+    },
+    {
+     "kind": "column",
+     "locator": {
+      "archive_member": "Mercadoria.txt",
+      "campo": "CDMercadoria"
+     },
+     "campo": "CDMercadoria",
+     "estado": "join",
+     "destino": null,
+     "motivo": "chave do join carga->mercadoria, deduplicada antes do merge"
+    },
+    {
+     "kind": "column",
+     "locator": {
+      "archive_member": "Mercadoria.txt",
+      "campo": "CDNCMSH2"
+     },
+     "campo": "CDNCMSH2",
+     "estado": "ignorada",
+     "destino": null,
+     "motivo": "capitulo NCM SH2 fora do contrato 1.0"
+    },
+    {
+     "kind": "column",
+     "locator": {
+      "archive_member": "Mercadoria.txt",
+      "campo": "Tipo Conteiner"
+     },
+     "campo": "Tipo Conteiner",
+     "estado": "ignorada",
+     "destino": null,
+     "motivo": "tipo de conteiner fora do contrato 1.0"
+    },
+    {
+     "kind": "column",
+     "locator": {
+      "archive_member": "Mercadoria.txt",
+      "campo": "Grupo de Mercadoria"
+     },
+     "campo": "Grupo de Mercadoria",
+     "estado": "mapeada",
+     "destino": "grupo_mercadoria",
+     "motivo": "copiado sem conversao"
+    },
+    {
+     "kind": "column",
+     "locator": {
+      "archive_member": "Mercadoria.txt",
+      "campo": "Mercadoria"
+     },
+     "campo": "Mercadoria",
+     "estado": "ignorada",
+     "destino": null,
+     "motivo": "descricao NCM completa lida em parse_mercadoria e fora da projecao merc_cols do join; a coluna publica mercadoria e a nomenclatura simplificada"
+    },
+    {
+     "kind": "column",
+     "locator": {
+      "archive_member": "Mercadoria.txt",
+      "campo": "Nomenclatura Simplificada Mercadoria"
+     },
+     "campo": "Nomenclatura Simplificada Mercadoria",
+     "estado": "mapeada",
+     "destino": "mercadoria",
+     "motivo": "nome curto publicado; filtro publico mercadoria (substring case-insensitive)"
+    }
+   ],
+   "samples": [
+    {
+     "key": {
+      "posicao": 0
+     },
+     "column": "peso_bruto_ton",
+     "value": 2.0,
+     "raw_cells": [
+      {
+       "locator": {
+        "file": "carga.txt",
+        "registro": 1,
+        "campo": "VLPesoCargaBruta"
+       },
+       "value": "2",
+       "published_unit": "t"
+      }
+     ],
+     "conversion": "sem separadores no texto publicado; float64 = 2.0"
+    },
+    {
+     "key": {
+      "posicao": 0
+     },
+     "column": "mes",
+     "value": 1,
+     "raw_cells": [
+      {
+       "locator": {
+        "file": "atracacao.txt",
+        "registro": 4,
+        "campo": "Mes"
+       },
+       "value": "jan",
+       "published_unit": null
+      }
+     ],
+     "conversion": "rotulo textual pt-BR resolvido por month_to_number"
+    },
+    {
+     "key": {
+      "posicao": 2
+     },
+     "column": "peso_bruto_ton",
+     "value": 419.915,
+     "raw_cells": [
+      {
+       "locator": {
+        "file": "carga.txt",
+        "registro": 10,
+        "campo": "VLPesoCargaBruta"
+       },
+       "value": "419,915",
+       "published_unit": "t"
+      }
+     ],
+     "conversion": "virgula decimal -> ponto; tres casas preservadas"
+    },
+    {
+     "key": {
+      "posicao": 8
+     },
+     "column": "peso_bruto_ton",
+     "value": 27501.04,
+     "raw_cells": [
+      {
+       "locator": {
+        "file": "carga.txt",
+        "registro": 7,
+        "campo": "VLPesoCargaBruta"
+       },
+       "value": "27501,04",
+       "published_unit": "t"
+      }
+     ],
+     "conversion": "virgula decimal -> ponto"
+    },
+    {
+     "key": {
+      "posicao": 8
+     },
+     "column": "qt_carga",
+     "value": 27500000,
+     "raw_cells": [
+      {
+       "locator": {
+        "file": "carga.txt",
+        "registro": 7,
+        "campo": "QTCarga"
+       },
+       "value": "27500000",
+       "published_unit": null,
+       "unit_inference": "a escala sugere kg (27.500.000 contra 27.501,04 t de peso bruto); inferencia do revisor, nao unidade publicada"
+      }
+     ],
+     "conversion": "copiado; a ANTAQ nao publica unidade de QTCarga"
+    },
+    {
+     "key": {
+      "posicao": 5
+     },
+     "column": "data_atracacao",
+     "value": "22/12/2023 17:32:00",
+     "raw_cells": [
+      {
+       "locator": {
+        "file": "atracacao.txt",
+        "registro": 3,
+        "campo": "Data Atracação"
+       },
+       "value": "22/12/2023 17:32:00",
+       "published_unit": null
+      }
+     ],
+     "conversion": "posicao dificil: atracacao de dezembro/2023 publicada com Ano=2024 e Mes=jan"
+    },
+    {
+     "key": {
+      "posicao": 5
+     },
+     "column": "tipo_navegacao",
+     "value": "Apoio Portuário",
+     "raw_cells": [
+      {
+       "locator": {
+        "file": "carga.txt",
+        "registro": 4,
+        "campo": "Tipo Navegação"
+       },
+       "value": "Apoio Portuário",
+       "published_unit": null
+      },
+      {
+       "locator": {
+        "file": "atracacao.txt",
+        "registro": 3,
+        "campo": "Tipo de Navegação da Atracação"
+       },
+       "value": "Longo Curso",
+       "published_unit": null
+      }
+     ],
+     "conversion": "as duas colunas divergem na atracacao 1406197; o join publica a da carga"
+    },
+    {
+     "key": {
+      "posicao": 3
+     },
+     "column": "mercadoria",
+     "value": "Bauxita",
+     "raw_cells": [
+      {
+       "locator": {
+        "file": "mercadoria.txt",
+        "campo": "Nomenclatura Simplificada Mercadoria",
+        "cd": "2606"
+       },
+       "value": "Bauxita",
+       "published_unit": null
+      },
+      {
+       "locator": {
+        "file": "mercadoria.txt",
+        "campo": "Mercadoria",
+        "cd": "2606"
+       },
+       "value": "Minérios de alumínio e seus concentrados",
+       "published_unit": null
+      }
+     ],
+     "conversion": "mercadoria = nomenclatura simplificada; a descricao NCM completa nao e publicada"
+    },
+    {
+     "key": {
+      "posicao": 9
+     },
+     "column": "peso_bruto_ton",
+     "value": 9506.94,
+     "raw_cells": [
+      {
+       "locator": {
+        "file": "carga.txt",
+        "registro": 8,
+        "campo": "VLPesoCargaBruta"
+       },
+       "value": "9506,94",
+       "published_unit": "t"
+      }
+     ],
+     "conversion": "ultima linha da saida ordenada"
+    }
+   ],
+   "oracle_path": "fonte"
+  },
+  {
+   "id": "dataset_2024_agregado",
+   "dataset": "movimentacao_portuaria",
+   "r2_id": "movimentacao_portuaria:antaq:zip_relacional",
+   "source": "antaq",
+   "selection": {
+    "ano": 2024
+   },
+   "layout": "zip_relacional_agregado_por_pk",
+   "files": [
+    "../antaq/movimentacao_sample/atracacao.txt",
+    "../antaq/movimentacao_sample/carga.txt",
+    "../antaq/movimentacao_sample/mercadoria.txt"
+   ],
+   "columns": [
+    "ano",
+    "mes",
+    "porto",
+    "cd_mercadoria",
+    "sentido",
+    "tipo_navegacao",
+    "peso_bruto_ton",
+    "qt_carga",
+    "teu",
+    "complexo_portuario",
+    "municipio",
+    "uf",
+    "regiao",
+    "mercadoria",
+    "grupo_mercadoria",
+    "data_atracacao",
+    "tipo_operacao",
+    "natureza_carga",
+    "terminal",
+    "origem",
+    "destino"
+   ],
+   "period": {
+    "rotulo_normalizado": {
+     "ano": 2024,
+     "mes": 1
+    },
+    "rows": 6,
+    "linhas_de_entrada": 10,
+    "grupos": 6,
+    "pk": [
+     "ano",
+     "mes",
+     "porto",
+     "cd_mercadoria",
+     "sentido",
+     "tipo_navegacao"
+    ]
+   },
+   "structure": [],
+   "samples": [
+    {
+     "key": {
+      "ano": 2024,
+      "mes": 1,
+      "porto": "Terminal Navecunha",
+      "cd_mercadoria": "2201",
+      "sentido": "Embarcados",
+      "tipo_navegacao": "Interior"
+     },
+     "column": "peso_bruto_ton",
+     "value": 4.0,
+     "raw_cells": [
+      {
+       "locator": {
+        "file": "carga.txt",
+        "registro": 1,
+        "campo": "VLPesoCargaBruta"
+       },
+       "value": "2",
+       "published_unit": "t"
+      },
+      {
+       "locator": {
+        "file": "carga.txt",
+        "registro": 9,
+        "campo": "VLPesoCargaBruta"
+       },
+       "value": "2",
+       "published_unit": "t"
+      }
+     ],
+     "conversion": "soma das duas cargas do grupo"
+    },
+    {
+     "key": {
+      "ano": 2024,
+      "mes": 1,
+      "porto": "Terminal Navecunha",
+      "cd_mercadoria": "2201",
+      "sentido": "Embarcados",
+      "tipo_navegacao": "Interior"
+     },
+     "column": "data_atracacao",
+     "value": null,
+     "raw_cells": [
+      {
+       "locator": {
+        "file": "atracacao.txt",
+        "registro": 4,
+        "campo": "Data Atracação"
+       },
+       "value": "02/01/2024 07:28:00",
+       "published_unit": null
+      },
+      {
+       "locator": {
+        "file": "atracacao.txt",
+        "registro": 5,
+        "campo": "Data Atracação"
+       },
+       "value": "03/01/2024 10:11:00",
+       "published_unit": null
+      }
+     ],
+     "conversion": "duas atracacoes distintas no mesmo grupo -> None (_single_or_none)"
+    },
+    {
+     "key": {
+      "ano": 2024,
+      "mes": 1,
+      "porto": "Vila do Conde",
+      "cd_mercadoria": "3102",
+      "sentido": "Desembarcados",
+      "tipo_navegacao": "Longo Curso"
+     },
+     "column": "peso_bruto_ton",
+     "value": 37007.98,
+     "raw_cells": [
+      {
+       "locator": {
+        "file": "carga.txt",
+        "registro": 7,
+        "campo": "VLPesoCargaBruta"
+       },
+       "value": "27501,04",
+       "published_unit": "t"
+      },
+      {
+       "locator": {
+        "file": "carga.txt",
+        "registro": 8,
+        "campo": "VLPesoCargaBruta"
+       },
+       "value": "9506,94",
+       "published_unit": "t"
+      }
+     ],
+     "conversion": "soma exata em Decimal: 27501,04 + 9506,94 = 37007,98"
+    },
+    {
+     "key": {
+      "ano": 2024,
+      "mes": 1,
+      "porto": "Vila do Conde",
+      "cd_mercadoria": "CA01",
+      "sentido": "Embarcados",
+      "tipo_navegacao": "Apoio Portuário"
+     },
+     "column": "qt_carga",
+     "value": 101,
+     "raw_cells": [
+      {
+       "locator": {
+        "file": "carga.txt",
+        "registro": 4,
+        "campo": "QTCarga"
+       },
+       "value": "70",
+       "published_unit": null
+      },
+      {
+       "locator": {
+        "file": "carga.txt",
+        "registro": 5,
+        "campo": "QTCarga"
+       },
+       "value": "27",
+       "published_unit": null
+      },
+      {
+       "locator": {
+        "file": "carga.txt",
+        "registro": 6,
+        "campo": "QTCarga"
+       },
+       "value": "4",
+       "published_unit": null
+      }
+     ],
+     "conversion": "soma de tres cargas de apoio: 70 + 27 + 4 = 101"
+    }
+   ],
+   "oracle_path": "dataset"
+  },
+  {
+   "id": "filtro_mercadoria_bauxita",
+   "dataset": "antaq.movimentacao",
+   "r2_id": "movimentacao_portuaria:antaq:zip_relacional",
+   "source": "antaq",
+   "selection": {
+    "ano": 2024,
+    "mercadoria": "bauxita"
+   },
+   "layout": "zip_relacional_txt_atracacao_carga_mercadoria",
+   "files": [
+    "../antaq/movimentacao_sample/atracacao.txt",
+    "../antaq/movimentacao_sample/carga.txt",
+    "../antaq/movimentacao_sample/mercadoria.txt"
+   ],
+   "columns": [
+    "ano",
+    "mes",
+    "data_atracacao",
+    "tipo_navegacao",
+    "tipo_operacao",
+    "natureza_carga",
+    "sentido",
+    "porto",
+    "complexo_portuario",
+    "terminal",
+    "municipio",
+    "uf",
+    "regiao",
+    "cd_mercadoria",
+    "mercadoria",
+    "grupo_mercadoria",
+    "origem",
+    "destino",
+    "peso_bruto_ton",
+    "qt_carga",
+    "teu"
+   ],
+   "period": {
+    "rows": 2,
+    "filtro_publico": "mercadoria",
+    "nota": null
+   },
+   "structure": [],
+   "samples": [],
+   "oracle_path": "filtros.filtro_mercadoria_bauxita"
+  },
+  {
+   "id": "filtro_mercadoria_vazio",
+   "dataset": "antaq.movimentacao",
+   "r2_id": "movimentacao_portuaria:antaq:zip_relacional",
+   "source": "antaq",
+   "selection": {
+    "ano": 2024,
+    "mercadoria": "trigo"
+   },
+   "layout": "zip_relacional_txt_atracacao_carga_mercadoria",
+   "files": [
+    "../antaq/movimentacao_sample/atracacao.txt",
+    "../antaq/movimentacao_sample/carga.txt",
+    "../antaq/movimentacao_sample/mercadoria.txt"
+   ],
+   "columns": [
+    "ano",
+    "mes",
+    "data_atracacao",
+    "tipo_navegacao",
+    "tipo_operacao",
+    "natureza_carga",
+    "sentido",
+    "porto",
+    "complexo_portuario",
+    "terminal",
+    "municipio",
+    "uf",
+    "regiao",
+    "cd_mercadoria",
+    "mercadoria",
+    "grupo_mercadoria",
+    "origem",
+    "destino",
+    "peso_bruto_ton",
+    "qt_carga",
+    "teu"
+   ],
+   "period": {
+    "rows": 0,
+    "filtro_publico": "mercadoria",
+    "nota": "nenhuma nomenclatura simplificada do recorte contem 'trigo'"
+   },
+   "structure": [],
+   "samples": [],
+   "oracle_path": "filtros.filtro_mercadoria_vazio"
+  },
+  {
+   "id": "filtro_porto_trombetas",
+   "dataset": "antaq.movimentacao",
+   "r2_id": "movimentacao_portuaria:antaq:zip_relacional",
+   "source": "antaq",
+   "selection": {
+    "ano": 2024,
+    "porto": "Trombetas"
+   },
+   "layout": "zip_relacional_txt_atracacao_carga_mercadoria",
+   "files": [
+    "../antaq/movimentacao_sample/atracacao.txt",
+    "../antaq/movimentacao_sample/carga.txt",
+    "../antaq/movimentacao_sample/mercadoria.txt"
+   ],
+   "columns": [
+    "ano",
+    "mes",
+    "data_atracacao",
+    "tipo_navegacao",
+    "tipo_operacao",
+    "natureza_carga",
+    "sentido",
+    "porto",
+    "complexo_portuario",
+    "terminal",
+    "municipio",
+    "uf",
+    "regiao",
+    "cd_mercadoria",
+    "mercadoria",
+    "grupo_mercadoria",
+    "origem",
+    "destino",
+    "peso_bruto_ton",
+    "qt_carga",
+    "teu"
+   ],
+   "period": {
+    "rows": 2,
+    "filtro_publico": "porto",
+    "nota": null
+   },
+   "structure": [],
+   "samples": [],
+   "oracle_path": "filtros.filtro_porto_trombetas"
+  },
+  {
+   "id": "filtro_porto_vazio",
+   "dataset": "antaq.movimentacao",
+   "r2_id": "movimentacao_portuaria:antaq:zip_relacional",
+   "source": "antaq",
+   "selection": {
+    "ano": 2024,
+    "porto": "Santos"
+   },
+   "layout": "zip_relacional_txt_atracacao_carga_mercadoria",
+   "files": [
+    "../antaq/movimentacao_sample/atracacao.txt",
+    "../antaq/movimentacao_sample/carga.txt",
+    "../antaq/movimentacao_sample/mercadoria.txt"
+   ],
+   "columns": [
+    "ano",
+    "mes",
+    "data_atracacao",
+    "tipo_navegacao",
+    "tipo_operacao",
+    "natureza_carga",
+    "sentido",
+    "porto",
+    "complexo_portuario",
+    "terminal",
+    "municipio",
+    "uf",
+    "regiao",
+    "cd_mercadoria",
+    "mercadoria",
+    "grupo_mercadoria",
+    "origem",
+    "destino",
+    "peso_bruto_ton",
+    "qt_carga",
+    "teu"
+   ],
+   "period": {
+    "rows": 0,
+    "filtro_publico": "porto",
+    "nota": "Santos nao aparece no recorte (so AM e PA)"
+   },
+   "structure": [],
+   "samples": [],
+   "oracle_path": "filtros.filtro_porto_vazio"
+  },
+  {
+   "id": "filtro_uf_am",
+   "dataset": "antaq.movimentacao",
+   "r2_id": "movimentacao_portuaria:antaq:zip_relacional",
+   "source": "antaq",
+   "selection": {
+    "ano": 2024,
+    "uf": "am"
+   },
+   "layout": "zip_relacional_txt_atracacao_carga_mercadoria",
+   "files": [
+    "../antaq/movimentacao_sample/atracacao.txt",
+    "../antaq/movimentacao_sample/carga.txt",
+    "../antaq/movimentacao_sample/mercadoria.txt"
+   ],
+   "columns": [
+    "ano",
+    "mes",
+    "data_atracacao",
+    "tipo_navegacao",
+    "tipo_operacao",
+    "natureza_carga",
+    "sentido",
+    "porto",
+    "complexo_portuario",
+    "terminal",
+    "municipio",
+    "uf",
+    "regiao",
+    "cd_mercadoria",
+    "mercadoria",
+    "grupo_mercadoria",
+    "origem",
+    "destino",
+    "peso_bruto_ton",
+    "qt_carga",
+    "teu"
+   ],
+   "period": {
+    "rows": 2,
+    "filtro_publico": "uf",
+    "nota": null
+   },
+   "structure": [],
+   "samples": [],
+   "oracle_path": "filtros.filtro_uf_am"
+  },
+  {
+   "id": "filtro_uf_vazio",
+   "dataset": "antaq.movimentacao",
+   "r2_id": "movimentacao_portuaria:antaq:zip_relacional",
+   "source": "antaq",
+   "selection": {
+    "ano": 2024,
+    "uf": "SP"
+   },
+   "layout": "zip_relacional_txt_atracacao_carga_mercadoria",
+   "files": [
+    "../antaq/movimentacao_sample/atracacao.txt",
+    "../antaq/movimentacao_sample/carga.txt",
+    "../antaq/movimentacao_sample/mercadoria.txt"
+   ],
+   "columns": [
+    "ano",
+    "mes",
+    "data_atracacao",
+    "tipo_navegacao",
+    "tipo_operacao",
+    "natureza_carga",
+    "sentido",
+    "porto",
+    "complexo_portuario",
+    "terminal",
+    "municipio",
+    "uf",
+    "regiao",
+    "cd_mercadoria",
+    "mercadoria",
+    "grupo_mercadoria",
+    "origem",
+    "destino",
+    "peso_bruto_ton",
+    "qt_carga",
+    "teu"
+   ],
+   "period": {
+    "rows": 0,
+    "filtro_publico": "uf",
+    "nota": "SP nao aparece no recorte"
+   },
+   "structure": [],
+   "samples": [],
+   "oracle_path": "filtros.filtro_uf_vazio"
+  },
+  {
+   "id": "filtro_sentido_desembarque",
+   "dataset": "antaq.movimentacao",
+   "r2_id": "movimentacao_portuaria:antaq:zip_relacional",
+   "source": "antaq",
+   "selection": {
+    "ano": 2024,
+    "sentido": "desembarque"
+   },
+   "layout": "zip_relacional_txt_atracacao_carga_mercadoria",
+   "files": [
+    "../antaq/movimentacao_sample/atracacao.txt",
+    "../antaq/movimentacao_sample/carga.txt",
+    "../antaq/movimentacao_sample/mercadoria.txt"
+   ],
+   "columns": [
+    "ano",
+    "mes",
+    "data_atracacao",
+    "tipo_navegacao",
+    "tipo_operacao",
+    "natureza_carga",
+    "sentido",
+    "porto",
+    "complexo_portuario",
+    "terminal",
+    "municipio",
+    "uf",
+    "regiao",
+    "cd_mercadoria",
+    "mercadoria",
+    "grupo_mercadoria",
+    "origem",
+    "destino",
+    "peso_bruto_ton",
+    "qt_carga",
+    "teu"
+   ],
+   "period": {
+    "rows": 3,
+    "filtro_publico": "sentido",
+    "nota": null
+   },
+   "structure": [],
+   "samples": [],
+   "oracle_path": "filtros.filtro_sentido_desembarque"
+  },
+  {
+   "id": "filtro_sentido_vazio",
+   "dataset": "antaq.movimentacao",
+   "r2_id": "movimentacao_portuaria:antaq:zip_relacional",
+   "source": "antaq",
+   "selection": {
+    "ano": 2024,
+    "sentido": "Desembarcados "
+   },
+   "layout": "zip_relacional_txt_atracacao_carga_mercadoria",
+   "files": [
+    "../antaq/movimentacao_sample/atracacao.txt",
+    "../antaq/movimentacao_sample/carga.txt",
+    "../antaq/movimentacao_sample/mercadoria.txt"
+   ],
+   "columns": [
+    "ano",
+    "mes",
+    "data_atracacao",
+    "tipo_navegacao",
+    "tipo_operacao",
+    "natureza_carga",
+    "sentido",
+    "porto",
+    "complexo_portuario",
+    "terminal",
+    "municipio",
+    "uf",
+    "regiao",
+    "cd_mercadoria",
+    "mercadoria",
+    "grupo_mercadoria",
+    "origem",
+    "destino",
+    "peso_bruto_ton",
+    "qt_carga",
+    "teu"
+   ],
+   "period": {
+    "rows": 0,
+    "filtro_publico": "sentido",
+    "nota": "os dois sentidos ocorrem no recorte; o unico recorte vazio possivel usa o rotulo bruto com espaco a direita, que o filtro repassa sem normalizar nem recusar"
+   },
+   "structure": [],
+   "samples": [],
+   "oracle_path": "filtros.filtro_sentido_vazio"
+  },
+  {
+   "id": "filtro_tipo_navegacao_interior",
+   "dataset": "antaq.movimentacao",
+   "r2_id": "movimentacao_portuaria:antaq:zip_relacional",
+   "source": "antaq",
+   "selection": {
+    "ano": 2024,
+    "tipo_navegacao": "interior"
+   },
+   "layout": "zip_relacional_txt_atracacao_carga_mercadoria",
+   "files": [
+    "../antaq/movimentacao_sample/atracacao.txt",
+    "../antaq/movimentacao_sample/carga.txt",
+    "../antaq/movimentacao_sample/mercadoria.txt"
+   ],
+   "columns": [
+    "ano",
+    "mes",
+    "data_atracacao",
+    "tipo_navegacao",
+    "tipo_operacao",
+    "natureza_carga",
+    "sentido",
+    "porto",
+    "complexo_portuario",
+    "terminal",
+    "municipio",
+    "uf",
+    "regiao",
+    "cd_mercadoria",
+    "mercadoria",
+    "grupo_mercadoria",
+    "origem",
+    "destino",
+    "peso_bruto_ton",
+    "qt_carga",
+    "teu"
+   ],
+   "period": {
+    "rows": 3,
+    "filtro_publico": "tipo_navegacao",
+    "nota": null
+   },
+   "structure": [],
+   "samples": [],
+   "oracle_path": "filtros.filtro_tipo_navegacao_interior"
+  },
+  {
+   "id": "filtro_tipo_navegacao_vazio",
+   "dataset": "antaq.movimentacao",
+   "r2_id": "movimentacao_portuaria:antaq:zip_relacional",
+   "source": "antaq",
+   "selection": {
+    "ano": 2024,
+    "tipo_navegacao": "apoio_maritimo"
+   },
+   "layout": "zip_relacional_txt_atracacao_carga_mercadoria",
+   "files": [
+    "../antaq/movimentacao_sample/atracacao.txt",
+    "../antaq/movimentacao_sample/carga.txt",
+    "../antaq/movimentacao_sample/mercadoria.txt"
+   ],
+   "columns": [
+    "ano",
+    "mes",
+    "data_atracacao",
+    "tipo_navegacao",
+    "tipo_operacao",
+    "natureza_carga",
+    "sentido",
+    "porto",
+    "complexo_portuario",
+    "terminal",
+    "municipio",
+    "uf",
+    "regiao",
+    "cd_mercadoria",
+    "mercadoria",
+    "grupo_mercadoria",
+    "origem",
+    "destino",
+    "peso_bruto_ton",
+    "qt_carga",
+    "teu"
+   ],
+   "period": {
+    "rows": 0,
+    "filtro_publico": "tipo_navegacao",
+    "nota": "Apoio Maritimo nao ocorre no recorte"
+   },
+   "structure": [],
+   "samples": [],
+   "oracle_path": "filtros.filtro_tipo_navegacao_vazio"
+  },
+  {
+   "id": "filtro_natureza_carga_geral",
+   "dataset": "antaq.movimentacao",
+   "r2_id": "movimentacao_portuaria:antaq:zip_relacional",
+   "source": "antaq",
+   "selection": {
+    "ano": 2024,
+    "natureza_carga": "carga_geral"
+   },
+   "layout": "zip_relacional_txt_atracacao_carga_mercadoria",
+   "files": [
+    "../antaq/movimentacao_sample/atracacao.txt",
+    "../antaq/movimentacao_sample/carga.txt",
+    "../antaq/movimentacao_sample/mercadoria.txt"
+   ],
+   "columns": [
+    "ano",
+    "mes",
+    "data_atracacao",
+    "tipo_navegacao",
+    "tipo_operacao",
+    "natureza_carga",
+    "sentido",
+    "porto",
+    "complexo_portuario",
+    "terminal",
+    "municipio",
+    "uf",
+    "regiao",
+    "cd_mercadoria",
+    "mercadoria",
+    "grupo_mercadoria",
+    "origem",
+    "destino",
+    "peso_bruto_ton",
+    "qt_carga",
+    "teu"
+   ],
+   "period": {
+    "rows": 5,
+    "filtro_publico": "natureza_carga",
+    "nota": null
+   },
+   "structure": [],
+   "samples": [],
+   "oracle_path": "filtros.filtro_natureza_carga_geral"
+  },
+  {
+   "id": "filtro_natureza_carga_vazio",
+   "dataset": "antaq.movimentacao",
+   "r2_id": "movimentacao_portuaria:antaq:zip_relacional",
+   "source": "antaq",
+   "selection": {
+    "ano": 2024,
+    "natureza_carga": "conteiner"
+   },
+   "layout": "zip_relacional_txt_atracacao_carga_mercadoria",
+   "files": [
+    "../antaq/movimentacao_sample/atracacao.txt",
+    "../antaq/movimentacao_sample/carga.txt",
+    "../antaq/movimentacao_sample/mercadoria.txt"
+   ],
+   "columns": [
+    "ano",
+    "mes",
+    "data_atracacao",
+    "tipo_navegacao",
+    "tipo_operacao",
+    "natureza_carga",
+    "sentido",
+    "porto",
+    "complexo_portuario",
+    "terminal",
+    "municipio",
+    "uf",
+    "regiao",
+    "cd_mercadoria",
+    "mercadoria",
+    "grupo_mercadoria",
+    "origem",
+    "destino",
+    "peso_bruto_ton",
+    "qt_carga",
+    "teu"
+   ],
+   "period": {
+    "rows": 0,
+    "filtro_publico": "natureza_carga",
+    "nota": "Carga Conteinerizada nao ocorre no recorte"
+   },
+   "structure": [],
+   "samples": [],
+   "oracle_path": "filtros.filtro_natureza_carga_vazio"
+  }
+ ],
+ "dtypes_observados": {
+  "fonte": {
+   "ano": "Int64",
+   "mes": "Int64",
+   "peso_bruto_ton": "float64",
+   "qt_carga": "int64",
+   "teu": "int64"
+  },
+  "dataset": {
+   "ano": "Int64",
+   "mes": "Int64",
+   "peso_bruto_ton": "float64",
+   "qt_carga": "int64",
+   "teu": "int64"
+  },
+  "nota": "qt_carga e declarado FLOAT no contrato e sai int64 neste recorte porque todos os QTCarga publicados sao inteiros; ColumnType.FLOAT aceita qualquer dtype numerico"
+ },
+ "unit_exceptions": [],
+ "pendencias": [
+  {
+   "item": "ZIP anual oficial",
+   "estado": "indisponivel",
+   "evidencia": "live_probe.json",
+   "motivo": "estatistica.antaq.gov.br redireciona para o aviso oficial de indisponibilidade desde 2026-06-23; nenhum corpo ZIP oficial existe no repositorio"
+  },
+  {
+   "item": "cargas orfas sem atracacao",
+   "estado": "nao observado no corpo",
+   "motivo": "as 10 cargas do recorte tem atracacao; coberto apenas por mutacao sintetica"
+  },
+  {
+   "item": "CDMercadoria repetido em Mercadoria.txt",
+   "estado": "nao observado no corpo",
+   "motivo": "os 1403 codigos sao distintos; o drop_duplicates do join e no-op neste recorte"
+  },
+  {
+   "item": "seletores sem linhas no recorte",
+   "estado": "sem cobertura positiva",
+   "motivo": "apoio_maritimo, carga conteinerizada, TEU > 0, anos != 2024, meses != janeiro e UFs fora de AM/PA nao existem no recorte de 10 cargas"
+  }
+ ],
+ "n3": {
+  "estado": "nao aplicavel",
+  "motivo": "movimentacao portuaria conta atracacao e peso bruto embarcado/desembarcado; nao e exportacao aduaneira (ComexStat/Comtrade). Sem ficha de equivalencia."
+ }
+}

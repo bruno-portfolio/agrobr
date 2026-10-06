@@ -1,0 +1,1135 @@
+{
+  "format_version": 2,
+  "lot": "trimestrais",
+  "oracle": "stdlib CSV; no agrobr imports; valores locais nao certificados como origem oficial",
+  "files": [
+    {
+      "file": "../ibge/abate_bovino_sample/response.csv",
+      "sha256": "8b48e95abd5ed730ecac57a450f81d29f039538c5db6c6b079084c4899313295",
+      "bytes": 1673,
+      "original_http_body": false,
+      "provenance": "nao comprovada: metadata informa somente fetched_at=2026-02-14; sem URL/recibo/corpo HTTP original"
+    },
+    {
+      "file": "../ibge/leite_trimestral_sample/response.csv",
+      "sha256": "65d235473ecbf13ed3c2a8fcdd5fa5c233a92ac193db2ca76a227f185cecf0f3",
+      "bytes": 1130,
+      "original_http_body": false,
+      "provenance": "simulada, explicitamente declarada em metadata.json; nao e prova da publicacao"
+    },
+    {
+      "file": "../ibge/pib_agro_sample/response.csv",
+      "sha256": "2b7d2ed20af287786972bb344df938064c3efbdf70506687e34c66c1041bcad2",
+      "bytes": 579,
+      "original_http_body": false,
+      "provenance": "simulada, explicitamente declarada em metadata.json; nao e prova da publicacao"
+    }
+  ],
+  "cases": [
+    {
+      "id": "abate_bovino_202303",
+      "directory": "abate_bovino_sample",
+      "dataset": "abate_trimestral",
+      "api": "abate",
+      "source": "ibge_abate",
+      "selection": {
+        "produto": "bovino",
+        "trimestre": "202303"
+      },
+      "source_selection": {
+        "especie": "bovino",
+        "trimestre": "202303"
+      },
+      "variable_dimension": "D2",
+      "period_dimension": "D3",
+      "variables": {
+        "284": "animais_abatidos",
+        "285": "peso_carcacas"
+      },
+      "transport": {
+        "t": "1092",
+        "n3": "all",
+        "p": "202303",
+        "v": "284,285",
+        "c12716": "115236",
+        "c12529": "118225",
+        "c18": "992",
+        "h": "n"
+      },
+      "provenance": "nao comprovada: metadata informa somente fetched_at=2026-02-14; sem URL/recibo/corpo HTTP original",
+      "simulated": null,
+      "file": "../ibge/abate_bovino_sample/response.csv",
+      "key_columns": [
+        "trimestre",
+        "localidade"
+      ],
+      "expected_keys": [
+        {
+          "trimestre": "202303",
+          "localidade": "Rondônia"
+        },
+        {
+          "trimestre": "202303",
+          "localidade": "Acre"
+        },
+        {
+          "trimestre": "202303",
+          "localidade": "Mato Grosso"
+        },
+        {
+          "trimestre": "202303",
+          "localidade": "São Paulo"
+        },
+        {
+          "trimestre": "202303",
+          "localidade": "Goiás"
+        }
+      ],
+      "samples": [
+        {
+          "key": {
+            "trimestre": "202303",
+            "localidade": "Rondônia"
+          },
+          "column": "animais_abatidos",
+          "value": 764178.0,
+          "raw_cells": [
+            {
+              "csv_data_row": 1,
+              "column": "V",
+              "value": "764178",
+              "period": "3º trimestre 2023",
+              "variable": "Animais abatidos",
+              "unit": "Cabeças"
+            }
+          ],
+          "conversion": "identidade numerica; escala da fixture preservada, proveniencia limitada"
+        },
+        {
+          "key": {
+            "trimestre": "202303",
+            "localidade": "Rondônia"
+          },
+          "column": "peso_carcacas",
+          "value": 194840942.0,
+          "raw_cells": [
+            {
+              "csv_data_row": 2,
+              "column": "V",
+              "value": "194840942",
+              "period": "3º trimestre 2023",
+              "variable": "Peso total das carcaças",
+              "unit": "Quilogramas"
+            }
+          ],
+          "conversion": "identidade numerica; escala da fixture preservada, proveniencia limitada"
+        },
+        {
+          "key": {
+            "trimestre": "202303",
+            "localidade": "Acre"
+          },
+          "column": "animais_abatidos",
+          "value": 129933.0,
+          "raw_cells": [
+            {
+              "csv_data_row": 3,
+              "column": "V",
+              "value": "129933",
+              "period": "3º trimestre 2023",
+              "variable": "Animais abatidos",
+              "unit": "Cabeças"
+            }
+          ],
+          "conversion": "identidade numerica; escala da fixture preservada, proveniencia limitada"
+        },
+        {
+          "key": {
+            "trimestre": "202303",
+            "localidade": "Acre"
+          },
+          "column": "peso_carcacas",
+          "value": 31999888.0,
+          "raw_cells": [
+            {
+              "csv_data_row": 4,
+              "column": "V",
+              "value": "31999888",
+              "period": "3º trimestre 2023",
+              "variable": "Peso total das carcaças",
+              "unit": "Quilogramas"
+            }
+          ],
+          "conversion": "identidade numerica; escala da fixture preservada, proveniencia limitada"
+        },
+        {
+          "key": {
+            "trimestre": "202303",
+            "localidade": "Mato Grosso"
+          },
+          "column": "animais_abatidos",
+          "value": 1602321.0,
+          "raw_cells": [
+            {
+              "csv_data_row": 5,
+              "column": "V",
+              "value": "1602321",
+              "period": "3º trimestre 2023",
+              "variable": "Animais abatidos",
+              "unit": "Cabeças"
+            }
+          ],
+          "conversion": "identidade numerica; escala da fixture preservada, proveniencia limitada"
+        },
+        {
+          "key": {
+            "trimestre": "202303",
+            "localidade": "Mato Grosso"
+          },
+          "column": "peso_carcacas",
+          "value": 454267996.0,
+          "raw_cells": [
+            {
+              "csv_data_row": 6,
+              "column": "V",
+              "value": "454267996",
+              "period": "3º trimestre 2023",
+              "variable": "Peso total das carcaças",
+              "unit": "Quilogramas"
+            }
+          ],
+          "conversion": "identidade numerica; escala da fixture preservada, proveniencia limitada"
+        },
+        {
+          "key": {
+            "trimestre": "202303",
+            "localidade": "São Paulo"
+          },
+          "column": "animais_abatidos",
+          "value": 911856.0,
+          "raw_cells": [
+            {
+              "csv_data_row": 7,
+              "column": "V",
+              "value": "911856",
+              "period": "3º trimestre 2023",
+              "variable": "Animais abatidos",
+              "unit": "Cabeças"
+            }
+          ],
+          "conversion": "identidade numerica; escala da fixture preservada, proveniencia limitada"
+        },
+        {
+          "key": {
+            "trimestre": "202303",
+            "localidade": "São Paulo"
+          },
+          "column": "peso_carcacas",
+          "value": 255667937.0,
+          "raw_cells": [
+            {
+              "csv_data_row": 8,
+              "column": "V",
+              "value": "255667937",
+              "period": "3º trimestre 2023",
+              "variable": "Peso total das carcaças",
+              "unit": "Quilogramas"
+            }
+          ],
+          "conversion": "identidade numerica; escala da fixture preservada, proveniencia limitada"
+        },
+        {
+          "key": {
+            "trimestre": "202303",
+            "localidade": "Goiás"
+          },
+          "column": "animais_abatidos",
+          "value": 962647.0,
+          "raw_cells": [
+            {
+              "csv_data_row": 9,
+              "column": "V",
+              "value": "962647",
+              "period": "3º trimestre 2023",
+              "variable": "Animais abatidos",
+              "unit": "Cabeças"
+            }
+          ],
+          "conversion": "identidade numerica; escala da fixture preservada, proveniencia limitada"
+        },
+        {
+          "key": {
+            "trimestre": "202303",
+            "localidade": "Goiás"
+          },
+          "column": "peso_carcacas",
+          "value": 265597850.0,
+          "raw_cells": [
+            {
+              "csv_data_row": 10,
+              "column": "V",
+              "value": "265597850",
+              "period": "3º trimestre 2023",
+              "variable": "Peso total das carcaças",
+              "unit": "Quilogramas"
+            }
+          ],
+          "conversion": "identidade numerica; escala da fixture preservada, proveniencia limitada"
+        },
+        {
+          "key": {
+            "trimestre": "202303",
+            "localidade": "Rondônia"
+          },
+          "column": "trimestre",
+          "value": "202303",
+          "raw_cells": [
+            {
+              "column": "D3C",
+              "value": "202303",
+              "label": "3º trimestre 2023"
+            }
+          ],
+          "conversion": "YYYY0Q sem transformar em ano ou mes"
+        },
+        {
+          "key": {
+            "trimestre": "202303",
+            "localidade": "Acre"
+          },
+          "column": "trimestre",
+          "value": "202303",
+          "raw_cells": [
+            {
+              "column": "D3C",
+              "value": "202303",
+              "label": "3º trimestre 2023"
+            }
+          ],
+          "conversion": "YYYY0Q sem transformar em ano ou mes"
+        },
+        {
+          "key": {
+            "trimestre": "202303",
+            "localidade": "Mato Grosso"
+          },
+          "column": "trimestre",
+          "value": "202303",
+          "raw_cells": [
+            {
+              "column": "D3C",
+              "value": "202303",
+              "label": "3º trimestre 2023"
+            }
+          ],
+          "conversion": "YYYY0Q sem transformar em ano ou mes"
+        },
+        {
+          "key": {
+            "trimestre": "202303",
+            "localidade": "São Paulo"
+          },
+          "column": "trimestre",
+          "value": "202303",
+          "raw_cells": [
+            {
+              "column": "D3C",
+              "value": "202303",
+              "label": "3º trimestre 2023"
+            }
+          ],
+          "conversion": "YYYY0Q sem transformar em ano ou mes"
+        },
+        {
+          "key": {
+            "trimestre": "202303",
+            "localidade": "Goiás"
+          },
+          "column": "trimestre",
+          "value": "202303",
+          "raw_cells": [
+            {
+              "column": "D3C",
+              "value": "202303",
+              "label": "3º trimestre 2023"
+            }
+          ],
+          "conversion": "YYYY0Q sem transformar em ano ou mes"
+        }
+      ],
+      "null_columns": [],
+      "absent_rows": [],
+      "boundary": {
+        "first_csv_record": {
+          "NC": "3",
+          "NN": "Unidade da Federação",
+          "MC": "24",
+          "MN": "Cabeças",
+          "V": "764178",
+          "D1C": "11",
+          "D1N": "Rondônia",
+          "D2C": "284",
+          "D2N": "Animais abatidos",
+          "D3C": "202303",
+          "D3N": "3º trimestre 2023",
+          "D4C": "115236",
+          "D4N": "Total do trimestre",
+          "D5C": "992",
+          "D5N": "Total",
+          "D6C": "118225",
+          "D6N": "Total"
+        },
+        "last_csv_record": {
+          "NC": "3",
+          "NN": "Unidade da Federação",
+          "MC": "1007",
+          "MN": "Quilogramas",
+          "V": "265597850",
+          "D1C": "52",
+          "D1N": "Goiás",
+          "D2C": "285",
+          "D2N": "Peso total das carcaças",
+          "D3C": "202303",
+          "D3N": "3º trimestre 2023",
+          "D4C": "115236",
+          "D4N": "Total do trimestre",
+          "D5C": "992",
+          "D5N": "Total",
+          "D6C": "118225",
+          "D6N": "Total"
+        },
+        "row_count": 10
+      },
+      "structure": [
+        {
+          "column": "NC",
+          "status": "observada na fixture; nao certifica catalogo oficial"
+        },
+        {
+          "column": "NN",
+          "status": "observada na fixture; nao certifica catalogo oficial"
+        },
+        {
+          "column": "MC",
+          "status": "observada na fixture; nao certifica catalogo oficial"
+        },
+        {
+          "column": "MN",
+          "status": "observada na fixture; nao certifica catalogo oficial"
+        },
+        {
+          "column": "V",
+          "status": "observada na fixture; nao certifica catalogo oficial"
+        },
+        {
+          "column": "D1C",
+          "status": "observada na fixture; nao certifica catalogo oficial"
+        },
+        {
+          "column": "D1N",
+          "status": "observada na fixture; nao certifica catalogo oficial"
+        },
+        {
+          "column": "D2C",
+          "status": "observada na fixture; nao certifica catalogo oficial"
+        },
+        {
+          "column": "D2N",
+          "status": "observada na fixture; nao certifica catalogo oficial"
+        },
+        {
+          "column": "D3C",
+          "status": "observada na fixture; nao certifica catalogo oficial"
+        },
+        {
+          "column": "D3N",
+          "status": "observada na fixture; nao certifica catalogo oficial"
+        },
+        {
+          "column": "D4C",
+          "status": "observada na fixture; nao certifica catalogo oficial"
+        },
+        {
+          "column": "D4N",
+          "status": "observada na fixture; nao certifica catalogo oficial"
+        },
+        {
+          "column": "D5C",
+          "status": "observada na fixture; nao certifica catalogo oficial"
+        },
+        {
+          "column": "D5N",
+          "status": "observada na fixture; nao certifica catalogo oficial"
+        },
+        {
+          "column": "D6C",
+          "status": "observada na fixture; nao certifica catalogo oficial"
+        },
+        {
+          "column": "D6N",
+          "status": "observada na fixture; nao certifica catalogo oficial"
+        }
+      ],
+      "coverage": {
+        "N1": "pendente metadados originais",
+        "N2_source_certified": false,
+        "N2_local_replay": true,
+        "N3": "nao aplicavel"
+      }
+    },
+    {
+      "id": "leite_202503_simulado",
+      "directory": "leite_trimestral_sample",
+      "dataset": "leite_industrial",
+      "api": "leite_trimestral",
+      "source": "ibge_leite_trimestral",
+      "selection": {
+        "trimestre": "202503"
+      },
+      "source_selection": {
+        "trimestre": "202503"
+      },
+      "variable_dimension": "D3",
+      "period_dimension": "D2",
+      "variables": {
+        "282": "leite_adquirido",
+        "283": "leite_industrializado",
+        "2522": "preco_medio"
+      },
+      "transport": {
+        "t": "1086",
+        "n3": "all",
+        "p": "202503",
+        "v": "282,283,2522",
+        "h": "n"
+      },
+      "provenance": "simulada, explicitamente declarada em metadata.json; nao e prova da publicacao",
+      "simulated": true,
+      "file": "../ibge/leite_trimestral_sample/response.csv",
+      "key_columns": [
+        "trimestre",
+        "localidade"
+      ],
+      "expected_keys": [
+        {
+          "trimestre": "202503",
+          "localidade": "Minas Gerais"
+        },
+        {
+          "trimestre": "202503",
+          "localidade": "Rio Grande do Sul"
+        },
+        {
+          "trimestre": "202503",
+          "localidade": "Paraná"
+        }
+      ],
+      "samples": [
+        {
+          "key": {
+            "trimestre": "202503",
+            "localidade": "Minas Gerais"
+          },
+          "column": "leite_adquirido",
+          "value": 1850000.0,
+          "raw_cells": [
+            {
+              "csv_data_row": 1,
+              "column": "V",
+              "value": "1850000",
+              "period": "3º trimestre 2025",
+              "variable": "Leite cru adquirido",
+              "unit": "Mil litros"
+            }
+          ],
+          "conversion": "identidade numerica; escala da fixture preservada, proveniencia limitada"
+        },
+        {
+          "key": {
+            "trimestre": "202503",
+            "localidade": "Minas Gerais"
+          },
+          "column": "leite_industrializado",
+          "value": 1620000.0,
+          "raw_cells": [
+            {
+              "csv_data_row": 2,
+              "column": "V",
+              "value": "1620000",
+              "period": "3º trimestre 2025",
+              "variable": "Leite cru industrializado",
+              "unit": "Mil litros"
+            }
+          ],
+          "conversion": "identidade numerica; escala da fixture preservada, proveniencia limitada"
+        },
+        {
+          "key": {
+            "trimestre": "202503",
+            "localidade": "Minas Gerais"
+          },
+          "column": "preco_medio",
+          "value": 2.45,
+          "raw_cells": [
+            {
+              "csv_data_row": 3,
+              "column": "V",
+              "value": "2.45",
+              "period": "3º trimestre 2025",
+              "variable": "Preço médio pago ao produtor",
+              "unit": "Reais por litro"
+            }
+          ],
+          "conversion": "identidade numerica; escala da fixture preservada, proveniencia limitada"
+        },
+        {
+          "key": {
+            "trimestre": "202503",
+            "localidade": "Rio Grande do Sul"
+          },
+          "column": "leite_adquirido",
+          "value": 920000.0,
+          "raw_cells": [
+            {
+              "csv_data_row": 4,
+              "column": "V",
+              "value": "920000",
+              "period": "3º trimestre 2025",
+              "variable": "Leite cru adquirido",
+              "unit": "Mil litros"
+            }
+          ],
+          "conversion": "identidade numerica; escala da fixture preservada, proveniencia limitada"
+        },
+        {
+          "key": {
+            "trimestre": "202503",
+            "localidade": "Rio Grande do Sul"
+          },
+          "column": "leite_industrializado",
+          "value": 810000.0,
+          "raw_cells": [
+            {
+              "csv_data_row": 5,
+              "column": "V",
+              "value": "810000",
+              "period": "3º trimestre 2025",
+              "variable": "Leite cru industrializado",
+              "unit": "Mil litros"
+            }
+          ],
+          "conversion": "identidade numerica; escala da fixture preservada, proveniencia limitada"
+        },
+        {
+          "key": {
+            "trimestre": "202503",
+            "localidade": "Rio Grande do Sul"
+          },
+          "column": "preco_medio",
+          "value": 2.38,
+          "raw_cells": [
+            {
+              "csv_data_row": 6,
+              "column": "V",
+              "value": "2.38",
+              "period": "3º trimestre 2025",
+              "variable": "Preço médio pago ao produtor",
+              "unit": "Reais por litro"
+            }
+          ],
+          "conversion": "identidade numerica; escala da fixture preservada, proveniencia limitada"
+        },
+        {
+          "key": {
+            "trimestre": "202503",
+            "localidade": "Paraná"
+          },
+          "column": "leite_adquirido",
+          "value": 750000.0,
+          "raw_cells": [
+            {
+              "csv_data_row": 7,
+              "column": "V",
+              "value": "750000",
+              "period": "3º trimestre 2025",
+              "variable": "Leite cru adquirido",
+              "unit": "Mil litros"
+            }
+          ],
+          "conversion": "identidade numerica; escala da fixture preservada, proveniencia limitada"
+        },
+        {
+          "key": {
+            "trimestre": "202503",
+            "localidade": "Paraná"
+          },
+          "column": "leite_industrializado",
+          "value": 680000.0,
+          "raw_cells": [
+            {
+              "csv_data_row": 8,
+              "column": "V",
+              "value": "680000",
+              "period": "3º trimestre 2025",
+              "variable": "Leite cru industrializado",
+              "unit": "Mil litros"
+            }
+          ],
+          "conversion": "identidade numerica; escala da fixture preservada, proveniencia limitada"
+        },
+        {
+          "key": {
+            "trimestre": "202503",
+            "localidade": "Paraná"
+          },
+          "column": "preco_medio",
+          "value": 2.42,
+          "raw_cells": [
+            {
+              "csv_data_row": 9,
+              "column": "V",
+              "value": "2.42",
+              "period": "3º trimestre 2025",
+              "variable": "Preço médio pago ao produtor",
+              "unit": "Reais por litro"
+            }
+          ],
+          "conversion": "identidade numerica; escala da fixture preservada, proveniencia limitada"
+        },
+        {
+          "key": {
+            "trimestre": "202503",
+            "localidade": "Minas Gerais"
+          },
+          "column": "trimestre",
+          "value": "202503",
+          "raw_cells": [
+            {
+              "column": "D2C",
+              "value": "202503",
+              "label": "3º trimestre 2025"
+            }
+          ],
+          "conversion": "YYYY0Q sem transformar em ano ou mes"
+        },
+        {
+          "key": {
+            "trimestre": "202503",
+            "localidade": "Rio Grande do Sul"
+          },
+          "column": "trimestre",
+          "value": "202503",
+          "raw_cells": [
+            {
+              "column": "D2C",
+              "value": "202503",
+              "label": "3º trimestre 2025"
+            }
+          ],
+          "conversion": "YYYY0Q sem transformar em ano ou mes"
+        },
+        {
+          "key": {
+            "trimestre": "202503",
+            "localidade": "Paraná"
+          },
+          "column": "trimestre",
+          "value": "202503",
+          "raw_cells": [
+            {
+              "column": "D2C",
+              "value": "202503",
+              "label": "3º trimestre 2025"
+            }
+          ],
+          "conversion": "YYYY0Q sem transformar em ano ou mes"
+        }
+      ],
+      "null_columns": [],
+      "absent_rows": [],
+      "boundary": {
+        "first_csv_record": {
+          "NC": "3",
+          "NN": "Unidade da Federação",
+          "MC": "1028",
+          "MN": "Mil litros",
+          "V": "1850000",
+          "D1C": "31",
+          "D1N": "Minas Gerais",
+          "D2C": "202503",
+          "D2N": "3º trimestre 2025",
+          "D3C": "282",
+          "D3N": "Leite cru adquirido"
+        },
+        "last_csv_record": {
+          "NC": "3",
+          "NN": "Unidade da Federação",
+          "MC": "1",
+          "MN": "Reais por litro",
+          "V": "2.42",
+          "D1C": "41",
+          "D1N": "Paraná",
+          "D2C": "202503",
+          "D2N": "3º trimestre 2025",
+          "D3C": "2522",
+          "D3N": "Preço médio pago ao produtor"
+        },
+        "row_count": 9
+      },
+      "structure": [
+        {
+          "column": "NC",
+          "status": "observada na fixture; nao certifica catalogo oficial"
+        },
+        {
+          "column": "NN",
+          "status": "observada na fixture; nao certifica catalogo oficial"
+        },
+        {
+          "column": "MC",
+          "status": "observada na fixture; nao certifica catalogo oficial"
+        },
+        {
+          "column": "MN",
+          "status": "observada na fixture; nao certifica catalogo oficial"
+        },
+        {
+          "column": "V",
+          "status": "observada na fixture; nao certifica catalogo oficial"
+        },
+        {
+          "column": "D1C",
+          "status": "observada na fixture; nao certifica catalogo oficial"
+        },
+        {
+          "column": "D1N",
+          "status": "observada na fixture; nao certifica catalogo oficial"
+        },
+        {
+          "column": "D2C",
+          "status": "observada na fixture; nao certifica catalogo oficial"
+        },
+        {
+          "column": "D2N",
+          "status": "observada na fixture; nao certifica catalogo oficial"
+        },
+        {
+          "column": "D3C",
+          "status": "observada na fixture; nao certifica catalogo oficial"
+        },
+        {
+          "column": "D3N",
+          "status": "observada na fixture; nao certifica catalogo oficial"
+        }
+      ],
+      "coverage": {
+        "N1": "pendente metadados originais",
+        "N2_source_certified": false,
+        "N2_local_replay": true,
+        "N3": "nao aplicavel"
+      }
+    },
+    {
+      "id": "pib_corrente_2025_simulado",
+      "directory": "pib_agro_sample",
+      "dataset": "pib_agro",
+      "api": "pib_agro",
+      "source": "ibge_pib",
+      "selection": {
+        "trimestre": [
+          "202501",
+          "202502",
+          "202503",
+          "202504"
+        ],
+        "precos": "corrente",
+        "produto": "agropecuaria"
+      },
+      "source_selection": {
+        "trimestre": [
+          "202501",
+          "202502",
+          "202503",
+          "202504"
+        ],
+        "precos": "corrente",
+        "setor": "agropecuaria"
+      },
+      "variable_dimension": "D3",
+      "period_dimension": "D2",
+      "variables": {
+        "585": "valor"
+      },
+      "transport": {
+        "t": "1846",
+        "n1": "all",
+        "p": "202501,202502,202503,202504",
+        "v": "585",
+        "c11255": "90687",
+        "h": "n"
+      },
+      "provenance": "simulada, explicitamente declarada em metadata.json; nao e prova da publicacao",
+      "simulated": true,
+      "file": "../ibge/pib_agro_sample/response.csv",
+      "key_columns": [
+        "trimestre",
+        "setor"
+      ],
+      "expected_keys": [
+        {
+          "trimestre": "202501",
+          "setor": "agropecuaria"
+        },
+        {
+          "trimestre": "202502",
+          "setor": "agropecuaria"
+        },
+        {
+          "trimestre": "202503",
+          "setor": "agropecuaria"
+        },
+        {
+          "trimestre": "202504",
+          "setor": "agropecuaria"
+        }
+      ],
+      "samples": [
+        {
+          "key": {
+            "trimestre": "202501",
+            "setor": "agropecuaria"
+          },
+          "column": "valor",
+          "value": 125000.0,
+          "raw_cells": [
+            {
+              "csv_data_row": 1,
+              "column": "V",
+              "value": "125000",
+              "period": "1º trimestre 2025",
+              "variable": "Valores a preços correntes",
+              "unit": "Milhões de Reais"
+            }
+          ],
+          "conversion": "identidade numerica; escala da fixture preservada, proveniencia limitada"
+        },
+        {
+          "key": {
+            "trimestre": "202502",
+            "setor": "agropecuaria"
+          },
+          "column": "valor",
+          "value": 132000.0,
+          "raw_cells": [
+            {
+              "csv_data_row": 2,
+              "column": "V",
+              "value": "132000",
+              "period": "2º trimestre 2025",
+              "variable": "Valores a preços correntes",
+              "unit": "Milhões de Reais"
+            }
+          ],
+          "conversion": "identidade numerica; escala da fixture preservada, proveniencia limitada"
+        },
+        {
+          "key": {
+            "trimestre": "202503",
+            "setor": "agropecuaria"
+          },
+          "column": "valor",
+          "value": 138000.0,
+          "raw_cells": [
+            {
+              "csv_data_row": 3,
+              "column": "V",
+              "value": "138000",
+              "period": "3º trimestre 2025",
+              "variable": "Valores a preços correntes",
+              "unit": "Milhões de Reais"
+            }
+          ],
+          "conversion": "identidade numerica; escala da fixture preservada, proveniencia limitada"
+        },
+        {
+          "key": {
+            "trimestre": "202504",
+            "setor": "agropecuaria"
+          },
+          "column": "valor",
+          "value": 145000.0,
+          "raw_cells": [
+            {
+              "csv_data_row": 4,
+              "column": "V",
+              "value": "145000",
+              "period": "4º trimestre 2025",
+              "variable": "Valores a preços correntes",
+              "unit": "Milhões de Reais"
+            }
+          ],
+          "conversion": "identidade numerica; escala da fixture preservada, proveniencia limitada"
+        },
+        {
+          "key": {
+            "trimestre": "202501",
+            "setor": "agropecuaria"
+          },
+          "column": "trimestre",
+          "value": "202501",
+          "raw_cells": [
+            {
+              "column": "D2C",
+              "value": "202501",
+              "label": "1º trimestre 2025"
+            }
+          ],
+          "conversion": "YYYY0Q sem transformar em ano ou mes"
+        },
+        {
+          "key": {
+            "trimestre": "202502",
+            "setor": "agropecuaria"
+          },
+          "column": "trimestre",
+          "value": "202502",
+          "raw_cells": [
+            {
+              "column": "D2C",
+              "value": "202502",
+              "label": "2º trimestre 2025"
+            }
+          ],
+          "conversion": "YYYY0Q sem transformar em ano ou mes"
+        },
+        {
+          "key": {
+            "trimestre": "202503",
+            "setor": "agropecuaria"
+          },
+          "column": "trimestre",
+          "value": "202503",
+          "raw_cells": [
+            {
+              "column": "D2C",
+              "value": "202503",
+              "label": "3º trimestre 2025"
+            }
+          ],
+          "conversion": "YYYY0Q sem transformar em ano ou mes"
+        },
+        {
+          "key": {
+            "trimestre": "202504",
+            "setor": "agropecuaria"
+          },
+          "column": "trimestre",
+          "value": "202504",
+          "raw_cells": [
+            {
+              "column": "D2C",
+              "value": "202504",
+              "label": "4º trimestre 2025"
+            }
+          ],
+          "conversion": "YYYY0Q sem transformar em ano ou mes"
+        }
+      ],
+      "null_columns": [],
+      "absent_rows": [],
+      "boundary": {
+        "first_csv_record": {
+          "NC": "1",
+          "NN": "Brasil",
+          "MC": "63",
+          "MN": "Milhões de Reais",
+          "V": "125000",
+          "D1C": "1",
+          "D1N": "Brasil",
+          "D2C": "202501",
+          "D2N": "1º trimestre 2025",
+          "D3C": "585",
+          "D3N": "Valores a preços correntes",
+          "D4C": "90687",
+          "D4N": "Agropecuária - total"
+        },
+        "last_csv_record": {
+          "NC": "1",
+          "NN": "Brasil",
+          "MC": "63",
+          "MN": "Milhões de Reais",
+          "V": "145000",
+          "D1C": "1",
+          "D1N": "Brasil",
+          "D2C": "202504",
+          "D2N": "4º trimestre 2025",
+          "D3C": "585",
+          "D3N": "Valores a preços correntes",
+          "D4C": "90687",
+          "D4N": "Agropecuária - total"
+        },
+        "row_count": 4
+      },
+      "structure": [
+        {
+          "column": "NC",
+          "status": "observada na fixture; nao certifica catalogo oficial"
+        },
+        {
+          "column": "NN",
+          "status": "observada na fixture; nao certifica catalogo oficial"
+        },
+        {
+          "column": "MC",
+          "status": "observada na fixture; nao certifica catalogo oficial"
+        },
+        {
+          "column": "MN",
+          "status": "observada na fixture; nao certifica catalogo oficial"
+        },
+        {
+          "column": "V",
+          "status": "observada na fixture; nao certifica catalogo oficial"
+        },
+        {
+          "column": "D1C",
+          "status": "observada na fixture; nao certifica catalogo oficial"
+        },
+        {
+          "column": "D1N",
+          "status": "observada na fixture; nao certifica catalogo oficial"
+        },
+        {
+          "column": "D2C",
+          "status": "observada na fixture; nao certifica catalogo oficial"
+        },
+        {
+          "column": "D2N",
+          "status": "observada na fixture; nao certifica catalogo oficial"
+        },
+        {
+          "column": "D3C",
+          "status": "observada na fixture; nao certifica catalogo oficial"
+        },
+        {
+          "column": "D3N",
+          "status": "observada na fixture; nao certifica catalogo oficial"
+        },
+        {
+          "column": "D4C",
+          "status": "observada na fixture; nao certifica catalogo oficial"
+        },
+        {
+          "column": "D4N",
+          "status": "observada na fixture; nao certifica catalogo oficial"
+        }
+      ],
+      "coverage": {
+        "N1": "pendente metadados originais",
+        "N2_source_certified": false,
+        "N2_local_replay": true,
+        "N3": "nao aplicavel"
+      }
+    }
+  ]
+}

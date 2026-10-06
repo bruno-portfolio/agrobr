@@ -1,0 +1,13 @@
+{
+ "requested_url": "https://apisidra.ibge.gov.br/values/t/5457/n1/all/h/n/p/2023/v/214/c782/40124",
+ "status": 403,
+ "captured_at": "2026-09-18T13:43:19.368815+00:00",
+ "bytes": 5768,
+ "sha256": "4747e645913c3fd5e484375f95c013d087130dc0ca703094b33cb1dcf645f49e",
+ "headers": {
+  "content-type": "text/html; charset=UTF-8",
+  "cf-mitigated": "challenge",
+  "server": "cloudflare",
+  "cf-ray": "a3d0c76f1fa7f1d5-GRU"
+ }
+}

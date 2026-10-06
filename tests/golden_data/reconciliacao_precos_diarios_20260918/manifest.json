@@ -1,0 +1,6295 @@
+{
+ "format_version": 2,
+ "oracle": "BeautifulSoup/lxml sobre os bytes crus; sem importar agrobr; numeros por Decimal(virgula->ponto)",
+ "coordinate_system": "HTML: titulo da tabela (CEPEA) ou indice da tabela + fechamento (NA); linhas por celulas cruas",
+ "built_at": "2026-09-18T10:57:53.056395+00:00",
+ "files": [
+  {
+   "file": "../cepea/sanity_20260906/soja.html",
+   "url": "https://www.cepea.org.br/br/indicador/soja.aspx",
+   "sha256": "304aa06cccb566b286ea5593015b30751c107cfab97e37e2285dea941fa8498f",
+   "bytes": 60550,
+   "captured_at": "2026-09-06T01:38:54.163351+00:00",
+   "reused_from": "tests/golden_data/cepea/sanity_20260906 (captura oficial de 06/09/2026)"
+  },
+  {
+   "file": "../cepea/sanity_20260906/milho.html",
+   "url": "https://www.cepea.org.br/br/indicador/milho.aspx",
+   "sha256": "80e03952b21866fc12ca000e49de0c5a8f5ad671d24b462be5d18247b6a1f450",
+   "bytes": 51467,
+   "captured_at": "2026-09-06T01:39:04.393280+00:00",
+   "reused_from": "tests/golden_data/cepea/sanity_20260906 (captura oficial de 06/09/2026)"
+  },
+  {
+   "file": "../cepea/sanity_20260906/boi-gordo.html",
+   "url": "https://www.cepea.org.br/br/indicador/boi-gordo.aspx",
+   "sha256": "0a209df9cfdd1bab93f0eff98f97d1f7c4869c9e4d858ea9125059b04f080fbc",
+   "bytes": 65094,
+   "captured_at": "2026-09-06T01:39:29.815679+00:00",
+   "reused_from": "tests/golden_data/cepea/sanity_20260906 (captura oficial de 06/09/2026)"
+  },
+  {
+   "file": "../cepea/sanity_20260906/bezerro.html",
+   "url": "https://www.cepea.org.br/br/indicador/bezerro.aspx",
+   "sha256": "9a133908827bc3f590d435c35a3d79e619c507e13da1ae3c36f88c3694679e6d",
+   "bytes": 57518,
+   "captured_at": "2026-09-06T01:39:09.479729+00:00",
+   "reused_from": "tests/golden_data/cepea/sanity_20260906 (captura oficial de 06/09/2026)"
+  },
+  {
+   "file": "../cepea/sanity_20260906/cafe.html",
+   "url": "https://www.cepea.org.br/br/indicador/cafe.aspx",
+   "sha256": "2367b2976e3df7fd8878333c8f5062b08dbe660e835184482c9f4206ea90b4a7",
+   "bytes": 60568,
+   "captured_at": "2026-09-06T01:39:14.563438+00:00",
+   "reused_from": "tests/golden_data/cepea/sanity_20260906 (captura oficial de 06/09/2026)"
+  },
+  {
+   "file": "../cepea/sanity_20260906/trigo.html",
+   "url": "https://www.cepea.org.br/br/indicador/trigo.aspx",
+   "sha256": "dd54448d542b81f89b58b4efa9410fcb1d8058a755761cd8582d8bb4098a6206",
+   "bytes": 60970,
+   "captured_at": "2026-09-06T01:39:40.035961+00:00",
+   "reused_from": "tests/golden_data/cepea/sanity_20260906 (captura oficial de 06/09/2026)"
+  },
+  {
+   "file": "../cepea/sanity_20260906/algodao.html",
+   "url": "https://www.cepea.org.br/br/indicador/algodao.aspx",
+   "sha256": "2c1ff1877019a1bb65a62e006c45c788fde1ac6029adb622e7c5bf1a2a9e008e",
+   "bytes": 55598,
+   "captured_at": "2026-09-06T01:39:45.120007+00:00",
+   "reused_from": "tests/golden_data/cepea/sanity_20260906 (captura oficial de 06/09/2026)"
+  },
+  {
+   "file": "na_soja.html",
+   "url": "https://www.noticiasagricolas.com.br/cotacoes/soja/soja-indicador-cepea-esalq-porto-paranagua",
+   "sha256": "c1095f3eb723960501c91fcd2a49fe1f1703bdb5dd6e9b8e4c91bd9c6283df03",
+   "bytes": 131542,
+   "captured_at": "2026-09-18T10:54:23.944090+00:00"
+  },
+  {
+   "file": "na_milho.html",
+   "url": "https://www.noticiasagricolas.com.br/cotacoes/milho/indicador-cepea-esalq-milho",
+   "sha256": "b8153108c48b703e6bb39becdc5ff3d161d4d539ac840498b3f1cf7aa418208e",
+   "bytes": 131397,
+   "captured_at": "2026-09-18T10:54:27.049259+00:00"
+  },
+  {
+   "file": "na_boi.html",
+   "url": "https://www.noticiasagricolas.com.br/cotacoes/boi-gordo/boi-gordo-indicador-esalq-bmf",
+   "sha256": "d3be6f258bd6b8f739e348a15b1e8946c82370b39e905f995b147a65c61715bd",
+   "bytes": 131598,
+   "captured_at": "2026-09-18T10:54:30.128808+00:00"
+  },
+  {
+   "file": "na_bezerro.html",
+   "url": "https://www.noticiasagricolas.com.br/cotacoes/boi-gordo/indicador-bezerro-esalq-bmf-bovespa-ms",
+   "sha256": "e68800a2216d617f7bd9a3dd76dd230e783667721b53dbb883babd9e536403f7",
+   "bytes": 131661,
+   "captured_at": "2026-09-18T10:54:33.492643+00:00"
+  },
+  {
+   "file": "na_cafe.html",
+   "url": "https://www.noticiasagricolas.com.br/cotacoes/cafe/indicador-cepea-esalq-cafe-arabica",
+   "sha256": "e8b375acd73ae4f93bb5534984c12d621e9a595feed8a1802109a14e15f731da",
+   "bytes": 131516,
+   "captured_at": "2026-09-18T10:54:36.646024+00:00"
+  },
+  {
+   "file": "na_cafe_robusta.html",
+   "url": "https://www.noticiasagricolas.com.br/cotacoes/cafe/indicador-cepea-esalq-cafe-conillon",
+   "sha256": "715df5c47f1ac4ad990aae0fe5b15063f6d954b4f33cc53ec5cd712fb21f8335",
+   "bytes": 131499,
+   "captured_at": "2026-09-18T10:54:39.739612+00:00"
+  },
+  {
+   "file": "na_trigo.html",
+   "url": "https://www.noticiasagricolas.com.br/cotacoes/trigo/preco-medio-do-trigo-cepea-esalq",
+   "sha256": "81c157a56438cfd21ec2cd6801ea7e3ff8ca834147a8dbf1ff8724c8f8ba8327",
+   "bytes": 134837,
+   "captured_at": "2026-09-18T10:54:42.954103+00:00"
+  },
+  {
+   "file": "na_algodao.html",
+   "url": "https://www.noticiasagricolas.com.br/cotacoes/algodao/algodao-indicador-cepea-esalq-a-prazo",
+   "sha256": "a9ce79f9e57ea64542471eed16cffb162be98e2a297b1dc5fc8e16f2ebc39d8a",
+   "bytes": 131675,
+   "captured_at": "2026-09-18T10:54:46.022274+00:00"
+  }
+ ],
+ "cases": [
+  {
+   "id": "cepea_soja",
+   "dataset": "preco_diario",
+   "product": "soja",
+   "source": "cepea",
+   "selection": {
+    "produto": "soja",
+    "inicio": "2026-08-17",
+    "fim": "2026-09-04"
+   },
+   "file": "../cepea/sanity_20260906/soja.html",
+   "layout": "cepea_indicador_diario",
+   "structure": [
+    {
+     "kind": "html_table",
+     "locator": {
+      "title": "INDICADOR DA SOJA CEPEA/ESALQ - PARANAGUÁ",
+      "title_index": 0,
+      "selector": "div.imagenet-table-titulo + table"
+     },
+     "headers": [
+      "",
+      "Valor R$*",
+      "Var./Dia",
+      "Var./Mês",
+      "Valor US$*"
+     ],
+     "rows": 15,
+     "estado": "mapeada",
+     "campo": "valor|valor_usd|data",
+     "motivo": null
+    },
+    {
+     "kind": "html_table",
+     "locator": {
+      "title": "INDICADOR DA SOJA CEPEA/ESALQ - PARANÁ",
+      "title_index": 1,
+      "selector": "div.imagenet-table-titulo + table"
+     },
+     "headers": [
+      "",
+      "Valor R$*",
+      "Var./Dia",
+      "Var./Mês",
+      "Valor US$*"
+     ],
+     "rows": 15,
+     "estado": "ignorada",
+     "campo": null,
+     "motivo": "outro_indicador_soja_parana"
+    }
+   ],
+   "ignored_columns": [
+    "Var./Dia",
+    "Var./Mês"
+   ],
+   "period": {
+    "newest": "2026-09-04",
+    "oldest": "2026-08-17",
+    "rows": 15
+   },
+   "samples": [
+    {
+     "key": {
+      "produto": "soja",
+      "data": "2026-09-04",
+      "praca": "Paranaguá/PR"
+     },
+     "column": "valor",
+     "value": 160.87,
+     "raw_cells": {
+      "table_title": "INDICADOR DA SOJA CEPEA/ESALQ - PARANAGUÁ",
+      "row_cells": [
+       "04/09/2026",
+       "160,87",
+       "0,46%",
+       "0,90%",
+       "31,36"
+      ],
+      "headers": [
+       "",
+       "Valor R$*",
+       "Var./Dia",
+       "Var./Mês",
+       "Valor US$*"
+      ]
+     },
+     "conversion": "'Valor R$*' virgula decimal -> float64"
+    },
+    {
+     "key": {
+      "produto": "soja",
+      "data": "2026-08-17",
+      "praca": "Paranaguá/PR"
+     },
+     "column": "valor",
+     "value": 150.14,
+     "raw_cells": {
+      "table_title": "INDICADOR DA SOJA CEPEA/ESALQ - PARANAGUÁ",
+      "row_cells": [
+       "17/08/2026",
+       "150,14",
+       "0,80%",
+       "3,61%",
+       "28,88"
+      ],
+      "headers": [
+       "",
+       "Valor R$*",
+       "Var./Dia",
+       "Var./Mês",
+       "Valor US$*"
+      ]
+     },
+     "conversion": "linha mais antiga da tabela (ultima linha crua)"
+    },
+    {
+     "key": {
+      "produto": "soja",
+      "data": "2026-08-26",
+      "praca": "Paranaguá/PR"
+     },
+     "column": "valor",
+     "value": 154.57,
+     "raw_cells": {
+      "table_title": "INDICADOR DA SOJA CEPEA/ESALQ - PARANAGUÁ",
+      "row_cells": [
+       "26/08/2026",
+       "154,57",
+       "0,57%",
+       "6,67%",
+       "29,99"
+      ],
+      "headers": [
+       "",
+       "Valor R$*",
+       "Var./Dia",
+       "Var./Mês",
+       "Valor US$*"
+      ]
+     },
+     "conversion": "linha intermediaria"
+    },
+    {
+     "key": {
+      "produto": "soja",
+      "data": "2026-09-04",
+      "praca": "Paranaguá/PR"
+     },
+     "column": "unidade",
+     "value": "BRL/sc60kg",
+     "raw_cells": {
+      "table_title": "INDICADOR DA SOJA CEPEA/ESALQ - PARANAGUÁ",
+      "row_cells": [
+       "04/09/2026",
+       "160,87",
+       "0,46%",
+       "0,90%",
+       "31,36"
+      ],
+      "headers": [
+       "",
+       "Valor R$*",
+       "Var./Dia",
+       "Var./Mês",
+       "Valor US$*"
+      ]
+     },
+     "conversion": "texto publicado: 'Reais por saca de 60 kg.'; canonico do contrato"
+    },
+    {
+     "key": {
+      "produto": "soja",
+      "data": "2026-09-04",
+      "praca": "Paranaguá/PR"
+     },
+     "column": "praca",
+     "value": "Paranaguá/PR",
+     "raw_cells": {
+      "table_title": "INDICADOR DA SOJA CEPEA/ESALQ - PARANAGUÁ",
+      "row_cells": [
+       "04/09/2026",
+       "160,87",
+       "0,46%",
+       "0,90%",
+       "31,36"
+      ],
+      "headers": [
+       "",
+       "Valor R$*",
+       "Var./Dia",
+       "Var./Mês",
+       "Valor US$*"
+      ]
+     },
+     "conversion": "convencao documentada; titulo da tabela quando o traz"
+    },
+    {
+     "key": {
+      "produto": "soja",
+      "data": "2026-09-04",
+      "praca": "Paranaguá/PR"
+     },
+     "column": "fonte",
+     "value": "cepea",
+     "raw_cells": {
+      "table_title": "INDICADOR DA SOJA CEPEA/ESALQ - PARANAGUÁ",
+      "row_cells": [
+       "04/09/2026",
+       "160,87",
+       "0,46%",
+       "0,90%",
+       "31,36"
+      ],
+      "headers": [
+       "",
+       "Valor R$*",
+       "Var./Dia",
+       "Var./Mês",
+       "Valor US$*"
+      ]
+     },
+     "conversion": "origem da coleta"
+    },
+    {
+     "key": {
+      "produto": "soja",
+      "data": "2026-09-04",
+      "praca": "Paranaguá/PR"
+     },
+     "column": "valor_usd",
+     "value": 31.36,
+     "raw_cells": {
+      "table_title": "INDICADOR DA SOJA CEPEA/ESALQ - PARANAGUÁ",
+      "row_cells": [
+       "04/09/2026",
+       "160,87",
+       "0,46%",
+       "0,90%",
+       "31,36"
+      ],
+      "headers": [
+       "",
+       "Valor R$*",
+       "Var./Dia",
+       "Var./Mês",
+       "Valor US$*"
+      ]
+     },
+     "conversion": "'Valor US$*' virgula decimal -> float64"
+    },
+    {
+     "key": {
+      "produto": "soja",
+      "data": "2026-08-17",
+      "praca": "Paranaguá/PR"
+     },
+     "column": "valor_usd",
+     "value": 28.88,
+     "raw_cells": {
+      "table_title": "INDICADOR DA SOJA CEPEA/ESALQ - PARANAGUÁ",
+      "row_cells": [
+       "17/08/2026",
+       "150,14",
+       "0,80%",
+       "3,61%",
+       "28,88"
+      ],
+      "headers": [
+       "",
+       "Valor R$*",
+       "Var./Dia",
+       "Var./Mês",
+       "Valor US$*"
+      ]
+     },
+     "conversion": "USD da linha mais antiga"
+    },
+    {
+     "key": {
+      "produto": "soja",
+      "data": "2026-09-04",
+      "praca": "Paranaguá/PR"
+     },
+     "column": "peso_medio_kg",
+     "value": null,
+     "raw_cells": {
+      "table_title": "INDICADOR DA SOJA CEPEA/ESALQ - PARANAGUÁ",
+      "row_cells": [
+       "04/09/2026",
+       "160,87",
+       "0,46%",
+       "0,90%",
+       "31,36"
+      ],
+      "headers": [
+       "",
+       "Valor R$*",
+       "Var./Dia",
+       "Var./Mês",
+       "Valor US$*"
+      ]
+     },
+     "conversion": "sem tabela de peso medio para este produto"
+    }
+   ]
+  },
+  {
+   "id": "cepea_milho",
+   "dataset": "preco_diario",
+   "product": "milho",
+   "source": "cepea",
+   "selection": {
+    "produto": "milho",
+    "inicio": "2026-08-17",
+    "fim": "2026-09-04"
+   },
+   "file": "../cepea/sanity_20260906/milho.html",
+   "layout": "cepea_indicador_diario",
+   "structure": [
+    {
+     "kind": "html_table",
+     "locator": {
+      "title": "INDICADOR DO MILHO ESALQ/BM&FBOVESPA",
+      "title_index": 0,
+      "selector": "div.imagenet-table-titulo + table"
+     },
+     "headers": [
+      "",
+      "Valor R$*",
+      "Var./Dia",
+      "Var./Mês",
+      "Valor US$*"
+     ],
+     "rows": 15,
+     "estado": "mapeada",
+     "campo": "valor|valor_usd|data",
+     "motivo": null
+    }
+   ],
+   "ignored_columns": [
+    "Var./Dia",
+    "Var./Mês"
+   ],
+   "period": {
+    "newest": "2026-09-04",
+    "oldest": "2026-08-17",
+    "rows": 15
+   },
+   "samples": [
+    {
+     "key": {
+      "produto": "milho",
+      "data": "2026-09-04",
+      "praca": "Campinas/SP"
+     },
+     "column": "valor",
+     "value": 70.93,
+     "raw_cells": {
+      "table_title": "INDICADOR DO MILHO ESALQ/BM&FBOVESPA",
+      "row_cells": [
+       "04/09/2026",
+       "70,93",
+       "-0,18%",
+       "1,00%",
+       "13,83"
+      ],
+      "headers": [
+       "",
+       "Valor R$*",
+       "Var./Dia",
+       "Var./Mês",
+       "Valor US$*"
+      ]
+     },
+     "conversion": "'Valor R$*' virgula decimal -> float64"
+    },
+    {
+     "key": {
+      "produto": "milho",
+      "data": "2026-08-17",
+      "praca": "Campinas/SP"
+     },
+     "column": "valor",
+     "value": 66.71,
+     "raw_cells": {
+      "table_title": "INDICADOR DO MILHO ESALQ/BM&FBOVESPA",
+      "row_cells": [
+       "17/08/2026",
+       "66,71",
+       "0,54%",
+       "2,24%",
+       "12,83"
+      ],
+      "headers": [
+       "",
+       "Valor R$*",
+       "Var./Dia",
+       "Var./Mês",
+       "Valor US$*"
+      ]
+     },
+     "conversion": "linha mais antiga da tabela (ultima linha crua)"
+    },
+    {
+     "key": {
+      "produto": "milho",
+      "data": "2026-08-26",
+      "praca": "Campinas/SP"
+     },
+     "column": "valor",
+     "value": 68.79,
+     "raw_cells": {
+      "table_title": "INDICADOR DO MILHO ESALQ/BM&FBOVESPA",
+      "row_cells": [
+       "26/08/2026",
+       "68,79",
+       "0,53%",
+       "5,43%",
+       "13,35"
+      ],
+      "headers": [
+       "",
+       "Valor R$*",
+       "Var./Dia",
+       "Var./Mês",
+       "Valor US$*"
+      ]
+     },
+     "conversion": "linha intermediaria"
+    },
+    {
+     "key": {
+      "produto": "milho",
+      "data": "2026-09-04",
+      "praca": "Campinas/SP"
+     },
+     "column": "unidade",
+     "value": "BRL/sc60kg",
+     "raw_cells": {
+      "table_title": "INDICADOR DO MILHO ESALQ/BM&FBOVESPA",
+      "row_cells": [
+       "04/09/2026",
+       "70,93",
+       "-0,18%",
+       "1,00%",
+       "13,83"
+      ],
+      "headers": [
+       "",
+       "Valor R$*",
+       "Var./Dia",
+       "Var./Mês",
+       "Valor US$*"
+      ]
+     },
+     "conversion": "texto publicado: 'Reais por saca de 60 kg'; canonico do contrato"
+    },
+    {
+     "key": {
+      "produto": "milho",
+      "data": "2026-09-04",
+      "praca": "Campinas/SP"
+     },
+     "column": "praca",
+     "value": "Campinas/SP",
+     "raw_cells": {
+      "table_title": "INDICADOR DO MILHO ESALQ/BM&FBOVESPA",
+      "row_cells": [
+       "04/09/2026",
+       "70,93",
+       "-0,18%",
+       "1,00%",
+       "13,83"
+      ],
+      "headers": [
+       "",
+       "Valor R$*",
+       "Var./Dia",
+       "Var./Mês",
+       "Valor US$*"
+      ]
+     },
+     "conversion": "convencao documentada; titulo da tabela quando o traz"
+    },
+    {
+     "key": {
+      "produto": "milho",
+      "data": "2026-09-04",
+      "praca": "Campinas/SP"
+     },
+     "column": "fonte",
+     "value": "cepea",
+     "raw_cells": {
+      "table_title": "INDICADOR DO MILHO ESALQ/BM&FBOVESPA",
+      "row_cells": [
+       "04/09/2026",
+       "70,93",
+       "-0,18%",
+       "1,00%",
+       "13,83"
+      ],
+      "headers": [
+       "",
+       "Valor R$*",
+       "Var./Dia",
+       "Var./Mês",
+       "Valor US$*"
+      ]
+     },
+     "conversion": "origem da coleta"
+    },
+    {
+     "key": {
+      "produto": "milho",
+      "data": "2026-09-04",
+      "praca": "Campinas/SP"
+     },
+     "column": "valor_usd",
+     "value": 13.83,
+     "raw_cells": {
+      "table_title": "INDICADOR DO MILHO ESALQ/BM&FBOVESPA",
+      "row_cells": [
+       "04/09/2026",
+       "70,93",
+       "-0,18%",
+       "1,00%",
+       "13,83"
+      ],
+      "headers": [
+       "",
+       "Valor R$*",
+       "Var./Dia",
+       "Var./Mês",
+       "Valor US$*"
+      ]
+     },
+     "conversion": "'Valor US$*' virgula decimal -> float64"
+    },
+    {
+     "key": {
+      "produto": "milho",
+      "data": "2026-08-17",
+      "praca": "Campinas/SP"
+     },
+     "column": "valor_usd",
+     "value": 12.83,
+     "raw_cells": {
+      "table_title": "INDICADOR DO MILHO ESALQ/BM&FBOVESPA",
+      "row_cells": [
+       "17/08/2026",
+       "66,71",
+       "0,54%",
+       "2,24%",
+       "12,83"
+      ],
+      "headers": [
+       "",
+       "Valor R$*",
+       "Var./Dia",
+       "Var./Mês",
+       "Valor US$*"
+      ]
+     },
+     "conversion": "USD da linha mais antiga"
+    },
+    {
+     "key": {
+      "produto": "milho",
+      "data": "2026-09-04",
+      "praca": "Campinas/SP"
+     },
+     "column": "peso_medio_kg",
+     "value": null,
+     "raw_cells": {
+      "table_title": "INDICADOR DO MILHO ESALQ/BM&FBOVESPA",
+      "row_cells": [
+       "04/09/2026",
+       "70,93",
+       "-0,18%",
+       "1,00%",
+       "13,83"
+      ],
+      "headers": [
+       "",
+       "Valor R$*",
+       "Var./Dia",
+       "Var./Mês",
+       "Valor US$*"
+      ]
+     },
+     "conversion": "sem tabela de peso medio para este produto"
+    }
+   ]
+  },
+  {
+   "id": "cepea_boi",
+   "dataset": "preco_diario",
+   "product": "boi",
+   "source": "cepea",
+   "selection": {
+    "produto": "boi",
+    "inicio": "2026-08-17",
+    "fim": "2026-09-04"
+   },
+   "file": "../cepea/sanity_20260906/boi-gordo.html",
+   "layout": "cepea_indicador_diario",
+   "structure": [
+    {
+     "kind": "html_table",
+     "locator": {
+      "title": "INDICADOR DO BOI GORDO CEPEA/ESALQ",
+      "title_index": 0,
+      "selector": "div.imagenet-table-titulo + table"
+     },
+     "headers": [
+      "",
+      "Valor R$*",
+      "Var./Dia",
+      "Var./Mês",
+      "Valor US$*"
+     ],
+     "rows": 15,
+     "estado": "mapeada",
+     "campo": "valor|valor_usd|data",
+     "motivo": null
+    },
+    {
+     "kind": "html_table",
+     "locator": {
+      "title": "Media Móvel (5 últimos indic.)",
+      "title_index": 1,
+      "selector": "div.imagenet-table-titulo + table"
+     },
+     "headers": [
+      "",
+      "Valor R$",
+      "Var./Dia",
+      "Var./Mês",
+      "Valor US$/@"
+     ],
+     "rows": 6,
+     "estado": "ignorada",
+     "campo": null,
+     "motivo": "media_movel_derivada"
+    },
+    {
+     "kind": "html_table",
+     "locator": {
+      "title": "Boi Gordo - Média a Prazo Estado de São Paulo",
+      "title_index": 2,
+      "selector": "div.imagenet-table-titulo + table"
+     },
+     "headers": [
+      "",
+      "A Prazo",
+      "Var./Dia",
+      "Var./Mês",
+      "PMP"
+     ],
+     "rows": 15,
+     "estado": "ignorada",
+     "campo": null,
+     "motivo": "serie_a_prazo_nao_exposta"
+    }
+   ],
+   "ignored_columns": [
+    "Var./Dia",
+    "Var./Mês"
+   ],
+   "period": {
+    "newest": "2026-09-04",
+    "oldest": "2026-08-17",
+    "rows": 15
+   },
+   "samples": [
+    {
+     "key": {
+      "produto": "boi",
+      "data": "2026-09-04",
+      "praca": "São Paulo/SP"
+     },
+     "column": "valor",
+     "value": 347.7,
+     "raw_cells": {
+      "table_title": "INDICADOR DO BOI GORDO CEPEA/ESALQ",
+      "row_cells": [
+       "04/09/2026",
+       "347,70",
+       "0,03%",
+       "0,96%",
+       "67,78"
+      ],
+      "headers": [
+       "",
+       "Valor R$*",
+       "Var./Dia",
+       "Var./Mês",
+       "Valor US$*"
+      ]
+     },
+     "conversion": "'Valor R$*' virgula decimal -> float64"
+    },
+    {
+     "key": {
+      "produto": "boi",
+      "data": "2026-08-17",
+      "praca": "São Paulo/SP"
+     },
+     "column": "valor",
+     "value": 345.05,
+     "raw_cells": {
+      "table_title": "INDICADOR DO BOI GORDO CEPEA/ESALQ",
+      "row_cells": [
+       "17/08/2026",
+       "345,05",
+       "-0,49%",
+       "-0,43%",
+       "66,38"
+      ],
+      "headers": [
+       "",
+       "Valor R$*",
+       "Var./Dia",
+       "Var./Mês",
+       "Valor US$*"
+      ]
+     },
+     "conversion": "linha mais antiga da tabela (ultima linha crua)"
+    },
+    {
+     "key": {
+      "produto": "boi",
+      "data": "2026-08-26",
+      "praca": "São Paulo/SP"
+     },
+     "column": "valor",
+     "value": 342.5,
+     "raw_cells": {
+      "table_title": "INDICADOR DO BOI GORDO CEPEA/ESALQ",
+      "row_cells": [
+       "26/08/2026",
+       "342,50",
+       "-0,25%",
+       "-1,17%",
+       "66,45"
+      ],
+      "headers": [
+       "",
+       "Valor R$*",
+       "Var./Dia",
+       "Var./Mês",
+       "Valor US$*"
+      ]
+     },
+     "conversion": "linha intermediaria"
+    },
+    {
+     "key": {
+      "produto": "boi",
+      "data": "2026-09-04",
+      "praca": "São Paulo/SP"
+     },
+     "column": "unidade",
+     "value": "BRL/@",
+     "raw_cells": {
+      "table_title": "INDICADOR DO BOI GORDO CEPEA/ESALQ",
+      "row_cells": [
+       "04/09/2026",
+       "347,70",
+       "0,03%",
+       "0,96%",
+       "67,78"
+      ],
+      "headers": [
+       "",
+       "Valor R$*",
+       "Var./Dia",
+       "Var./Mês",
+       "Valor US$*"
+      ]
+     },
+     "conversion": "texto publicado: 'Valor à vista por arroba de 15 kg'; canonico do contrato"
+    },
+    {
+     "key": {
+      "produto": "boi",
+      "data": "2026-09-04",
+      "praca": "São Paulo/SP"
+     },
+     "column": "praca",
+     "value": "São Paulo/SP",
+     "raw_cells": {
+      "table_title": "INDICADOR DO BOI GORDO CEPEA/ESALQ",
+      "row_cells": [
+       "04/09/2026",
+       "347,70",
+       "0,03%",
+       "0,96%",
+       "67,78"
+      ],
+      "headers": [
+       "",
+       "Valor R$*",
+       "Var./Dia",
+       "Var./Mês",
+       "Valor US$*"
+      ]
+     },
+     "conversion": "convencao documentada; titulo da tabela quando o traz"
+    },
+    {
+     "key": {
+      "produto": "boi",
+      "data": "2026-09-04",
+      "praca": "São Paulo/SP"
+     },
+     "column": "fonte",
+     "value": "cepea",
+     "raw_cells": {
+      "table_title": "INDICADOR DO BOI GORDO CEPEA/ESALQ",
+      "row_cells": [
+       "04/09/2026",
+       "347,70",
+       "0,03%",
+       "0,96%",
+       "67,78"
+      ],
+      "headers": [
+       "",
+       "Valor R$*",
+       "Var./Dia",
+       "Var./Mês",
+       "Valor US$*"
+      ]
+     },
+     "conversion": "origem da coleta"
+    },
+    {
+     "key": {
+      "produto": "boi",
+      "data": "2026-09-04",
+      "praca": "São Paulo/SP"
+     },
+     "column": "valor_usd",
+     "value": 67.78,
+     "raw_cells": {
+      "table_title": "INDICADOR DO BOI GORDO CEPEA/ESALQ",
+      "row_cells": [
+       "04/09/2026",
+       "347,70",
+       "0,03%",
+       "0,96%",
+       "67,78"
+      ],
+      "headers": [
+       "",
+       "Valor R$*",
+       "Var./Dia",
+       "Var./Mês",
+       "Valor US$*"
+      ]
+     },
+     "conversion": "'Valor US$*' virgula decimal -> float64"
+    },
+    {
+     "key": {
+      "produto": "boi",
+      "data": "2026-08-17",
+      "praca": "São Paulo/SP"
+     },
+     "column": "valor_usd",
+     "value": 66.38,
+     "raw_cells": {
+      "table_title": "INDICADOR DO BOI GORDO CEPEA/ESALQ",
+      "row_cells": [
+       "17/08/2026",
+       "345,05",
+       "-0,49%",
+       "-0,43%",
+       "66,38"
+      ],
+      "headers": [
+       "",
+       "Valor R$*",
+       "Var./Dia",
+       "Var./Mês",
+       "Valor US$*"
+      ]
+     },
+     "conversion": "USD da linha mais antiga"
+    },
+    {
+     "key": {
+      "produto": "boi",
+      "data": "2026-09-04",
+      "praca": "São Paulo/SP"
+     },
+     "column": "peso_medio_kg",
+     "value": null,
+     "raw_cells": {
+      "table_title": "INDICADOR DO BOI GORDO CEPEA/ESALQ",
+      "row_cells": [
+       "04/09/2026",
+       "347,70",
+       "0,03%",
+       "0,96%",
+       "67,78"
+      ],
+      "headers": [
+       "",
+       "Valor R$*",
+       "Var./Dia",
+       "Var./Mês",
+       "Valor US$*"
+      ]
+     },
+     "conversion": "sem tabela de peso medio para este produto"
+    }
+   ]
+  },
+  {
+   "id": "cepea_bezerro",
+   "dataset": "preco_diario",
+   "product": "bezerro",
+   "source": "cepea",
+   "selection": {
+    "produto": "bezerro",
+    "inicio": "2026-08-17",
+    "fim": "2026-09-04"
+   },
+   "file": "../cepea/sanity_20260906/bezerro.html",
+   "layout": "cepea_indicador_diario",
+   "structure": [
+    {
+     "kind": "html_table",
+     "locator": {
+      "title": "INDICADOR DO BEZERRO CEPEA/ESALQ - MATO GROSSO DO SUL",
+      "title_index": 0,
+      "selector": "div.imagenet-table-titulo + table"
+     },
+     "headers": [
+      "",
+      "Valor R$*",
+      "Var./Dia",
+      "Var./Mês",
+      "Valor US$*"
+     ],
+     "rows": 15,
+     "estado": "mapeada",
+     "campo": "valor|valor_usd|data",
+     "motivo": null
+    },
+    {
+     "kind": "html_table",
+     "locator": {
+      "title": "Peso Médio do Bezerro - MS",
+      "title_index": 1,
+      "selector": "div.imagenet-table-titulo + table"
+     },
+     "headers": [
+      "",
+      "Peso Médio"
+     ],
+     "rows": 15,
+     "estado": "mapeada",
+     "campo": "peso_medio_kg",
+     "motivo": null
+    }
+   ],
+   "ignored_columns": [
+    "Var./Dia",
+    "Var./Mês"
+   ],
+   "period": {
+    "newest": "2026-09-04",
+    "oldest": "2026-08-17",
+    "rows": 15
+   },
+   "samples": [
+    {
+     "key": {
+      "produto": "bezerro",
+      "data": "2026-09-04",
+      "praca": "Mato Grosso do Sul"
+     },
+     "column": "valor",
+     "value": 3397.99,
+     "raw_cells": {
+      "table_title": "INDICADOR DO BEZERRO CEPEA/ESALQ - MATO GROSSO DO SUL",
+      "row_cells": [
+       "04/09/2026",
+       "3.397,99",
+       "0,01%",
+       "-0,16%",
+       "662,38"
+      ],
+      "headers": [
+       "",
+       "Valor R$*",
+       "Var./Dia",
+       "Var./Mês",
+       "Valor US$*"
+      ]
+     },
+     "conversion": "'Valor R$*' virgula decimal -> float64"
+    },
+    {
+     "key": {
+      "produto": "bezerro",
+      "data": "2026-08-17",
+      "praca": "Mato Grosso do Sul"
+     },
+     "column": "valor",
+     "value": 3390.21,
+     "raw_cells": {
+      "table_title": "INDICADOR DO BEZERRO CEPEA/ESALQ - MATO GROSSO DO SUL",
+      "row_cells": [
+       "17/08/2026",
+       "3.390,21",
+       "0,16%",
+       "0,38%",
+       "652,21"
+      ],
+      "headers": [
+       "",
+       "Valor R$*",
+       "Var./Dia",
+       "Var./Mês",
+       "Valor US$*"
+      ]
+     },
+     "conversion": "linha mais antiga da tabela (ultima linha crua)"
+    },
+    {
+     "key": {
+      "produto": "bezerro",
+      "data": "2026-08-26",
+      "praca": "Mato Grosso do Sul"
+     },
+     "column": "valor",
+     "value": 3394.43,
+     "raw_cells": {
+      "table_title": "INDICADOR DO BEZERRO CEPEA/ESALQ - MATO GROSSO DO SUL",
+      "row_cells": [
+       "26/08/2026",
+       "3.394,43",
+       "0,15%",
+       "0,51%",
+       "658,60"
+      ],
+      "headers": [
+       "",
+       "Valor R$*",
+       "Var./Dia",
+       "Var./Mês",
+       "Valor US$*"
+      ]
+     },
+     "conversion": "linha intermediaria"
+    },
+    {
+     "key": {
+      "produto": "bezerro",
+      "data": "2026-09-04",
+      "praca": "Mato Grosso do Sul"
+     },
+     "column": "unidade",
+     "value": "BRL/cabeca",
+     "raw_cells": {
+      "table_title": "INDICADOR DO BEZERRO CEPEA/ESALQ - MATO GROSSO DO SUL",
+      "row_cells": [
+       "04/09/2026",
+       "3.397,99",
+       "0,01%",
+       "-0,16%",
+       "662,38"
+      ],
+      "headers": [
+       "",
+       "Valor R$*",
+       "Var./Dia",
+       "Var./Mês",
+       "Valor US$*"
+      ]
+     },
+     "conversion": "sem texto de unidade na pagina; convencao documentada do contrato"
+    },
+    {
+     "key": {
+      "produto": "bezerro",
+      "data": "2026-09-04",
+      "praca": "Mato Grosso do Sul"
+     },
+     "column": "praca",
+     "value": "Mato Grosso do Sul",
+     "raw_cells": {
+      "table_title": "INDICADOR DO BEZERRO CEPEA/ESALQ - MATO GROSSO DO SUL",
+      "row_cells": [
+       "04/09/2026",
+       "3.397,99",
+       "0,01%",
+       "-0,16%",
+       "662,38"
+      ],
+      "headers": [
+       "",
+       "Valor R$*",
+       "Var./Dia",
+       "Var./Mês",
+       "Valor US$*"
+      ]
+     },
+     "conversion": "convencao documentada; titulo da tabela quando o traz"
+    },
+    {
+     "key": {
+      "produto": "bezerro",
+      "data": "2026-09-04",
+      "praca": "Mato Grosso do Sul"
+     },
+     "column": "fonte",
+     "value": "cepea",
+     "raw_cells": {
+      "table_title": "INDICADOR DO BEZERRO CEPEA/ESALQ - MATO GROSSO DO SUL",
+      "row_cells": [
+       "04/09/2026",
+       "3.397,99",
+       "0,01%",
+       "-0,16%",
+       "662,38"
+      ],
+      "headers": [
+       "",
+       "Valor R$*",
+       "Var./Dia",
+       "Var./Mês",
+       "Valor US$*"
+      ]
+     },
+     "conversion": "origem da coleta"
+    },
+    {
+     "key": {
+      "produto": "bezerro",
+      "data": "2026-09-04",
+      "praca": "Mato Grosso do Sul"
+     },
+     "column": "valor_usd",
+     "value": 662.38,
+     "raw_cells": {
+      "table_title": "INDICADOR DO BEZERRO CEPEA/ESALQ - MATO GROSSO DO SUL",
+      "row_cells": [
+       "04/09/2026",
+       "3.397,99",
+       "0,01%",
+       "-0,16%",
+       "662,38"
+      ],
+      "headers": [
+       "",
+       "Valor R$*",
+       "Var./Dia",
+       "Var./Mês",
+       "Valor US$*"
+      ]
+     },
+     "conversion": "'Valor US$*' virgula decimal -> float64"
+    },
+    {
+     "key": {
+      "produto": "bezerro",
+      "data": "2026-08-17",
+      "praca": "Mato Grosso do Sul"
+     },
+     "column": "valor_usd",
+     "value": 652.21,
+     "raw_cells": {
+      "table_title": "INDICADOR DO BEZERRO CEPEA/ESALQ - MATO GROSSO DO SUL",
+      "row_cells": [
+       "17/08/2026",
+       "3.390,21",
+       "0,16%",
+       "0,38%",
+       "652,21"
+      ],
+      "headers": [
+       "",
+       "Valor R$*",
+       "Var./Dia",
+       "Var./Mês",
+       "Valor US$*"
+      ]
+     },
+     "conversion": "USD da linha mais antiga"
+    },
+    {
+     "key": {
+      "produto": "bezerro",
+      "data": "2026-09-04",
+      "praca": "Mato Grosso do Sul"
+     },
+     "column": "peso_medio_kg",
+     "value": 211.69,
+     "raw_cells": {
+      "table_title": "INDICADOR DO BEZERRO CEPEA/ESALQ - MATO GROSSO DO SUL",
+      "row_cells": [
+       "04/09/2026",
+       "3.397,99",
+       "0,01%",
+       "-0,16%",
+       "662,38"
+      ],
+      "headers": [
+       "",
+       "Valor R$*",
+       "Var./Dia",
+       "Var./Mês",
+       "Valor US$*"
+      ],
+      "peso_table_rows": 15
+     },
+     "conversion": "tabela 'Peso Médio do Bezerro - MS', mesma data"
+    },
+    {
+     "key": {
+      "produto": "bezerro",
+      "data": "2026-08-17",
+      "praca": "Mato Grosso do Sul"
+     },
+     "column": "peso_medio_kg",
+     "value": 209.28,
+     "raw_cells": {
+      "table_title": "INDICADOR DO BEZERRO CEPEA/ESALQ - MATO GROSSO DO SUL",
+      "row_cells": [
+       "17/08/2026",
+       "3.390,21",
+       "0,16%",
+       "0,38%",
+       "652,21"
+      ],
+      "headers": [
+       "",
+       "Valor R$*",
+       "Var./Dia",
+       "Var./Mês",
+       "Valor US$*"
+      ]
+     },
+     "conversion": "peso da data mais antiga"
+    }
+   ]
+  },
+  {
+   "id": "cepea_cafe",
+   "dataset": "preco_diario",
+   "product": "cafe",
+   "source": "cepea",
+   "selection": {
+    "produto": "cafe",
+    "inicio": "2026-08-17",
+    "fim": "2026-09-04"
+   },
+   "file": "../cepea/sanity_20260906/cafe.html",
+   "layout": "cepea_indicador_diario",
+   "structure": [
+    {
+     "kind": "html_table",
+     "locator": {
+      "title": "INDICADOR DO CAFÉ ARÁBICA CEPEA/ESALQ",
+      "title_index": 0,
+      "selector": "div.imagenet-table-titulo + table"
+     },
+     "headers": [
+      "",
+      "Valor R$",
+      "Var./Dia",
+      "Var./Mês",
+      "Valor US$"
+     ],
+     "rows": 15,
+     "estado": "mapeada",
+     "campo": "valor|valor_usd|data",
+     "motivo": null
+    },
+    {
+     "kind": "html_table",
+     "locator": {
+      "title": "INDICADOR DO CAFÉ ROBUSTA CEPEA/ESALQ",
+      "title_index": 1,
+      "selector": "div.imagenet-table-titulo + table"
+     },
+     "headers": [
+      "",
+      "Valor R$",
+      "Var./Dia",
+      "Var./Mês",
+      "Valor US$"
+     ],
+     "rows": 15,
+     "estado": "ignorada",
+     "campo": null,
+     "motivo": "outro_produto_cafe_robusta"
+    }
+   ],
+   "ignored_columns": [
+    "Var./Dia",
+    "Var./Mês"
+   ],
+   "period": {
+    "newest": "2026-09-04",
+    "oldest": "2026-08-17",
+    "rows": 15
+   },
+   "samples": [
+    {
+     "key": {
+      "produto": "cafe",
+      "data": "2026-09-04",
+      "praca": "São Paulo/SP"
+     },
+     "column": "valor",
+     "value": 1659.93,
+     "raw_cells": {
+      "table_title": "INDICADOR DO CAFÉ ARÁBICA CEPEA/ESALQ",
+      "row_cells": [
+       "04/09/2026",
+       "1.659,93",
+       "-0,74%",
+       "-5,06%",
+       "323,57"
+      ],
+      "headers": [
+       "",
+       "Valor R$",
+       "Var./Dia",
+       "Var./Mês",
+       "Valor US$"
+      ]
+     },
+     "conversion": "'Valor R$' virgula decimal -> float64"
+    },
+    {
+     "key": {
+      "produto": "cafe",
+      "data": "2026-08-17",
+      "praca": "São Paulo/SP"
+     },
+     "column": "valor",
+     "value": 1784.82,
+     "raw_cells": {
+      "table_title": "INDICADOR DO CAFÉ ARÁBICA CEPEA/ESALQ",
+      "row_cells": [
+       "17/08/2026",
+       "1.784,82",
+       "-0,52%",
+       "2,33%",
+       "343,37"
+      ],
+      "headers": [
+       "",
+       "Valor R$",
+       "Var./Dia",
+       "Var./Mês",
+       "Valor US$"
+      ]
+     },
+     "conversion": "linha mais antiga da tabela (ultima linha crua)"
+    },
+    {
+     "key": {
+      "produto": "cafe",
+      "data": "2026-08-26",
+      "praca": "São Paulo/SP"
+     },
+     "column": "valor",
+     "value": 1800.79,
+     "raw_cells": {
+      "table_title": "INDICADOR DO CAFÉ ARÁBICA CEPEA/ESALQ",
+      "row_cells": [
+       "26/08/2026",
+       "1.800,79",
+       "-1,12%",
+       "3,25%",
+       "349,40"
+      ],
+      "headers": [
+       "",
+       "Valor R$",
+       "Var./Dia",
+       "Var./Mês",
+       "Valor US$"
+      ]
+     },
+     "conversion": "linha intermediaria"
+    },
+    {
+     "key": {
+      "produto": "cafe",
+      "data": "2026-09-04",
+      "praca": "São Paulo/SP"
+     },
+     "column": "unidade",
+     "value": "BRL/sc60kg",
+     "raw_cells": {
+      "table_title": "INDICADOR DO CAFÉ ARÁBICA CEPEA/ESALQ",
+      "row_cells": [
+       "04/09/2026",
+       "1.659,93",
+       "-0,74%",
+       "-5,06%",
+       "323,57"
+      ],
+      "headers": [
+       "",
+       "Valor R$",
+       "Var./Dia",
+       "Var./Mês",
+       "Valor US$"
+      ]
+     },
+     "conversion": "texto publicado: 'Reais por saca de 60 kg líquido'; canonico do contrato"
+    },
+    {
+     "key": {
+      "produto": "cafe",
+      "data": "2026-09-04",
+      "praca": "São Paulo/SP"
+     },
+     "column": "praca",
+     "value": "São Paulo/SP",
+     "raw_cells": {
+      "table_title": "INDICADOR DO CAFÉ ARÁBICA CEPEA/ESALQ",
+      "row_cells": [
+       "04/09/2026",
+       "1.659,93",
+       "-0,74%",
+       "-5,06%",
+       "323,57"
+      ],
+      "headers": [
+       "",
+       "Valor R$",
+       "Var./Dia",
+       "Var./Mês",
+       "Valor US$"
+      ]
+     },
+     "conversion": "convencao documentada; titulo da tabela quando o traz"
+    },
+    {
+     "key": {
+      "produto": "cafe",
+      "data": "2026-09-04",
+      "praca": "São Paulo/SP"
+     },
+     "column": "fonte",
+     "value": "cepea",
+     "raw_cells": {
+      "table_title": "INDICADOR DO CAFÉ ARÁBICA CEPEA/ESALQ",
+      "row_cells": [
+       "04/09/2026",
+       "1.659,93",
+       "-0,74%",
+       "-5,06%",
+       "323,57"
+      ],
+      "headers": [
+       "",
+       "Valor R$",
+       "Var./Dia",
+       "Var./Mês",
+       "Valor US$"
+      ]
+     },
+     "conversion": "origem da coleta"
+    },
+    {
+     "key": {
+      "produto": "cafe",
+      "data": "2026-09-04",
+      "praca": "São Paulo/SP"
+     },
+     "column": "valor_usd",
+     "value": 323.57,
+     "raw_cells": {
+      "table_title": "INDICADOR DO CAFÉ ARÁBICA CEPEA/ESALQ",
+      "row_cells": [
+       "04/09/2026",
+       "1.659,93",
+       "-0,74%",
+       "-5,06%",
+       "323,57"
+      ],
+      "headers": [
+       "",
+       "Valor R$",
+       "Var./Dia",
+       "Var./Mês",
+       "Valor US$"
+      ]
+     },
+     "conversion": "'Valor US$' virgula decimal -> float64"
+    },
+    {
+     "key": {
+      "produto": "cafe",
+      "data": "2026-08-17",
+      "praca": "São Paulo/SP"
+     },
+     "column": "valor_usd",
+     "value": 343.37,
+     "raw_cells": {
+      "table_title": "INDICADOR DO CAFÉ ARÁBICA CEPEA/ESALQ",
+      "row_cells": [
+       "17/08/2026",
+       "1.784,82",
+       "-0,52%",
+       "2,33%",
+       "343,37"
+      ],
+      "headers": [
+       "",
+       "Valor R$",
+       "Var./Dia",
+       "Var./Mês",
+       "Valor US$"
+      ]
+     },
+     "conversion": "USD da linha mais antiga"
+    },
+    {
+     "key": {
+      "produto": "cafe",
+      "data": "2026-09-04",
+      "praca": "São Paulo/SP"
+     },
+     "column": "peso_medio_kg",
+     "value": null,
+     "raw_cells": {
+      "table_title": "INDICADOR DO CAFÉ ARÁBICA CEPEA/ESALQ",
+      "row_cells": [
+       "04/09/2026",
+       "1.659,93",
+       "-0,74%",
+       "-5,06%",
+       "323,57"
+      ],
+      "headers": [
+       "",
+       "Valor R$",
+       "Var./Dia",
+       "Var./Mês",
+       "Valor US$"
+      ]
+     },
+     "conversion": "sem tabela de peso medio para este produto"
+    }
+   ]
+  },
+  {
+   "id": "cepea_cafe_robusta",
+   "dataset": "preco_diario",
+   "product": "cafe_robusta",
+   "source": "cepea",
+   "selection": {
+    "produto": "cafe_robusta",
+    "inicio": "2026-08-17",
+    "fim": "2026-09-04"
+   },
+   "file": "../cepea/sanity_20260906/cafe.html",
+   "layout": "cepea_indicador_diario",
+   "structure": [
+    {
+     "kind": "html_table",
+     "locator": {
+      "title": "INDICADOR DO CAFÉ ARÁBICA CEPEA/ESALQ",
+      "title_index": 0,
+      "selector": "div.imagenet-table-titulo + table"
+     },
+     "headers": [
+      "",
+      "Valor R$",
+      "Var./Dia",
+      "Var./Mês",
+      "Valor US$"
+     ],
+     "rows": 15,
+     "estado": "ignorada",
+     "campo": null,
+     "motivo": "outro_produto_cafe"
+    },
+    {
+     "kind": "html_table",
+     "locator": {
+      "title": "INDICADOR DO CAFÉ ROBUSTA CEPEA/ESALQ",
+      "title_index": 1,
+      "selector": "div.imagenet-table-titulo + table"
+     },
+     "headers": [
+      "",
+      "Valor R$",
+      "Var./Dia",
+      "Var./Mês",
+      "Valor US$"
+     ],
+     "rows": 15,
+     "estado": "mapeada",
+     "campo": "valor|valor_usd|data",
+     "motivo": null
+    }
+   ],
+   "ignored_columns": [
+    "Var./Dia",
+    "Var./Mês"
+   ],
+   "period": {
+    "newest": "2026-09-04",
+    "oldest": "2026-08-17",
+    "rows": 15
+   },
+   "samples": [
+    {
+     "key": {
+      "produto": "cafe_robusta",
+      "data": "2026-09-04",
+      "praca": "Espírito Santo"
+     },
+     "column": "valor",
+     "value": 976.71,
+     "raw_cells": {
+      "table_title": "INDICADOR DO CAFÉ ROBUSTA CEPEA/ESALQ",
+      "row_cells": [
+       "04/09/2026",
+       "976,71",
+       "-0,34%",
+       "-4,44%",
+       "190,39"
+      ],
+      "headers": [
+       "",
+       "Valor R$",
+       "Var./Dia",
+       "Var./Mês",
+       "Valor US$"
+      ]
+     },
+     "conversion": "'Valor R$' virgula decimal -> float64"
+    },
+    {
+     "key": {
+      "produto": "cafe_robusta",
+      "data": "2026-08-17",
+      "praca": "Espírito Santo"
+     },
+     "column": "valor",
+     "value": 1052.95,
+     "raw_cells": {
+      "table_title": "INDICADOR DO CAFÉ ROBUSTA CEPEA/ESALQ",
+      "row_cells": [
+       "17/08/2026",
+       "1.052,95",
+       "0,36%",
+       "-3,63%",
+       "202,57"
+      ],
+      "headers": [
+       "",
+       "Valor R$",
+       "Var./Dia",
+       "Var./Mês",
+       "Valor US$"
+      ]
+     },
+     "conversion": "linha mais antiga da tabela (ultima linha crua)"
+    },
+    {
+     "key": {
+      "produto": "cafe_robusta",
+      "data": "2026-08-26",
+      "praca": "Espírito Santo"
+     },
+     "column": "valor",
+     "value": 1036.13,
+     "raw_cells": {
+      "table_title": "INDICADOR DO CAFÉ ROBUSTA CEPEA/ESALQ",
+      "row_cells": [
+       "26/08/2026",
+       "1.036,13",
+       "-1,20%",
+       "-5,16%",
+       "201,03"
+      ],
+      "headers": [
+       "",
+       "Valor R$",
+       "Var./Dia",
+       "Var./Mês",
+       "Valor US$"
+      ]
+     },
+     "conversion": "linha intermediaria"
+    },
+    {
+     "key": {
+      "produto": "cafe_robusta",
+      "data": "2026-09-04",
+      "praca": "Espírito Santo"
+     },
+     "column": "unidade",
+     "value": "BRL/sc60kg",
+     "raw_cells": {
+      "table_title": "INDICADOR DO CAFÉ ROBUSTA CEPEA/ESALQ",
+      "row_cells": [
+       "04/09/2026",
+       "976,71",
+       "-0,34%",
+       "-4,44%",
+       "190,39"
+      ],
+      "headers": [
+       "",
+       "Valor R$",
+       "Var./Dia",
+       "Var./Mês",
+       "Valor US$"
+      ]
+     },
+     "conversion": "texto publicado: 'Reais por saca de 60 kg líquido'; canonico do contrato"
+    },
+    {
+     "key": {
+      "produto": "cafe_robusta",
+      "data": "2026-09-04",
+      "praca": "Espírito Santo"
+     },
+     "column": "praca",
+     "value": "Espírito Santo",
+     "raw_cells": {
+      "table_title": "INDICADOR DO CAFÉ ROBUSTA CEPEA/ESALQ",
+      "row_cells": [
+       "04/09/2026",
+       "976,71",
+       "-0,34%",
+       "-4,44%",
+       "190,39"
+      ],
+      "headers": [
+       "",
+       "Valor R$",
+       "Var./Dia",
+       "Var./Mês",
+       "Valor US$"
+      ]
+     },
+     "conversion": "convencao documentada; titulo da tabela quando o traz"
+    },
+    {
+     "key": {
+      "produto": "cafe_robusta",
+      "data": "2026-09-04",
+      "praca": "Espírito Santo"
+     },
+     "column": "fonte",
+     "value": "cepea",
+     "raw_cells": {
+      "table_title": "INDICADOR DO CAFÉ ROBUSTA CEPEA/ESALQ",
+      "row_cells": [
+       "04/09/2026",
+       "976,71",
+       "-0,34%",
+       "-4,44%",
+       "190,39"
+      ],
+      "headers": [
+       "",
+       "Valor R$",
+       "Var./Dia",
+       "Var./Mês",
+       "Valor US$"
+      ]
+     },
+     "conversion": "origem da coleta"
+    },
+    {
+     "key": {
+      "produto": "cafe_robusta",
+      "data": "2026-09-04",
+      "praca": "Espírito Santo"
+     },
+     "column": "valor_usd",
+     "value": 190.39,
+     "raw_cells": {
+      "table_title": "INDICADOR DO CAFÉ ROBUSTA CEPEA/ESALQ",
+      "row_cells": [
+       "04/09/2026",
+       "976,71",
+       "-0,34%",
+       "-4,44%",
+       "190,39"
+      ],
+      "headers": [
+       "",
+       "Valor R$",
+       "Var./Dia",
+       "Var./Mês",
+       "Valor US$"
+      ]
+     },
+     "conversion": "'Valor US$' virgula decimal -> float64"
+    },
+    {
+     "key": {
+      "produto": "cafe_robusta",
+      "data": "2026-08-17",
+      "praca": "Espírito Santo"
+     },
+     "column": "valor_usd",
+     "value": 202.57,
+     "raw_cells": {
+      "table_title": "INDICADOR DO CAFÉ ROBUSTA CEPEA/ESALQ",
+      "row_cells": [
+       "17/08/2026",
+       "1.052,95",
+       "0,36%",
+       "-3,63%",
+       "202,57"
+      ],
+      "headers": [
+       "",
+       "Valor R$",
+       "Var./Dia",
+       "Var./Mês",
+       "Valor US$"
+      ]
+     },
+     "conversion": "USD da linha mais antiga"
+    },
+    {
+     "key": {
+      "produto": "cafe_robusta",
+      "data": "2026-09-04",
+      "praca": "Espírito Santo"
+     },
+     "column": "peso_medio_kg",
+     "value": null,
+     "raw_cells": {
+      "table_title": "INDICADOR DO CAFÉ ROBUSTA CEPEA/ESALQ",
+      "row_cells": [
+       "04/09/2026",
+       "976,71",
+       "-0,34%",
+       "-4,44%",
+       "190,39"
+      ],
+      "headers": [
+       "",
+       "Valor R$",
+       "Var./Dia",
+       "Var./Mês",
+       "Valor US$"
+      ]
+     },
+     "conversion": "sem tabela de peso medio para este produto"
+    }
+   ]
+  },
+  {
+   "id": "cepea_trigo",
+   "dataset": "preco_diario",
+   "product": "trigo",
+   "source": "cepea",
+   "selection": {
+    "produto": "trigo",
+    "inicio": "2026-08-17",
+    "fim": "2026-09-04"
+   },
+   "file": "../cepea/sanity_20260906/trigo.html",
+   "layout": "cepea_indicador_diario",
+   "structure": [
+    {
+     "kind": "html_table",
+     "locator": {
+      "title": "PREÇO MÉDIO DO TRIGO CEPEA/ESALQ - PARANÁ",
+      "title_index": 0,
+      "selector": "div.imagenet-table-titulo + table"
+     },
+     "headers": [
+      "",
+      "Valor R$/t*",
+      "Var./Dia",
+      "Var./Mês",
+      "Valor US$/t*"
+     ],
+     "rows": 15,
+     "estado": "mapeada",
+     "campo": "valor|valor_usd|data",
+     "motivo": null
+    },
+    {
+     "kind": "html_table",
+     "locator": {
+      "title": "PREÇO MÉDIO DO TRIGO CEPEA/ESALQ - RIO GRANDE DO SUL",
+      "title_index": 1,
+      "selector": "div.imagenet-table-titulo + table"
+     },
+     "headers": [
+      "",
+      "Valor R$/t*",
+      "Var./Dia",
+      "Var./Mês",
+      "Valor US$/t*"
+     ],
+     "rows": 15,
+     "estado": "ignorada",
+     "campo": null,
+     "motivo": "praca_alternativa_nao_exposta"
+    }
+   ],
+   "ignored_columns": [
+    "Var./Dia",
+    "Var./Mês"
+   ],
+   "period": {
+    "newest": "2026-09-04",
+    "oldest": "2026-08-17",
+    "rows": 15
+   },
+   "samples": [
+    {
+     "key": {
+      "produto": "trigo",
+      "data": "2026-09-04",
+      "praca": "Paraná"
+     },
+     "column": "valor",
+     "value": 1457.55,
+     "raw_cells": {
+      "table_title": "PREÇO MÉDIO DO TRIGO CEPEA/ESALQ - PARANÁ",
+      "row_cells": [
+       "04/09/2026",
+       "1.457,55",
+       "0,07%",
+       "0,08%",
+       "284,12"
+      ],
+      "headers": [
+       "",
+       "Valor R$/t*",
+       "Var./Dia",
+       "Var./Mês",
+       "Valor US$/t*"
+      ]
+     },
+     "conversion": "'Valor R$/t*' virgula decimal -> float64"
+    },
+    {
+     "key": {
+      "produto": "trigo",
+      "data": "2026-08-17",
+      "praca": "Paraná"
+     },
+     "column": "valor",
+     "value": 1419.11,
+     "raw_cells": {
+      "table_title": "PREÇO MÉDIO DO TRIGO CEPEA/ESALQ - PARANÁ",
+      "row_cells": [
+       "17/08/2026",
+       "1.419,11",
+       "-0,18%",
+       "0,94%",
+       "273,01"
+      ],
+      "headers": [
+       "",
+       "Valor R$/t*",
+       "Var./Dia",
+       "Var./Mês",
+       "Valor US$/t*"
+      ]
+     },
+     "conversion": "linha mais antiga da tabela (ultima linha crua)"
+    },
+    {
+     "key": {
+      "produto": "trigo",
+      "data": "2026-08-26",
+      "praca": "Paraná"
+     },
+     "column": "valor",
+     "value": 1454.12,
+     "raw_cells": {
+      "table_title": "PREÇO MÉDIO DO TRIGO CEPEA/ESALQ - PARANÁ",
+      "row_cells": [
+       "26/08/2026",
+       "1.454,12",
+       "0,81%",
+       "3,43%",
+       "282,13"
+      ],
+      "headers": [
+       "",
+       "Valor R$/t*",
+       "Var./Dia",
+       "Var./Mês",
+       "Valor US$/t*"
+      ]
+     },
+     "conversion": "linha intermediaria"
+    },
+    {
+     "key": {
+      "produto": "trigo",
+      "data": "2026-09-04",
+      "praca": "Paraná"
+     },
+     "column": "unidade",
+     "value": "BRL/ton",
+     "raw_cells": {
+      "table_title": "PREÇO MÉDIO DO TRIGO CEPEA/ESALQ - PARANÁ",
+      "row_cells": [
+       "04/09/2026",
+       "1.457,55",
+       "0,07%",
+       "0,08%",
+       "284,12"
+      ],
+      "headers": [
+       "",
+       "Valor R$/t*",
+       "Var./Dia",
+       "Var./Mês",
+       "Valor US$/t*"
+      ]
+     },
+     "conversion": "texto publicado: 'Valor R$/t'; canonico do contrato"
+    },
+    {
+     "key": {
+      "produto": "trigo",
+      "data": "2026-09-04",
+      "praca": "Paraná"
+     },
+     "column": "praca",
+     "value": "Paraná",
+     "raw_cells": {
+      "table_title": "PREÇO MÉDIO DO TRIGO CEPEA/ESALQ - PARANÁ",
+      "row_cells": [
+       "04/09/2026",
+       "1.457,55",
+       "0,07%",
+       "0,08%",
+       "284,12"
+      ],
+      "headers": [
+       "",
+       "Valor R$/t*",
+       "Var./Dia",
+       "Var./Mês",
+       "Valor US$/t*"
+      ]
+     },
+     "conversion": "convencao documentada; titulo da tabela quando o traz"
+    },
+    {
+     "key": {
+      "produto": "trigo",
+      "data": "2026-09-04",
+      "praca": "Paraná"
+     },
+     "column": "fonte",
+     "value": "cepea",
+     "raw_cells": {
+      "table_title": "PREÇO MÉDIO DO TRIGO CEPEA/ESALQ - PARANÁ",
+      "row_cells": [
+       "04/09/2026",
+       "1.457,55",
+       "0,07%",
+       "0,08%",
+       "284,12"
+      ],
+      "headers": [
+       "",
+       "Valor R$/t*",
+       "Var./Dia",
+       "Var./Mês",
+       "Valor US$/t*"
+      ]
+     },
+     "conversion": "origem da coleta"
+    },
+    {
+     "key": {
+      "produto": "trigo",
+      "data": "2026-09-04",
+      "praca": "Paraná"
+     },
+     "column": "valor_usd",
+     "value": 284.12,
+     "raw_cells": {
+      "table_title": "PREÇO MÉDIO DO TRIGO CEPEA/ESALQ - PARANÁ",
+      "row_cells": [
+       "04/09/2026",
+       "1.457,55",
+       "0,07%",
+       "0,08%",
+       "284,12"
+      ],
+      "headers": [
+       "",
+       "Valor R$/t*",
+       "Var./Dia",
+       "Var./Mês",
+       "Valor US$/t*"
+      ]
+     },
+     "conversion": "'Valor US$/t*' virgula decimal -> float64"
+    },
+    {
+     "key": {
+      "produto": "trigo",
+      "data": "2026-08-17",
+      "praca": "Paraná"
+     },
+     "column": "valor_usd",
+     "value": 273.01,
+     "raw_cells": {
+      "table_title": "PREÇO MÉDIO DO TRIGO CEPEA/ESALQ - PARANÁ",
+      "row_cells": [
+       "17/08/2026",
+       "1.419,11",
+       "-0,18%",
+       "0,94%",
+       "273,01"
+      ],
+      "headers": [
+       "",
+       "Valor R$/t*",
+       "Var./Dia",
+       "Var./Mês",
+       "Valor US$/t*"
+      ]
+     },
+     "conversion": "USD da linha mais antiga"
+    },
+    {
+     "key": {
+      "produto": "trigo",
+      "data": "2026-09-04",
+      "praca": "Paraná"
+     },
+     "column": "peso_medio_kg",
+     "value": null,
+     "raw_cells": {
+      "table_title": "PREÇO MÉDIO DO TRIGO CEPEA/ESALQ - PARANÁ",
+      "row_cells": [
+       "04/09/2026",
+       "1.457,55",
+       "0,07%",
+       "0,08%",
+       "284,12"
+      ],
+      "headers": [
+       "",
+       "Valor R$/t*",
+       "Var./Dia",
+       "Var./Mês",
+       "Valor US$/t*"
+      ]
+     },
+     "conversion": "sem tabela de peso medio para este produto"
+    }
+   ]
+  },
+  {
+   "id": "cepea_algodao",
+   "dataset": "preco_diario",
+   "product": "algodao",
+   "source": "cepea",
+   "selection": {
+    "produto": "algodao",
+    "inicio": "2026-08-17",
+    "fim": "2026-09-04"
+   },
+   "file": "../cepea/sanity_20260906/algodao.html",
+   "layout": "cepea_indicador_diario",
+   "structure": [
+    {
+     "kind": "html_table",
+     "locator": {
+      "title": "Indicador do Algodão em Pluma CEPEA/ESALQ - Prazo de 8 dias",
+      "title_index": 0,
+      "selector": "div.imagenet-table-titulo + table"
+     },
+     "headers": [
+      "",
+      "Centavos R$/lp",
+      "Var./Dia",
+      "Var./Mês",
+      "Prazo pgto. (dias)"
+     ],
+     "rows": 15,
+     "estado": "mapeada",
+     "campo": "valor|valor_usd|data",
+     "motivo": null
+    },
+    {
+     "kind": "html_table",
+     "locator": {
+      "title": "Média Móvel dos Últimos Três Indicadores (8 dias)",
+      "title_index": 1,
+      "selector": "div.imagenet-table-titulo + table"
+     },
+     "headers": [
+      "",
+      "Centavos R$/lp",
+      "Var./Dia",
+      "Var./Mês"
+     ],
+     "rows": 6,
+     "estado": "ignorada",
+     "campo": null,
+     "motivo": "media_movel_derivada"
+    }
+   ],
+   "ignored_columns": [
+    "Var./Dia",
+    "Var./Mês",
+    "Prazo pgto. (dias)"
+   ],
+   "period": {
+    "newest": "2026-09-04",
+    "oldest": "2026-08-17",
+    "rows": 15
+   },
+   "samples": [
+    {
+     "key": {
+      "produto": "algodao",
+      "data": "2026-09-04",
+      "praca": "São Paulo/SP"
+     },
+     "column": "valor",
+     "value": 439.98,
+     "raw_cells": {
+      "table_title": "Indicador do Algodão em Pluma CEPEA/ESALQ - Prazo de 8 dias",
+      "row_cells": [
+       "04/09/2026",
+       "439,98",
+       "0,44%",
+       "0,80%",
+       "19,22"
+      ],
+      "headers": [
+       "",
+       "Centavos R$/lp",
+       "Var./Dia",
+       "Var./Mês",
+       "Prazo pgto. (dias)"
+      ]
+     },
+     "conversion": "'Centavos R$/lp' virgula decimal -> float64"
+    },
+    {
+     "key": {
+      "produto": "algodao",
+      "data": "2026-08-17",
+      "praca": "São Paulo/SP"
+     },
+     "column": "valor",
+     "value": 421.71,
+     "raw_cells": {
+      "table_title": "Indicador do Algodão em Pluma CEPEA/ESALQ - Prazo de 8 dias",
+      "row_cells": [
+       "17/08/2026",
+       "421,71",
+       "0,65%",
+       "0,31%",
+       "15,66"
+      ],
+      "headers": [
+       "",
+       "Centavos R$/lp",
+       "Var./Dia",
+       "Var./Mês",
+       "Prazo pgto. (dias)"
+      ]
+     },
+     "conversion": "linha mais antiga da tabela (ultima linha crua)"
+    },
+    {
+     "key": {
+      "produto": "algodao",
+      "data": "2026-08-26",
+      "praca": "São Paulo/SP"
+     },
+     "column": "valor",
+     "value": 428.45,
+     "raw_cells": {
+      "table_title": "Indicador do Algodão em Pluma CEPEA/ESALQ - Prazo de 8 dias",
+      "row_cells": [
+       "26/08/2026",
+       "428,45",
+       "0,08%",
+       "1,92%",
+       "14,42"
+      ],
+      "headers": [
+       "",
+       "Centavos R$/lp",
+       "Var./Dia",
+       "Var./Mês",
+       "Prazo pgto. (dias)"
+      ]
+     },
+     "conversion": "linha intermediaria"
+    },
+    {
+     "key": {
+      "produto": "algodao",
+      "data": "2026-09-04",
+      "praca": "São Paulo/SP"
+     },
+     "column": "unidade",
+     "value": "cBRL/lb",
+     "raw_cells": {
+      "table_title": "Indicador do Algodão em Pluma CEPEA/ESALQ - Prazo de 8 dias",
+      "row_cells": [
+       "04/09/2026",
+       "439,98",
+       "0,44%",
+       "0,80%",
+       "19,22"
+      ],
+      "headers": [
+       "",
+       "Centavos R$/lp",
+       "Var./Dia",
+       "Var./Mês",
+       "Prazo pgto. (dias)"
+      ]
+     },
+     "conversion": "texto publicado: 'Centavos R$/lp'; canonico do contrato"
+    },
+    {
+     "key": {
+      "produto": "algodao",
+      "data": "2026-09-04",
+      "praca": "São Paulo/SP"
+     },
+     "column": "praca",
+     "value": "São Paulo/SP",
+     "raw_cells": {
+      "table_title": "Indicador do Algodão em Pluma CEPEA/ESALQ - Prazo de 8 dias",
+      "row_cells": [
+       "04/09/2026",
+       "439,98",
+       "0,44%",
+       "0,80%",
+       "19,22"
+      ],
+      "headers": [
+       "",
+       "Centavos R$/lp",
+       "Var./Dia",
+       "Var./Mês",
+       "Prazo pgto. (dias)"
+      ]
+     },
+     "conversion": "convencao documentada; titulo da tabela quando o traz"
+    },
+    {
+     "key": {
+      "produto": "algodao",
+      "data": "2026-09-04",
+      "praca": "São Paulo/SP"
+     },
+     "column": "fonte",
+     "value": "cepea",
+     "raw_cells": {
+      "table_title": "Indicador do Algodão em Pluma CEPEA/ESALQ - Prazo de 8 dias",
+      "row_cells": [
+       "04/09/2026",
+       "439,98",
+       "0,44%",
+       "0,80%",
+       "19,22"
+      ],
+      "headers": [
+       "",
+       "Centavos R$/lp",
+       "Var./Dia",
+       "Var./Mês",
+       "Prazo pgto. (dias)"
+      ]
+     },
+     "conversion": "origem da coleta"
+    },
+    {
+     "key": {
+      "produto": "algodao",
+      "data": "2026-09-04",
+      "praca": "São Paulo/SP"
+     },
+     "column": "valor_usd",
+     "value": null,
+     "raw_cells": {
+      "table_title": "Indicador do Algodão em Pluma CEPEA/ESALQ - Prazo de 8 dias",
+      "row_cells": [
+       "04/09/2026",
+       "439,98",
+       "0,44%",
+       "0,80%",
+       "19,22"
+      ],
+      "headers": [
+       "",
+       "Centavos R$/lp",
+       "Var./Dia",
+       "Var./Mês",
+       "Prazo pgto. (dias)"
+      ]
+     },
+     "conversion": "tabela sem coluna US$; colunas ignoradas: ['Var./Dia', 'Var./Mês', 'Prazo pgto. (dias)']"
+    },
+    {
+     "key": {
+      "produto": "algodao",
+      "data": "2026-09-04",
+      "praca": "São Paulo/SP"
+     },
+     "column": "peso_medio_kg",
+     "value": null,
+     "raw_cells": {
+      "table_title": "Indicador do Algodão em Pluma CEPEA/ESALQ - Prazo de 8 dias",
+      "row_cells": [
+       "04/09/2026",
+       "439,98",
+       "0,44%",
+       "0,80%",
+       "19,22"
+      ],
+      "headers": [
+       "",
+       "Centavos R$/lp",
+       "Var./Dia",
+       "Var./Mês",
+       "Prazo pgto. (dias)"
+      ]
+     },
+     "conversion": "sem tabela de peso medio para este produto"
+    }
+   ]
+  },
+  {
+   "id": "noticias_agricolas_soja",
+   "dataset": "preco_diario",
+   "product": "soja",
+   "source": "noticias_agricolas",
+   "selection": {
+    "produto": "soja",
+    "inicio": "2026-09-03",
+    "fim": "2026-09-17"
+   },
+   "file": "na_soja.html",
+   "layout": "na_cotacao_diaria",
+   "structure": [
+    {
+     "kind": "html_table",
+     "locator": {
+      "table_index": 0,
+      "class": [
+       "cot-fisicas"
+      ],
+      "fechamento": "Fechamento: 17/09/2026"
+     },
+     "headers": [
+      "Data",
+      "Valor R$",
+      "Variação (%)"
+     ],
+     "rows": 1,
+     "estado": "mapeada",
+     "campo": "valor|data",
+     "motivo": null
+    },
+    {
+     "kind": "html_table",
+     "locator": {
+      "table_index": 1,
+      "class": [
+       "cot-fisicas"
+      ],
+      "fechamento": "Fechamento: 16/09/2026"
+     },
+     "headers": [
+      "Data",
+      "Valor R$",
+      "Variação (%)"
+     ],
+     "rows": 1,
+     "estado": "mapeada",
+     "campo": "valor|data",
+     "motivo": null
+    },
+    {
+     "kind": "html_table",
+     "locator": {
+      "table_index": 2,
+      "class": [
+       "cot-fisicas"
+      ],
+      "fechamento": "Fechamento: 15/09/2026"
+     },
+     "headers": [
+      "Data",
+      "Valor R$",
+      "Variação (%)"
+     ],
+     "rows": 1,
+     "estado": "mapeada",
+     "campo": "valor|data",
+     "motivo": null
+    },
+    {
+     "kind": "html_table",
+     "locator": {
+      "table_index": 3,
+      "class": [
+       "cot-fisicas"
+      ],
+      "fechamento": "Fechamento: 14/09/2026"
+     },
+     "headers": [
+      "Data",
+      "Valor R$",
+      "Variação (%)"
+     ],
+     "rows": 1,
+     "estado": "mapeada",
+     "campo": "valor|data",
+     "motivo": null
+    },
+    {
+     "kind": "html_table",
+     "locator": {
+      "table_index": 4,
+      "class": [
+       "cot-fisicas"
+      ],
+      "fechamento": "Fechamento: 11/09/2026"
+     },
+     "headers": [
+      "Data",
+      "Valor R$",
+      "Variação (%)"
+     ],
+     "rows": 1,
+     "estado": "mapeada",
+     "campo": "valor|data",
+     "motivo": null
+    },
+    {
+     "kind": "html_table",
+     "locator": {
+      "table_index": 5,
+      "class": [
+       "cot-fisicas"
+      ],
+      "fechamento": "Fechamento: 10/09/2026"
+     },
+     "headers": [
+      "Data",
+      "Valor R$",
+      "Variação (%)"
+     ],
+     "rows": 1,
+     "estado": "mapeada",
+     "campo": "valor|data",
+     "motivo": null
+    },
+    {
+     "kind": "html_table",
+     "locator": {
+      "table_index": 6,
+      "class": [
+       "cot-fisicas"
+      ],
+      "fechamento": "Fechamento: 09/09/2026"
+     },
+     "headers": [
+      "Data",
+      "Valor R$",
+      "Variação (%)"
+     ],
+     "rows": 1,
+     "estado": "mapeada",
+     "campo": "valor|data",
+     "motivo": null
+    },
+    {
+     "kind": "html_table",
+     "locator": {
+      "table_index": 7,
+      "class": [
+       "cot-fisicas"
+      ],
+      "fechamento": "Fechamento: 08/09/2026"
+     },
+     "headers": [
+      "Data",
+      "Valor R$",
+      "Variação (%)"
+     ],
+     "rows": 1,
+     "estado": "mapeada",
+     "campo": "valor|data",
+     "motivo": null
+    },
+    {
+     "kind": "html_table",
+     "locator": {
+      "table_index": 8,
+      "class": [
+       "cot-fisicas"
+      ],
+      "fechamento": "Fechamento: 04/09/2026"
+     },
+     "headers": [
+      "Data",
+      "Valor R$",
+      "Variação (%)"
+     ],
+     "rows": 1,
+     "estado": "mapeada",
+     "campo": "valor|data",
+     "motivo": null
+    },
+    {
+     "kind": "html_table",
+     "locator": {
+      "table_index": 9,
+      "class": [
+       "cot-fisicas"
+      ],
+      "fechamento": "Fechamento: 03/09/2026"
+     },
+     "headers": [
+      "Data",
+      "Valor R$",
+      "Variação (%)"
+     ],
+     "rows": 1,
+     "estado": "mapeada",
+     "campo": "valor|data",
+     "motivo": null
+    },
+    {
+     "kind": "html_table",
+     "locator": {
+      "table_index": 10,
+      "class": null,
+      "fechamento": null
+     },
+     "headers": [
+      "CONTRATO",
+      "US$/bu",
+      "VAR",
+      "",
+      ""
+     ],
+     "rows": 5,
+     "estado": "ignorada",
+     "campo": null,
+     "motivo": "tabela_sem_classe_cot-fisicas_ou_sem_coluna_data"
+    },
+    {
+     "kind": "html_table",
+     "locator": {
+      "table_index": 11,
+      "class": null,
+      "fechamento": null
+     },
+     "headers": [
+      "CONTRATO",
+      "PREÇO",
+      "VAR"
+     ],
+     "rows": 5,
+     "estado": "ignorada",
+     "campo": null,
+     "motivo": "tabela_sem_classe_cot-fisicas_ou_sem_coluna_data"
+    },
+    {
+     "kind": "html_table",
+     "locator": {
+      "table_index": 12,
+      "class": null,
+      "fechamento": null
+     },
+     "headers": [
+      "CONTRATO",
+      "PREÇO",
+      "VAR"
+     ],
+     "rows": 5,
+     "estado": "ignorada",
+     "campo": null,
+     "motivo": "tabela_sem_classe_cot-fisicas_ou_sem_coluna_data"
+    },
+    {
+     "kind": "html_table",
+     "locator": {
+      "table_index": 13,
+      "class": null,
+      "fechamento": null
+     },
+     "headers": [
+      "PRODUTO (R$)",
+      "PREÇO",
+      "VAR"
+     ],
+     "rows": 6,
+     "estado": "ignorada",
+     "campo": null,
+     "motivo": "tabela_sem_classe_cot-fisicas_ou_sem_coluna_data"
+    },
+    {
+     "kind": "html_table",
+     "locator": {
+      "table_index": 14,
+      "class": null,
+      "fechamento": null
+     },
+     "headers": [
+      "CONTRATO",
+      "PREÇO"
+     ],
+     "rows": 7,
+     "estado": "ignorada",
+     "campo": null,
+     "motivo": "tabela_sem_classe_cot-fisicas_ou_sem_coluna_data"
+    }
+   ],
+   "period": {
+    "newest": "2026-09-17",
+    "oldest": "2026-09-03",
+    "rows": 10,
+    "rows_canonical": 10
+   },
+   "other_regions_published": [],
+   "samples": [
+    {
+     "key": {
+      "produto": "soja",
+      "data": "2026-09-17",
+      "praca": "Paranaguá/PR"
+     },
+     "column": "valor",
+     "value": 162.02,
+     "raw_cells": {
+      "row_cells": [
+       "17/09/2026",
+       "162,02",
+       "0,09%"
+      ],
+      "headers": [
+       "Data",
+       "Valor R$",
+       "Variação (%)"
+      ],
+      "region_cell": null
+     },
+     "conversion": "tabela cot-fisicas do fechamento mais recente"
+    },
+    {
+     "key": {
+      "produto": "soja",
+      "data": "2026-09-03",
+      "praca": "Paranaguá/PR"
+     },
+     "column": "valor",
+     "value": 160.14,
+     "raw_cells": {
+      "row_cells": [
+       "03/09/2026",
+       "160,14",
+       "-0,53"
+      ],
+      "headers": [
+       "Data",
+       "Valor R$",
+       "Variação (%)"
+      ],
+      "region_cell": null
+     },
+     "conversion": "tabela cot-fisicas do fechamento mais antigo da pagina"
+    },
+    {
+     "key": {
+      "produto": "soja",
+      "data": "2026-09-17",
+      "praca": "Paranaguá/PR"
+     },
+     "column": "valor_usd",
+     "value": null,
+     "raw_cells": {
+      "row_cells": [
+       "17/09/2026",
+       "162,02",
+       "0,09%"
+      ],
+      "headers": [
+       "Data",
+       "Valor R$",
+       "Variação (%)"
+      ],
+      "region_cell": null
+     },
+     "conversion": "Noticias Agricolas nao publica USD"
+    },
+    {
+     "key": {
+      "produto": "soja",
+      "data": "2026-09-17",
+      "praca": "Paranaguá/PR"
+     },
+     "column": "peso_medio_kg",
+     "value": null,
+     "raw_cells": {
+      "row_cells": [
+       "17/09/2026",
+       "162,02",
+       "0,09%"
+      ],
+      "headers": [
+       "Data",
+       "Valor R$",
+       "Variação (%)"
+      ],
+      "region_cell": null
+     },
+     "conversion": "Noticias Agricolas nao publica peso medio"
+    },
+    {
+     "key": {
+      "produto": "soja",
+      "data": "2026-09-17",
+      "praca": "Paranaguá/PR"
+     },
+     "column": "fonte",
+     "value": "noticias_agricolas",
+     "raw_cells": {
+      "row_cells": [
+       "17/09/2026",
+       "162,02",
+       "0,09%"
+      ],
+      "headers": [
+       "Data",
+       "Valor R$",
+       "Variação (%)"
+      ],
+      "region_cell": null
+     },
+     "conversion": "fallback"
+    },
+    {
+     "key": {
+      "produto": "soja",
+      "data": "2026-09-17",
+      "praca": "Paranaguá/PR"
+     },
+     "column": "praca",
+     "value": "Paranaguá/PR",
+     "raw_cells": {
+      "row_cells": [
+       "17/09/2026",
+       "162,02",
+       "0,09%"
+      ],
+      "headers": [
+       "Data",
+       "Valor R$",
+       "Variação (%)"
+      ],
+      "region_cell": null
+     },
+     "conversion": "coluna Regiao quando existe; senao convencao documentada"
+    },
+    {
+     "key": {
+      "produto": "soja",
+      "data": "2026-09-17",
+      "praca": "Paranaguá/PR"
+     },
+     "column": "unidade",
+     "value": "BRL/sc60kg",
+     "raw_cells": {
+      "row_cells": [
+       "17/09/2026",
+       "162,02",
+       "0,09%"
+      ],
+      "headers": [
+       "Data",
+       "Valor R$",
+       "Variação (%)"
+      ],
+      "region_cell": null
+     },
+     "conversion": "canonico do contrato; NA publica o cabecalho da coluna"
+    }
+   ]
+  },
+  {
+   "id": "noticias_agricolas_milho",
+   "dataset": "preco_diario",
+   "product": "milho",
+   "source": "noticias_agricolas",
+   "selection": {
+    "produto": "milho",
+    "inicio": "2026-09-03",
+    "fim": "2026-09-17"
+   },
+   "file": "na_milho.html",
+   "layout": "na_cotacao_diaria",
+   "structure": [
+    {
+     "kind": "html_table",
+     "locator": {
+      "table_index": 0,
+      "class": [
+       "cot-fisicas"
+      ],
+      "fechamento": "Fechamento: 17/09/2026"
+     },
+     "headers": [
+      "Data",
+      "Valor (R$/sc 60 kg)",
+      "Variação (%)"
+     ],
+     "rows": 1,
+     "estado": "mapeada",
+     "campo": "valor|data",
+     "motivo": null
+    },
+    {
+     "kind": "html_table",
+     "locator": {
+      "table_index": 1,
+      "class": [
+       "cot-fisicas"
+      ],
+      "fechamento": "Fechamento: 16/09/2026"
+     },
+     "headers": [
+      "Data",
+      "Valor (R$/sc 60 kg)",
+      "Variação (%)"
+     ],
+     "rows": 1,
+     "estado": "mapeada",
+     "campo": "valor|data",
+     "motivo": null
+    },
+    {
+     "kind": "html_table",
+     "locator": {
+      "table_index": 2,
+      "class": [
+       "cot-fisicas"
+      ],
+      "fechamento": "Fechamento: 15/09/2026"
+     },
+     "headers": [
+      "Data",
+      "Valor (R$/sc 60 kg)",
+      "Variação (%)"
+     ],
+     "rows": 1,
+     "estado": "mapeada",
+     "campo": "valor|data",
+     "motivo": null
+    },
+    {
+     "kind": "html_table",
+     "locator": {
+      "table_index": 3,
+      "class": [
+       "cot-fisicas"
+      ],
+      "fechamento": "Fechamento: 14/09/2026"
+     },
+     "headers": [
+      "Data",
+      "Valor (R$/sc 60 kg)",
+      "Variação (%)"
+     ],
+     "rows": 1,
+     "estado": "mapeada",
+     "campo": "valor|data",
+     "motivo": null
+    },
+    {
+     "kind": "html_table",
+     "locator": {
+      "table_index": 4,
+      "class": [
+       "cot-fisicas"
+      ],
+      "fechamento": "Fechamento: 11/09/2026"
+     },
+     "headers": [
+      "Data",
+      "Valor (R$/sc 60 kg)",
+      "Variação (%)"
+     ],
+     "rows": 1,
+     "estado": "mapeada",
+     "campo": "valor|data",
+     "motivo": null
+    },
+    {
+     "kind": "html_table",
+     "locator": {
+      "table_index": 5,
+      "class": [
+       "cot-fisicas"
+      ],
+      "fechamento": "Fechamento: 10/09/2026"
+     },
+     "headers": [
+      "Data",
+      "Valor (R$/sc 60 kg)",
+      "Variação (%)"
+     ],
+     "rows": 1,
+     "estado": "mapeada",
+     "campo": "valor|data",
+     "motivo": null
+    },
+    {
+     "kind": "html_table",
+     "locator": {
+      "table_index": 6,
+      "class": [
+       "cot-fisicas"
+      ],
+      "fechamento": "Fechamento: 09/09/2026"
+     },
+     "headers": [
+      "Data",
+      "Valor (R$/sc 60 kg)",
+      "Variação (%)"
+     ],
+     "rows": 1,
+     "estado": "mapeada",
+     "campo": "valor|data",
+     "motivo": null
+    },
+    {
+     "kind": "html_table",
+     "locator": {
+      "table_index": 7,
+      "class": [
+       "cot-fisicas"
+      ],
+      "fechamento": "Fechamento: 08/09/2026"
+     },
+     "headers": [
+      "Data",
+      "Valor (R$/sc 60 kg)",
+      "Variação (%)"
+     ],
+     "rows": 1,
+     "estado": "mapeada",
+     "campo": "valor|data",
+     "motivo": null
+    },
+    {
+     "kind": "html_table",
+     "locator": {
+      "table_index": 8,
+      "class": [
+       "cot-fisicas"
+      ],
+      "fechamento": "Fechamento: 04/09/2026"
+     },
+     "headers": [
+      "Data",
+      "Valor (R$/sc 60 kg)",
+      "Variação (%)"
+     ],
+     "rows": 1,
+     "estado": "mapeada",
+     "campo": "valor|data",
+     "motivo": null
+    },
+    {
+     "kind": "html_table",
+     "locator": {
+      "table_index": 9,
+      "class": [
+       "cot-fisicas"
+      ],
+      "fechamento": "Fechamento: 03/09/2026"
+     },
+     "headers": [
+      "Data",
+      "Valor (R$/sc 60 kg)",
+      "Variação (%)"
+     ],
+     "rows": 1,
+     "estado": "mapeada",
+     "campo": "valor|data",
+     "motivo": null
+    },
+    {
+     "kind": "html_table",
+     "locator": {
+      "table_index": 10,
+      "class": null,
+      "fechamento": null
+     },
+     "headers": [
+      "CONTRATO",
+      "US$/bu",
+      "VAR",
+      "",
+      ""
+     ],
+     "rows": 5,
+     "estado": "ignorada",
+     "campo": null,
+     "motivo": "tabela_sem_classe_cot-fisicas_ou_sem_coluna_data"
+    },
+    {
+     "kind": "html_table",
+     "locator": {
+      "table_index": 11,
+      "class": null,
+      "fechamento": null
+     },
+     "headers": [
+      "CONTRATO",
+      "PREÇO",
+      "VAR"
+     ],
+     "rows": 5,
+     "estado": "ignorada",
+     "campo": null,
+     "motivo": "tabela_sem_classe_cot-fisicas_ou_sem_coluna_data"
+    },
+    {
+     "kind": "html_table",
+     "locator": {
+      "table_index": 12,
+      "class": null,
+      "fechamento": null
+     },
+     "headers": [
+      "CONTRATO",
+      "PREÇO",
+      "VAR"
+     ],
+     "rows": 5,
+     "estado": "ignorada",
+     "campo": null,
+     "motivo": "tabela_sem_classe_cot-fisicas_ou_sem_coluna_data"
+    },
+    {
+     "kind": "html_table",
+     "locator": {
+      "table_index": 13,
+      "class": null,
+      "fechamento": null
+     },
+     "headers": [
+      "PRODUTO (R$)",
+      "PREÇO",
+      "VAR"
+     ],
+     "rows": 6,
+     "estado": "ignorada",
+     "campo": null,
+     "motivo": "tabela_sem_classe_cot-fisicas_ou_sem_coluna_data"
+    },
+    {
+     "kind": "html_table",
+     "locator": {
+      "table_index": 14,
+      "class": null,
+      "fechamento": null
+     },
+     "headers": [
+      "CONTRATO",
+      "PREÇO"
+     ],
+     "rows": 7,
+     "estado": "ignorada",
+     "campo": null,
+     "motivo": "tabela_sem_classe_cot-fisicas_ou_sem_coluna_data"
+    }
+   ],
+   "period": {
+    "newest": "2026-09-17",
+    "oldest": "2026-09-03",
+    "rows": 10,
+    "rows_canonical": 10
+   },
+   "other_regions_published": [],
+   "samples": [
+    {
+     "key": {
+      "produto": "milho",
+      "data": "2026-09-17",
+      "praca": "Campinas/SP"
+     },
+     "column": "valor",
+     "value": 69.25,
+     "raw_cells": {
+      "row_cells": [
+       "17/09/2026",
+       "69,25",
+       "0,07%"
+      ],
+      "headers": [
+       "Data",
+       "Valor (R$/sc 60 kg)",
+       "Variação (%)"
+      ],
+      "region_cell": null
+     },
+     "conversion": "tabela cot-fisicas do fechamento mais recente"
+    },
+    {
+     "key": {
+      "produto": "milho",
+      "data": "2026-09-03",
+      "praca": "Campinas/SP"
+     },
+     "column": "valor",
+     "value": 71.06,
+     "raw_cells": {
+      "row_cells": [
+       "03/09/2026",
+       "71,06",
+       "+0,17"
+      ],
+      "headers": [
+       "Data",
+       "Valor (R$/sc 60 kg)",
+       "Variação (%)"
+      ],
+      "region_cell": null
+     },
+     "conversion": "tabela cot-fisicas do fechamento mais antigo da pagina"
+    },
+    {
+     "key": {
+      "produto": "milho",
+      "data": "2026-09-17",
+      "praca": "Campinas/SP"
+     },
+     "column": "valor_usd",
+     "value": null,
+     "raw_cells": {
+      "row_cells": [
+       "17/09/2026",
+       "69,25",
+       "0,07%"
+      ],
+      "headers": [
+       "Data",
+       "Valor (R$/sc 60 kg)",
+       "Variação (%)"
+      ],
+      "region_cell": null
+     },
+     "conversion": "Noticias Agricolas nao publica USD"
+    },
+    {
+     "key": {
+      "produto": "milho",
+      "data": "2026-09-17",
+      "praca": "Campinas/SP"
+     },
+     "column": "peso_medio_kg",
+     "value": null,
+     "raw_cells": {
+      "row_cells": [
+       "17/09/2026",
+       "69,25",
+       "0,07%"
+      ],
+      "headers": [
+       "Data",
+       "Valor (R$/sc 60 kg)",
+       "Variação (%)"
+      ],
+      "region_cell": null
+     },
+     "conversion": "Noticias Agricolas nao publica peso medio"
+    },
+    {
+     "key": {
+      "produto": "milho",
+      "data": "2026-09-17",
+      "praca": "Campinas/SP"
+     },
+     "column": "fonte",
+     "value": "noticias_agricolas",
+     "raw_cells": {
+      "row_cells": [
+       "17/09/2026",
+       "69,25",
+       "0,07%"
+      ],
+      "headers": [
+       "Data",
+       "Valor (R$/sc 60 kg)",
+       "Variação (%)"
+      ],
+      "region_cell": null
+     },
+     "conversion": "fallback"
+    },
+    {
+     "key": {
+      "produto": "milho",
+      "data": "2026-09-17",
+      "praca": "Campinas/SP"
+     },
+     "column": "praca",
+     "value": "Campinas/SP",
+     "raw_cells": {
+      "row_cells": [
+       "17/09/2026",
+       "69,25",
+       "0,07%"
+      ],
+      "headers": [
+       "Data",
+       "Valor (R$/sc 60 kg)",
+       "Variação (%)"
+      ],
+      "region_cell": null
+     },
+     "conversion": "coluna Regiao quando existe; senao convencao documentada"
+    },
+    {
+     "key": {
+      "produto": "milho",
+      "data": "2026-09-17",
+      "praca": "Campinas/SP"
+     },
+     "column": "unidade",
+     "value": "BRL/sc60kg",
+     "raw_cells": {
+      "row_cells": [
+       "17/09/2026",
+       "69,25",
+       "0,07%"
+      ],
+      "headers": [
+       "Data",
+       "Valor (R$/sc 60 kg)",
+       "Variação (%)"
+      ],
+      "region_cell": null
+     },
+     "conversion": "canonico do contrato; NA publica o cabecalho da coluna"
+    }
+   ]
+  },
+  {
+   "id": "noticias_agricolas_boi",
+   "dataset": "preco_diario",
+   "product": "boi",
+   "source": "noticias_agricolas",
+   "selection": {
+    "produto": "boi",
+    "inicio": "2026-09-03",
+    "fim": "2026-09-17"
+   },
+   "file": "na_boi.html",
+   "layout": "na_cotacao_diaria",
+   "structure": [
+    {
+     "kind": "html_table",
+     "locator": {
+      "table_index": 0,
+      "class": [
+       "cot-fisicas"
+      ],
+      "fechamento": "Fechamento: 17/09/2026"
+     },
+     "headers": [
+      "Data",
+      "à vista R$",
+      "Variação (%)"
+     ],
+     "rows": 1,
+     "estado": "mapeada",
+     "campo": "valor|data",
+     "motivo": null
+    },
+    {
+     "kind": "html_table",
+     "locator": {
+      "table_index": 1,
+      "class": [
+       "cot-fisicas"
+      ],
+      "fechamento": "Fechamento: 16/09/2026"
+     },
+     "headers": [
+      "Data",
+      "à vista R$",
+      "Variação (%)"
+     ],
+     "rows": 1,
+     "estado": "mapeada",
+     "campo": "valor|data",
+     "motivo": null
+    },
+    {
+     "kind": "html_table",
+     "locator": {
+      "table_index": 2,
+      "class": [
+       "cot-fisicas"
+      ],
+      "fechamento": "Fechamento: 15/09/2026"
+     },
+     "headers": [
+      "Data",
+      "à vista R$",
+      "Variação (%)"
+     ],
+     "rows": 1,
+     "estado": "mapeada",
+     "campo": "valor|data",
+     "motivo": null
+    },
+    {
+     "kind": "html_table",
+     "locator": {
+      "table_index": 3,
+      "class": [
+       "cot-fisicas"
+      ],
+      "fechamento": "Fechamento: 14/09/2026"
+     },
+     "headers": [
+      "Data",
+      "à vista R$",
+      "Variação (%)"
+     ],
+     "rows": 1,
+     "estado": "mapeada",
+     "campo": "valor|data",
+     "motivo": null
+    },
+    {
+     "kind": "html_table",
+     "locator": {
+      "table_index": 4,
+      "class": [
+       "cot-fisicas"
+      ],
+      "fechamento": "Fechamento: 11/09/2026"
+     },
+     "headers": [
+      "Data",
+      "à vista R$",
+      "Variação (%)"
+     ],
+     "rows": 1,
+     "estado": "mapeada",
+     "campo": "valor|data",
+     "motivo": null
+    },
+    {
+     "kind": "html_table",
+     "locator": {
+      "table_index": 5,
+      "class": [
+       "cot-fisicas"
+      ],
+      "fechamento": "Fechamento: 10/09/2026"
+     },
+     "headers": [
+      "Data",
+      "à vista R$",
+      "Variação (%)"
+     ],
+     "rows": 1,
+     "estado": "mapeada",
+     "campo": "valor|data",
+     "motivo": null
+    },
+    {
+     "kind": "html_table",
+     "locator": {
+      "table_index": 6,
+      "class": [
+       "cot-fisicas"
+      ],
+      "fechamento": "Fechamento: 09/09/2026"
+     },
+     "headers": [
+      "Data",
+      "à vista R$",
+      "Variação (%)"
+     ],
+     "rows": 1,
+     "estado": "mapeada",
+     "campo": "valor|data",
+     "motivo": null
+    },
+    {
+     "kind": "html_table",
+     "locator": {
+      "table_index": 7,
+      "class": [
+       "cot-fisicas"
+      ],
+      "fechamento": "Fechamento: 08/09/2026"
+     },
+     "headers": [
+      "Data",
+      "à vista R$",
+      "Variação (%)"
+     ],
+     "rows": 1,
+     "estado": "mapeada",
+     "campo": "valor|data",
+     "motivo": null
+    },
+    {
+     "kind": "html_table",
+     "locator": {
+      "table_index": 8,
+      "class": [
+       "cot-fisicas"
+      ],
+      "fechamento": "Fechamento: 04/09/2026"
+     },
+     "headers": [
+      "Data",
+      "à vista R$",
+      "Variação (%)"
+     ],
+     "rows": 1,
+     "estado": "mapeada",
+     "campo": "valor|data",
+     "motivo": null
+    },
+    {
+     "kind": "html_table",
+     "locator": {
+      "table_index": 9,
+      "class": [
+       "cot-fisicas"
+      ],
+      "fechamento": "Fechamento: 03/09/2026"
+     },
+     "headers": [
+      "Data",
+      "à vista R$",
+      "Variação (%)"
+     ],
+     "rows": 1,
+     "estado": "mapeada",
+     "campo": "valor|data",
+     "motivo": null
+    },
+    {
+     "kind": "html_table",
+     "locator": {
+      "table_index": 10,
+      "class": null,
+      "fechamento": null
+     },
+     "headers": [
+      "CONTRATO",
+      "US$/bu",
+      "VAR",
+      "",
+      ""
+     ],
+     "rows": 5,
+     "estado": "ignorada",
+     "campo": null,
+     "motivo": "tabela_sem_classe_cot-fisicas_ou_sem_coluna_data"
+    },
+    {
+     "kind": "html_table",
+     "locator": {
+      "table_index": 11,
+      "class": null,
+      "fechamento": null
+     },
+     "headers": [
+      "CONTRATO",
+      "PREÇO",
+      "VAR"
+     ],
+     "rows": 5,
+     "estado": "ignorada",
+     "campo": null,
+     "motivo": "tabela_sem_classe_cot-fisicas_ou_sem_coluna_data"
+    },
+    {
+     "kind": "html_table",
+     "locator": {
+      "table_index": 12,
+      "class": null,
+      "fechamento": null
+     },
+     "headers": [
+      "CONTRATO",
+      "PREÇO",
+      "VAR"
+     ],
+     "rows": 5,
+     "estado": "ignorada",
+     "campo": null,
+     "motivo": "tabela_sem_classe_cot-fisicas_ou_sem_coluna_data"
+    },
+    {
+     "kind": "html_table",
+     "locator": {
+      "table_index": 13,
+      "class": null,
+      "fechamento": null
+     },
+     "headers": [
+      "PRODUTO (R$)",
+      "PREÇO",
+      "VAR"
+     ],
+     "rows": 6,
+     "estado": "ignorada",
+     "campo": null,
+     "motivo": "tabela_sem_classe_cot-fisicas_ou_sem_coluna_data"
+    },
+    {
+     "kind": "html_table",
+     "locator": {
+      "table_index": 14,
+      "class": null,
+      "fechamento": null
+     },
+     "headers": [
+      "CONTRATO",
+      "PREÇO"
+     ],
+     "rows": 7,
+     "estado": "ignorada",
+     "campo": null,
+     "motivo": "tabela_sem_classe_cot-fisicas_ou_sem_coluna_data"
+    }
+   ],
+   "period": {
+    "newest": "2026-09-17",
+    "oldest": "2026-09-03",
+    "rows": 10,
+    "rows_canonical": 10
+   },
+   "other_regions_published": [],
+   "samples": [
+    {
+     "key": {
+      "produto": "boi",
+      "data": "2026-09-17",
+      "praca": "São Paulo/SP"
+     },
+     "column": "valor",
+     "value": 352.55,
+     "raw_cells": {
+      "row_cells": [
+       "17/09/2026",
+       "352,55",
+       "0,07%"
+      ],
+      "headers": [
+       "Data",
+       "à vista R$",
+       "Variação (%)"
+      ],
+      "region_cell": null
+     },
+     "conversion": "tabela cot-fisicas do fechamento mais recente"
+    },
+    {
+     "key": {
+      "produto": "boi",
+      "data": "2026-09-03",
+      "praca": "São Paulo/SP"
+     },
+     "column": "valor",
+     "value": 347.6,
+     "raw_cells": {
+      "row_cells": [
+       "03/09/2026",
+       "347,60",
+       "+0,06"
+      ],
+      "headers": [
+       "Data",
+       "à vista R$",
+       "Variação (%)"
+      ],
+      "region_cell": null
+     },
+     "conversion": "tabela cot-fisicas do fechamento mais antigo da pagina"
+    },
+    {
+     "key": {
+      "produto": "boi",
+      "data": "2026-09-17",
+      "praca": "São Paulo/SP"
+     },
+     "column": "valor_usd",
+     "value": null,
+     "raw_cells": {
+      "row_cells": [
+       "17/09/2026",
+       "352,55",
+       "0,07%"
+      ],
+      "headers": [
+       "Data",
+       "à vista R$",
+       "Variação (%)"
+      ],
+      "region_cell": null
+     },
+     "conversion": "Noticias Agricolas nao publica USD"
+    },
+    {
+     "key": {
+      "produto": "boi",
+      "data": "2026-09-17",
+      "praca": "São Paulo/SP"
+     },
+     "column": "peso_medio_kg",
+     "value": null,
+     "raw_cells": {
+      "row_cells": [
+       "17/09/2026",
+       "352,55",
+       "0,07%"
+      ],
+      "headers": [
+       "Data",
+       "à vista R$",
+       "Variação (%)"
+      ],
+      "region_cell": null
+     },
+     "conversion": "Noticias Agricolas nao publica peso medio"
+    },
+    {
+     "key": {
+      "produto": "boi",
+      "data": "2026-09-17",
+      "praca": "São Paulo/SP"
+     },
+     "column": "fonte",
+     "value": "noticias_agricolas",
+     "raw_cells": {
+      "row_cells": [
+       "17/09/2026",
+       "352,55",
+       "0,07%"
+      ],
+      "headers": [
+       "Data",
+       "à vista R$",
+       "Variação (%)"
+      ],
+      "region_cell": null
+     },
+     "conversion": "fallback"
+    },
+    {
+     "key": {
+      "produto": "boi",
+      "data": "2026-09-17",
+      "praca": "São Paulo/SP"
+     },
+     "column": "praca",
+     "value": "São Paulo/SP",
+     "raw_cells": {
+      "row_cells": [
+       "17/09/2026",
+       "352,55",
+       "0,07%"
+      ],
+      "headers": [
+       "Data",
+       "à vista R$",
+       "Variação (%)"
+      ],
+      "region_cell": null
+     },
+     "conversion": "coluna Regiao quando existe; senao convencao documentada"
+    },
+    {
+     "key": {
+      "produto": "boi",
+      "data": "2026-09-17",
+      "praca": "São Paulo/SP"
+     },
+     "column": "unidade",
+     "value": "BRL/@",
+     "raw_cells": {
+      "row_cells": [
+       "17/09/2026",
+       "352,55",
+       "0,07%"
+      ],
+      "headers": [
+       "Data",
+       "à vista R$",
+       "Variação (%)"
+      ],
+      "region_cell": null
+     },
+     "conversion": "canonico do contrato; NA publica o cabecalho da coluna"
+    }
+   ]
+  },
+  {
+   "id": "noticias_agricolas_bezerro",
+   "dataset": "preco_diario",
+   "product": "bezerro",
+   "source": "noticias_agricolas",
+   "selection": {
+    "produto": "bezerro",
+    "inicio": "2026-09-03",
+    "fim": "2026-09-17"
+   },
+   "file": "na_bezerro.html",
+   "layout": "na_cotacao_diaria",
+   "structure": [
+    {
+     "kind": "html_table",
+     "locator": {
+      "table_index": 0,
+      "class": [
+       "cot-fisicas"
+      ],
+      "fechamento": "Fechamento: 17/09/2026"
+     },
+     "headers": [
+      "Data",
+      "Valor R$",
+      "Variação (%)"
+     ],
+     "rows": 1,
+     "estado": "mapeada",
+     "campo": "valor|data",
+     "motivo": null
+    },
+    {
+     "kind": "html_table",
+     "locator": {
+      "table_index": 1,
+      "class": [
+       "cot-fisicas"
+      ],
+      "fechamento": "Fechamento: 16/09/2026"
+     },
+     "headers": [
+      "Data",
+      "Valor R$",
+      "Variação (%)"
+     ],
+     "rows": 1,
+     "estado": "mapeada",
+     "campo": "valor|data",
+     "motivo": null
+    },
+    {
+     "kind": "html_table",
+     "locator": {
+      "table_index": 2,
+      "class": [
+       "cot-fisicas"
+      ],
+      "fechamento": "Fechamento: 15/09/2026"
+     },
+     "headers": [
+      "Data",
+      "Valor R$",
+      "Variação (%)"
+     ],
+     "rows": 1,
+     "estado": "mapeada",
+     "campo": "valor|data",
+     "motivo": null
+    },
+    {
+     "kind": "html_table",
+     "locator": {
+      "table_index": 3,
+      "class": [
+       "cot-fisicas"
+      ],
+      "fechamento": "Fechamento: 14/09/2026"
+     },
+     "headers": [
+      "Data",
+      "Valor R$",
+      "Variação (%)"
+     ],
+     "rows": 1,
+     "estado": "mapeada",
+     "campo": "valor|data",
+     "motivo": null
+    },
+    {
+     "kind": "html_table",
+     "locator": {
+      "table_index": 4,
+      "class": [
+       "cot-fisicas"
+      ],
+      "fechamento": "Fechamento: 11/09/2026"
+     },
+     "headers": [
+      "Data",
+      "Valor R$",
+      "Variação (%)"
+     ],
+     "rows": 1,
+     "estado": "mapeada",
+     "campo": "valor|data",
+     "motivo": null
+    },
+    {
+     "kind": "html_table",
+     "locator": {
+      "table_index": 5,
+      "class": [
+       "cot-fisicas"
+      ],
+      "fechamento": "Fechamento: 10/09/2026"
+     },
+     "headers": [
+      "Data",
+      "Valor R$",
+      "Variação (%)"
+     ],
+     "rows": 1,
+     "estado": "mapeada",
+     "campo": "valor|data",
+     "motivo": null
+    },
+    {
+     "kind": "html_table",
+     "locator": {
+      "table_index": 6,
+      "class": [
+       "cot-fisicas"
+      ],
+      "fechamento": "Fechamento: 09/09/2026"
+     },
+     "headers": [
+      "Data",
+      "Valor R$",
+      "Variação (%)"
+     ],
+     "rows": 1,
+     "estado": "mapeada",
+     "campo": "valor|data",
+     "motivo": null
+    },
+    {
+     "kind": "html_table",
+     "locator": {
+      "table_index": 7,
+      "class": [
+       "cot-fisicas"
+      ],
+      "fechamento": "Fechamento: 08/09/2026"
+     },
+     "headers": [
+      "Data",
+      "Valor R$",
+      "Variação (%)"
+     ],
+     "rows": 1,
+     "estado": "mapeada",
+     "campo": "valor|data",
+     "motivo": null
+    },
+    {
+     "kind": "html_table",
+     "locator": {
+      "table_index": 8,
+      "class": [
+       "cot-fisicas"
+      ],
+      "fechamento": "Fechamento: 04/09/2026"
+     },
+     "headers": [
+      "Data",
+      "Valor R$",
+      "Variação (%)"
+     ],
+     "rows": 1,
+     "estado": "mapeada",
+     "campo": "valor|data",
+     "motivo": null
+    },
+    {
+     "kind": "html_table",
+     "locator": {
+      "table_index": 9,
+      "class": [
+       "cot-fisicas"
+      ],
+      "fechamento": "Fechamento: 03/09/2026"
+     },
+     "headers": [
+      "Data",
+      "Valor R$",
+      "Variação (%)"
+     ],
+     "rows": 1,
+     "estado": "mapeada",
+     "campo": "valor|data",
+     "motivo": null
+    },
+    {
+     "kind": "html_table",
+     "locator": {
+      "table_index": 10,
+      "class": null,
+      "fechamento": null
+     },
+     "headers": [
+      "CONTRATO",
+      "US$/bu",
+      "VAR",
+      "",
+      ""
+     ],
+     "rows": 5,
+     "estado": "ignorada",
+     "campo": null,
+     "motivo": "tabela_sem_classe_cot-fisicas_ou_sem_coluna_data"
+    },
+    {
+     "kind": "html_table",
+     "locator": {
+      "table_index": 11,
+      "class": null,
+      "fechamento": null
+     },
+     "headers": [
+      "CONTRATO",
+      "PREÇO",
+      "VAR"
+     ],
+     "rows": 5,
+     "estado": "ignorada",
+     "campo": null,
+     "motivo": "tabela_sem_classe_cot-fisicas_ou_sem_coluna_data"
+    },
+    {
+     "kind": "html_table",
+     "locator": {
+      "table_index": 12,
+      "class": null,
+      "fechamento": null
+     },
+     "headers": [
+      "CONTRATO",
+      "PREÇO",
+      "VAR"
+     ],
+     "rows": 5,
+     "estado": "ignorada",
+     "campo": null,
+     "motivo": "tabela_sem_classe_cot-fisicas_ou_sem_coluna_data"
+    },
+    {
+     "kind": "html_table",
+     "locator": {
+      "table_index": 13,
+      "class": null,
+      "fechamento": null
+     },
+     "headers": [
+      "PRODUTO (R$)",
+      "PREÇO",
+      "VAR"
+     ],
+     "rows": 6,
+     "estado": "ignorada",
+     "campo": null,
+     "motivo": "tabela_sem_classe_cot-fisicas_ou_sem_coluna_data"
+    },
+    {
+     "kind": "html_table",
+     "locator": {
+      "table_index": 14,
+      "class": null,
+      "fechamento": null
+     },
+     "headers": [
+      "CONTRATO",
+      "PREÇO"
+     ],
+     "rows": 7,
+     "estado": "ignorada",
+     "campo": null,
+     "motivo": "tabela_sem_classe_cot-fisicas_ou_sem_coluna_data"
+    }
+   ],
+   "period": {
+    "newest": "2026-09-17",
+    "oldest": "2026-09-03",
+    "rows": 10,
+    "rows_canonical": 10
+   },
+   "other_regions_published": [],
+   "samples": [
+    {
+     "key": {
+      "produto": "bezerro",
+      "data": "2026-09-17",
+      "praca": "Mato Grosso do Sul"
+     },
+     "column": "valor",
+     "value": 3406.24,
+     "raw_cells": {
+      "row_cells": [
+       "17/09/2026",
+       "3.406,24",
+       "0,25%"
+      ],
+      "headers": [
+       "Data",
+       "Valor R$",
+       "Variação (%)"
+      ],
+      "region_cell": null
+     },
+     "conversion": "tabela cot-fisicas do fechamento mais recente"
+    },
+    {
+     "key": {
+      "produto": "bezerro",
+      "data": "2026-09-03",
+      "praca": "Mato Grosso do Sul"
+     },
+     "column": "valor",
+     "value": 3397.58,
+     "raw_cells": {
+      "row_cells": [
+       "03/09/2026",
+       "3.397,58",
+       "+0,07"
+      ],
+      "headers": [
+       "Data",
+       "Valor R$",
+       "Variação (%)"
+      ],
+      "region_cell": null
+     },
+     "conversion": "tabela cot-fisicas do fechamento mais antigo da pagina"
+    },
+    {
+     "key": {
+      "produto": "bezerro",
+      "data": "2026-09-17",
+      "praca": "Mato Grosso do Sul"
+     },
+     "column": "valor_usd",
+     "value": null,
+     "raw_cells": {
+      "row_cells": [
+       "17/09/2026",
+       "3.406,24",
+       "0,25%"
+      ],
+      "headers": [
+       "Data",
+       "Valor R$",
+       "Variação (%)"
+      ],
+      "region_cell": null
+     },
+     "conversion": "Noticias Agricolas nao publica USD"
+    },
+    {
+     "key": {
+      "produto": "bezerro",
+      "data": "2026-09-17",
+      "praca": "Mato Grosso do Sul"
+     },
+     "column": "peso_medio_kg",
+     "value": null,
+     "raw_cells": {
+      "row_cells": [
+       "17/09/2026",
+       "3.406,24",
+       "0,25%"
+      ],
+      "headers": [
+       "Data",
+       "Valor R$",
+       "Variação (%)"
+      ],
+      "region_cell": null
+     },
+     "conversion": "Noticias Agricolas nao publica peso medio"
+    },
+    {
+     "key": {
+      "produto": "bezerro",
+      "data": "2026-09-17",
+      "praca": "Mato Grosso do Sul"
+     },
+     "column": "fonte",
+     "value": "noticias_agricolas",
+     "raw_cells": {
+      "row_cells": [
+       "17/09/2026",
+       "3.406,24",
+       "0,25%"
+      ],
+      "headers": [
+       "Data",
+       "Valor R$",
+       "Variação (%)"
+      ],
+      "region_cell": null
+     },
+     "conversion": "fallback"
+    },
+    {
+     "key": {
+      "produto": "bezerro",
+      "data": "2026-09-17",
+      "praca": "Mato Grosso do Sul"
+     },
+     "column": "praca",
+     "value": "Mato Grosso do Sul",
+     "raw_cells": {
+      "row_cells": [
+       "17/09/2026",
+       "3.406,24",
+       "0,25%"
+      ],
+      "headers": [
+       "Data",
+       "Valor R$",
+       "Variação (%)"
+      ],
+      "region_cell": null
+     },
+     "conversion": "coluna Regiao quando existe; senao convencao documentada"
+    },
+    {
+     "key": {
+      "produto": "bezerro",
+      "data": "2026-09-17",
+      "praca": "Mato Grosso do Sul"
+     },
+     "column": "unidade",
+     "value": "BRL/cabeca",
+     "raw_cells": {
+      "row_cells": [
+       "17/09/2026",
+       "3.406,24",
+       "0,25%"
+      ],
+      "headers": [
+       "Data",
+       "Valor R$",
+       "Variação (%)"
+      ],
+      "region_cell": null
+     },
+     "conversion": "canonico do contrato; NA publica o cabecalho da coluna"
+    }
+   ]
+  },
+  {
+   "id": "noticias_agricolas_cafe",
+   "dataset": "preco_diario",
+   "product": "cafe",
+   "source": "noticias_agricolas",
+   "selection": {
+    "produto": "cafe",
+    "inicio": "2026-09-03",
+    "fim": "2026-09-17"
+   },
+   "file": "na_cafe.html",
+   "layout": "na_cotacao_diaria",
+   "structure": [
+    {
+     "kind": "html_table",
+     "locator": {
+      "table_index": 0,
+      "class": [
+       "cot-fisicas"
+      ],
+      "fechamento": "Fechamento: 17/09/2026"
+     },
+     "headers": [
+      "Data",
+      "Valor R$",
+      "Variação(%)"
+     ],
+     "rows": 1,
+     "estado": "mapeada",
+     "campo": "valor|data",
+     "motivo": null
+    },
+    {
+     "kind": "html_table",
+     "locator": {
+      "table_index": 1,
+      "class": [
+       "cot-fisicas"
+      ],
+      "fechamento": "Fechamento: 16/09/2026"
+     },
+     "headers": [
+      "Data",
+      "Valor R$",
+      "Variação(%)"
+     ],
+     "rows": 1,
+     "estado": "mapeada",
+     "campo": "valor|data",
+     "motivo": null
+    },
+    {
+     "kind": "html_table",
+     "locator": {
+      "table_index": 2,
+      "class": [
+       "cot-fisicas"
+      ],
+      "fechamento": "Fechamento: 15/09/2026"
+     },
+     "headers": [
+      "Data",
+      "Valor R$",
+      "Variação(%)"
+     ],
+     "rows": 1,
+     "estado": "mapeada",
+     "campo": "valor|data",
+     "motivo": null
+    },
+    {
+     "kind": "html_table",
+     "locator": {
+      "table_index": 3,
+      "class": [
+       "cot-fisicas"
+      ],
+      "fechamento": "Fechamento: 14/09/2026"
+     },
+     "headers": [
+      "Data",
+      "Valor R$",
+      "Variação(%)"
+     ],
+     "rows": 1,
+     "estado": "mapeada",
+     "campo": "valor|data",
+     "motivo": null
+    },
+    {
+     "kind": "html_table",
+     "locator": {
+      "table_index": 4,
+      "class": [
+       "cot-fisicas"
+      ],
+      "fechamento": "Fechamento: 11/09/2026"
+     },
+     "headers": [
+      "Data",
+      "Valor R$",
+      "Variação(%)"
+     ],
+     "rows": 1,
+     "estado": "mapeada",
+     "campo": "valor|data",
+     "motivo": null
+    },
+    {
+     "kind": "html_table",
+     "locator": {
+      "table_index": 5,
+      "class": [
+       "cot-fisicas"
+      ],
+      "fechamento": "Fechamento: 10/09/2026"
+     },
+     "headers": [
+      "Data",
+      "Valor R$",
+      "Variação(%)"
+     ],
+     "rows": 1,
+     "estado": "mapeada",
+     "campo": "valor|data",
+     "motivo": null
+    },
+    {
+     "kind": "html_table",
+     "locator": {
+      "table_index": 6,
+      "class": [
+       "cot-fisicas"
+      ],
+      "fechamento": "Fechamento: 09/09/2026"
+     },
+     "headers": [
+      "Data",
+      "Valor R$",
+      "Variação(%)"
+     ],
+     "rows": 1,
+     "estado": "mapeada",
+     "campo": "valor|data",
+     "motivo": null
+    },
+    {
+     "kind": "html_table",
+     "locator": {
+      "table_index": 7,
+      "class": [
+       "cot-fisicas"
+      ],
+      "fechamento": "Fechamento: 08/09/2026"
+     },
+     "headers": [
+      "Data",
+      "Valor R$",
+      "Variação(%)"
+     ],
+     "rows": 1,
+     "estado": "mapeada",
+     "campo": "valor|data",
+     "motivo": null
+    },
+    {
+     "kind": "html_table",
+     "locator": {
+      "table_index": 8,
+      "class": [
+       "cot-fisicas"
+      ],
+      "fechamento": "Fechamento: 04/09/2026"
+     },
+     "headers": [
+      "Data",
+      "Valor R$",
+      "Variação(%)"
+     ],
+     "rows": 1,
+     "estado": "mapeada",
+     "campo": "valor|data",
+     "motivo": null
+    },
+    {
+     "kind": "html_table",
+     "locator": {
+      "table_index": 9,
+      "class": [
+       "cot-fisicas"
+      ],
+      "fechamento": "Fechamento: 03/09/2026"
+     },
+     "headers": [
+      "Data",
+      "Valor R$",
+      "Variação(%)"
+     ],
+     "rows": 1,
+     "estado": "mapeada",
+     "campo": "valor|data",
+     "motivo": null
+    },
+    {
+     "kind": "html_table",
+     "locator": {
+      "table_index": 10,
+      "class": null,
+      "fechamento": null
+     },
+     "headers": [
+      "CONTRATO",
+      "US$/bu",
+      "VAR",
+      "",
+      ""
+     ],
+     "rows": 5,
+     "estado": "ignorada",
+     "campo": null,
+     "motivo": "tabela_sem_classe_cot-fisicas_ou_sem_coluna_data"
+    },
+    {
+     "kind": "html_table",
+     "locator": {
+      "table_index": 11,
+      "class": null,
+      "fechamento": null
+     },
+     "headers": [
+      "CONTRATO",
+      "PREÇO",
+      "VAR"
+     ],
+     "rows": 5,
+     "estado": "ignorada",
+     "campo": null,
+     "motivo": "tabela_sem_classe_cot-fisicas_ou_sem_coluna_data"
+    },
+    {
+     "kind": "html_table",
+     "locator": {
+      "table_index": 12,
+      "class": null,
+      "fechamento": null
+     },
+     "headers": [
+      "CONTRATO",
+      "PREÇO",
+      "VAR"
+     ],
+     "rows": 5,
+     "estado": "ignorada",
+     "campo": null,
+     "motivo": "tabela_sem_classe_cot-fisicas_ou_sem_coluna_data"
+    },
+    {
+     "kind": "html_table",
+     "locator": {
+      "table_index": 13,
+      "class": null,
+      "fechamento": null
+     },
+     "headers": [
+      "PRODUTO (R$)",
+      "PREÇO",
+      "VAR"
+     ],
+     "rows": 6,
+     "estado": "ignorada",
+     "campo": null,
+     "motivo": "tabela_sem_classe_cot-fisicas_ou_sem_coluna_data"
+    },
+    {
+     "kind": "html_table",
+     "locator": {
+      "table_index": 14,
+      "class": null,
+      "fechamento": null
+     },
+     "headers": [
+      "CONTRATO",
+      "PREÇO"
+     ],
+     "rows": 7,
+     "estado": "ignorada",
+     "campo": null,
+     "motivo": "tabela_sem_classe_cot-fisicas_ou_sem_coluna_data"
+    }
+   ],
+   "period": {
+    "newest": "2026-09-17",
+    "oldest": "2026-09-03",
+    "rows": 10,
+    "rows_canonical": 10
+   },
+   "other_regions_published": [],
+   "samples": [
+    {
+     "key": {
+      "produto": "cafe",
+      "data": "2026-09-17",
+      "praca": "São Paulo/SP"
+     },
+     "column": "valor",
+     "value": 1541.97,
+     "raw_cells": {
+      "row_cells": [
+       "17/09/2026",
+       "1.541,97",
+       "-1,56%"
+      ],
+      "headers": [
+       "Data",
+       "Valor R$",
+       "Variação(%)"
+      ],
+      "region_cell": null
+     },
+     "conversion": "tabela cot-fisicas do fechamento mais recente"
+    },
+    {
+     "key": {
+      "produto": "cafe",
+      "data": "2026-09-03",
+      "praca": "São Paulo/SP"
+     },
+     "column": "valor",
+     "value": 1672.25,
+     "raw_cells": {
+      "row_cells": [
+       "03/09/2026",
+       "1.672,25",
+       "-1,44"
+      ],
+      "headers": [
+       "Data",
+       "Valor R$",
+       "Variação(%)"
+      ],
+      "region_cell": null
+     },
+     "conversion": "tabela cot-fisicas do fechamento mais antigo da pagina"
+    },
+    {
+     "key": {
+      "produto": "cafe",
+      "data": "2026-09-17",
+      "praca": "São Paulo/SP"
+     },
+     "column": "valor_usd",
+     "value": null,
+     "raw_cells": {
+      "row_cells": [
+       "17/09/2026",
+       "1.541,97",
+       "-1,56%"
+      ],
+      "headers": [
+       "Data",
+       "Valor R$",
+       "Variação(%)"
+      ],
+      "region_cell": null
+     },
+     "conversion": "Noticias Agricolas nao publica USD"
+    },
+    {
+     "key": {
+      "produto": "cafe",
+      "data": "2026-09-17",
+      "praca": "São Paulo/SP"
+     },
+     "column": "peso_medio_kg",
+     "value": null,
+     "raw_cells": {
+      "row_cells": [
+       "17/09/2026",
+       "1.541,97",
+       "-1,56%"
+      ],
+      "headers": [
+       "Data",
+       "Valor R$",
+       "Variação(%)"
+      ],
+      "region_cell": null
+     },
+     "conversion": "Noticias Agricolas nao publica peso medio"
+    },
+    {
+     "key": {
+      "produto": "cafe",
+      "data": "2026-09-17",
+      "praca": "São Paulo/SP"
+     },
+     "column": "fonte",
+     "value": "noticias_agricolas",
+     "raw_cells": {
+      "row_cells": [
+       "17/09/2026",
+       "1.541,97",
+       "-1,56%"
+      ],
+      "headers": [
+       "Data",
+       "Valor R$",
+       "Variação(%)"
+      ],
+      "region_cell": null
+     },
+     "conversion": "fallback"
+    },
+    {
+     "key": {
+      "produto": "cafe",
+      "data": "2026-09-17",
+      "praca": "São Paulo/SP"
+     },
+     "column": "praca",
+     "value": "São Paulo/SP",
+     "raw_cells": {
+      "row_cells": [
+       "17/09/2026",
+       "1.541,97",
+       "-1,56%"
+      ],
+      "headers": [
+       "Data",
+       "Valor R$",
+       "Variação(%)"
+      ],
+      "region_cell": null
+     },
+     "conversion": "coluna Regiao quando existe; senao convencao documentada"
+    },
+    {
+     "key": {
+      "produto": "cafe",
+      "data": "2026-09-17",
+      "praca": "São Paulo/SP"
+     },
+     "column": "unidade",
+     "value": "BRL/sc60kg",
+     "raw_cells": {
+      "row_cells": [
+       "17/09/2026",
+       "1.541,97",
+       "-1,56%"
+      ],
+      "headers": [
+       "Data",
+       "Valor R$",
+       "Variação(%)"
+      ],
+      "region_cell": null
+     },
+     "conversion": "canonico do contrato; NA publica o cabecalho da coluna"
+    }
+   ]
+  },
+  {
+   "id": "noticias_agricolas_cafe_robusta",
+   "dataset": "preco_diario",
+   "product": "cafe_robusta",
+   "source": "noticias_agricolas",
+   "selection": {
+    "produto": "cafe_robusta",
+    "inicio": "2026-09-03",
+    "fim": "2026-09-17"
+   },
+   "file": "na_cafe_robusta.html",
+   "layout": "na_cotacao_diaria",
+   "structure": [
+    {
+     "kind": "html_table",
+     "locator": {
+      "table_index": 0,
+      "class": [
+       "cot-fisicas"
+      ],
+      "fechamento": "Fechamento: 17/09/2026"
+     },
+     "headers": [
+      "Data",
+      "Valor R$",
+      "Variação(%)"
+     ],
+     "rows": 1,
+     "estado": "mapeada",
+     "campo": "valor|data",
+     "motivo": null
+    },
+    {
+     "kind": "html_table",
+     "locator": {
+      "table_index": 1,
+      "class": [
+       "cot-fisicas"
+      ],
+      "fechamento": "Fechamento: 16/09/2026"
+     },
+     "headers": [
+      "Data",
+      "Valor R$",
+      "Variação(%)"
+     ],
+     "rows": 1,
+     "estado": "mapeada",
+     "campo": "valor|data",
+     "motivo": null
+    },
+    {
+     "kind": "html_table",
+     "locator": {
+      "table_index": 2,
+      "class": [
+       "cot-fisicas"
+      ],
+      "fechamento": "Fechamento: 15/09/2026"
+     },
+     "headers": [
+      "Data",
+      "Valor R$",
+      "Variação(%)"
+     ],
+     "rows": 1,
+     "estado": "mapeada",
+     "campo": "valor|data",
+     "motivo": null
+    },
+    {
+     "kind": "html_table",
+     "locator": {
+      "table_index": 3,
+      "class": [
+       "cot-fisicas"
+      ],
+      "fechamento": "Fechamento: 14/09/2026"
+     },
+     "headers": [
+      "Data",
+      "Valor R$",
+      "Variação(%)"
+     ],
+     "rows": 1,
+     "estado": "mapeada",
+     "campo": "valor|data",
+     "motivo": null
+    },
+    {
+     "kind": "html_table",
+     "locator": {
+      "table_index": 4,
+      "class": [
+       "cot-fisicas"
+      ],
+      "fechamento": "Fechamento: 11/09/2026"
+     },
+     "headers": [
+      "Data",
+      "Valor R$",
+      "Variação(%)"
+     ],
+     "rows": 1,
+     "estado": "mapeada",
+     "campo": "valor|data",
+     "motivo": null
+    },
+    {
+     "kind": "html_table",
+     "locator": {
+      "table_index": 5,
+      "class": [
+       "cot-fisicas"
+      ],
+      "fechamento": "Fechamento: 10/09/2026"
+     },
+     "headers": [
+      "Data",
+      "Valor R$",
+      "Variação(%)"
+     ],
+     "rows": 1,
+     "estado": "mapeada",
+     "campo": "valor|data",
+     "motivo": null
+    },
+    {
+     "kind": "html_table",
+     "locator": {
+      "table_index": 6,
+      "class": [
+       "cot-fisicas"
+      ],
+      "fechamento": "Fechamento: 09/09/2026"
+     },
+     "headers": [
+      "Data",
+      "Valor R$",
+      "Variação(%)"
+     ],
+     "rows": 1,
+     "estado": "mapeada",
+     "campo": "valor|data",
+     "motivo": null
+    },
+    {
+     "kind": "html_table",
+     "locator": {
+      "table_index": 7,
+      "class": [
+       "cot-fisicas"
+      ],
+      "fechamento": "Fechamento: 08/09/2026"
+     },
+     "headers": [
+      "Data",
+      "Valor R$",
+      "Variação(%)"
+     ],
+     "rows": 1,
+     "estado": "mapeada",
+     "campo": "valor|data",
+     "motivo": null
+    },
+    {
+     "kind": "html_table",
+     "locator": {
+      "table_index": 8,
+      "class": [
+       "cot-fisicas"
+      ],
+      "fechamento": "Fechamento: 04/09/2026"
+     },
+     "headers": [
+      "Data",
+      "Valor R$",
+      "Variação(%)"
+     ],
+     "rows": 1,
+     "estado": "mapeada",
+     "campo": "valor|data",
+     "motivo": null
+    },
+    {
+     "kind": "html_table",
+     "locator": {
+      "table_index": 9,
+      "class": [
+       "cot-fisicas"
+      ],
+      "fechamento": "Fechamento: 03/09/2026"
+     },
+     "headers": [
+      "Data",
+      "Valor R$",
+      "Variação(%)"
+     ],
+     "rows": 1,
+     "estado": "mapeada",
+     "campo": "valor|data",
+     "motivo": null
+    },
+    {
+     "kind": "html_table",
+     "locator": {
+      "table_index": 10,
+      "class": null,
+      "fechamento": null
+     },
+     "headers": [
+      "CONTRATO",
+      "US$/bu",
+      "VAR",
+      "",
+      ""
+     ],
+     "rows": 5,
+     "estado": "ignorada",
+     "campo": null,
+     "motivo": "tabela_sem_classe_cot-fisicas_ou_sem_coluna_data"
+    },
+    {
+     "kind": "html_table",
+     "locator": {
+      "table_index": 11,
+      "class": null,
+      "fechamento": null
+     },
+     "headers": [
+      "CONTRATO",
+      "PREÇO",
+      "VAR"
+     ],
+     "rows": 5,
+     "estado": "ignorada",
+     "campo": null,
+     "motivo": "tabela_sem_classe_cot-fisicas_ou_sem_coluna_data"
+    },
+    {
+     "kind": "html_table",
+     "locator": {
+      "table_index": 12,
+      "class": null,
+      "fechamento": null
+     },
+     "headers": [
+      "CONTRATO",
+      "PREÇO",
+      "VAR"
+     ],
+     "rows": 5,
+     "estado": "ignorada",
+     "campo": null,
+     "motivo": "tabela_sem_classe_cot-fisicas_ou_sem_coluna_data"
+    },
+    {
+     "kind": "html_table",
+     "locator": {
+      "table_index": 13,
+      "class": null,
+      "fechamento": null
+     },
+     "headers": [
+      "PRODUTO (R$)",
+      "PREÇO",
+      "VAR"
+     ],
+     "rows": 6,
+     "estado": "ignorada",
+     "campo": null,
+     "motivo": "tabela_sem_classe_cot-fisicas_ou_sem_coluna_data"
+    },
+    {
+     "kind": "html_table",
+     "locator": {
+      "table_index": 14,
+      "class": null,
+      "fechamento": null
+     },
+     "headers": [
+      "CONTRATO",
+      "PREÇO"
+     ],
+     "rows": 7,
+     "estado": "ignorada",
+     "campo": null,
+     "motivo": "tabela_sem_classe_cot-fisicas_ou_sem_coluna_data"
+    }
+   ],
+   "period": {
+    "newest": "2026-09-17",
+    "oldest": "2026-09-03",
+    "rows": 10,
+    "rows_canonical": 10
+   },
+   "other_regions_published": [],
+   "samples": [
+    {
+     "key": {
+      "produto": "cafe_robusta",
+      "data": "2026-09-17",
+      "praca": "Espírito Santo"
+     },
+     "column": "valor",
+     "value": 965.02,
+     "raw_cells": {
+      "row_cells": [
+       "17/09/2026",
+       "965,02",
+       "-1,26%"
+      ],
+      "headers": [
+       "Data",
+       "Valor R$",
+       "Variação(%)"
+      ],
+      "region_cell": null
+     },
+     "conversion": "tabela cot-fisicas do fechamento mais recente"
+    },
+    {
+     "key": {
+      "produto": "cafe_robusta",
+      "data": "2026-09-03",
+      "praca": "Espírito Santo"
+     },
+     "column": "valor",
+     "value": 980.05,
+     "raw_cells": {
+      "row_cells": [
+       "03/09/2026",
+       "980,05",
+       "-1,18"
+      ],
+      "headers": [
+       "Data",
+       "Valor R$",
+       "Variação(%)"
+      ],
+      "region_cell": null
+     },
+     "conversion": "tabela cot-fisicas do fechamento mais antigo da pagina"
+    },
+    {
+     "key": {
+      "produto": "cafe_robusta",
+      "data": "2026-09-17",
+      "praca": "Espírito Santo"
+     },
+     "column": "valor_usd",
+     "value": null,
+     "raw_cells": {
+      "row_cells": [
+       "17/09/2026",
+       "965,02",
+       "-1,26%"
+      ],
+      "headers": [
+       "Data",
+       "Valor R$",
+       "Variação(%)"
+      ],
+      "region_cell": null
+     },
+     "conversion": "Noticias Agricolas nao publica USD"
+    },
+    {
+     "key": {
+      "produto": "cafe_robusta",
+      "data": "2026-09-17",
+      "praca": "Espírito Santo"
+     },
+     "column": "peso_medio_kg",
+     "value": null,
+     "raw_cells": {
+      "row_cells": [
+       "17/09/2026",
+       "965,02",
+       "-1,26%"
+      ],
+      "headers": [
+       "Data",
+       "Valor R$",
+       "Variação(%)"
+      ],
+      "region_cell": null
+     },
+     "conversion": "Noticias Agricolas nao publica peso medio"
+    },
+    {
+     "key": {
+      "produto": "cafe_robusta",
+      "data": "2026-09-17",
+      "praca": "Espírito Santo"
+     },
+     "column": "fonte",
+     "value": "noticias_agricolas",
+     "raw_cells": {
+      "row_cells": [
+       "17/09/2026",
+       "965,02",
+       "-1,26%"
+      ],
+      "headers": [
+       "Data",
+       "Valor R$",
+       "Variação(%)"
+      ],
+      "region_cell": null
+     },
+     "conversion": "fallback"
+    },
+    {
+     "key": {
+      "produto": "cafe_robusta",
+      "data": "2026-09-17",
+      "praca": "Espírito Santo"
+     },
+     "column": "praca",
+     "value": "Espírito Santo",
+     "raw_cells": {
+      "row_cells": [
+       "17/09/2026",
+       "965,02",
+       "-1,26%"
+      ],
+      "headers": [
+       "Data",
+       "Valor R$",
+       "Variação(%)"
+      ],
+      "region_cell": null
+     },
+     "conversion": "coluna Regiao quando existe; senao convencao documentada"
+    },
+    {
+     "key": {
+      "produto": "cafe_robusta",
+      "data": "2026-09-17",
+      "praca": "Espírito Santo"
+     },
+     "column": "unidade",
+     "value": "BRL/sc60kg",
+     "raw_cells": {
+      "row_cells": [
+       "17/09/2026",
+       "965,02",
+       "-1,26%"
+      ],
+      "headers": [
+       "Data",
+       "Valor R$",
+       "Variação(%)"
+      ],
+      "region_cell": null
+     },
+     "conversion": "canonico do contrato; NA publica o cabecalho da coluna"
+    }
+   ]
+  },
+  {
+   "id": "noticias_agricolas_trigo",
+   "dataset": "preco_diario",
+   "product": "trigo",
+   "source": "noticias_agricolas",
+   "selection": {
+    "produto": "trigo",
+    "inicio": "2026-09-03",
+    "fim": "2026-09-17"
+   },
+   "file": "na_trigo.html",
+   "layout": "na_cotacao_regional",
+   "structure": [
+    {
+     "kind": "html_table",
+     "locator": {
+      "table_index": 0,
+      "class": [
+       "cot-fisicas"
+      ],
+      "fechamento": "Fechamento: 17/09/2026"
+     },
+     "headers": [
+      "Data",
+      "Região",
+      "R$/t",
+      "Variação (%)"
+     ],
+     "rows": 2,
+     "estado": "mapeada",
+     "campo": "valor|data",
+     "motivo": null
+    },
+    {
+     "kind": "html_table",
+     "locator": {
+      "table_index": 1,
+      "class": [
+       "cot-fisicas"
+      ],
+      "fechamento": "Fechamento: 16/09/2026"
+     },
+     "headers": [
+      "Data",
+      "Região",
+      "R$/t",
+      "Variação (%)"
+     ],
+     "rows": 2,
+     "estado": "mapeada",
+     "campo": "valor|data",
+     "motivo": null
+    },
+    {
+     "kind": "html_table",
+     "locator": {
+      "table_index": 2,
+      "class": [
+       "cot-fisicas"
+      ],
+      "fechamento": "Fechamento: 15/09/2026"
+     },
+     "headers": [
+      "Data",
+      "Região",
+      "R$/t",
+      "Variação (%)"
+     ],
+     "rows": 2,
+     "estado": "mapeada",
+     "campo": "valor|data",
+     "motivo": null
+    },
+    {
+     "kind": "html_table",
+     "locator": {
+      "table_index": 3,
+      "class": [
+       "cot-fisicas"
+      ],
+      "fechamento": "Fechamento: 14/09/2026"
+     },
+     "headers": [
+      "Data",
+      "Região",
+      "R$/t",
+      "Variação (%)"
+     ],
+     "rows": 2,
+     "estado": "mapeada",
+     "campo": "valor|data",
+     "motivo": null
+    },
+    {
+     "kind": "html_table",
+     "locator": {
+      "table_index": 4,
+      "class": [
+       "cot-fisicas"
+      ],
+      "fechamento": "Fechamento: 11/09/2026"
+     },
+     "headers": [
+      "Data",
+      "Região",
+      "R$/t",
+      "Variação (%)"
+     ],
+     "rows": 2,
+     "estado": "mapeada",
+     "campo": "valor|data",
+     "motivo": null
+    },
+    {
+     "kind": "html_table",
+     "locator": {
+      "table_index": 5,
+      "class": [
+       "cot-fisicas"
+      ],
+      "fechamento": "Fechamento: 10/09/2026"
+     },
+     "headers": [
+      "Data",
+      "Região",
+      "R$/t",
+      "Variação (%)"
+     ],
+     "rows": 2,
+     "estado": "mapeada",
+     "campo": "valor|data",
+     "motivo": null
+    },
+    {
+     "kind": "html_table",
+     "locator": {
+      "table_index": 6,
+      "class": [
+       "cot-fisicas"
+      ],
+      "fechamento": "Fechamento: 09/09/2026"
+     },
+     "headers": [
+      "Data",
+      "Região",
+      "R$/t",
+      "Variação (%)"
+     ],
+     "rows": 2,
+     "estado": "mapeada",
+     "campo": "valor|data",
+     "motivo": null
+    },
+    {
+     "kind": "html_table",
+     "locator": {
+      "table_index": 7,
+      "class": [
+       "cot-fisicas"
+      ],
+      "fechamento": "Fechamento: 08/09/2026"
+     },
+     "headers": [
+      "Data",
+      "Região",
+      "R$/t",
+      "Variação (%)"
+     ],
+     "rows": 2,
+     "estado": "mapeada",
+     "campo": "valor|data",
+     "motivo": null
+    },
+    {
+     "kind": "html_table",
+     "locator": {
+      "table_index": 8,
+      "class": [
+       "cot-fisicas"
+      ],
+      "fechamento": "Fechamento: 04/09/2026"
+     },
+     "headers": [
+      "Data",
+      "Região",
+      "R$/t",
+      "Variação (%)"
+     ],
+     "rows": 2,
+     "estado": "mapeada",
+     "campo": "valor|data",
+     "motivo": null
+    },
+    {
+     "kind": "html_table",
+     "locator": {
+      "table_index": 9,
+      "class": [
+       "cot-fisicas"
+      ],
+      "fechamento": "Fechamento: 03/09/2026"
+     },
+     "headers": [
+      "Data",
+      "Região",
+      "R$/t",
+      "Variação (%)"
+     ],
+     "rows": 2,
+     "estado": "mapeada",
+     "campo": "valor|data",
+     "motivo": null
+    },
+    {
+     "kind": "html_table",
+     "locator": {
+      "table_index": 10,
+      "class": null,
+      "fechamento": null
+     },
+     "headers": [
+      "CONTRATO",
+      "US$/bu",
+      "VAR",
+      "",
+      ""
+     ],
+     "rows": 5,
+     "estado": "ignorada",
+     "campo": null,
+     "motivo": "tabela_sem_classe_cot-fisicas_ou_sem_coluna_data"
+    },
+    {
+     "kind": "html_table",
+     "locator": {
+      "table_index": 11,
+      "class": null,
+      "fechamento": null
+     },
+     "headers": [
+      "CONTRATO",
+      "PREÇO",
+      "VAR"
+     ],
+     "rows": 5,
+     "estado": "ignorada",
+     "campo": null,
+     "motivo": "tabela_sem_classe_cot-fisicas_ou_sem_coluna_data"
+    },
+    {
+     "kind": "html_table",
+     "locator": {
+      "table_index": 12,
+      "class": null,
+      "fechamento": null
+     },
+     "headers": [
+      "CONTRATO",
+      "PREÇO",
+      "VAR"
+     ],
+     "rows": 5,
+     "estado": "ignorada",
+     "campo": null,
+     "motivo": "tabela_sem_classe_cot-fisicas_ou_sem_coluna_data"
+    },
+    {
+     "kind": "html_table",
+     "locator": {
+      "table_index": 13,
+      "class": null,
+      "fechamento": null
+     },
+     "headers": [
+      "PRODUTO (R$)",
+      "PREÇO",
+      "VAR"
+     ],
+     "rows": 6,
+     "estado": "ignorada",
+     "campo": null,
+     "motivo": "tabela_sem_classe_cot-fisicas_ou_sem_coluna_data"
+    },
+    {
+     "kind": "html_table",
+     "locator": {
+      "table_index": 14,
+      "class": null,
+      "fechamento": null
+     },
+     "headers": [
+      "CONTRATO",
+      "PREÇO"
+     ],
+     "rows": 7,
+     "estado": "ignorada",
+     "campo": null,
+     "motivo": "tabela_sem_classe_cot-fisicas_ou_sem_coluna_data"
+    }
+   ],
+   "period": {
+    "newest": "2026-09-17",
+    "oldest": "2026-09-03",
+    "rows": 20,
+    "rows_canonical": 10
+   },
+   "other_regions_published": [
+    "Rio Grande do Sul"
+   ],
+   "samples": [
+    {
+     "key": {
+      "produto": "trigo",
+      "data": "2026-09-17",
+      "praca": "Paraná"
+     },
+     "column": "valor",
+     "value": 1509.74,
+     "raw_cells": {
+      "row_cells": [
+       "17/09/2026",
+       "Paraná",
+       "1.509,74",
+       "-0,15%"
+      ],
+      "headers": [
+       "Data",
+       "Região",
+       "R$/t",
+       "Variação (%)"
+      ],
+      "region_cell": "Paraná"
+     },
+     "conversion": "tabela cot-fisicas do fechamento mais recente"
+    },
+    {
+     "key": {
+      "produto": "trigo",
+      "data": "2026-09-03",
+      "praca": "Paraná"
+     },
+     "column": "valor",
+     "value": 1456.52,
+     "raw_cells": {
+      "row_cells": [
+       "03/09/2026",
+       "Paraná",
+       "1.456,52",
+       "+0,20"
+      ],
+      "headers": [
+       "Data",
+       "Região",
+       "R$/t",
+       "Variação (%)"
+      ],
+      "region_cell": "Paraná"
+     },
+     "conversion": "tabela cot-fisicas do fechamento mais antigo da pagina"
+    },
+    {
+     "key": {
+      "produto": "trigo",
+      "data": "2026-09-17",
+      "praca": "Paraná"
+     },
+     "column": "valor_usd",
+     "value": null,
+     "raw_cells": {
+      "row_cells": [
+       "17/09/2026",
+       "Paraná",
+       "1.509,74",
+       "-0,15%"
+      ],
+      "headers": [
+       "Data",
+       "Região",
+       "R$/t",
+       "Variação (%)"
+      ],
+      "region_cell": "Paraná"
+     },
+     "conversion": "Noticias Agricolas nao publica USD"
+    },
+    {
+     "key": {
+      "produto": "trigo",
+      "data": "2026-09-17",
+      "praca": "Paraná"
+     },
+     "column": "peso_medio_kg",
+     "value": null,
+     "raw_cells": {
+      "row_cells": [
+       "17/09/2026",
+       "Paraná",
+       "1.509,74",
+       "-0,15%"
+      ],
+      "headers": [
+       "Data",
+       "Região",
+       "R$/t",
+       "Variação (%)"
+      ],
+      "region_cell": "Paraná"
+     },
+     "conversion": "Noticias Agricolas nao publica peso medio"
+    },
+    {
+     "key": {
+      "produto": "trigo",
+      "data": "2026-09-17",
+      "praca": "Paraná"
+     },
+     "column": "fonte",
+     "value": "noticias_agricolas",
+     "raw_cells": {
+      "row_cells": [
+       "17/09/2026",
+       "Paraná",
+       "1.509,74",
+       "-0,15%"
+      ],
+      "headers": [
+       "Data",
+       "Região",
+       "R$/t",
+       "Variação (%)"
+      ],
+      "region_cell": "Paraná"
+     },
+     "conversion": "fallback"
+    },
+    {
+     "key": {
+      "produto": "trigo",
+      "data": "2026-09-17",
+      "praca": "Paraná"
+     },
+     "column": "praca",
+     "value": "Paraná",
+     "raw_cells": {
+      "row_cells": [
+       "17/09/2026",
+       "Paraná",
+       "1.509,74",
+       "-0,15%"
+      ],
+      "headers": [
+       "Data",
+       "Região",
+       "R$/t",
+       "Variação (%)"
+      ],
+      "region_cell": "Paraná"
+     },
+     "conversion": "coluna Regiao quando existe; senao convencao documentada"
+    },
+    {
+     "key": {
+      "produto": "trigo",
+      "data": "2026-09-17",
+      "praca": "Paraná"
+     },
+     "column": "unidade",
+     "value": "BRL/ton",
+     "raw_cells": {
+      "row_cells": [
+       "17/09/2026",
+       "Paraná",
+       "1.509,74",
+       "-0,15%"
+      ],
+      "headers": [
+       "Data",
+       "Região",
+       "R$/t",
+       "Variação (%)"
+      ],
+      "region_cell": "Paraná"
+     },
+     "conversion": "canonico do contrato; NA publica o cabecalho da coluna"
+    }
+   ]
+  },
+  {
+   "id": "noticias_agricolas_algodao",
+   "dataset": "preco_diario",
+   "product": "algodao",
+   "source": "noticias_agricolas",
+   "selection": {
+    "produto": "algodao",
+    "inicio": "2026-09-03",
+    "fim": "2026-09-17"
+   },
+   "file": "na_algodao.html",
+   "layout": "na_cotacao_diaria",
+   "structure": [
+    {
+     "kind": "html_table",
+     "locator": {
+      "table_index": 0,
+      "class": [
+       "cot-fisicas"
+      ],
+      "fechamento": "Fechamento: 17/09/2026"
+     },
+     "headers": [
+      "Data",
+      "Valor (8 dias) Cent/R$/lb",
+      "Variação Diária (%)"
+     ],
+     "rows": 1,
+     "estado": "mapeada",
+     "campo": "valor|data",
+     "motivo": null
+    },
+    {
+     "kind": "html_table",
+     "locator": {
+      "table_index": 1,
+      "class": [
+       "cot-fisicas"
+      ],
+      "fechamento": "Fechamento: 16/09/2026"
+     },
+     "headers": [
+      "Data",
+      "Valor (8 dias) Cent/R$/lb",
+      "Variação Diária (%)"
+     ],
+     "rows": 1,
+     "estado": "mapeada",
+     "campo": "valor|data",
+     "motivo": null
+    },
+    {
+     "kind": "html_table",
+     "locator": {
+      "table_index": 2,
+      "class": [
+       "cot-fisicas"
+      ],
+      "fechamento": "Fechamento: 15/09/2026"
+     },
+     "headers": [
+      "Data",
+      "Valor (8 dias) Cent/R$/lb",
+      "Variação Diária (%)"
+     ],
+     "rows": 1,
+     "estado": "mapeada",
+     "campo": "valor|data",
+     "motivo": null
+    },
+    {
+     "kind": "html_table",
+     "locator": {
+      "table_index": 3,
+      "class": [
+       "cot-fisicas"
+      ],
+      "fechamento": "Fechamento: 14/09/2026"
+     },
+     "headers": [
+      "Data",
+      "Valor (8 dias) Cent/R$/lb",
+      "Variação Diária (%)"
+     ],
+     "rows": 1,
+     "estado": "mapeada",
+     "campo": "valor|data",
+     "motivo": null
+    },
+    {
+     "kind": "html_table",
+     "locator": {
+      "table_index": 4,
+      "class": [
+       "cot-fisicas"
+      ],
+      "fechamento": "Fechamento: 11/09/2026"
+     },
+     "headers": [
+      "Data",
+      "Valor (8 dias) Cent/R$/lb",
+      "Variação Diária (%)"
+     ],
+     "rows": 1,
+     "estado": "mapeada",
+     "campo": "valor|data",
+     "motivo": null
+    },
+    {
+     "kind": "html_table",
+     "locator": {
+      "table_index": 5,
+      "class": [
+       "cot-fisicas"
+      ],
+      "fechamento": "Fechamento: 10/09/2026"
+     },
+     "headers": [
+      "Data",
+      "Valor (8 dias) Cent/R$/lb",
+      "Variação Diária (%)"
+     ],
+     "rows": 1,
+     "estado": "mapeada",
+     "campo": "valor|data",
+     "motivo": null
+    },
+    {
+     "kind": "html_table",
+     "locator": {
+      "table_index": 6,
+      "class": [
+       "cot-fisicas"
+      ],
+      "fechamento": "Fechamento: 09/09/2026"
+     },
+     "headers": [
+      "Data",
+      "Valor (8 dias) Cent/R$/lb",
+      "Variação Diária (%)"
+     ],
+     "rows": 1,
+     "estado": "mapeada",
+     "campo": "valor|data",
+     "motivo": null
+    },
+    {
+     "kind": "html_table",
+     "locator": {
+      "table_index": 7,
+      "class": [
+       "cot-fisicas"
+      ],
+      "fechamento": "Fechamento: 08/09/2026"
+     },
+     "headers": [
+      "Data",
+      "Valor (8 dias) Cent/R$/lb",
+      "Variação Diária (%)"
+     ],
+     "rows": 1,
+     "estado": "mapeada",
+     "campo": "valor|data",
+     "motivo": null
+    },
+    {
+     "kind": "html_table",
+     "locator": {
+      "table_index": 8,
+      "class": [
+       "cot-fisicas"
+      ],
+      "fechamento": "Fechamento: 04/09/2026"
+     },
+     "headers": [
+      "Data",
+      "Valor (8 dias) Cent/R$/lb",
+      "Variação Diária (%)"
+     ],
+     "rows": 1,
+     "estado": "mapeada",
+     "campo": "valor|data",
+     "motivo": null
+    },
+    {
+     "kind": "html_table",
+     "locator": {
+      "table_index": 9,
+      "class": [
+       "cot-fisicas"
+      ],
+      "fechamento": "Fechamento: 03/09/2026"
+     },
+     "headers": [
+      "Data",
+      "Valor (8 dias) Cent/R$/lb",
+      "Variação Diária (%)"
+     ],
+     "rows": 1,
+     "estado": "mapeada",
+     "campo": "valor|data",
+     "motivo": null
+    },
+    {
+     "kind": "html_table",
+     "locator": {
+      "table_index": 10,
+      "class": null,
+      "fechamento": null
+     },
+     "headers": [
+      "CONTRATO",
+      "US$/bu",
+      "VAR",
+      "",
+      ""
+     ],
+     "rows": 5,
+     "estado": "ignorada",
+     "campo": null,
+     "motivo": "tabela_sem_classe_cot-fisicas_ou_sem_coluna_data"
+    },
+    {
+     "kind": "html_table",
+     "locator": {
+      "table_index": 11,
+      "class": null,
+      "fechamento": null
+     },
+     "headers": [
+      "CONTRATO",
+      "PREÇO",
+      "VAR"
+     ],
+     "rows": 5,
+     "estado": "ignorada",
+     "campo": null,
+     "motivo": "tabela_sem_classe_cot-fisicas_ou_sem_coluna_data"
+    },
+    {
+     "kind": "html_table",
+     "locator": {
+      "table_index": 12,
+      "class": null,
+      "fechamento": null
+     },
+     "headers": [
+      "CONTRATO",
+      "PREÇO",
+      "VAR"
+     ],
+     "rows": 5,
+     "estado": "ignorada",
+     "campo": null,
+     "motivo": "tabela_sem_classe_cot-fisicas_ou_sem_coluna_data"
+    },
+    {
+     "kind": "html_table",
+     "locator": {
+      "table_index": 13,
+      "class": null,
+      "fechamento": null
+     },
+     "headers": [
+      "PRODUTO (R$)",
+      "PREÇO",
+      "VAR"
+     ],
+     "rows": 6,
+     "estado": "ignorada",
+     "campo": null,
+     "motivo": "tabela_sem_classe_cot-fisicas_ou_sem_coluna_data"
+    },
+    {
+     "kind": "html_table",
+     "locator": {
+      "table_index": 14,
+      "class": null,
+      "fechamento": null
+     },
+     "headers": [
+      "CONTRATO",
+      "PREÇO"
+     ],
+     "rows": 7,
+     "estado": "ignorada",
+     "campo": null,
+     "motivo": "tabela_sem_classe_cot-fisicas_ou_sem_coluna_data"
+    }
+   ],
+   "period": {
+    "newest": "2026-09-17",
+    "oldest": "2026-09-03",
+    "rows": 10,
+    "rows_canonical": 10
+   },
+   "other_regions_published": [],
+   "samples": [
+    {
+     "key": {
+      "produto": "algodao",
+      "data": "2026-09-17",
+      "praca": "São Paulo/SP"
+     },
+     "column": "valor",
+     "value": 432.57,
+     "raw_cells": {
+      "row_cells": [
+       "17/09/2026",
+       "432,57",
+       "0,35%"
+      ],
+      "headers": [
+       "Data",
+       "Valor (8 dias) Cent/R$/lb",
+       "Variação Diária (%)"
+      ],
+      "region_cell": null
+     },
+     "conversion": "tabela cot-fisicas do fechamento mais recente"
+    },
+    {
+     "key": {
+      "produto": "algodao",
+      "data": "2026-09-03",
+      "praca": "São Paulo/SP"
+     },
+     "column": "valor",
+     "value": 438.05,
+     "raw_cells": {
+      "row_cells": [
+       "03/09/2026",
+       "438,05",
+       "-0,64"
+      ],
+      "headers": [
+       "Data",
+       "Valor (8 dias) Cent/R$/lb",
+       "Variação Diária (%)"
+      ],
+      "region_cell": null
+     },
+     "conversion": "tabela cot-fisicas do fechamento mais antigo da pagina"
+    },
+    {
+     "key": {
+      "produto": "algodao",
+      "data": "2026-09-17",
+      "praca": "São Paulo/SP"
+     },
+     "column": "valor_usd",
+     "value": null,
+     "raw_cells": {
+      "row_cells": [
+       "17/09/2026",
+       "432,57",
+       "0,35%"
+      ],
+      "headers": [
+       "Data",
+       "Valor (8 dias) Cent/R$/lb",
+       "Variação Diária (%)"
+      ],
+      "region_cell": null
+     },
+     "conversion": "Noticias Agricolas nao publica USD"
+    },
+    {
+     "key": {
+      "produto": "algodao",
+      "data": "2026-09-17",
+      "praca": "São Paulo/SP"
+     },
+     "column": "peso_medio_kg",
+     "value": null,
+     "raw_cells": {
+      "row_cells": [
+       "17/09/2026",
+       "432,57",
+       "0,35%"
+      ],
+      "headers": [
+       "Data",
+       "Valor (8 dias) Cent/R$/lb",
+       "Variação Diária (%)"
+      ],
+      "region_cell": null
+     },
+     "conversion": "Noticias Agricolas nao publica peso medio"
+    },
+    {
+     "key": {
+      "produto": "algodao",
+      "data": "2026-09-17",
+      "praca": "São Paulo/SP"
+     },
+     "column": "fonte",
+     "value": "noticias_agricolas",
+     "raw_cells": {
+      "row_cells": [
+       "17/09/2026",
+       "432,57",
+       "0,35%"
+      ],
+      "headers": [
+       "Data",
+       "Valor (8 dias) Cent/R$/lb",
+       "Variação Diária (%)"
+      ],
+      "region_cell": null
+     },
+     "conversion": "fallback"
+    },
+    {
+     "key": {
+      "produto": "algodao",
+      "data": "2026-09-17",
+      "praca": "São Paulo/SP"
+     },
+     "column": "praca",
+     "value": "São Paulo/SP",
+     "raw_cells": {
+      "row_cells": [
+       "17/09/2026",
+       "432,57",
+       "0,35%"
+      ],
+      "headers": [
+       "Data",
+       "Valor (8 dias) Cent/R$/lb",
+       "Variação Diária (%)"
+      ],
+      "region_cell": null
+     },
+     "conversion": "coluna Regiao quando existe; senao convencao documentada"
+    },
+    {
+     "key": {
+      "produto": "algodao",
+      "data": "2026-09-17",
+      "praca": "São Paulo/SP"
+     },
+     "column": "unidade",
+     "value": "cBRL/lb",
+     "raw_cells": {
+      "row_cells": [
+       "17/09/2026",
+       "432,57",
+       "0,35%"
+      ],
+      "headers": [
+       "Data",
+       "Valor (8 dias) Cent/R$/lb",
+       "Variação Diária (%)"
+      ],
+      "region_cell": null
+     },
+     "conversion": "canonico do contrato; NA publica o cabecalho da coluna"
+    }
+   ]
+  }
+ ],
+ "unit_exceptions": [],
+ "n3": {
+  "estado": "nao_aplicavel",
+  "motivo": "Noticias Agricolas reproduz a cotacao CEPEA; cache repete observacoes"
+ }
+}

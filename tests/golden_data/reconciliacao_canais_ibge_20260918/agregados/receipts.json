@@ -1,0 +1,401 @@
+[
+ {
+  "name": "agregados_001",
+  "requested_url": "https://servicodados.ibge.gov.br/api/v3/agregados/5457/periodos/2023/variaveis/8331,216,214,112?localidades=N3[all]&classificacao=782[40124]",
+  "final_url": "https://servicodados.ibge.gov.br/api/v3/agregados/5457/periodos/2023/variaveis/8331,216,214,112?localidades=N3[all]&classificacao=782[40124]",
+  "status": 200,
+  "captured_at": "2026-09-18T14:17:16.738737+00:00",
+  "bytes": 14310,
+  "sha256": "ae36b82df15f8a9ce6c115d783db60712607f0a4e878378c0b04dee003f3465d",
+  "headers": {
+   "date": "Fri, 18 Sep 2026 14:17:16 GMT",
+   "content-type": "application/json",
+   "content-length": "14310"
+  },
+  "origem": "corpo HTTP original recapturado na conferência (JSON idêntico à captura reserializada de 18/09 10:45)",
+  "captura": {
+   "captured_at": "2026-09-18T13:45:13.298718+00:00",
+   "sha256_reserializado": "eeceeaa6b420a2e7af06f838f8d5b6374d9ca66d2bc3b5ccdb3bd86efc5b2a8f"
+  }
+ },
+ {
+  "name": "agregados_002",
+  "requested_url": "https://servicodados.ibge.gov.br/api/v3/agregados/5457/periodos",
+  "final_url": "https://servicodados.ibge.gov.br/api/v3/agregados/5457/periodos",
+  "status": 200,
+  "captured_at": "2026-09-18T14:17:17.779993+00:00",
+  "bytes": 3173,
+  "sha256": "293a41ac923ee2a59831cbc3b7289750b42cf0855ca80167b665f664f1be51e8",
+  "headers": {
+   "date": "Fri, 18 Sep 2026 14:17:17 GMT",
+   "content-type": "application/json; charset=utf-8",
+   "content-encoding": "gzip"
+  },
+  "origem": "corpo HTTP original recapturado na conferência (JSON idêntico à captura reserializada de 18/09 10:45)",
+  "captura": {
+   "captured_at": "2026-09-18T13:45:14.333948+00:00",
+   "sha256_reserializado": "221f19c42726db66b08d451e70e50d5bd93e86ac47cd8472add4b461c767b2ec"
+  }
+ },
+ {
+  "name": "agregados_003",
+  "requested_url": "https://servicodados.ibge.gov.br/api/v3/agregados/5457/periodos/2022,2023/variaveis/8331,216,214,112?localidades=N1[all]&classificacao=782[40122]",
+  "final_url": "https://servicodados.ibge.gov.br/api/v3/agregados/5457/periodos/2022,2023/variaveis/8331,216,214,112?localidades=N1[all]&classificacao=782[40122]",
+  "status": 200,
+  "captured_at": "2026-09-18T14:17:18.839707+00:00",
+  "bytes": 1435,
+  "sha256": "b4e15c6066ef8c18871674710cb124d6adde3f9986a89421c2eb9c7ace84f509",
+  "headers": {
+   "date": "Fri, 18 Sep 2026 14:17:19 GMT",
+   "content-type": "application/json",
+   "content-length": "1435"
+  },
+  "origem": "corpo HTTP original recapturado na conferência (JSON idêntico à captura reserializada de 18/09 10:45)",
+  "captura": {
+   "captured_at": "2026-09-18T13:45:15.458406+00:00",
+   "sha256_reserializado": "a9544416b47eec6db88350e5569a6d187260401147ea0ab6ab55beffc624e096"
+  }
+ },
+ {
+  "name": "agregados_004",
+  "requested_url": "https://servicodados.ibge.gov.br/api/v3/agregados/6588/periodos/202607/variaveis/all?localidades=N1[all]&classificacao=48[39443]",
+  "final_url": "https://servicodados.ibge.gov.br/api/v3/agregados/6588/periodos/202607/variaveis/all?localidades=N1[all]&classificacao=48[39443]",
+  "status": 200,
+  "captured_at": "2026-09-18T14:17:19.889616+00:00",
+  "bytes": 1182,
+  "sha256": "058acb953d12d98681d8018eacb3169dc18a08bb9e4f3c41daec0c86fa629a41",
+  "headers": {
+   "date": "Fri, 18 Sep 2026 14:17:20 GMT",
+   "content-type": "application/json",
+   "content-length": "1182"
+  },
+  "origem": "corpo HTTP original recapturado na conferência (JSON idêntico à captura reserializada de 18/09 10:45)",
+  "captura": {
+   "captured_at": "2026-09-18T13:45:16.618369+00:00",
+   "sha256_reserializado": "1311ebd23df14d8f2fd77e6a00a36631706fea8d6390d567a885ba4fc3673870"
+  }
+ },
+ {
+  "name": "agregados_005",
+  "requested_url": "https://servicodados.ibge.gov.br/api/v3/agregados/6588/periodos",
+  "final_url": "https://servicodados.ibge.gov.br/api/v3/agregados/6588/periodos",
+  "status": 200,
+  "captured_at": "2026-09-18T14:17:20.919221+00:00",
+  "bytes": 21121,
+  "sha256": "126a3d553317d0625ede0de5e0540549a560e5fbc52e5dfd181135d2aa514783",
+  "headers": {
+   "date": "Fri, 18 Sep 2026 14:17:21 GMT",
+   "content-type": "application/json; charset=utf-8",
+   "content-encoding": "gzip"
+  },
+  "origem": "corpo HTTP original recapturado na conferência (JSON idêntico à captura reserializada de 18/09 10:45)",
+  "captura": {
+   "captured_at": "2026-09-18T13:45:17.654014+00:00",
+   "sha256_reserializado": "d2ea19c82c85f50fd87488a164565080578bbbc9575c6801c6b8031af7309f20"
+  }
+ },
+ {
+  "name": "agregados_006",
+  "requested_url": "https://servicodados.ibge.gov.br/api/v3/agregados/3939/periodos/2023/variaveis/105?localidades=N3[all]&classificacao=79[2670]",
+  "final_url": "https://servicodados.ibge.gov.br/api/v3/agregados/3939/periodos/2023/variaveis/105?localidades=N3[all]&classificacao=79[2670]",
+  "status": 200,
+  "captured_at": "2026-09-18T14:17:21.963080+00:00",
+  "bytes": 3587,
+  "sha256": "de5a5e3e44acd068bd4a45b8d0d9d53832026cb7f37c19dbd87c20123ab37cd3",
+  "headers": {
+   "date": "Fri, 18 Sep 2026 14:17:22 GMT",
+   "content-type": "application/json",
+   "content-length": "3587"
+  },
+  "origem": "corpo HTTP original recapturado na conferência (JSON idêntico à captura reserializada de 18/09 10:45)",
+  "captura": {
+   "captured_at": "2026-09-18T13:45:18.800144+00:00",
+   "sha256_reserializado": "c80455511e9d5037f3185db923dc94b00fa3cb8be2a36cca609506ee5ecf6644"
+  }
+ },
+ {
+  "name": "agregados_007",
+  "requested_url": "https://servicodados.ibge.gov.br/api/v3/agregados/3939/periodos",
+  "final_url": "https://servicodados.ibge.gov.br/api/v3/agregados/3939/periodos",
+  "status": 200,
+  "captured_at": "2026-09-18T14:17:22.998106+00:00",
+  "bytes": 3112,
+  "sha256": "81b0abe8f01c0e38b9abbcd3a79c29951209d82193edf154e18fa6df7a2db7ed",
+  "headers": {
+   "date": "Fri, 18 Sep 2026 14:17:23 GMT",
+   "content-type": "application/json; charset=utf-8",
+   "content-encoding": "gzip"
+  },
+  "origem": "corpo HTTP original recapturado na conferência (JSON idêntico à captura reserializada de 18/09 10:45)",
+  "captura": {
+   "captured_at": "2026-09-18T13:45:19.847066+00:00",
+   "sha256_reserializado": "40cfb266918a4c36892714ec488aa23645b44fc02d702c467397b077f472b16e"
+  }
+ },
+ {
+  "name": "agregados_008",
+  "requested_url": "https://servicodados.ibge.gov.br/api/v3/agregados/1092/periodos/202401/variaveis/284,285?localidades=N3[all]&classificacao=12716[115236]|12529[118225]|18[992]",
+  "final_url": "https://servicodados.ibge.gov.br/api/v3/agregados/1092/periodos/202401/variaveis/284,285?localidades=N3[all]&classificacao=12716[115236]|12529[118225]|18[992]",
+  "status": 200,
+  "captured_at": "2026-09-18T14:17:24.073132+00:00",
+  "bytes": 7575,
+  "sha256": "c935946d3bac75b921b85e8d35c225e2b7c9c2df041917dbfa224dfa76574b02",
+  "headers": {
+   "date": "Fri, 18 Sep 2026 14:17:24 GMT",
+   "content-type": "application/json",
+   "content-length": "7575"
+  },
+  "origem": "corpo HTTP original recapturado na conferência (JSON idêntico à captura reserializada de 18/09 10:45)",
+  "captura": {
+   "captured_at": "2026-09-18T13:45:20.939324+00:00",
+   "sha256_reserializado": "e33dd62e88f5a4f432558d1b39527c9767a60840ca4a54d12599c8ee7a0f67ef"
+  }
+ },
+ {
+  "name": "agregados_009",
+  "requested_url": "https://servicodados.ibge.gov.br/api/v3/agregados/1092/periodos",
+  "final_url": "https://servicodados.ibge.gov.br/api/v3/agregados/1092/periodos",
+  "status": 200,
+  "captured_at": "2026-09-18T14:17:25.101862+00:00",
+  "bytes": 11919,
+  "sha256": "123cfabc6a3f31b491b872eced9d4ddf7ab8ab06547380d19acd1bef840cf133",
+  "headers": {
+   "date": "Fri, 18 Sep 2026 14:17:25 GMT",
+   "content-type": "application/json; charset=utf-8",
+   "content-encoding": "gzip"
+  },
+  "origem": "corpo HTTP original recapturado na conferência (JSON idêntico à captura reserializada de 18/09 10:45)",
+  "captura": {
+   "captured_at": "2026-09-18T13:45:21.976938+00:00",
+   "sha256_reserializado": "659b391f4ee4b1ddf661aeb83602ef3fe6f277e6ad69b87d6ce7c44083dc3ad7"
+  }
+ },
+ {
+  "name": "agregados_010",
+  "requested_url": "https://servicodados.ibge.gov.br/api/v3/agregados/291/periodos/2023/variaveis/142?localidades=N3[all]&classificacao=194[3455]",
+  "final_url": "https://servicodados.ibge.gov.br/api/v3/agregados/291/periodos/2023/variaveis/142?localidades=N3[all]&classificacao=194[3455]",
+  "status": 200,
+  "captured_at": "2026-09-18T14:17:26.143049+00:00",
+  "bytes": 3416,
+  "sha256": "90fd503d7d6f2c70831400e81578b85c7989c57f129fc968ef981bc87d11b268",
+  "headers": {
+   "date": "Fri, 18 Sep 2026 14:17:26 GMT",
+   "content-type": "application/json",
+   "content-length": "3416"
+  },
+  "origem": "corpo HTTP original recapturado na conferência (JSON idêntico à captura reserializada de 18/09 10:45)",
+  "captura": {
+   "captured_at": "2026-09-18T13:45:23.082351+00:00",
+   "sha256_reserializado": "48778d4131256c82fd0dc01cb8978c3d5f61c7b5cf95c02688b7a436e72cb855"
+  }
+ },
+ {
+  "name": "agregados_011",
+  "requested_url": "https://servicodados.ibge.gov.br/api/v3/agregados/291/periodos",
+  "final_url": "https://servicodados.ibge.gov.br/api/v3/agregados/291/periodos",
+  "status": 200,
+  "captured_at": "2026-09-18T14:17:27.186903+00:00",
+  "bytes": 2380,
+  "sha256": "25fa921d5a351e993d724d50d3c93be3124df6d2a95c5d48f1b0344cfc68d7ab",
+  "headers": {
+   "date": "Fri, 18 Sep 2026 14:17:27 GMT",
+   "content-type": "application/json; charset=utf-8",
+   "content-encoding": "gzip"
+  },
+  "origem": "corpo HTTP original recapturado na conferência (JSON idêntico à captura reserializada de 18/09 10:45)",
+  "captura": {
+   "captured_at": "2026-09-18T13:45:24.122978+00:00",
+   "sha256_reserializado": "c5433c0b71f287e574eff6672ece1b1d724a95e84d3f91b5376acc55f6751d7a"
+  }
+ },
+ {
+  "name": "agregados_012",
+  "requested_url": "https://servicodados.ibge.gov.br/api/v3/agregados/289/periodos/2023/variaveis/144?localidades=N3[all]&classificacao=193[3403]",
+  "final_url": "https://servicodados.ibge.gov.br/api/v3/agregados/289/periodos/2023/variaveis/144?localidades=N3[all]&classificacao=193[3403]",
+  "status": 200,
+  "captured_at": "2026-09-18T14:17:28.228225+00:00",
+  "bytes": 3490,
+  "sha256": "3b4ce68d2e22c1b7484d39f0a3e366b22734bfd7dc593ef7a554a0bb9b3ac70f",
+  "headers": {
+   "date": "Fri, 18 Sep 2026 14:17:28 GMT",
+   "content-type": "application/json",
+   "content-length": "3490"
+  },
+  "origem": "corpo HTTP original recapturado na conferência (JSON idêntico à captura reserializada de 18/09 10:45)",
+  "captura": {
+   "captured_at": "2026-09-18T13:45:25.217407+00:00",
+   "sha256_reserializado": "a65d72575e2f00d4810d3dd041c8aa80cad5910a327b15364a6a70d33b6aa700"
+  }
+ },
+ {
+  "name": "agregados_013",
+  "requested_url": "https://servicodados.ibge.gov.br/api/v3/agregados/289/periodos",
+  "final_url": "https://servicodados.ibge.gov.br/api/v3/agregados/289/periodos",
+  "status": 200,
+  "captured_at": "2026-09-18T14:17:29.263366+00:00",
+  "bytes": 2380,
+  "sha256": "b709e2c3dfb43ae9b52f538b35b209ca8e208c23e4cdee97a0f6b0e9f03bd6a0",
+  "headers": {
+   "date": "Fri, 18 Sep 2026 14:17:29 GMT",
+   "content-type": "application/json; charset=utf-8",
+   "content-encoding": "gzip"
+  },
+  "origem": "corpo HTTP original recapturado na conferência (JSON idêntico à captura reserializada de 18/09 10:45)",
+  "captura": {
+   "captured_at": "2026-09-18T13:45:26.254584+00:00",
+   "sha256_reserializado": "494bde9b5cd249c7a69204f991ba2b21c9e19c37769766887a204bd6b78faa5f"
+  }
+ },
+ {
+  "name": "agregados_014",
+  "requested_url": "https://servicodados.ibge.gov.br/api/v3/agregados/1086/periodos/202401/variaveis/282,283,2522?localidades=N3[all]",
+  "final_url": "https://servicodados.ibge.gov.br/api/v3/agregados/1086/periodos/202401/variaveis/282,283,2522?localidades=N3[all]",
+  "status": 200,
+  "captured_at": "2026-09-18T14:17:30.309990+00:00",
+  "bytes": 10709,
+  "sha256": "9cac29c645c8bcf74804fb944dd9bbf58d22206d474bb25e8fdc3744b3d447a5",
+  "headers": {
+   "date": "Fri, 18 Sep 2026 14:17:30 GMT",
+   "content-type": "application/json",
+   "content-length": "10709"
+  },
+  "origem": "corpo HTTP original recapturado na conferência (JSON idêntico à captura reserializada de 18/09 10:45)",
+  "captura": {
+   "captured_at": "2026-09-18T13:45:27.407288+00:00",
+   "sha256_reserializado": "604093051e9eafd92bccdfd1bd4a9cb229422390e4d2986ff105de9acd814e99"
+  }
+ },
+ {
+  "name": "agregados_015",
+  "requested_url": "https://servicodados.ibge.gov.br/api/v3/agregados/1086/periodos",
+  "final_url": "https://servicodados.ibge.gov.br/api/v3/agregados/1086/periodos",
+  "status": 200,
+  "captured_at": "2026-09-18T14:17:31.350577+00:00",
+  "bytes": 11919,
+  "sha256": "183e002b95e39ecf835d1098642aa52a62fc02d226606ebda2983216ed0299e1",
+  "headers": {
+   "date": "Fri, 18 Sep 2026 14:17:31 GMT",
+   "content-type": "application/json; charset=utf-8",
+   "content-encoding": "gzip"
+  },
+  "origem": "corpo HTTP original recapturado na conferência (JSON idêntico à captura reserializada de 18/09 10:45)",
+  "captura": {
+   "captured_at": "2026-09-18T13:45:28.433205+00:00",
+   "sha256_reserializado": "21696010d2675bd26d59f5f622e17fb8a2527387eb20dfe7b0c5d04c0d7d8e45"
+  }
+ },
+ {
+  "name": "agregados_016",
+  "requested_url": "https://servicodados.ibge.gov.br/api/v3/agregados/1846/periodos/202401/variaveis/585?localidades=N1[all]&classificacao=11255[90687]",
+  "final_url": "https://servicodados.ibge.gov.br/api/v3/agregados/1846/periodos/202401/variaveis/585?localidades=N1[all]&classificacao=11255[90687]",
+  "status": 200,
+  "captured_at": "2026-09-18T14:17:32.401255+00:00",
+  "bytes": 329,
+  "sha256": "ca5420e2f2c48b5f16bd9eab1910a30acc3ab2a2c10c7274603c22c90ef18a7e",
+  "headers": {
+   "date": "Fri, 18 Sep 2026 14:17:32 GMT",
+   "content-type": "application/json",
+   "content-length": "329"
+  },
+  "origem": "corpo HTTP original recapturado na conferência (JSON idêntico à captura reserializada de 18/09 10:45)",
+  "captura": {
+   "captured_at": "2026-09-18T13:45:29.524950+00:00",
+   "sha256_reserializado": "e8f1f7c795958dc97908fe6d9e7c4f804b457f161e7fc7a463b00a881fcece7d"
+  }
+ },
+ {
+  "name": "agregados_017",
+  "requested_url": "https://servicodados.ibge.gov.br/api/v3/agregados/1846/periodos",
+  "final_url": "https://servicodados.ibge.gov.br/api/v3/agregados/1846/periodos",
+  "status": 200,
+  "captured_at": "2026-09-18T14:17:33.430597+00:00",
+  "bytes": 12323,
+  "sha256": "26f9819a3c562e91a41b4d74713dc9c9edb569c42eeb45130b3f6dfefdb6104c",
+  "headers": {
+   "date": "Fri, 18 Sep 2026 14:17:33 GMT",
+   "content-type": "application/json; charset=utf-8",
+   "content-encoding": "gzip"
+  },
+  "origem": "corpo HTTP original recapturado na conferência (JSON idêntico à captura reserializada de 18/09 10:45)",
+  "captura": {
+   "captured_at": "2026-09-18T13:45:30.559646+00:00",
+   "sha256_reserializado": "116c46b76e9332b0ce7af2b08eca62ace76d4b0fd5d9214909b7db0419eda585"
+  }
+ },
+ {
+  "name": "agregados_018",
+  "requested_url": "https://servicodados.ibge.gov.br/api/v3/agregados/6907/periodos/all/variaveis/10010,2209?localidades=N3[all]&classificacao=829[46302]|12443[all]|218[46502]",
+  "final_url": "https://servicodados.ibge.gov.br/api/v3/agregados/6907/periodos/all/variaveis/10010,2209?localidades=N3[all]&classificacao=829[46302]|12443[all]|218[46502]",
+  "status": 200,
+  "captured_at": "2026-09-18T14:17:34.588963+00:00",
+  "bytes": 108530,
+  "sha256": "a75cc11ebdcedf2977f5f8f676b493f72b232e8d573f528bb98f1dc5481164bb",
+  "headers": {
+   "date": "Fri, 18 Sep 2026 14:17:34 GMT",
+   "content-type": "application/json",
+   "content-length": "108530"
+  },
+  "origem": "corpo HTTP original recapturado na conferência (JSON idêntico à captura reserializada de 18/09 10:45)",
+  "captura": {
+   "captured_at": "2026-09-18T13:45:31.668758+00:00",
+   "sha256_reserializado": "768cba2afe0e41bd9c09302e7cc488654fc56b3fa7c9757ba3c97c50afe265fc"
+  }
+ },
+ {
+  "name": "agregados_019",
+  "requested_url": "https://servicodados.ibge.gov.br/api/v3/agregados/6907/periodos",
+  "final_url": "https://servicodados.ibge.gov.br/api/v3/agregados/6907/periodos",
+  "status": 200,
+  "captured_at": "2026-09-18T14:17:35.614245+00:00",
+  "bytes": 62,
+  "sha256": "74fb172c2f7c033cabbe25cdc09caed6fa5b63461bfa87f27e2d912b45612098",
+  "headers": {
+   "date": "Fri, 18 Sep 2026 14:17:35 GMT",
+   "content-type": "application/json; charset=utf-8",
+   "content-encoding": "gzip"
+  },
+  "origem": "corpo HTTP original recapturado na conferência (JSON idêntico à captura reserializada de 18/09 10:45)",
+  "captura": {
+   "captured_at": "2026-09-18T13:45:32.692379+00:00",
+   "sha256_reserializado": "2cbae839d15749bfaaa66cfafacc0cc813bb1037442d2bf43c0966fe6a81353b"
+  }
+ },
+ {
+  "name": "agregados_020",
+  "requested_url": "https://servicodados.ibge.gov.br/api/v3/agregados/263/periodos/2006/variaveis/183,1000183,184,1000184?localidades=N3[all]&classificacao=220[all]",
+  "final_url": "https://servicodados.ibge.gov.br/api/v3/agregados/263/periodos/2006/variaveis/183,1000183,184,1000184?localidades=N3[all]&classificacao=220[all]",
+  "status": 200,
+  "captured_at": "2026-09-18T14:17:36.698102+00:00",
+  "bytes": 83749,
+  "sha256": "a5e42a26c0ea2e344584cfaa2597a6782b50209361201cea941f34568db677aa",
+  "headers": {
+   "date": "Fri, 18 Sep 2026 14:17:36 GMT",
+   "content-type": "application/json",
+   "content-length": "83749"
+  },
+  "origem": "corpo HTTP original recapturado na conferência (JSON idêntico à captura reserializada de 18/09 10:45)",
+  "captura": {
+   "captured_at": "2026-09-18T13:45:33.805532+00:00",
+   "sha256_reserializado": "b0ce1fe62165bd16770db15db526bad9cc44b1f8731e00ab01f2d4e78d2269e2"
+  }
+ },
+ {
+  "name": "agregados_021",
+  "requested_url": "https://servicodados.ibge.gov.br/api/v3/agregados/263/periodos",
+  "final_url": "https://servicodados.ibge.gov.br/api/v3/agregados/263/periodos",
+  "status": 200,
+  "captured_at": "2026-09-18T14:17:37.756952+00:00",
+  "bytes": 611,
+  "sha256": "c376d6d5d75b1d71b19d11c4af887a77aee19866a109962bb3c80c9f45036d48",
+  "headers": {
+   "date": "Fri, 18 Sep 2026 14:17:37 GMT",
+   "content-type": "application/json; charset=utf-8",
+   "content-encoding": "gzip"
+  },
+  "origem": "corpo HTTP original recapturado na conferência (JSON idêntico à captura reserializada de 18/09 10:45)",
+  "captura": {
+   "captured_at": "2026-09-18T13:45:34.842625+00:00",
+   "sha256_reserializado": "85896aba750be0176e4b1f637de11dbc047080cc49c8b2aea0772b592e33cd26"
+  }
+ }
+]

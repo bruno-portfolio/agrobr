@@ -1,0 +1,6716 @@
+{
+  "format_version": 2,
+  "lot": "pam_pevs_ppm",
+  "oracle": "xlrd original BIFF cells, own row selection; no agrobr imports",
+  "coordinate_system": "Excel A1",
+  "r3_manifest_sha256": "5b0ae2784965e0286553427471a2ed2f3ac2894c424852eca1a1658971851e5a",
+  "files": [
+    {
+      "file": "../reconciliacao_conab_20260918/dc5524f326c16e26.html",
+      "url": "https://www.gov.br/conab/pt-br/atuacao/informacoes-agropecuarias/safras/safra-de-graos/boletim-da-safra-de-graos",
+      "sha256": "dc5524f326c16e2603844e8fbf99743f4f49b9ece2929d5b0d8f4addc5106da1",
+      "bytes": 253467,
+      "captured_at": "2026-09-18T08:03:56.765877+00:00",
+      "captured_on": null,
+      "timestamp_precision": "instant",
+      "timestamp_note": null,
+      "content_type": "text/html;charset=utf-8"
+    },
+    {
+      "file": "../reconciliacao_conab_20260918/55f4791a137850c0.html",
+      "url": "https://www.gov.br/conab/pt-br/atuacao/informacoes-agropecuarias/safras/safra-de-graos/boletim-da-safra-de-graos?b_start:int=30",
+      "sha256": "55f4791a137850c0e36799298405f10ec33d86191cdfc1f829dc0f0dc5a79259",
+      "bytes": 249568,
+      "captured_at": "2026-09-18T08:04:04.374456+00:00",
+      "captured_on": null,
+      "timestamp_precision": "instant",
+      "timestamp_note": null,
+      "content_type": "text/html;charset=utf-8"
+    },
+    {
+      "file": "../reconciliacao_conab_20260918/100a4d2ed79ee74b.html",
+      "url": "https://www.gov.br/conab/pt-br/atuacao/informacoes-agropecuarias/safras/safra-de-graos/boletim-da-safra-de-graos?b_start:int=60",
+      "sha256": "100a4d2ed79ee74b6c947e5af82fd3f2430458055b764d8b68771bb83f8e139e",
+      "bytes": 216887,
+      "captured_at": "2026-09-18T08:04:11.575312+00:00",
+      "captured_on": null,
+      "timestamp_precision": "instant",
+      "timestamp_note": null,
+      "content_type": "text/html;charset=utf-8"
+    },
+    {
+      "url": "https://www.gov.br/conab/pt-br/atuacao/informacoes-agropecuarias/safras/safra-de-graos/boletim-da-safra-de-graos/12o-levantamento-safra-2020-21/site-previsao-de-safra-por-produto-set-2021.xls",
+      "sha256": "1569ad0cf189f4d55fccf061f4790700780ffd16ad958160b859d5363bcdef6d",
+      "bytes": 1584640,
+      "captured_at": "2026-09-18T11:30:35.636360+00:00",
+      "file": "1569ad0cf189f4d5.xls",
+      "content_type": "application/vnd.ms-excel"
+    }
+  ],
+  "structures": {
+    "safra_2020_21_12_soja": [
+      {
+        "kind": "sheet",
+        "locator": {
+          "sheet": "Principal"
+        },
+        "estado": "ignorada",
+        "motivo": "aba fora desta selecao",
+        "shape": [
+          0,
+          0
+        ]
+      },
+      {
+        "kind": "sheet",
+        "locator": {
+          "sheet": "Área_Brasil"
+        },
+        "estado": "ignorada",
+        "motivo": "aba fora desta selecao",
+        "shape": [
+          50,
+          8
+        ]
+      },
+      {
+        "kind": "sheet",
+        "locator": {
+          "sheet": "Produtividade_Brasil"
+        },
+        "estado": "ignorada",
+        "motivo": "aba fora desta selecao",
+        "shape": [
+          73,
+          9
+        ]
+      },
+      {
+        "kind": "sheet",
+        "locator": {
+          "sheet": "Produção_Brasil"
+        },
+        "estado": "ignorada",
+        "motivo": "aba fora desta selecao",
+        "shape": [
+          56,
+          8
+        ]
+      },
+      {
+        "kind": "sheet",
+        "locator": {
+          "sheet": "Brasil total por UF"
+        },
+        "estado": "ignorada",
+        "motivo": "aba fora desta selecao",
+        "shape": [
+          52,
+          10
+        ]
+      },
+      {
+        "kind": "sheet",
+        "locator": {
+          "sheet": "Brasil - Total por Produto"
+        },
+        "estado": "ignorada",
+        "motivo": "aba fora desta selecao",
+        "shape": [
+          52,
+          10
+        ]
+      },
+      {
+        "kind": "sheet",
+        "locator": {
+          "sheet": "Algodao em Caroço"
+        },
+        "estado": "ignorada",
+        "motivo": "aba fora desta selecao",
+        "shape": [
+          44,
+          10
+        ]
+      },
+      {
+        "kind": "sheet",
+        "locator": {
+          "sheet": "Algodao em Pluma"
+        },
+        "estado": "ignorada",
+        "motivo": "aba fora desta selecao",
+        "shape": [
+          44,
+          10
+        ]
+      },
+      {
+        "kind": "sheet",
+        "locator": {
+          "sheet": "Caroço de Algodão"
+        },
+        "estado": "ignorada",
+        "motivo": "aba fora desta selecao",
+        "shape": [
+          44,
+          10
+        ]
+      },
+      {
+        "kind": "sheet",
+        "locator": {
+          "sheet": "Algodão Rendimento"
+        },
+        "estado": "ignorada",
+        "motivo": "aba fora desta selecao",
+        "shape": [
+          45,
+          10
+        ]
+      },
+      {
+        "kind": "sheet",
+        "locator": {
+          "sheet": "Amendoim 1a"
+        },
+        "estado": "ignorada",
+        "motivo": "aba fora desta selecao",
+        "shape": [
+          44,
+          10
+        ]
+      },
+      {
+        "kind": "sheet",
+        "locator": {
+          "sheet": "Amendoim 2a"
+        },
+        "estado": "ignorada",
+        "motivo": "aba fora desta selecao",
+        "shape": [
+          44,
+          10
+        ]
+      },
+      {
+        "kind": "sheet",
+        "locator": {
+          "sheet": "Amendoim Total"
+        },
+        "estado": "ignorada",
+        "motivo": "aba fora desta selecao",
+        "shape": [
+          44,
+          10
+        ]
+      },
+      {
+        "kind": "sheet",
+        "locator": {
+          "sheet": "Arroz Sequeiro"
+        },
+        "estado": "ignorada",
+        "motivo": "aba fora desta selecao",
+        "shape": [
+          44,
+          10
+        ]
+      },
+      {
+        "kind": "sheet",
+        "locator": {
+          "sheet": "Arroz Irrigado"
+        },
+        "estado": "ignorada",
+        "motivo": "aba fora desta selecao",
+        "shape": [
+          44,
+          10
+        ]
+      },
+      {
+        "kind": "sheet",
+        "locator": {
+          "sheet": "Arroz Total"
+        },
+        "estado": "ignorada",
+        "motivo": "aba fora desta selecao",
+        "shape": [
+          44,
+          10
+        ]
+      },
+      {
+        "kind": "sheet",
+        "locator": {
+          "sheet": "Feijão 1a Cores"
+        },
+        "estado": "ignorada",
+        "motivo": "aba fora desta selecao",
+        "shape": [
+          44,
+          10
+        ]
+      },
+      {
+        "kind": "sheet",
+        "locator": {
+          "sheet": "Feijão 1a Preto"
+        },
+        "estado": "ignorada",
+        "motivo": "aba fora desta selecao",
+        "shape": [
+          44,
+          10
+        ]
+      },
+      {
+        "kind": "sheet",
+        "locator": {
+          "sheet": "Feijão 1a Caupi"
+        },
+        "estado": "ignorada",
+        "motivo": "aba fora desta selecao",
+        "shape": [
+          44,
+          10
+        ]
+      },
+      {
+        "kind": "sheet",
+        "locator": {
+          "sheet": "Feijão 1a Total"
+        },
+        "estado": "ignorada",
+        "motivo": "aba fora desta selecao",
+        "shape": [
+          44,
+          10
+        ]
+      },
+      {
+        "kind": "sheet",
+        "locator": {
+          "sheet": "Feijão 2a Cores"
+        },
+        "estado": "ignorada",
+        "motivo": "aba fora desta selecao",
+        "shape": [
+          44,
+          10
+        ]
+      },
+      {
+        "kind": "sheet",
+        "locator": {
+          "sheet": "Feijão 2a Preto"
+        },
+        "estado": "ignorada",
+        "motivo": "aba fora desta selecao",
+        "shape": [
+          44,
+          10
+        ]
+      },
+      {
+        "kind": "sheet",
+        "locator": {
+          "sheet": "Feijão 2a Caupi"
+        },
+        "estado": "ignorada",
+        "motivo": "aba fora desta selecao",
+        "shape": [
+          44,
+          10
+        ]
+      },
+      {
+        "kind": "sheet",
+        "locator": {
+          "sheet": "Feijão 2a Total"
+        },
+        "estado": "ignorada",
+        "motivo": "aba fora desta selecao",
+        "shape": [
+          44,
+          10
+        ]
+      },
+      {
+        "kind": "sheet",
+        "locator": {
+          "sheet": "Feijão 3a Cores"
+        },
+        "estado": "ignorada",
+        "motivo": "aba fora desta selecao",
+        "shape": [
+          44,
+          11
+        ]
+      },
+      {
+        "kind": "sheet",
+        "locator": {
+          "sheet": "Feijão 3a Preto"
+        },
+        "estado": "ignorada",
+        "motivo": "aba fora desta selecao",
+        "shape": [
+          44,
+          10
+        ]
+      },
+      {
+        "kind": "sheet",
+        "locator": {
+          "sheet": "Feijão 3a Caupi"
+        },
+        "estado": "ignorada",
+        "motivo": "aba fora desta selecao",
+        "shape": [
+          44,
+          10
+        ]
+      },
+      {
+        "kind": "sheet",
+        "locator": {
+          "sheet": "Feijão 3a Total"
+        },
+        "estado": "ignorada",
+        "motivo": "aba fora desta selecao",
+        "shape": [
+          44,
+          10
+        ]
+      },
+      {
+        "kind": "sheet",
+        "locator": {
+          "sheet": "Feijão Cores Total"
+        },
+        "estado": "ignorada",
+        "motivo": "aba fora desta selecao",
+        "shape": [
+          44,
+          10
+        ]
+      },
+      {
+        "kind": "sheet",
+        "locator": {
+          "sheet": "Feijão Preto Total"
+        },
+        "estado": "ignorada",
+        "motivo": "aba fora desta selecao",
+        "shape": [
+          44,
+          10
+        ]
+      },
+      {
+        "kind": "sheet",
+        "locator": {
+          "sheet": "Feijão Caupi Total"
+        },
+        "estado": "ignorada",
+        "motivo": "aba fora desta selecao",
+        "shape": [
+          44,
+          10
+        ]
+      },
+      {
+        "kind": "sheet",
+        "locator": {
+          "sheet": "Feijão Total"
+        },
+        "estado": "ignorada",
+        "motivo": "aba fora desta selecao",
+        "shape": [
+          44,
+          10
+        ]
+      },
+      {
+        "kind": "sheet",
+        "locator": {
+          "sheet": "Gergelim"
+        },
+        "estado": "ignorada",
+        "motivo": "aba fora desta selecao",
+        "shape": [
+          44,
+          10
+        ]
+      },
+      {
+        "kind": "sheet",
+        "locator": {
+          "sheet": "Girassol"
+        },
+        "estado": "ignorada",
+        "motivo": "aba fora desta selecao",
+        "shape": [
+          44,
+          10
+        ]
+      },
+      {
+        "kind": "sheet",
+        "locator": {
+          "sheet": "Mamona"
+        },
+        "estado": "ignorada",
+        "motivo": "aba fora desta selecao",
+        "shape": [
+          44,
+          12
+        ]
+      },
+      {
+        "kind": "sheet",
+        "locator": {
+          "sheet": "Milho 1a"
+        },
+        "estado": "ignorada",
+        "motivo": "aba fora desta selecao",
+        "shape": [
+          51,
+          10
+        ]
+      },
+      {
+        "kind": "sheet",
+        "locator": {
+          "sheet": "Milho 2a"
+        },
+        "estado": "ignorada",
+        "motivo": "aba fora desta selecao",
+        "shape": [
+          52,
+          22
+        ]
+      },
+      {
+        "kind": "sheet",
+        "locator": {
+          "sheet": "Milho 3a"
+        },
+        "estado": "ignorada",
+        "motivo": "aba fora desta selecao",
+        "shape": [
+          52,
+          10
+        ]
+      },
+      {
+        "kind": "sheet",
+        "locator": {
+          "sheet": "Milho Total"
+        },
+        "estado": "ignorada",
+        "motivo": "aba fora desta selecao",
+        "shape": [
+          52,
+          10
+        ]
+      },
+      {
+        "kind": "sheet",
+        "locator": {
+          "sheet": "Soja"
+        },
+        "estado": "mapeada",
+        "motivo": "selecao nominal",
+        "shape": [
+          44,
+          10
+        ]
+      },
+      {
+        "kind": "sheet",
+        "locator": {
+          "sheet": "Sorgo"
+        },
+        "estado": "ignorada",
+        "motivo": "aba fora desta selecao",
+        "shape": [
+          44,
+          11
+        ]
+      },
+      {
+        "kind": "sheet",
+        "locator": {
+          "sheet": "Aveia 2021"
+        },
+        "estado": "ignorada",
+        "motivo": "aba fora desta selecao",
+        "shape": [
+          44,
+          10
+        ]
+      },
+      {
+        "kind": "sheet",
+        "locator": {
+          "sheet": "Canola 2021"
+        },
+        "estado": "ignorada",
+        "motivo": "aba fora desta selecao",
+        "shape": [
+          44,
+          10
+        ]
+      },
+      {
+        "kind": "sheet",
+        "locator": {
+          "sheet": "Centeio 2021"
+        },
+        "estado": "ignorada",
+        "motivo": "aba fora desta selecao",
+        "shape": [
+          44,
+          10
+        ]
+      },
+      {
+        "kind": "sheet",
+        "locator": {
+          "sheet": "Cevada 2021"
+        },
+        "estado": "ignorada",
+        "motivo": "aba fora desta selecao",
+        "shape": [
+          44,
+          10
+        ]
+      },
+      {
+        "kind": "sheet",
+        "locator": {
+          "sheet": "Trigo 2021"
+        },
+        "estado": "ignorada",
+        "motivo": "aba fora desta selecao",
+        "shape": [
+          44,
+          10
+        ]
+      },
+      {
+        "kind": "sheet",
+        "locator": {
+          "sheet": "Triticale 2021"
+        },
+        "estado": "ignorada",
+        "motivo": "aba fora desta selecao",
+        "shape": [
+          44,
+          10
+        ]
+      },
+      {
+        "kind": "sheet",
+        "locator": {
+          "sheet": "Aveia 2020"
+        },
+        "estado": "ignorada",
+        "motivo": "aba fora desta selecao",
+        "shape": [
+          44,
+          10
+        ]
+      },
+      {
+        "kind": "sheet",
+        "locator": {
+          "sheet": "Canola 2020"
+        },
+        "estado": "ignorada",
+        "motivo": "aba fora desta selecao",
+        "shape": [
+          44,
+          10
+        ]
+      },
+      {
+        "kind": "sheet",
+        "locator": {
+          "sheet": "Centeio 2020"
+        },
+        "estado": "ignorada",
+        "motivo": "aba fora desta selecao",
+        "shape": [
+          44,
+          10
+        ]
+      },
+      {
+        "kind": "sheet",
+        "locator": {
+          "sheet": "Cevada 2020"
+        },
+        "estado": "ignorada",
+        "motivo": "aba fora desta selecao",
+        "shape": [
+          44,
+          10
+        ]
+      },
+      {
+        "kind": "sheet",
+        "locator": {
+          "sheet": "Trigo 2020"
+        },
+        "estado": "ignorada",
+        "motivo": "aba fora desta selecao",
+        "shape": [
+          44,
+          10
+        ]
+      },
+      {
+        "kind": "sheet",
+        "locator": {
+          "sheet": "Triticale 2020"
+        },
+        "estado": "ignorada",
+        "motivo": "aba fora desta selecao",
+        "shape": [
+          44,
+          10
+        ]
+      },
+      {
+        "kind": "sheet",
+        "locator": {
+          "sheet": "Suprimento"
+        },
+        "estado": "ignorada",
+        "motivo": "aba fora desta selecao",
+        "shape": [
+          47,
+          10
+        ]
+      },
+      {
+        "kind": "column",
+        "locator": {
+          "sheet": "Soja",
+          "column": "A"
+        },
+        "header": "",
+        "estado": "mapeada",
+        "campo": "uf",
+        "motivo": "periodo escolhido ou identidade"
+      },
+      {
+        "kind": "column",
+        "locator": {
+          "sheet": "Soja",
+          "column": "B"
+        },
+        "header": "Safra 19/20",
+        "estado": "ignorada",
+        "campo": null,
+        "motivo": "periodo anterior"
+      },
+      {
+        "kind": "column",
+        "locator": {
+          "sheet": "Soja",
+          "column": "C"
+        },
+        "header": "Safra 20/21",
+        "estado": "mapeada",
+        "campo": "area_plantada",
+        "motivo": "periodo escolhido ou identidade"
+      },
+      {
+        "kind": "column",
+        "locator": {
+          "sheet": "Soja",
+          "column": "D"
+        },
+        "header": "VAR. %",
+        "estado": "ignorada",
+        "campo": null,
+        "motivo": "variacao percentual; nao e nivel da metrica"
+      },
+      {
+        "kind": "column",
+        "locator": {
+          "sheet": "Soja",
+          "column": "E"
+        },
+        "header": "Safra 19/20",
+        "estado": "ignorada",
+        "campo": null,
+        "motivo": "periodo anterior"
+      },
+      {
+        "kind": "column",
+        "locator": {
+          "sheet": "Soja",
+          "column": "F"
+        },
+        "header": "Safra 20/21",
+        "estado": "mapeada",
+        "campo": "rendimento",
+        "motivo": "periodo escolhido ou identidade"
+      },
+      {
+        "kind": "column",
+        "locator": {
+          "sheet": "Soja",
+          "column": "G"
+        },
+        "header": "VAR. %",
+        "estado": "ignorada",
+        "campo": null,
+        "motivo": "variacao percentual; nao e nivel da metrica"
+      },
+      {
+        "kind": "column",
+        "locator": {
+          "sheet": "Soja",
+          "column": "H"
+        },
+        "header": "Safra 19/20",
+        "estado": "ignorada",
+        "campo": null,
+        "motivo": "periodo anterior"
+      },
+      {
+        "kind": "column",
+        "locator": {
+          "sheet": "Soja",
+          "column": "I"
+        },
+        "header": "Safra 20/21",
+        "estado": "mapeada",
+        "campo": "producao",
+        "motivo": "periodo escolhido ou identidade"
+      },
+      {
+        "kind": "column",
+        "locator": {
+          "sheet": "Soja",
+          "column": "J"
+        },
+        "header": "VAR. %",
+        "estado": "ignorada",
+        "campo": null,
+        "motivo": "variacao percentual; nao e nivel da metrica"
+      },
+      {
+        "kind": "row",
+        "locator": {
+          "sheet": "Soja",
+          "row": 1,
+          "label": ""
+        },
+        "estado": "ignorada",
+        "motivo": "cabecalho"
+      },
+      {
+        "kind": "row",
+        "locator": {
+          "sheet": "Soja",
+          "row": 2,
+          "label": ""
+        },
+        "estado": "ignorada",
+        "motivo": "cabecalho"
+      },
+      {
+        "kind": "row",
+        "locator": {
+          "sheet": "Soja",
+          "row": 3,
+          "label": ""
+        },
+        "estado": "ignorada",
+        "motivo": "cabecalho"
+      },
+      {
+        "kind": "row",
+        "locator": {
+          "sheet": "Soja",
+          "row": 4,
+          "label": ""
+        },
+        "estado": "ignorada",
+        "motivo": "cabecalho"
+      },
+      {
+        "kind": "row",
+        "locator": {
+          "sheet": "Soja",
+          "row": 5,
+          "label": "REGIÃO/UF"
+        },
+        "estado": "ignorada",
+        "motivo": "cabecalho"
+      },
+      {
+        "kind": "row",
+        "locator": {
+          "sheet": "Soja",
+          "row": 6,
+          "label": ""
+        },
+        "estado": "ignorada",
+        "motivo": "cabecalho"
+      },
+      {
+        "kind": "row",
+        "locator": {
+          "sheet": "Soja",
+          "row": 7,
+          "label": ""
+        },
+        "estado": "ignorada",
+        "motivo": "cabecalho"
+      },
+      {
+        "kind": "row",
+        "locator": {
+          "sheet": "Soja",
+          "row": 8,
+          "label": "NORTE"
+        },
+        "estado": "ignorada",
+        "motivo": "agregado publicado; Brasil calculado somente das UFs"
+      },
+      {
+        "kind": "row",
+        "locator": {
+          "sheet": "Soja",
+          "row": 9,
+          "label": "RR"
+        },
+        "estado": "mapeada",
+        "motivo": "UF publicada"
+      },
+      {
+        "kind": "row",
+        "locator": {
+          "sheet": "Soja",
+          "row": 10,
+          "label": "RO"
+        },
+        "estado": "mapeada",
+        "motivo": "UF publicada"
+      },
+      {
+        "kind": "row",
+        "locator": {
+          "sheet": "Soja",
+          "row": 11,
+          "label": "AC"
+        },
+        "estado": "mapeada",
+        "motivo": "UF publicada"
+      },
+      {
+        "kind": "row",
+        "locator": {
+          "sheet": "Soja",
+          "row": 12,
+          "label": "AM"
+        },
+        "estado": "mapeada",
+        "motivo": "UF publicada"
+      },
+      {
+        "kind": "row",
+        "locator": {
+          "sheet": "Soja",
+          "row": 13,
+          "label": "AP"
+        },
+        "estado": "mapeada",
+        "motivo": "UF publicada"
+      },
+      {
+        "kind": "row",
+        "locator": {
+          "sheet": "Soja",
+          "row": 14,
+          "label": "PA"
+        },
+        "estado": "mapeada",
+        "motivo": "UF publicada"
+      },
+      {
+        "kind": "row",
+        "locator": {
+          "sheet": "Soja",
+          "row": 15,
+          "label": "TO"
+        },
+        "estado": "mapeada",
+        "motivo": "UF publicada"
+      },
+      {
+        "kind": "row",
+        "locator": {
+          "sheet": "Soja",
+          "row": 16,
+          "label": "NORDESTE"
+        },
+        "estado": "ignorada",
+        "motivo": "agregado publicado; Brasil calculado somente das UFs"
+      },
+      {
+        "kind": "row",
+        "locator": {
+          "sheet": "Soja",
+          "row": 17,
+          "label": "MA"
+        },
+        "estado": "mapeada",
+        "motivo": "UF publicada"
+      },
+      {
+        "kind": "row",
+        "locator": {
+          "sheet": "Soja",
+          "row": 18,
+          "label": "PI"
+        },
+        "estado": "mapeada",
+        "motivo": "UF publicada"
+      },
+      {
+        "kind": "row",
+        "locator": {
+          "sheet": "Soja",
+          "row": 19,
+          "label": "CE"
+        },
+        "estado": "mapeada",
+        "motivo": "UF publicada"
+      },
+      {
+        "kind": "row",
+        "locator": {
+          "sheet": "Soja",
+          "row": 20,
+          "label": "RN"
+        },
+        "estado": "mapeada",
+        "motivo": "UF publicada"
+      },
+      {
+        "kind": "row",
+        "locator": {
+          "sheet": "Soja",
+          "row": 21,
+          "label": "PB"
+        },
+        "estado": "mapeada",
+        "motivo": "UF publicada"
+      },
+      {
+        "kind": "row",
+        "locator": {
+          "sheet": "Soja",
+          "row": 22,
+          "label": "PE"
+        },
+        "estado": "mapeada",
+        "motivo": "UF publicada"
+      },
+      {
+        "kind": "row",
+        "locator": {
+          "sheet": "Soja",
+          "row": 23,
+          "label": "AL"
+        },
+        "estado": "mapeada",
+        "motivo": "UF publicada"
+      },
+      {
+        "kind": "row",
+        "locator": {
+          "sheet": "Soja",
+          "row": 24,
+          "label": "SE"
+        },
+        "estado": "mapeada",
+        "motivo": "UF publicada"
+      },
+      {
+        "kind": "row",
+        "locator": {
+          "sheet": "Soja",
+          "row": 25,
+          "label": "BA"
+        },
+        "estado": "mapeada",
+        "motivo": "UF publicada"
+      },
+      {
+        "kind": "row",
+        "locator": {
+          "sheet": "Soja",
+          "row": 26,
+          "label": "CENTRO-OESTE"
+        },
+        "estado": "ignorada",
+        "motivo": "agregado publicado; Brasil calculado somente das UFs"
+      },
+      {
+        "kind": "row",
+        "locator": {
+          "sheet": "Soja",
+          "row": 27,
+          "label": "MT"
+        },
+        "estado": "mapeada",
+        "motivo": "UF publicada"
+      },
+      {
+        "kind": "row",
+        "locator": {
+          "sheet": "Soja",
+          "row": 28,
+          "label": "MS"
+        },
+        "estado": "mapeada",
+        "motivo": "UF publicada"
+      },
+      {
+        "kind": "row",
+        "locator": {
+          "sheet": "Soja",
+          "row": 29,
+          "label": "GO"
+        },
+        "estado": "mapeada",
+        "motivo": "UF publicada"
+      },
+      {
+        "kind": "row",
+        "locator": {
+          "sheet": "Soja",
+          "row": 30,
+          "label": "DF"
+        },
+        "estado": "mapeada",
+        "motivo": "UF publicada"
+      },
+      {
+        "kind": "row",
+        "locator": {
+          "sheet": "Soja",
+          "row": 31,
+          "label": "SUDESTE"
+        },
+        "estado": "ignorada",
+        "motivo": "agregado publicado; Brasil calculado somente das UFs"
+      },
+      {
+        "kind": "row",
+        "locator": {
+          "sheet": "Soja",
+          "row": 32,
+          "label": "MG"
+        },
+        "estado": "mapeada",
+        "motivo": "UF publicada"
+      },
+      {
+        "kind": "row",
+        "locator": {
+          "sheet": "Soja",
+          "row": 33,
+          "label": "ES"
+        },
+        "estado": "mapeada",
+        "motivo": "UF publicada"
+      },
+      {
+        "kind": "row",
+        "locator": {
+          "sheet": "Soja",
+          "row": 34,
+          "label": "RJ"
+        },
+        "estado": "mapeada",
+        "motivo": "UF publicada"
+      },
+      {
+        "kind": "row",
+        "locator": {
+          "sheet": "Soja",
+          "row": 35,
+          "label": "SP"
+        },
+        "estado": "mapeada",
+        "motivo": "UF publicada"
+      },
+      {
+        "kind": "row",
+        "locator": {
+          "sheet": "Soja",
+          "row": 36,
+          "label": "SUL"
+        },
+        "estado": "ignorada",
+        "motivo": "agregado publicado; Brasil calculado somente das UFs"
+      },
+      {
+        "kind": "row",
+        "locator": {
+          "sheet": "Soja",
+          "row": 37,
+          "label": "PR"
+        },
+        "estado": "mapeada",
+        "motivo": "UF publicada"
+      },
+      {
+        "kind": "row",
+        "locator": {
+          "sheet": "Soja",
+          "row": 38,
+          "label": "SC"
+        },
+        "estado": "mapeada",
+        "motivo": "UF publicada"
+      },
+      {
+        "kind": "row",
+        "locator": {
+          "sheet": "Soja",
+          "row": 39,
+          "label": "RS"
+        },
+        "estado": "mapeada",
+        "motivo": "UF publicada"
+      },
+      {
+        "kind": "row",
+        "locator": {
+          "sheet": "Soja",
+          "row": 40,
+          "label": "NORTE/NORDESTE"
+        },
+        "estado": "ignorada",
+        "motivo": "agregado publicado; Brasil calculado somente das UFs"
+      },
+      {
+        "kind": "row",
+        "locator": {
+          "sheet": "Soja",
+          "row": 41,
+          "label": "CENTRO-SUL"
+        },
+        "estado": "ignorada",
+        "motivo": "agregado publicado; Brasil calculado somente das UFs"
+      },
+      {
+        "kind": "row",
+        "locator": {
+          "sheet": "Soja",
+          "row": 42,
+          "label": "BRASIL"
+        },
+        "estado": "ignorada",
+        "motivo": "agregado publicado; Brasil calculado somente das UFs"
+      },
+      {
+        "kind": "row",
+        "locator": {
+          "sheet": "Soja",
+          "row": 43,
+          "label": "Fonte: Conab."
+        },
+        "estado": "ignorada",
+        "motivo": "fonte/nota"
+      },
+      {
+        "kind": "row",
+        "locator": {
+          "sheet": "Soja",
+          "row": 44,
+          "label": "Nota: Estimativa em setembro/2021."
+        },
+        "estado": "ignorada",
+        "motivo": "fonte/nota"
+      }
+    ],
+    "safra_2020_21_12_trigo": [
+      {
+        "kind": "sheet",
+        "locator": {
+          "sheet": "Principal"
+        },
+        "estado": "ignorada",
+        "motivo": "aba fora desta selecao",
+        "shape": [
+          0,
+          0
+        ]
+      },
+      {
+        "kind": "sheet",
+        "locator": {
+          "sheet": "Área_Brasil"
+        },
+        "estado": "ignorada",
+        "motivo": "aba fora desta selecao",
+        "shape": [
+          50,
+          8
+        ]
+      },
+      {
+        "kind": "sheet",
+        "locator": {
+          "sheet": "Produtividade_Brasil"
+        },
+        "estado": "ignorada",
+        "motivo": "aba fora desta selecao",
+        "shape": [
+          73,
+          9
+        ]
+      },
+      {
+        "kind": "sheet",
+        "locator": {
+          "sheet": "Produção_Brasil"
+        },
+        "estado": "ignorada",
+        "motivo": "aba fora desta selecao",
+        "shape": [
+          56,
+          8
+        ]
+      },
+      {
+        "kind": "sheet",
+        "locator": {
+          "sheet": "Brasil total por UF"
+        },
+        "estado": "ignorada",
+        "motivo": "aba fora desta selecao",
+        "shape": [
+          52,
+          10
+        ]
+      },
+      {
+        "kind": "sheet",
+        "locator": {
+          "sheet": "Brasil - Total por Produto"
+        },
+        "estado": "ignorada",
+        "motivo": "aba fora desta selecao",
+        "shape": [
+          52,
+          10
+        ]
+      },
+      {
+        "kind": "sheet",
+        "locator": {
+          "sheet": "Algodao em Caroço"
+        },
+        "estado": "ignorada",
+        "motivo": "aba fora desta selecao",
+        "shape": [
+          44,
+          10
+        ]
+      },
+      {
+        "kind": "sheet",
+        "locator": {
+          "sheet": "Algodao em Pluma"
+        },
+        "estado": "ignorada",
+        "motivo": "aba fora desta selecao",
+        "shape": [
+          44,
+          10
+        ]
+      },
+      {
+        "kind": "sheet",
+        "locator": {
+          "sheet": "Caroço de Algodão"
+        },
+        "estado": "ignorada",
+        "motivo": "aba fora desta selecao",
+        "shape": [
+          44,
+          10
+        ]
+      },
+      {
+        "kind": "sheet",
+        "locator": {
+          "sheet": "Algodão Rendimento"
+        },
+        "estado": "ignorada",
+        "motivo": "aba fora desta selecao",
+        "shape": [
+          45,
+          10
+        ]
+      },
+      {
+        "kind": "sheet",
+        "locator": {
+          "sheet": "Amendoim 1a"
+        },
+        "estado": "ignorada",
+        "motivo": "aba fora desta selecao",
+        "shape": [
+          44,
+          10
+        ]
+      },
+      {
+        "kind": "sheet",
+        "locator": {
+          "sheet": "Amendoim 2a"
+        },
+        "estado": "ignorada",
+        "motivo": "aba fora desta selecao",
+        "shape": [
+          44,
+          10
+        ]
+      },
+      {
+        "kind": "sheet",
+        "locator": {
+          "sheet": "Amendoim Total"
+        },
+        "estado": "ignorada",
+        "motivo": "aba fora desta selecao",
+        "shape": [
+          44,
+          10
+        ]
+      },
+      {
+        "kind": "sheet",
+        "locator": {
+          "sheet": "Arroz Sequeiro"
+        },
+        "estado": "ignorada",
+        "motivo": "aba fora desta selecao",
+        "shape": [
+          44,
+          10
+        ]
+      },
+      {
+        "kind": "sheet",
+        "locator": {
+          "sheet": "Arroz Irrigado"
+        },
+        "estado": "ignorada",
+        "motivo": "aba fora desta selecao",
+        "shape": [
+          44,
+          10
+        ]
+      },
+      {
+        "kind": "sheet",
+        "locator": {
+          "sheet": "Arroz Total"
+        },
+        "estado": "ignorada",
+        "motivo": "aba fora desta selecao",
+        "shape": [
+          44,
+          10
+        ]
+      },
+      {
+        "kind": "sheet",
+        "locator": {
+          "sheet": "Feijão 1a Cores"
+        },
+        "estado": "ignorada",
+        "motivo": "aba fora desta selecao",
+        "shape": [
+          44,
+          10
+        ]
+      },
+      {
+        "kind": "sheet",
+        "locator": {
+          "sheet": "Feijão 1a Preto"
+        },
+        "estado": "ignorada",
+        "motivo": "aba fora desta selecao",
+        "shape": [
+          44,
+          10
+        ]
+      },
+      {
+        "kind": "sheet",
+        "locator": {
+          "sheet": "Feijão 1a Caupi"
+        },
+        "estado": "ignorada",
+        "motivo": "aba fora desta selecao",
+        "shape": [
+          44,
+          10
+        ]
+      },
+      {
+        "kind": "sheet",
+        "locator": {
+          "sheet": "Feijão 1a Total"
+        },
+        "estado": "ignorada",
+        "motivo": "aba fora desta selecao",
+        "shape": [
+          44,
+          10
+        ]
+      },
+      {
+        "kind": "sheet",
+        "locator": {
+          "sheet": "Feijão 2a Cores"
+        },
+        "estado": "ignorada",
+        "motivo": "aba fora desta selecao",
+        "shape": [
+          44,
+          10
+        ]
+      },
+      {
+        "kind": "sheet",
+        "locator": {
+          "sheet": "Feijão 2a Preto"
+        },
+        "estado": "ignorada",
+        "motivo": "aba fora desta selecao",
+        "shape": [
+          44,
+          10
+        ]
+      },
+      {
+        "kind": "sheet",
+        "locator": {
+          "sheet": "Feijão 2a Caupi"
+        },
+        "estado": "ignorada",
+        "motivo": "aba fora desta selecao",
+        "shape": [
+          44,
+          10
+        ]
+      },
+      {
+        "kind": "sheet",
+        "locator": {
+          "sheet": "Feijão 2a Total"
+        },
+        "estado": "ignorada",
+        "motivo": "aba fora desta selecao",
+        "shape": [
+          44,
+          10
+        ]
+      },
+      {
+        "kind": "sheet",
+        "locator": {
+          "sheet": "Feijão 3a Cores"
+        },
+        "estado": "ignorada",
+        "motivo": "aba fora desta selecao",
+        "shape": [
+          44,
+          11
+        ]
+      },
+      {
+        "kind": "sheet",
+        "locator": {
+          "sheet": "Feijão 3a Preto"
+        },
+        "estado": "ignorada",
+        "motivo": "aba fora desta selecao",
+        "shape": [
+          44,
+          10
+        ]
+      },
+      {
+        "kind": "sheet",
+        "locator": {
+          "sheet": "Feijão 3a Caupi"
+        },
+        "estado": "ignorada",
+        "motivo": "aba fora desta selecao",
+        "shape": [
+          44,
+          10
+        ]
+      },
+      {
+        "kind": "sheet",
+        "locator": {
+          "sheet": "Feijão 3a Total"
+        },
+        "estado": "ignorada",
+        "motivo": "aba fora desta selecao",
+        "shape": [
+          44,
+          10
+        ]
+      },
+      {
+        "kind": "sheet",
+        "locator": {
+          "sheet": "Feijão Cores Total"
+        },
+        "estado": "ignorada",
+        "motivo": "aba fora desta selecao",
+        "shape": [
+          44,
+          10
+        ]
+      },
+      {
+        "kind": "sheet",
+        "locator": {
+          "sheet": "Feijão Preto Total"
+        },
+        "estado": "ignorada",
+        "motivo": "aba fora desta selecao",
+        "shape": [
+          44,
+          10
+        ]
+      },
+      {
+        "kind": "sheet",
+        "locator": {
+          "sheet": "Feijão Caupi Total"
+        },
+        "estado": "ignorada",
+        "motivo": "aba fora desta selecao",
+        "shape": [
+          44,
+          10
+        ]
+      },
+      {
+        "kind": "sheet",
+        "locator": {
+          "sheet": "Feijão Total"
+        },
+        "estado": "ignorada",
+        "motivo": "aba fora desta selecao",
+        "shape": [
+          44,
+          10
+        ]
+      },
+      {
+        "kind": "sheet",
+        "locator": {
+          "sheet": "Gergelim"
+        },
+        "estado": "ignorada",
+        "motivo": "aba fora desta selecao",
+        "shape": [
+          44,
+          10
+        ]
+      },
+      {
+        "kind": "sheet",
+        "locator": {
+          "sheet": "Girassol"
+        },
+        "estado": "ignorada",
+        "motivo": "aba fora desta selecao",
+        "shape": [
+          44,
+          10
+        ]
+      },
+      {
+        "kind": "sheet",
+        "locator": {
+          "sheet": "Mamona"
+        },
+        "estado": "ignorada",
+        "motivo": "aba fora desta selecao",
+        "shape": [
+          44,
+          12
+        ]
+      },
+      {
+        "kind": "sheet",
+        "locator": {
+          "sheet": "Milho 1a"
+        },
+        "estado": "ignorada",
+        "motivo": "aba fora desta selecao",
+        "shape": [
+          51,
+          10
+        ]
+      },
+      {
+        "kind": "sheet",
+        "locator": {
+          "sheet": "Milho 2a"
+        },
+        "estado": "ignorada",
+        "motivo": "aba fora desta selecao",
+        "shape": [
+          52,
+          22
+        ]
+      },
+      {
+        "kind": "sheet",
+        "locator": {
+          "sheet": "Milho 3a"
+        },
+        "estado": "ignorada",
+        "motivo": "aba fora desta selecao",
+        "shape": [
+          52,
+          10
+        ]
+      },
+      {
+        "kind": "sheet",
+        "locator": {
+          "sheet": "Milho Total"
+        },
+        "estado": "ignorada",
+        "motivo": "aba fora desta selecao",
+        "shape": [
+          52,
+          10
+        ]
+      },
+      {
+        "kind": "sheet",
+        "locator": {
+          "sheet": "Soja"
+        },
+        "estado": "ignorada",
+        "motivo": "aba fora desta selecao",
+        "shape": [
+          44,
+          10
+        ]
+      },
+      {
+        "kind": "sheet",
+        "locator": {
+          "sheet": "Sorgo"
+        },
+        "estado": "ignorada",
+        "motivo": "aba fora desta selecao",
+        "shape": [
+          44,
+          11
+        ]
+      },
+      {
+        "kind": "sheet",
+        "locator": {
+          "sheet": "Aveia 2021"
+        },
+        "estado": "ignorada",
+        "motivo": "aba fora desta selecao",
+        "shape": [
+          44,
+          10
+        ]
+      },
+      {
+        "kind": "sheet",
+        "locator": {
+          "sheet": "Canola 2021"
+        },
+        "estado": "ignorada",
+        "motivo": "aba fora desta selecao",
+        "shape": [
+          44,
+          10
+        ]
+      },
+      {
+        "kind": "sheet",
+        "locator": {
+          "sheet": "Centeio 2021"
+        },
+        "estado": "ignorada",
+        "motivo": "aba fora desta selecao",
+        "shape": [
+          44,
+          10
+        ]
+      },
+      {
+        "kind": "sheet",
+        "locator": {
+          "sheet": "Cevada 2021"
+        },
+        "estado": "ignorada",
+        "motivo": "aba fora desta selecao",
+        "shape": [
+          44,
+          10
+        ]
+      },
+      {
+        "kind": "sheet",
+        "locator": {
+          "sheet": "Trigo 2021"
+        },
+        "estado": "mapeada",
+        "motivo": "selecao nominal",
+        "shape": [
+          44,
+          10
+        ]
+      },
+      {
+        "kind": "sheet",
+        "locator": {
+          "sheet": "Triticale 2021"
+        },
+        "estado": "ignorada",
+        "motivo": "aba fora desta selecao",
+        "shape": [
+          44,
+          10
+        ]
+      },
+      {
+        "kind": "sheet",
+        "locator": {
+          "sheet": "Aveia 2020"
+        },
+        "estado": "ignorada",
+        "motivo": "aba fora desta selecao",
+        "shape": [
+          44,
+          10
+        ]
+      },
+      {
+        "kind": "sheet",
+        "locator": {
+          "sheet": "Canola 2020"
+        },
+        "estado": "ignorada",
+        "motivo": "aba fora desta selecao",
+        "shape": [
+          44,
+          10
+        ]
+      },
+      {
+        "kind": "sheet",
+        "locator": {
+          "sheet": "Centeio 2020"
+        },
+        "estado": "ignorada",
+        "motivo": "aba fora desta selecao",
+        "shape": [
+          44,
+          10
+        ]
+      },
+      {
+        "kind": "sheet",
+        "locator": {
+          "sheet": "Cevada 2020"
+        },
+        "estado": "ignorada",
+        "motivo": "aba fora desta selecao",
+        "shape": [
+          44,
+          10
+        ]
+      },
+      {
+        "kind": "sheet",
+        "locator": {
+          "sheet": "Trigo 2020"
+        },
+        "estado": "ignorada",
+        "motivo": "aba fora desta selecao",
+        "shape": [
+          44,
+          10
+        ]
+      },
+      {
+        "kind": "sheet",
+        "locator": {
+          "sheet": "Triticale 2020"
+        },
+        "estado": "ignorada",
+        "motivo": "aba fora desta selecao",
+        "shape": [
+          44,
+          10
+        ]
+      },
+      {
+        "kind": "sheet",
+        "locator": {
+          "sheet": "Suprimento"
+        },
+        "estado": "ignorada",
+        "motivo": "aba fora desta selecao",
+        "shape": [
+          47,
+          10
+        ]
+      },
+      {
+        "kind": "column",
+        "locator": {
+          "sheet": "Trigo 2021",
+          "column": "A"
+        },
+        "header": "",
+        "estado": "mapeada",
+        "campo": "uf",
+        "motivo": "periodo escolhido ou identidade"
+      },
+      {
+        "kind": "column",
+        "locator": {
+          "sheet": "Trigo 2021",
+          "column": "B"
+        },
+        "header": "Safra 2020",
+        "estado": "ignorada",
+        "campo": null,
+        "motivo": "periodo anterior"
+      },
+      {
+        "kind": "column",
+        "locator": {
+          "sheet": "Trigo 2021",
+          "column": "C"
+        },
+        "header": "Safra 2021",
+        "estado": "mapeada",
+        "campo": "area_plantada",
+        "motivo": "periodo escolhido ou identidade"
+      },
+      {
+        "kind": "column",
+        "locator": {
+          "sheet": "Trigo 2021",
+          "column": "D"
+        },
+        "header": "VAR. %",
+        "estado": "ignorada",
+        "campo": null,
+        "motivo": "variacao percentual; nao e nivel da metrica"
+      },
+      {
+        "kind": "column",
+        "locator": {
+          "sheet": "Trigo 2021",
+          "column": "E"
+        },
+        "header": "Safra 2020",
+        "estado": "ignorada",
+        "campo": null,
+        "motivo": "periodo anterior"
+      },
+      {
+        "kind": "column",
+        "locator": {
+          "sheet": "Trigo 2021",
+          "column": "F"
+        },
+        "header": "Safra 2021",
+        "estado": "mapeada",
+        "campo": "rendimento",
+        "motivo": "periodo escolhido ou identidade"
+      },
+      {
+        "kind": "column",
+        "locator": {
+          "sheet": "Trigo 2021",
+          "column": "G"
+        },
+        "header": "VAR. %",
+        "estado": "ignorada",
+        "campo": null,
+        "motivo": "variacao percentual; nao e nivel da metrica"
+      },
+      {
+        "kind": "column",
+        "locator": {
+          "sheet": "Trigo 2021",
+          "column": "H"
+        },
+        "header": "Safra 2020",
+        "estado": "ignorada",
+        "campo": null,
+        "motivo": "periodo anterior"
+      },
+      {
+        "kind": "column",
+        "locator": {
+          "sheet": "Trigo 2021",
+          "column": "I"
+        },
+        "header": "Safra 2021",
+        "estado": "mapeada",
+        "campo": "producao",
+        "motivo": "periodo escolhido ou identidade"
+      },
+      {
+        "kind": "column",
+        "locator": {
+          "sheet": "Trigo 2021",
+          "column": "J"
+        },
+        "header": "VAR. %",
+        "estado": "ignorada",
+        "campo": null,
+        "motivo": "variacao percentual; nao e nivel da metrica"
+      },
+      {
+        "kind": "row",
+        "locator": {
+          "sheet": "Trigo 2021",
+          "row": 1,
+          "label": ""
+        },
+        "estado": "ignorada",
+        "motivo": "cabecalho"
+      },
+      {
+        "kind": "row",
+        "locator": {
+          "sheet": "Trigo 2021",
+          "row": 2,
+          "label": ""
+        },
+        "estado": "ignorada",
+        "motivo": "cabecalho"
+      },
+      {
+        "kind": "row",
+        "locator": {
+          "sheet": "Trigo 2021",
+          "row": 3,
+          "label": ""
+        },
+        "estado": "ignorada",
+        "motivo": "cabecalho"
+      },
+      {
+        "kind": "row",
+        "locator": {
+          "sheet": "Trigo 2021",
+          "row": 4,
+          "label": ""
+        },
+        "estado": "ignorada",
+        "motivo": "cabecalho"
+      },
+      {
+        "kind": "row",
+        "locator": {
+          "sheet": "Trigo 2021",
+          "row": 5,
+          "label": "REGIÃO/UF"
+        },
+        "estado": "ignorada",
+        "motivo": "cabecalho"
+      },
+      {
+        "kind": "row",
+        "locator": {
+          "sheet": "Trigo 2021",
+          "row": 6,
+          "label": ""
+        },
+        "estado": "ignorada",
+        "motivo": "cabecalho"
+      },
+      {
+        "kind": "row",
+        "locator": {
+          "sheet": "Trigo 2021",
+          "row": 7,
+          "label": ""
+        },
+        "estado": "ignorada",
+        "motivo": "cabecalho"
+      },
+      {
+        "kind": "row",
+        "locator": {
+          "sheet": "Trigo 2021",
+          "row": 8,
+          "label": "NORTE"
+        },
+        "estado": "ignorada",
+        "motivo": "agregado publicado; Brasil calculado somente das UFs"
+      },
+      {
+        "kind": "row",
+        "locator": {
+          "sheet": "Trigo 2021",
+          "row": 9,
+          "label": "RR"
+        },
+        "estado": "mapeada",
+        "motivo": "UF publicada"
+      },
+      {
+        "kind": "row",
+        "locator": {
+          "sheet": "Trigo 2021",
+          "row": 10,
+          "label": "RO"
+        },
+        "estado": "mapeada",
+        "motivo": "UF publicada"
+      },
+      {
+        "kind": "row",
+        "locator": {
+          "sheet": "Trigo 2021",
+          "row": 11,
+          "label": "AC"
+        },
+        "estado": "mapeada",
+        "motivo": "UF publicada"
+      },
+      {
+        "kind": "row",
+        "locator": {
+          "sheet": "Trigo 2021",
+          "row": 12,
+          "label": "AM"
+        },
+        "estado": "mapeada",
+        "motivo": "UF publicada"
+      },
+      {
+        "kind": "row",
+        "locator": {
+          "sheet": "Trigo 2021",
+          "row": 13,
+          "label": "AP"
+        },
+        "estado": "mapeada",
+        "motivo": "UF publicada"
+      },
+      {
+        "kind": "row",
+        "locator": {
+          "sheet": "Trigo 2021",
+          "row": 14,
+          "label": "PA"
+        },
+        "estado": "mapeada",
+        "motivo": "UF publicada"
+      },
+      {
+        "kind": "row",
+        "locator": {
+          "sheet": "Trigo 2021",
+          "row": 15,
+          "label": "TO"
+        },
+        "estado": "mapeada",
+        "motivo": "UF publicada"
+      },
+      {
+        "kind": "row",
+        "locator": {
+          "sheet": "Trigo 2021",
+          "row": 16,
+          "label": "NORDESTE"
+        },
+        "estado": "ignorada",
+        "motivo": "agregado publicado; Brasil calculado somente das UFs"
+      },
+      {
+        "kind": "row",
+        "locator": {
+          "sheet": "Trigo 2021",
+          "row": 17,
+          "label": "MA"
+        },
+        "estado": "mapeada",
+        "motivo": "UF publicada"
+      },
+      {
+        "kind": "row",
+        "locator": {
+          "sheet": "Trigo 2021",
+          "row": 18,
+          "label": "PI"
+        },
+        "estado": "mapeada",
+        "motivo": "UF publicada"
+      },
+      {
+        "kind": "row",
+        "locator": {
+          "sheet": "Trigo 2021",
+          "row": 19,
+          "label": "CE"
+        },
+        "estado": "mapeada",
+        "motivo": "UF publicada"
+      },
+      {
+        "kind": "row",
+        "locator": {
+          "sheet": "Trigo 2021",
+          "row": 20,
+          "label": "RN"
+        },
+        "estado": "mapeada",
+        "motivo": "UF publicada"
+      },
+      {
+        "kind": "row",
+        "locator": {
+          "sheet": "Trigo 2021",
+          "row": 21,
+          "label": "PB"
+        },
+        "estado": "mapeada",
+        "motivo": "UF publicada"
+      },
+      {
+        "kind": "row",
+        "locator": {
+          "sheet": "Trigo 2021",
+          "row": 22,
+          "label": "PE"
+        },
+        "estado": "mapeada",
+        "motivo": "UF publicada"
+      },
+      {
+        "kind": "row",
+        "locator": {
+          "sheet": "Trigo 2021",
+          "row": 23,
+          "label": "AL"
+        },
+        "estado": "mapeada",
+        "motivo": "UF publicada"
+      },
+      {
+        "kind": "row",
+        "locator": {
+          "sheet": "Trigo 2021",
+          "row": 24,
+          "label": "SE"
+        },
+        "estado": "mapeada",
+        "motivo": "UF publicada"
+      },
+      {
+        "kind": "row",
+        "locator": {
+          "sheet": "Trigo 2021",
+          "row": 25,
+          "label": "BA"
+        },
+        "estado": "mapeada",
+        "motivo": "UF publicada"
+      },
+      {
+        "kind": "row",
+        "locator": {
+          "sheet": "Trigo 2021",
+          "row": 26,
+          "label": "CENTRO-OESTE"
+        },
+        "estado": "ignorada",
+        "motivo": "agregado publicado; Brasil calculado somente das UFs"
+      },
+      {
+        "kind": "row",
+        "locator": {
+          "sheet": "Trigo 2021",
+          "row": 27,
+          "label": "MT"
+        },
+        "estado": "mapeada",
+        "motivo": "UF publicada"
+      },
+      {
+        "kind": "row",
+        "locator": {
+          "sheet": "Trigo 2021",
+          "row": 28,
+          "label": "MS"
+        },
+        "estado": "mapeada",
+        "motivo": "UF publicada"
+      },
+      {
+        "kind": "row",
+        "locator": {
+          "sheet": "Trigo 2021",
+          "row": 29,
+          "label": "GO"
+        },
+        "estado": "mapeada",
+        "motivo": "UF publicada"
+      },
+      {
+        "kind": "row",
+        "locator": {
+          "sheet": "Trigo 2021",
+          "row": 30,
+          "label": "DF"
+        },
+        "estado": "mapeada",
+        "motivo": "UF publicada"
+      },
+      {
+        "kind": "row",
+        "locator": {
+          "sheet": "Trigo 2021",
+          "row": 31,
+          "label": "SUDESTE"
+        },
+        "estado": "ignorada",
+        "motivo": "agregado publicado; Brasil calculado somente das UFs"
+      },
+      {
+        "kind": "row",
+        "locator": {
+          "sheet": "Trigo 2021",
+          "row": 32,
+          "label": "MG"
+        },
+        "estado": "mapeada",
+        "motivo": "UF publicada"
+      },
+      {
+        "kind": "row",
+        "locator": {
+          "sheet": "Trigo 2021",
+          "row": 33,
+          "label": "ES"
+        },
+        "estado": "mapeada",
+        "motivo": "UF publicada"
+      },
+      {
+        "kind": "row",
+        "locator": {
+          "sheet": "Trigo 2021",
+          "row": 34,
+          "label": "RJ"
+        },
+        "estado": "mapeada",
+        "motivo": "UF publicada"
+      },
+      {
+        "kind": "row",
+        "locator": {
+          "sheet": "Trigo 2021",
+          "row": 35,
+          "label": "SP"
+        },
+        "estado": "mapeada",
+        "motivo": "UF publicada"
+      },
+      {
+        "kind": "row",
+        "locator": {
+          "sheet": "Trigo 2021",
+          "row": 36,
+          "label": "SUL"
+        },
+        "estado": "ignorada",
+        "motivo": "agregado publicado; Brasil calculado somente das UFs"
+      },
+      {
+        "kind": "row",
+        "locator": {
+          "sheet": "Trigo 2021",
+          "row": 37,
+          "label": "PR"
+        },
+        "estado": "mapeada",
+        "motivo": "UF publicada"
+      },
+      {
+        "kind": "row",
+        "locator": {
+          "sheet": "Trigo 2021",
+          "row": 38,
+          "label": "SC"
+        },
+        "estado": "mapeada",
+        "motivo": "UF publicada"
+      },
+      {
+        "kind": "row",
+        "locator": {
+          "sheet": "Trigo 2021",
+          "row": 39,
+          "label": "RS"
+        },
+        "estado": "mapeada",
+        "motivo": "UF publicada"
+      },
+      {
+        "kind": "row",
+        "locator": {
+          "sheet": "Trigo 2021",
+          "row": 40,
+          "label": "NORTE/NORDESTE"
+        },
+        "estado": "ignorada",
+        "motivo": "agregado publicado; Brasil calculado somente das UFs"
+      },
+      {
+        "kind": "row",
+        "locator": {
+          "sheet": "Trigo 2021",
+          "row": 41,
+          "label": "CENTRO-SUL"
+        },
+        "estado": "ignorada",
+        "motivo": "agregado publicado; Brasil calculado somente das UFs"
+      },
+      {
+        "kind": "row",
+        "locator": {
+          "sheet": "Trigo 2021",
+          "row": 42,
+          "label": "BRASIL"
+        },
+        "estado": "ignorada",
+        "motivo": "agregado publicado; Brasil calculado somente das UFs"
+      },
+      {
+        "kind": "row",
+        "locator": {
+          "sheet": "Trigo 2021",
+          "row": 43,
+          "label": "Fonte: Conab."
+        },
+        "estado": "ignorada",
+        "motivo": "fonte/nota"
+      },
+      {
+        "kind": "row",
+        "locator": {
+          "sheet": "Trigo 2021",
+          "row": 44,
+          "label": "Nota: Estimativa em setembro/2021."
+        },
+        "estado": "ignorada",
+        "motivo": "fonte/nota"
+      }
+    ]
+  },
+  "cases": [
+    {
+      "id": "conab_soja_uf_all_2021_xls",
+      "r3_case_id": "safra_2025_26_12_soja",
+      "dataset": "producao_anual",
+      "selection": {
+        "produto": "soja",
+        "ano": 2021,
+        "nivel": "uf"
+      },
+      "file": "1569ad0cf189f4d5.xls",
+      "layout": "levantamento_xls_bienio",
+      "key_columns": [
+        "ano",
+        "produto",
+        "localidade"
+      ],
+      "expected_keys": [
+        {
+          "ano": 2021,
+          "produto": "soja",
+          "localidade": "Roraima"
+        },
+        {
+          "ano": 2021,
+          "produto": "soja",
+          "localidade": "Rondônia"
+        },
+        {
+          "ano": 2021,
+          "produto": "soja",
+          "localidade": "Acre"
+        },
+        {
+          "ano": 2021,
+          "produto": "soja",
+          "localidade": "Amazonas"
+        },
+        {
+          "ano": 2021,
+          "produto": "soja",
+          "localidade": "Amapá"
+        },
+        {
+          "ano": 2021,
+          "produto": "soja",
+          "localidade": "Pará"
+        },
+        {
+          "ano": 2021,
+          "produto": "soja",
+          "localidade": "Tocantins"
+        },
+        {
+          "ano": 2021,
+          "produto": "soja",
+          "localidade": "Maranhão"
+        },
+        {
+          "ano": 2021,
+          "produto": "soja",
+          "localidade": "Piauí"
+        },
+        {
+          "ano": 2021,
+          "produto": "soja",
+          "localidade": "Ceará"
+        },
+        {
+          "ano": 2021,
+          "produto": "soja",
+          "localidade": "Rio Grande do Norte"
+        },
+        {
+          "ano": 2021,
+          "produto": "soja",
+          "localidade": "Paraíba"
+        },
+        {
+          "ano": 2021,
+          "produto": "soja",
+          "localidade": "Pernambuco"
+        },
+        {
+          "ano": 2021,
+          "produto": "soja",
+          "localidade": "Alagoas"
+        },
+        {
+          "ano": 2021,
+          "produto": "soja",
+          "localidade": "Sergipe"
+        },
+        {
+          "ano": 2021,
+          "produto": "soja",
+          "localidade": "Bahia"
+        },
+        {
+          "ano": 2021,
+          "produto": "soja",
+          "localidade": "Mato Grosso"
+        },
+        {
+          "ano": 2021,
+          "produto": "soja",
+          "localidade": "Mato Grosso do Sul"
+        },
+        {
+          "ano": 2021,
+          "produto": "soja",
+          "localidade": "Goiás"
+        },
+        {
+          "ano": 2021,
+          "produto": "soja",
+          "localidade": "Distrito Federal"
+        },
+        {
+          "ano": 2021,
+          "produto": "soja",
+          "localidade": "Minas Gerais"
+        },
+        {
+          "ano": 2021,
+          "produto": "soja",
+          "localidade": "Espírito Santo"
+        },
+        {
+          "ano": 2021,
+          "produto": "soja",
+          "localidade": "Rio de Janeiro"
+        },
+        {
+          "ano": 2021,
+          "produto": "soja",
+          "localidade": "São Paulo"
+        },
+        {
+          "ano": 2021,
+          "produto": "soja",
+          "localidade": "Paraná"
+        },
+        {
+          "ano": 2021,
+          "produto": "soja",
+          "localidade": "Santa Catarina"
+        },
+        {
+          "ano": 2021,
+          "produto": "soja",
+          "localidade": "Rio Grande do Sul"
+        }
+      ],
+      "samples": [
+        {
+          "key": {
+            "ano": 2021,
+            "produto": "soja",
+            "localidade": "Roraima"
+          },
+          "column": "area_plantada",
+          "value": 70000.0,
+          "raw_cells": [
+            {
+              "sheet": "Soja",
+              "cell": "C9",
+              "value": 70.0,
+              "row_label": "RR",
+              "row_label_cell": "A9",
+              "header": "Safra 20/21",
+              "header_cell": "C6",
+              "published_unit": "ÁREA (Em mil ha)",
+              "unit_cell": "B5"
+            }
+          ],
+          "conversion": "Escala publicada x1000; sem arredondamento"
+        },
+        {
+          "key": {
+            "ano": 2021,
+            "produto": "soja",
+            "localidade": "Roraima"
+          },
+          "column": "producao",
+          "value": 196000.0,
+          "raw_cells": [
+            {
+              "sheet": "Soja",
+              "cell": "I9",
+              "value": 196.0,
+              "row_label": "RR",
+              "row_label_cell": "A9",
+              "header": "Safra 20/21",
+              "header_cell": "I6",
+              "published_unit": "PRODUÇÃO (Em mil t)",
+              "unit_cell": "H5"
+            }
+          ],
+          "conversion": "Escala publicada x1000; sem arredondamento"
+        },
+        {
+          "key": {
+            "ano": 2021,
+            "produto": "soja",
+            "localidade": "Roraima"
+          },
+          "column": "rendimento",
+          "value": 2800.0,
+          "raw_cells": [
+            {
+              "sheet": "Soja",
+              "cell": "F9",
+              "value": 2800.0,
+              "row_label": "RR",
+              "row_label_cell": "A9",
+              "header": "Safra 20/21",
+              "header_cell": "F6",
+              "published_unit": "PRODUTIVIDADE (Em kg/ha)",
+              "unit_cell": "E5"
+            }
+          ],
+          "conversion": "Escala publicada x1; sem arredondamento"
+        },
+        {
+          "key": {
+            "ano": 2021,
+            "produto": "soja",
+            "localidade": "Roraima"
+          },
+          "column": "ano",
+          "value": 2021,
+          "raw_cells": [
+            {
+              "sheet": "Soja",
+              "cell": "C6",
+              "value": "Safra 20/21"
+            }
+          ],
+          "conversion": "Ano de encerramento do bienio; trigo usa o ano civil publicado"
+        },
+        {
+          "key": {
+            "ano": 2021,
+            "produto": "soja",
+            "localidade": "Bahia"
+          },
+          "column": "area_plantada",
+          "value": 1701000.0,
+          "raw_cells": [
+            {
+              "sheet": "Soja",
+              "cell": "C25",
+              "value": 1701.0,
+              "row_label": "BA",
+              "row_label_cell": "A25",
+              "header": "Safra 20/21",
+              "header_cell": "C6",
+              "published_unit": "ÁREA (Em mil ha)",
+              "unit_cell": "B5"
+            }
+          ],
+          "conversion": "Escala publicada x1000; sem arredondamento"
+        },
+        {
+          "key": {
+            "ano": 2021,
+            "produto": "soja",
+            "localidade": "Bahia"
+          },
+          "column": "producao",
+          "value": 6838000.0,
+          "raw_cells": [
+            {
+              "sheet": "Soja",
+              "cell": "I25",
+              "value": 6838.0,
+              "row_label": "BA",
+              "row_label_cell": "A25",
+              "header": "Safra 20/21",
+              "header_cell": "I6",
+              "published_unit": "PRODUÇÃO (Em mil t)",
+              "unit_cell": "H5"
+            }
+          ],
+          "conversion": "Escala publicada x1000; sem arredondamento"
+        },
+        {
+          "key": {
+            "ano": 2021,
+            "produto": "soja",
+            "localidade": "Bahia"
+          },
+          "column": "rendimento",
+          "value": 4020.0,
+          "raw_cells": [
+            {
+              "sheet": "Soja",
+              "cell": "F25",
+              "value": 4020.0,
+              "row_label": "BA",
+              "row_label_cell": "A25",
+              "header": "Safra 20/21",
+              "header_cell": "F6",
+              "published_unit": "PRODUTIVIDADE (Em kg/ha)",
+              "unit_cell": "E5"
+            }
+          ],
+          "conversion": "Escala publicada x1; sem arredondamento"
+        },
+        {
+          "key": {
+            "ano": 2021,
+            "produto": "soja",
+            "localidade": "Bahia"
+          },
+          "column": "ano",
+          "value": 2021,
+          "raw_cells": [
+            {
+              "sheet": "Soja",
+              "cell": "C6",
+              "value": "Safra 20/21"
+            }
+          ],
+          "conversion": "Ano de encerramento do bienio; trigo usa o ano civil publicado"
+        },
+        {
+          "key": {
+            "ano": 2021,
+            "produto": "soja",
+            "localidade": "Mato Grosso"
+          },
+          "column": "area_plantada",
+          "value": 10297200.0,
+          "raw_cells": [
+            {
+              "sheet": "Soja",
+              "cell": "C27",
+              "value": 10297.2,
+              "row_label": "MT",
+              "row_label_cell": "A27",
+              "header": "Safra 20/21",
+              "header_cell": "C6",
+              "published_unit": "ÁREA (Em mil ha)",
+              "unit_cell": "B5"
+            }
+          ],
+          "conversion": "Escala publicada x1000; sem arredondamento"
+        },
+        {
+          "key": {
+            "ano": 2021,
+            "produto": "soja",
+            "localidade": "Mato Grosso"
+          },
+          "column": "producao",
+          "value": 35885700.0,
+          "raw_cells": [
+            {
+              "sheet": "Soja",
+              "cell": "I27",
+              "value": 35885.7,
+              "row_label": "MT",
+              "row_label_cell": "A27",
+              "header": "Safra 20/21",
+              "header_cell": "I6",
+              "published_unit": "PRODUÇÃO (Em mil t)",
+              "unit_cell": "H5"
+            }
+          ],
+          "conversion": "Escala publicada x1000; sem arredondamento"
+        },
+        {
+          "key": {
+            "ano": 2021,
+            "produto": "soja",
+            "localidade": "Mato Grosso"
+          },
+          "column": "rendimento",
+          "value": 3485.0,
+          "raw_cells": [
+            {
+              "sheet": "Soja",
+              "cell": "F27",
+              "value": 3485.0,
+              "row_label": "MT",
+              "row_label_cell": "A27",
+              "header": "Safra 20/21",
+              "header_cell": "F6",
+              "published_unit": "PRODUTIVIDADE (Em kg/ha)",
+              "unit_cell": "E5"
+            }
+          ],
+          "conversion": "Escala publicada x1; sem arredondamento"
+        },
+        {
+          "key": {
+            "ano": 2021,
+            "produto": "soja",
+            "localidade": "Mato Grosso"
+          },
+          "column": "ano",
+          "value": 2021,
+          "raw_cells": [
+            {
+              "sheet": "Soja",
+              "cell": "C6",
+              "value": "Safra 20/21"
+            }
+          ],
+          "conversion": "Ano de encerramento do bienio; trigo usa o ano civil publicado"
+        },
+        {
+          "key": {
+            "ano": 2021,
+            "produto": "soja",
+            "localidade": "Paraná"
+          },
+          "column": "area_plantada",
+          "value": 5623800.0,
+          "raw_cells": [
+            {
+              "sheet": "Soja",
+              "cell": "C37",
+              "value": 5623.8,
+              "row_label": "PR",
+              "row_label_cell": "A37",
+              "header": "Safra 20/21",
+              "header_cell": "C6",
+              "published_unit": "ÁREA (Em mil ha)",
+              "unit_cell": "B5"
+            }
+          ],
+          "conversion": "Escala publicada x1000; sem arredondamento"
+        },
+        {
+          "key": {
+            "ano": 2021,
+            "produto": "soja",
+            "localidade": "Paraná"
+          },
+          "column": "producao",
+          "value": 19880100.0,
+          "raw_cells": [
+            {
+              "sheet": "Soja",
+              "cell": "I37",
+              "value": 19880.1,
+              "row_label": "PR",
+              "row_label_cell": "A37",
+              "header": "Safra 20/21",
+              "header_cell": "I6",
+              "published_unit": "PRODUÇÃO (Em mil t)",
+              "unit_cell": "H5"
+            }
+          ],
+          "conversion": "Escala publicada x1000; sem arredondamento"
+        },
+        {
+          "key": {
+            "ano": 2021,
+            "produto": "soja",
+            "localidade": "Paraná"
+          },
+          "column": "rendimento",
+          "value": 3535.0,
+          "raw_cells": [
+            {
+              "sheet": "Soja",
+              "cell": "F37",
+              "value": 3535.0,
+              "row_label": "PR",
+              "row_label_cell": "A37",
+              "header": "Safra 20/21",
+              "header_cell": "F6",
+              "published_unit": "PRODUTIVIDADE (Em kg/ha)",
+              "unit_cell": "E5"
+            }
+          ],
+          "conversion": "Escala publicada x1; sem arredondamento"
+        },
+        {
+          "key": {
+            "ano": 2021,
+            "produto": "soja",
+            "localidade": "Paraná"
+          },
+          "column": "ano",
+          "value": 2021,
+          "raw_cells": [
+            {
+              "sheet": "Soja",
+              "cell": "C6",
+              "value": "Safra 20/21"
+            }
+          ],
+          "conversion": "Ano de encerramento do bienio; trigo usa o ano civil publicado"
+        },
+        {
+          "key": {
+            "ano": 2021,
+            "produto": "soja",
+            "localidade": "Rio Grande do Sul"
+          },
+          "column": "area_plantada",
+          "value": 6055200.0,
+          "raw_cells": [
+            {
+              "sheet": "Soja",
+              "cell": "C39",
+              "value": 6055.2,
+              "row_label": "RS",
+              "row_label_cell": "A39",
+              "header": "Safra 20/21",
+              "header_cell": "C6",
+              "published_unit": "ÁREA (Em mil ha)",
+              "unit_cell": "B5"
+            }
+          ],
+          "conversion": "Escala publicada x1000; sem arredondamento"
+        },
+        {
+          "key": {
+            "ano": 2021,
+            "produto": "soja",
+            "localidade": "Rio Grande do Sul"
+          },
+          "column": "producao",
+          "value": 20787500.0,
+          "raw_cells": [
+            {
+              "sheet": "Soja",
+              "cell": "I39",
+              "value": 20787.5,
+              "row_label": "RS",
+              "row_label_cell": "A39",
+              "header": "Safra 20/21",
+              "header_cell": "I6",
+              "published_unit": "PRODUÇÃO (Em mil t)",
+              "unit_cell": "H5"
+            }
+          ],
+          "conversion": "Escala publicada x1000; sem arredondamento"
+        },
+        {
+          "key": {
+            "ano": 2021,
+            "produto": "soja",
+            "localidade": "Rio Grande do Sul"
+          },
+          "column": "rendimento",
+          "value": 3433.0,
+          "raw_cells": [
+            {
+              "sheet": "Soja",
+              "cell": "F39",
+              "value": 3433.0,
+              "row_label": "RS",
+              "row_label_cell": "A39",
+              "header": "Safra 20/21",
+              "header_cell": "F6",
+              "published_unit": "PRODUTIVIDADE (Em kg/ha)",
+              "unit_cell": "E5"
+            }
+          ],
+          "conversion": "Escala publicada x1; sem arredondamento"
+        },
+        {
+          "key": {
+            "ano": 2021,
+            "produto": "soja",
+            "localidade": "Rio Grande do Sul"
+          },
+          "column": "ano",
+          "value": 2021,
+          "raw_cells": [
+            {
+              "sheet": "Soja",
+              "cell": "C6",
+              "value": "Safra 20/21"
+            }
+          ],
+          "conversion": "Ano de encerramento do bienio; trigo usa o ano civil publicado"
+        }
+      ],
+      "null_columns": [
+        "area_colhida",
+        "valor_producao",
+        "unidade_valor_producao",
+        "condicao_produto"
+      ],
+      "absent_rows": [],
+      "structure_ref": "safra_2020_21_12_soja",
+      "boundary": {
+        "first_uf": {
+          "cell": "A9",
+          "value": "RR"
+        },
+        "last_uf": {
+          "cell": "A39",
+          "value": "RS"
+        },
+        "last_numeric": {
+          "cell": "J42",
+          "value": 8.9,
+          "ignored": "VAR. %"
+        },
+        "last_row": {
+          "cell": "A44",
+          "value": "Nota: Estimativa em setembro/2021.",
+          "ignored": "nota"
+        }
+      },
+      "year_rule": "CONAB levantamento: ano do encerramento, nao o inicio do bienio",
+      "N3": "Fallback da mesma captura, sem equivalencia PAM contemporanea comprovada",
+      "catalog_reuse_only": true,
+      "extra_file": {
+        "url": "https://www.gov.br/conab/pt-br/atuacao/informacoes-agropecuarias/safras/safra-de-graos/boletim-da-safra-de-graos/12o-levantamento-safra-2020-21/site-previsao-de-safra-por-produto-set-2021.xls",
+        "sha256": "1569ad0cf189f4d55fccf061f4790700780ffd16ad958160b859d5363bcdef6d",
+        "bytes": 1584640,
+        "captured_at": "2026-09-18T11:30:35.636360+00:00",
+        "file": "1569ad0cf189f4d5.xls",
+        "content_type": "application/vnd.ms-excel"
+      }
+    },
+    {
+      "id": "conab_soja_uf_MT_2021_xls",
+      "r3_case_id": "safra_2025_26_12_soja",
+      "dataset": "producao_anual",
+      "selection": {
+        "produto": "soja",
+        "ano": 2021,
+        "nivel": "uf",
+        "uf": "MT"
+      },
+      "file": "1569ad0cf189f4d5.xls",
+      "layout": "levantamento_xls_bienio",
+      "key_columns": [
+        "ano",
+        "produto",
+        "localidade"
+      ],
+      "expected_keys": [
+        {
+          "ano": 2021,
+          "produto": "soja",
+          "localidade": "Mato Grosso"
+        }
+      ],
+      "samples": [
+        {
+          "key": {
+            "ano": 2021,
+            "produto": "soja",
+            "localidade": "Mato Grosso"
+          },
+          "column": "area_plantada",
+          "value": 10297200.0,
+          "raw_cells": [
+            {
+              "sheet": "Soja",
+              "cell": "C27",
+              "value": 10297.2,
+              "row_label": "MT",
+              "row_label_cell": "A27",
+              "header": "Safra 20/21",
+              "header_cell": "C6",
+              "published_unit": "ÁREA (Em mil ha)",
+              "unit_cell": "B5"
+            }
+          ],
+          "conversion": "Escala publicada x1000; sem arredondamento"
+        },
+        {
+          "key": {
+            "ano": 2021,
+            "produto": "soja",
+            "localidade": "Mato Grosso"
+          },
+          "column": "producao",
+          "value": 35885700.0,
+          "raw_cells": [
+            {
+              "sheet": "Soja",
+              "cell": "I27",
+              "value": 35885.7,
+              "row_label": "MT",
+              "row_label_cell": "A27",
+              "header": "Safra 20/21",
+              "header_cell": "I6",
+              "published_unit": "PRODUÇÃO (Em mil t)",
+              "unit_cell": "H5"
+            }
+          ],
+          "conversion": "Escala publicada x1000; sem arredondamento"
+        },
+        {
+          "key": {
+            "ano": 2021,
+            "produto": "soja",
+            "localidade": "Mato Grosso"
+          },
+          "column": "rendimento",
+          "value": 3485.0,
+          "raw_cells": [
+            {
+              "sheet": "Soja",
+              "cell": "F27",
+              "value": 3485.0,
+              "row_label": "MT",
+              "row_label_cell": "A27",
+              "header": "Safra 20/21",
+              "header_cell": "F6",
+              "published_unit": "PRODUTIVIDADE (Em kg/ha)",
+              "unit_cell": "E5"
+            }
+          ],
+          "conversion": "Escala publicada x1; sem arredondamento"
+        },
+        {
+          "key": {
+            "ano": 2021,
+            "produto": "soja",
+            "localidade": "Mato Grosso"
+          },
+          "column": "ano",
+          "value": 2021,
+          "raw_cells": [
+            {
+              "sheet": "Soja",
+              "cell": "C6",
+              "value": "Safra 20/21"
+            }
+          ],
+          "conversion": "Ano de encerramento do bienio; trigo usa o ano civil publicado"
+        }
+      ],
+      "null_columns": [
+        "area_colhida",
+        "valor_producao",
+        "unidade_valor_producao",
+        "condicao_produto"
+      ],
+      "absent_rows": [],
+      "structure_ref": "safra_2020_21_12_soja",
+      "boundary": {
+        "first_uf": {
+          "cell": "A9",
+          "value": "RR"
+        },
+        "last_uf": {
+          "cell": "A39",
+          "value": "RS"
+        },
+        "last_numeric": {
+          "cell": "J42",
+          "value": 8.9,
+          "ignored": "VAR. %"
+        },
+        "last_row": {
+          "cell": "A44",
+          "value": "Nota: Estimativa em setembro/2021.",
+          "ignored": "nota"
+        }
+      },
+      "year_rule": "CONAB levantamento: ano do encerramento, nao o inicio do bienio",
+      "N3": "Fallback da mesma captura, sem equivalencia PAM contemporanea comprovada",
+      "catalog_reuse_only": true,
+      "extra_file": {
+        "url": "https://www.gov.br/conab/pt-br/atuacao/informacoes-agropecuarias/safras/safra-de-graos/boletim-da-safra-de-graos/12o-levantamento-safra-2020-21/site-previsao-de-safra-por-produto-set-2021.xls",
+        "sha256": "1569ad0cf189f4d55fccf061f4790700780ffd16ad958160b859d5363bcdef6d",
+        "bytes": 1584640,
+        "captured_at": "2026-09-18T11:30:35.636360+00:00",
+        "file": "1569ad0cf189f4d5.xls",
+        "content_type": "application/vnd.ms-excel"
+      }
+    },
+    {
+      "id": "conab_soja_brasil_all_2021_xls",
+      "r3_case_id": "safra_2025_26_12_soja",
+      "dataset": "producao_anual",
+      "selection": {
+        "produto": "soja",
+        "ano": 2021,
+        "nivel": "brasil"
+      },
+      "file": "1569ad0cf189f4d5.xls",
+      "layout": "levantamento_xls_bienio",
+      "key_columns": [
+        "ano",
+        "produto",
+        "localidade"
+      ],
+      "expected_keys": [
+        {
+          "ano": 2021,
+          "produto": "soja",
+          "localidade": "Brasil"
+        }
+      ],
+      "samples": [
+        {
+          "key": {
+            "ano": 2021,
+            "produto": "soja",
+            "localidade": "Brasil"
+          },
+          "column": "area_plantada",
+          "value": 38532100.0,
+          "raw_cells": [
+            {
+              "sheet": "Soja",
+              "cell": "C9",
+              "value": 70.0,
+              "row_label": "RR",
+              "row_label_cell": "A9",
+              "header": "Safra 20/21",
+              "header_cell": "C6"
+            },
+            {
+              "sheet": "Soja",
+              "cell": "C10",
+              "value": 396.5,
+              "row_label": "RO",
+              "row_label_cell": "A10",
+              "header": "Safra 20/21",
+              "header_cell": "C6"
+            },
+            {
+              "sheet": "Soja",
+              "cell": "C11",
+              "value": 6.1,
+              "row_label": "AC",
+              "row_label_cell": "A11",
+              "header": "Safra 20/21",
+              "header_cell": "C6"
+            },
+            {
+              "sheet": "Soja",
+              "cell": "C12",
+              "value": 4.3,
+              "row_label": "AM",
+              "row_label_cell": "A12",
+              "header": "Safra 20/21",
+              "header_cell": "C6"
+            },
+            {
+              "sheet": "Soja",
+              "cell": "C13",
+              "value": 5.3,
+              "row_label": "AP",
+              "row_label_cell": "A13",
+              "header": "Safra 20/21",
+              "header_cell": "C6"
+            },
+            {
+              "sheet": "Soja",
+              "cell": "C14",
+              "value": 731.9,
+              "row_label": "PA",
+              "row_label_cell": "A14",
+              "header": "Safra 20/21",
+              "header_cell": "C6"
+            },
+            {
+              "sheet": "Soja",
+              "cell": "C15",
+              "value": 1119.0,
+              "row_label": "TO",
+              "row_label_cell": "A15",
+              "header": "Safra 20/21",
+              "header_cell": "C6"
+            },
+            {
+              "sheet": "Soja",
+              "cell": "C17",
+              "value": 1005.7,
+              "row_label": "MA",
+              "row_label_cell": "A17",
+              "header": "Safra 20/21",
+              "header_cell": "C6"
+            },
+            {
+              "sheet": "Soja",
+              "cell": "C18",
+              "value": 834.8,
+              "row_label": "PI",
+              "row_label_cell": "A18",
+              "header": "Safra 20/21",
+              "header_cell": "C6"
+            },
+            {
+              "sheet": "Soja",
+              "cell": "C19",
+              "value": 0.0,
+              "row_label": "CE",
+              "row_label_cell": "A19",
+              "header": "Safra 20/21",
+              "header_cell": "C6"
+            },
+            {
+              "sheet": "Soja",
+              "cell": "C20",
+              "value": 0.0,
+              "row_label": "RN",
+              "row_label_cell": "A20",
+              "header": "Safra 20/21",
+              "header_cell": "C6"
+            },
+            {
+              "sheet": "Soja",
+              "cell": "C21",
+              "value": 0.0,
+              "row_label": "PB",
+              "row_label_cell": "A21",
+              "header": "Safra 20/21",
+              "header_cell": "C6"
+            },
+            {
+              "sheet": "Soja",
+              "cell": "C22",
+              "value": 0.0,
+              "row_label": "PE",
+              "row_label_cell": "A22",
+              "header": "Safra 20/21",
+              "header_cell": "C6"
+            },
+            {
+              "sheet": "Soja",
+              "cell": "C23",
+              "value": 2.1,
+              "row_label": "AL",
+              "row_label_cell": "A23",
+              "header": "Safra 20/21",
+              "header_cell": "C6"
+            },
+            {
+              "sheet": "Soja",
+              "cell": "C24",
+              "value": 0.0,
+              "row_label": "SE",
+              "row_label_cell": "A24",
+              "header": "Safra 20/21",
+              "header_cell": "C6"
+            },
+            {
+              "sheet": "Soja",
+              "cell": "C25",
+              "value": 1701.0,
+              "row_label": "BA",
+              "row_label_cell": "A25",
+              "header": "Safra 20/21",
+              "header_cell": "C6"
+            },
+            {
+              "sheet": "Soja",
+              "cell": "C27",
+              "value": 10297.2,
+              "row_label": "MT",
+              "row_label_cell": "A27",
+              "header": "Safra 20/21",
+              "header_cell": "C6"
+            },
+            {
+              "sheet": "Soja",
+              "cell": "C28",
+              "value": 3149.1,
+              "row_label": "MS",
+              "row_label_cell": "A28",
+              "header": "Safra 20/21",
+              "header_cell": "C6"
+            },
+            {
+              "sheet": "Soja",
+              "cell": "C29",
+              "value": 3694.0,
+              "row_label": "GO",
+              "row_label_cell": "A29",
+              "header": "Safra 20/21",
+              "header_cell": "C6"
+            },
+            {
+              "sheet": "Soja",
+              "cell": "C30",
+              "value": 78.5,
+              "row_label": "DF",
+              "row_label_cell": "A30",
+              "header": "Safra 20/21",
+              "header_cell": "C6"
+            },
+            {
+              "sheet": "Soja",
+              "cell": "C32",
+              "value": 1899.3,
+              "row_label": "MG",
+              "row_label_cell": "A32",
+              "header": "Safra 20/21",
+              "header_cell": "C6"
+            },
+            {
+              "sheet": "Soja",
+              "cell": "C33",
+              "value": 0.0,
+              "row_label": "ES",
+              "row_label_cell": "A33",
+              "header": "Safra 20/21",
+              "header_cell": "C6"
+            },
+            {
+              "sheet": "Soja",
+              "cell": "C34",
+              "value": 0.0,
+              "row_label": "RJ",
+              "row_label_cell": "A34",
+              "header": "Safra 20/21",
+              "header_cell": "C6"
+            },
+            {
+              "sheet": "Soja",
+              "cell": "C35",
+              "value": 1162.0,
+              "row_label": "SP",
+              "row_label_cell": "A35",
+              "header": "Safra 20/21",
+              "header_cell": "C6"
+            },
+            {
+              "sheet": "Soja",
+              "cell": "C37",
+              "value": 5623.8,
+              "row_label": "PR",
+              "row_label_cell": "A37",
+              "header": "Safra 20/21",
+              "header_cell": "C6"
+            },
+            {
+              "sheet": "Soja",
+              "cell": "C38",
+              "value": 696.3,
+              "row_label": "SC",
+              "row_label_cell": "A38",
+              "header": "Safra 20/21",
+              "header_cell": "C6"
+            },
+            {
+              "sheet": "Soja",
+              "cell": "C39",
+              "value": 6055.2,
+              "row_label": "RS",
+              "row_label_cell": "A39",
+              "header": "Safra 20/21",
+              "header_cell": "C6"
+            }
+          ],
+          "conversion": "Soma somente UFs, mil ha/ha e mil t/t x1000; rendimento nacional=producao_t*1000/area_ha; ano=encerramento publicado"
+        },
+        {
+          "key": {
+            "ano": 2021,
+            "produto": "soja",
+            "localidade": "Brasil"
+          },
+          "column": "producao",
+          "value": 135912300.0,
+          "raw_cells": [
+            {
+              "sheet": "Soja",
+              "cell": "I9",
+              "value": 196.0,
+              "row_label": "RR",
+              "row_label_cell": "A9",
+              "header": "Safra 20/21",
+              "header_cell": "I6"
+            },
+            {
+              "sheet": "Soja",
+              "cell": "I10",
+              "value": 1375.1,
+              "row_label": "RO",
+              "row_label_cell": "A10",
+              "header": "Safra 20/21",
+              "header_cell": "I6"
+            },
+            {
+              "sheet": "Soja",
+              "cell": "I11",
+              "value": 23.0,
+              "row_label": "AC",
+              "row_label_cell": "A11",
+              "header": "Safra 20/21",
+              "header_cell": "I6"
+            },
+            {
+              "sheet": "Soja",
+              "cell": "I12",
+              "value": 12.9,
+              "row_label": "AM",
+              "row_label_cell": "A12",
+              "header": "Safra 20/21",
+              "header_cell": "I6"
+            },
+            {
+              "sheet": "Soja",
+              "cell": "I13",
+              "value": 12.8,
+              "row_label": "AP",
+              "row_label_cell": "A13",
+              "header": "Safra 20/21",
+              "header_cell": "I6"
+            },
+            {
+              "sheet": "Soja",
+              "cell": "I14",
+              "value": 2230.8,
+              "row_label": "PA",
+              "row_label_cell": "A14",
+              "header": "Safra 20/21",
+              "header_cell": "I6"
+            },
+            {
+              "sheet": "Soja",
+              "cell": "I15",
+              "value": 3526.0,
+              "row_label": "TO",
+              "row_label_cell": "A15",
+              "header": "Safra 20/21",
+              "header_cell": "I6"
+            },
+            {
+              "sheet": "Soja",
+              "cell": "I17",
+              "value": 3285.6,
+              "row_label": "MA",
+              "row_label_cell": "A17",
+              "header": "Safra 20/21",
+              "header_cell": "I6"
+            },
+            {
+              "sheet": "Soja",
+              "cell": "I18",
+              "value": 2719.8,
+              "row_label": "PI",
+              "row_label_cell": "A18",
+              "header": "Safra 20/21",
+              "header_cell": "I6"
+            },
+            {
+              "sheet": "Soja",
+              "cell": "I19",
+              "value": 0.0,
+              "row_label": "CE",
+              "row_label_cell": "A19",
+              "header": "Safra 20/21",
+              "header_cell": "I6"
+            },
+            {
+              "sheet": "Soja",
+              "cell": "I20",
+              "value": 0.0,
+              "row_label": "RN",
+              "row_label_cell": "A20",
+              "header": "Safra 20/21",
+              "header_cell": "I6"
+            },
+            {
+              "sheet": "Soja",
+              "cell": "I21",
+              "value": 0.0,
+              "row_label": "PB",
+              "row_label_cell": "A21",
+              "header": "Safra 20/21",
+              "header_cell": "I6"
+            },
+            {
+              "sheet": "Soja",
+              "cell": "I22",
+              "value": 0.0,
+              "row_label": "PE",
+              "row_label_cell": "A22",
+              "header": "Safra 20/21",
+              "header_cell": "I6"
+            },
+            {
+              "sheet": "Soja",
+              "cell": "I23",
+              "value": 7.6,
+              "row_label": "AL",
+              "row_label_cell": "A23",
+              "header": "Safra 20/21",
+              "header_cell": "I6"
+            },
+            {
+              "sheet": "Soja",
+              "cell": "I24",
+              "value": 0.0,
+              "row_label": "SE",
+              "row_label_cell": "A24",
+              "header": "Safra 20/21",
+              "header_cell": "I6"
+            },
+            {
+              "sheet": "Soja",
+              "cell": "I25",
+              "value": 6838.0,
+              "row_label": "BA",
+              "row_label_cell": "A25",
+              "header": "Safra 20/21",
+              "header_cell": "I6"
+            },
+            {
+              "sheet": "Soja",
+              "cell": "I27",
+              "value": 35885.7,
+              "row_label": "MT",
+              "row_label_cell": "A27",
+              "header": "Safra 20/21",
+              "header_cell": "I6"
+            },
+            {
+              "sheet": "Soja",
+              "cell": "I28",
+              "value": 11431.2,
+              "row_label": "MS",
+              "row_label_cell": "A28",
+              "header": "Safra 20/21",
+              "header_cell": "I6"
+            },
+            {
+              "sheet": "Soja",
+              "cell": "I29",
+              "value": 13723.2,
+              "row_label": "GO",
+              "row_label_cell": "A29",
+              "header": "Safra 20/21",
+              "header_cell": "I6"
+            },
+            {
+              "sheet": "Soja",
+              "cell": "I30",
+              "value": 292.0,
+              "row_label": "DF",
+              "row_label_cell": "A30",
+              "header": "Safra 20/21",
+              "header_cell": "I6"
+            },
+            {
+              "sheet": "Soja",
+              "cell": "I32",
+              "value": 7021.7,
+              "row_label": "MG",
+              "row_label_cell": "A32",
+              "header": "Safra 20/21",
+              "header_cell": "I6"
+            },
+            {
+              "sheet": "Soja",
+              "cell": "I33",
+              "value": 0.0,
+              "row_label": "ES",
+              "row_label_cell": "A33",
+              "header": "Safra 20/21",
+              "header_cell": "I6"
+            },
+            {
+              "sheet": "Soja",
+              "cell": "I34",
+              "value": 0.0,
+              "row_label": "RJ",
+              "row_label_cell": "A34",
+              "header": "Safra 20/21",
+              "header_cell": "I6"
+            },
+            {
+              "sheet": "Soja",
+              "cell": "I35",
+              "value": 4299.4,
+              "row_label": "SP",
+              "row_label_cell": "A35",
+              "header": "Safra 20/21",
+              "header_cell": "I6"
+            },
+            {
+              "sheet": "Soja",
+              "cell": "I37",
+              "value": 19880.1,
+              "row_label": "PR",
+              "row_label_cell": "A37",
+              "header": "Safra 20/21",
+              "header_cell": "I6"
+            },
+            {
+              "sheet": "Soja",
+              "cell": "I38",
+              "value": 2363.9,
+              "row_label": "SC",
+              "row_label_cell": "A38",
+              "header": "Safra 20/21",
+              "header_cell": "I6"
+            },
+            {
+              "sheet": "Soja",
+              "cell": "I39",
+              "value": 20787.5,
+              "row_label": "RS",
+              "row_label_cell": "A39",
+              "header": "Safra 20/21",
+              "header_cell": "I6"
+            }
+          ],
+          "conversion": "Soma somente UFs, mil ha/ha e mil t/t x1000; rendimento nacional=producao_t*1000/area_ha; ano=encerramento publicado"
+        },
+        {
+          "key": {
+            "ano": 2021,
+            "produto": "soja",
+            "localidade": "Brasil"
+          },
+          "column": "rendimento",
+          "value": 3527.2487095175193,
+          "raw_cells": [
+            {
+              "sheet": "Soja",
+              "cell": "C9",
+              "value": 70.0,
+              "row_label": "RR",
+              "row_label_cell": "A9",
+              "header": "Safra 20/21",
+              "header_cell": "C6"
+            },
+            {
+              "sheet": "Soja",
+              "cell": "I9",
+              "value": 196.0,
+              "row_label": "RR",
+              "row_label_cell": "A9",
+              "header": "Safra 20/21",
+              "header_cell": "I6"
+            },
+            {
+              "sheet": "Soja",
+              "cell": "C10",
+              "value": 396.5,
+              "row_label": "RO",
+              "row_label_cell": "A10",
+              "header": "Safra 20/21",
+              "header_cell": "C6"
+            },
+            {
+              "sheet": "Soja",
+              "cell": "I10",
+              "value": 1375.1,
+              "row_label": "RO",
+              "row_label_cell": "A10",
+              "header": "Safra 20/21",
+              "header_cell": "I6"
+            },
+            {
+              "sheet": "Soja",
+              "cell": "C11",
+              "value": 6.1,
+              "row_label": "AC",
+              "row_label_cell": "A11",
+              "header": "Safra 20/21",
+              "header_cell": "C6"
+            },
+            {
+              "sheet": "Soja",
+              "cell": "I11",
+              "value": 23.0,
+              "row_label": "AC",
+              "row_label_cell": "A11",
+              "header": "Safra 20/21",
+              "header_cell": "I6"
+            },
+            {
+              "sheet": "Soja",
+              "cell": "C12",
+              "value": 4.3,
+              "row_label": "AM",
+              "row_label_cell": "A12",
+              "header": "Safra 20/21",
+              "header_cell": "C6"
+            },
+            {
+              "sheet": "Soja",
+              "cell": "I12",
+              "value": 12.9,
+              "row_label": "AM",
+              "row_label_cell": "A12",
+              "header": "Safra 20/21",
+              "header_cell": "I6"
+            },
+            {
+              "sheet": "Soja",
+              "cell": "C13",
+              "value": 5.3,
+              "row_label": "AP",
+              "row_label_cell": "A13",
+              "header": "Safra 20/21",
+              "header_cell": "C6"
+            },
+            {
+              "sheet": "Soja",
+              "cell": "I13",
+              "value": 12.8,
+              "row_label": "AP",
+              "row_label_cell": "A13",
+              "header": "Safra 20/21",
+              "header_cell": "I6"
+            },
+            {
+              "sheet": "Soja",
+              "cell": "C14",
+              "value": 731.9,
+              "row_label": "PA",
+              "row_label_cell": "A14",
+              "header": "Safra 20/21",
+              "header_cell": "C6"
+            },
+            {
+              "sheet": "Soja",
+              "cell": "I14",
+              "value": 2230.8,
+              "row_label": "PA",
+              "row_label_cell": "A14",
+              "header": "Safra 20/21",
+              "header_cell": "I6"
+            },
+            {
+              "sheet": "Soja",
+              "cell": "C15",
+              "value": 1119.0,
+              "row_label": "TO",
+              "row_label_cell": "A15",
+              "header": "Safra 20/21",
+              "header_cell": "C6"
+            },
+            {
+              "sheet": "Soja",
+              "cell": "I15",
+              "value": 3526.0,
+              "row_label": "TO",
+              "row_label_cell": "A15",
+              "header": "Safra 20/21",
+              "header_cell": "I6"
+            },
+            {
+              "sheet": "Soja",
+              "cell": "C17",
+              "value": 1005.7,
+              "row_label": "MA",
+              "row_label_cell": "A17",
+              "header": "Safra 20/21",
+              "header_cell": "C6"
+            },
+            {
+              "sheet": "Soja",
+              "cell": "I17",
+              "value": 3285.6,
+              "row_label": "MA",
+              "row_label_cell": "A17",
+              "header": "Safra 20/21",
+              "header_cell": "I6"
+            },
+            {
+              "sheet": "Soja",
+              "cell": "C18",
+              "value": 834.8,
+              "row_label": "PI",
+              "row_label_cell": "A18",
+              "header": "Safra 20/21",
+              "header_cell": "C6"
+            },
+            {
+              "sheet": "Soja",
+              "cell": "I18",
+              "value": 2719.8,
+              "row_label": "PI",
+              "row_label_cell": "A18",
+              "header": "Safra 20/21",
+              "header_cell": "I6"
+            },
+            {
+              "sheet": "Soja",
+              "cell": "C19",
+              "value": 0.0,
+              "row_label": "CE",
+              "row_label_cell": "A19",
+              "header": "Safra 20/21",
+              "header_cell": "C6"
+            },
+            {
+              "sheet": "Soja",
+              "cell": "I19",
+              "value": 0.0,
+              "row_label": "CE",
+              "row_label_cell": "A19",
+              "header": "Safra 20/21",
+              "header_cell": "I6"
+            },
+            {
+              "sheet": "Soja",
+              "cell": "C20",
+              "value": 0.0,
+              "row_label": "RN",
+              "row_label_cell": "A20",
+              "header": "Safra 20/21",
+              "header_cell": "C6"
+            },
+            {
+              "sheet": "Soja",
+              "cell": "I20",
+              "value": 0.0,
+              "row_label": "RN",
+              "row_label_cell": "A20",
+              "header": "Safra 20/21",
+              "header_cell": "I6"
+            },
+            {
+              "sheet": "Soja",
+              "cell": "C21",
+              "value": 0.0,
+              "row_label": "PB",
+              "row_label_cell": "A21",
+              "header": "Safra 20/21",
+              "header_cell": "C6"
+            },
+            {
+              "sheet": "Soja",
+              "cell": "I21",
+              "value": 0.0,
+              "row_label": "PB",
+              "row_label_cell": "A21",
+              "header": "Safra 20/21",
+              "header_cell": "I6"
+            },
+            {
+              "sheet": "Soja",
+              "cell": "C22",
+              "value": 0.0,
+              "row_label": "PE",
+              "row_label_cell": "A22",
+              "header": "Safra 20/21",
+              "header_cell": "C6"
+            },
+            {
+              "sheet": "Soja",
+              "cell": "I22",
+              "value": 0.0,
+              "row_label": "PE",
+              "row_label_cell": "A22",
+              "header": "Safra 20/21",
+              "header_cell": "I6"
+            },
+            {
+              "sheet": "Soja",
+              "cell": "C23",
+              "value": 2.1,
+              "row_label": "AL",
+              "row_label_cell": "A23",
+              "header": "Safra 20/21",
+              "header_cell": "C6"
+            },
+            {
+              "sheet": "Soja",
+              "cell": "I23",
+              "value": 7.6,
+              "row_label": "AL",
+              "row_label_cell": "A23",
+              "header": "Safra 20/21",
+              "header_cell": "I6"
+            },
+            {
+              "sheet": "Soja",
+              "cell": "C24",
+              "value": 0.0,
+              "row_label": "SE",
+              "row_label_cell": "A24",
+              "header": "Safra 20/21",
+              "header_cell": "C6"
+            },
+            {
+              "sheet": "Soja",
+              "cell": "I24",
+              "value": 0.0,
+              "row_label": "SE",
+              "row_label_cell": "A24",
+              "header": "Safra 20/21",
+              "header_cell": "I6"
+            },
+            {
+              "sheet": "Soja",
+              "cell": "C25",
+              "value": 1701.0,
+              "row_label": "BA",
+              "row_label_cell": "A25",
+              "header": "Safra 20/21",
+              "header_cell": "C6"
+            },
+            {
+              "sheet": "Soja",
+              "cell": "I25",
+              "value": 6838.0,
+              "row_label": "BA",
+              "row_label_cell": "A25",
+              "header": "Safra 20/21",
+              "header_cell": "I6"
+            },
+            {
+              "sheet": "Soja",
+              "cell": "C27",
+              "value": 10297.2,
+              "row_label": "MT",
+              "row_label_cell": "A27",
+              "header": "Safra 20/21",
+              "header_cell": "C6"
+            },
+            {
+              "sheet": "Soja",
+              "cell": "I27",
+              "value": 35885.7,
+              "row_label": "MT",
+              "row_label_cell": "A27",
+              "header": "Safra 20/21",
+              "header_cell": "I6"
+            },
+            {
+              "sheet": "Soja",
+              "cell": "C28",
+              "value": 3149.1,
+              "row_label": "MS",
+              "row_label_cell": "A28",
+              "header": "Safra 20/21",
+              "header_cell": "C6"
+            },
+            {
+              "sheet": "Soja",
+              "cell": "I28",
+              "value": 11431.2,
+              "row_label": "MS",
+              "row_label_cell": "A28",
+              "header": "Safra 20/21",
+              "header_cell": "I6"
+            },
+            {
+              "sheet": "Soja",
+              "cell": "C29",
+              "value": 3694.0,
+              "row_label": "GO",
+              "row_label_cell": "A29",
+              "header": "Safra 20/21",
+              "header_cell": "C6"
+            },
+            {
+              "sheet": "Soja",
+              "cell": "I29",
+              "value": 13723.2,
+              "row_label": "GO",
+              "row_label_cell": "A29",
+              "header": "Safra 20/21",
+              "header_cell": "I6"
+            },
+            {
+              "sheet": "Soja",
+              "cell": "C30",
+              "value": 78.5,
+              "row_label": "DF",
+              "row_label_cell": "A30",
+              "header": "Safra 20/21",
+              "header_cell": "C6"
+            },
+            {
+              "sheet": "Soja",
+              "cell": "I30",
+              "value": 292.0,
+              "row_label": "DF",
+              "row_label_cell": "A30",
+              "header": "Safra 20/21",
+              "header_cell": "I6"
+            },
+            {
+              "sheet": "Soja",
+              "cell": "C32",
+              "value": 1899.3,
+              "row_label": "MG",
+              "row_label_cell": "A32",
+              "header": "Safra 20/21",
+              "header_cell": "C6"
+            },
+            {
+              "sheet": "Soja",
+              "cell": "I32",
+              "value": 7021.7,
+              "row_label": "MG",
+              "row_label_cell": "A32",
+              "header": "Safra 20/21",
+              "header_cell": "I6"
+            },
+            {
+              "sheet": "Soja",
+              "cell": "C33",
+              "value": 0.0,
+              "row_label": "ES",
+              "row_label_cell": "A33",
+              "header": "Safra 20/21",
+              "header_cell": "C6"
+            },
+            {
+              "sheet": "Soja",
+              "cell": "I33",
+              "value": 0.0,
+              "row_label": "ES",
+              "row_label_cell": "A33",
+              "header": "Safra 20/21",
+              "header_cell": "I6"
+            },
+            {
+              "sheet": "Soja",
+              "cell": "C34",
+              "value": 0.0,
+              "row_label": "RJ",
+              "row_label_cell": "A34",
+              "header": "Safra 20/21",
+              "header_cell": "C6"
+            },
+            {
+              "sheet": "Soja",
+              "cell": "I34",
+              "value": 0.0,
+              "row_label": "RJ",
+              "row_label_cell": "A34",
+              "header": "Safra 20/21",
+              "header_cell": "I6"
+            },
+            {
+              "sheet": "Soja",
+              "cell": "C35",
+              "value": 1162.0,
+              "row_label": "SP",
+              "row_label_cell": "A35",
+              "header": "Safra 20/21",
+              "header_cell": "C6"
+            },
+            {
+              "sheet": "Soja",
+              "cell": "I35",
+              "value": 4299.4,
+              "row_label": "SP",
+              "row_label_cell": "A35",
+              "header": "Safra 20/21",
+              "header_cell": "I6"
+            },
+            {
+              "sheet": "Soja",
+              "cell": "C37",
+              "value": 5623.8,
+              "row_label": "PR",
+              "row_label_cell": "A37",
+              "header": "Safra 20/21",
+              "header_cell": "C6"
+            },
+            {
+              "sheet": "Soja",
+              "cell": "I37",
+              "value": 19880.1,
+              "row_label": "PR",
+              "row_label_cell": "A37",
+              "header": "Safra 20/21",
+              "header_cell": "I6"
+            },
+            {
+              "sheet": "Soja",
+              "cell": "C38",
+              "value": 696.3,
+              "row_label": "SC",
+              "row_label_cell": "A38",
+              "header": "Safra 20/21",
+              "header_cell": "C6"
+            },
+            {
+              "sheet": "Soja",
+              "cell": "I38",
+              "value": 2363.9,
+              "row_label": "SC",
+              "row_label_cell": "A38",
+              "header": "Safra 20/21",
+              "header_cell": "I6"
+            },
+            {
+              "sheet": "Soja",
+              "cell": "C39",
+              "value": 6055.2,
+              "row_label": "RS",
+              "row_label_cell": "A39",
+              "header": "Safra 20/21",
+              "header_cell": "C6"
+            },
+            {
+              "sheet": "Soja",
+              "cell": "I39",
+              "value": 20787.5,
+              "row_label": "RS",
+              "row_label_cell": "A39",
+              "header": "Safra 20/21",
+              "header_cell": "I6"
+            }
+          ],
+          "conversion": "Soma somente UFs, mil ha/ha e mil t/t x1000; rendimento nacional=producao_t*1000/area_ha; ano=encerramento publicado"
+        },
+        {
+          "key": {
+            "ano": 2021,
+            "produto": "soja",
+            "localidade": "Brasil"
+          },
+          "column": "ano",
+          "value": 2021,
+          "raw_cells": [
+            {
+              "sheet": "Soja",
+              "cell": "C9",
+              "value": 70.0,
+              "row_label": "RR",
+              "row_label_cell": "A9",
+              "header": "Safra 20/21",
+              "header_cell": "C6"
+            },
+            {
+              "sheet": "Soja",
+              "cell": "C10",
+              "value": 396.5,
+              "row_label": "RO",
+              "row_label_cell": "A10",
+              "header": "Safra 20/21",
+              "header_cell": "C6"
+            },
+            {
+              "sheet": "Soja",
+              "cell": "C11",
+              "value": 6.1,
+              "row_label": "AC",
+              "row_label_cell": "A11",
+              "header": "Safra 20/21",
+              "header_cell": "C6"
+            },
+            {
+              "sheet": "Soja",
+              "cell": "C12",
+              "value": 4.3,
+              "row_label": "AM",
+              "row_label_cell": "A12",
+              "header": "Safra 20/21",
+              "header_cell": "C6"
+            },
+            {
+              "sheet": "Soja",
+              "cell": "C13",
+              "value": 5.3,
+              "row_label": "AP",
+              "row_label_cell": "A13",
+              "header": "Safra 20/21",
+              "header_cell": "C6"
+            },
+            {
+              "sheet": "Soja",
+              "cell": "C14",
+              "value": 731.9,
+              "row_label": "PA",
+              "row_label_cell": "A14",
+              "header": "Safra 20/21",
+              "header_cell": "C6"
+            },
+            {
+              "sheet": "Soja",
+              "cell": "C15",
+              "value": 1119.0,
+              "row_label": "TO",
+              "row_label_cell": "A15",
+              "header": "Safra 20/21",
+              "header_cell": "C6"
+            },
+            {
+              "sheet": "Soja",
+              "cell": "C17",
+              "value": 1005.7,
+              "row_label": "MA",
+              "row_label_cell": "A17",
+              "header": "Safra 20/21",
+              "header_cell": "C6"
+            },
+            {
+              "sheet": "Soja",
+              "cell": "C18",
+              "value": 834.8,
+              "row_label": "PI",
+              "row_label_cell": "A18",
+              "header": "Safra 20/21",
+              "header_cell": "C6"
+            },
+            {
+              "sheet": "Soja",
+              "cell": "C19",
+              "value": 0.0,
+              "row_label": "CE",
+              "row_label_cell": "A19",
+              "header": "Safra 20/21",
+              "header_cell": "C6"
+            },
+            {
+              "sheet": "Soja",
+              "cell": "C20",
+              "value": 0.0,
+              "row_label": "RN",
+              "row_label_cell": "A20",
+              "header": "Safra 20/21",
+              "header_cell": "C6"
+            },
+            {
+              "sheet": "Soja",
+              "cell": "C21",
+              "value": 0.0,
+              "row_label": "PB",
+              "row_label_cell": "A21",
+              "header": "Safra 20/21",
+              "header_cell": "C6"
+            },
+            {
+              "sheet": "Soja",
+              "cell": "C22",
+              "value": 0.0,
+              "row_label": "PE",
+              "row_label_cell": "A22",
+              "header": "Safra 20/21",
+              "header_cell": "C6"
+            },
+            {
+              "sheet": "Soja",
+              "cell": "C23",
+              "value": 2.1,
+              "row_label": "AL",
+              "row_label_cell": "A23",
+              "header": "Safra 20/21",
+              "header_cell": "C6"
+            },
+            {
+              "sheet": "Soja",
+              "cell": "C24",
+              "value": 0.0,
+              "row_label": "SE",
+              "row_label_cell": "A24",
+              "header": "Safra 20/21",
+              "header_cell": "C6"
+            },
+            {
+              "sheet": "Soja",
+              "cell": "C25",
+              "value": 1701.0,
+              "row_label": "BA",
+              "row_label_cell": "A25",
+              "header": "Safra 20/21",
+              "header_cell": "C6"
+            },
+            {
+              "sheet": "Soja",
+              "cell": "C27",
+              "value": 10297.2,
+              "row_label": "MT",
+              "row_label_cell": "A27",
+              "header": "Safra 20/21",
+              "header_cell": "C6"
+            },
+            {
+              "sheet": "Soja",
+              "cell": "C28",
+              "value": 3149.1,
+              "row_label": "MS",
+              "row_label_cell": "A28",
+              "header": "Safra 20/21",
+              "header_cell": "C6"
+            },
+            {
+              "sheet": "Soja",
+              "cell": "C29",
+              "value": 3694.0,
+              "row_label": "GO",
+              "row_label_cell": "A29",
+              "header": "Safra 20/21",
+              "header_cell": "C6"
+            },
+            {
+              "sheet": "Soja",
+              "cell": "C30",
+              "value": 78.5,
+              "row_label": "DF",
+              "row_label_cell": "A30",
+              "header": "Safra 20/21",
+              "header_cell": "C6"
+            },
+            {
+              "sheet": "Soja",
+              "cell": "C32",
+              "value": 1899.3,
+              "row_label": "MG",
+              "row_label_cell": "A32",
+              "header": "Safra 20/21",
+              "header_cell": "C6"
+            },
+            {
+              "sheet": "Soja",
+              "cell": "C33",
+              "value": 0.0,
+              "row_label": "ES",
+              "row_label_cell": "A33",
+              "header": "Safra 20/21",
+              "header_cell": "C6"
+            },
+            {
+              "sheet": "Soja",
+              "cell": "C34",
+              "value": 0.0,
+              "row_label": "RJ",
+              "row_label_cell": "A34",
+              "header": "Safra 20/21",
+              "header_cell": "C6"
+            },
+            {
+              "sheet": "Soja",
+              "cell": "C35",
+              "value": 1162.0,
+              "row_label": "SP",
+              "row_label_cell": "A35",
+              "header": "Safra 20/21",
+              "header_cell": "C6"
+            },
+            {
+              "sheet": "Soja",
+              "cell": "C37",
+              "value": 5623.8,
+              "row_label": "PR",
+              "row_label_cell": "A37",
+              "header": "Safra 20/21",
+              "header_cell": "C6"
+            },
+            {
+              "sheet": "Soja",
+              "cell": "C38",
+              "value": 696.3,
+              "row_label": "SC",
+              "row_label_cell": "A38",
+              "header": "Safra 20/21",
+              "header_cell": "C6"
+            },
+            {
+              "sheet": "Soja",
+              "cell": "C39",
+              "value": 6055.2,
+              "row_label": "RS",
+              "row_label_cell": "A39",
+              "header": "Safra 20/21",
+              "header_cell": "C6"
+            }
+          ],
+          "conversion": "Soma somente UFs, mil ha/ha e mil t/t x1000; rendimento nacional=producao_t*1000/area_ha; ano=encerramento publicado"
+        }
+      ],
+      "null_columns": [
+        "area_colhida",
+        "valor_producao",
+        "unidade_valor_producao",
+        "condicao_produto"
+      ],
+      "absent_rows": [],
+      "structure_ref": "safra_2020_21_12_soja",
+      "boundary": {
+        "first_uf": {
+          "cell": "A9",
+          "value": "RR"
+        },
+        "last_uf": {
+          "cell": "A39",
+          "value": "RS"
+        },
+        "last_numeric": {
+          "cell": "J42",
+          "value": 8.9,
+          "ignored": "VAR. %"
+        },
+        "last_row": {
+          "cell": "A44",
+          "value": "Nota: Estimativa em setembro/2021.",
+          "ignored": "nota"
+        }
+      },
+      "year_rule": "CONAB levantamento: ano do encerramento, nao o inicio do bienio",
+      "N3": "Fallback da mesma captura, sem equivalencia PAM contemporanea comprovada",
+      "catalog_reuse_only": true,
+      "extra_file": {
+        "url": "https://www.gov.br/conab/pt-br/atuacao/informacoes-agropecuarias/safras/safra-de-graos/boletim-da-safra-de-graos/12o-levantamento-safra-2020-21/site-previsao-de-safra-por-produto-set-2021.xls",
+        "sha256": "1569ad0cf189f4d55fccf061f4790700780ffd16ad958160b859d5363bcdef6d",
+        "bytes": 1584640,
+        "captured_at": "2026-09-18T11:30:35.636360+00:00",
+        "file": "1569ad0cf189f4d5.xls",
+        "content_type": "application/vnd.ms-excel"
+      },
+      "published_brasil": {
+        "sheet": "Soja",
+        "label_cell": "A42",
+        "label": "BRASIL",
+        "values": {
+          "area_plantada": {
+            "cell": "C42",
+            "raw": 38532.1,
+            "published": 38532100.0,
+            "sum_ufs": 38532100.0,
+            "delta": 0.0
+          },
+          "producao": {
+            "cell": "I42",
+            "raw": 135912.3,
+            "published": 135912300.0,
+            "sum_ufs": 135912300.0,
+            "delta": 0.0
+          }
+        },
+        "published_yield": {
+          "cell": "F42",
+          "value": 3527.253541852118
+        },
+        "note": "area/producao soma UFs comparada ao agregado publicado; rendimento continua recalculado"
+      }
+    },
+    {
+      "id": "conab_trigo_uf_all_2021_xls",
+      "r3_case_id": "safra_2025_26_12_trigo",
+      "dataset": "producao_anual",
+      "selection": {
+        "produto": "trigo",
+        "ano": 2021,
+        "nivel": "uf"
+      },
+      "file": "1569ad0cf189f4d5.xls",
+      "layout": "levantamento_xls_anual",
+      "key_columns": [
+        "ano",
+        "produto",
+        "localidade"
+      ],
+      "expected_keys": [
+        {
+          "ano": 2021,
+          "produto": "trigo",
+          "localidade": "Roraima"
+        },
+        {
+          "ano": 2021,
+          "produto": "trigo",
+          "localidade": "Rondônia"
+        },
+        {
+          "ano": 2021,
+          "produto": "trigo",
+          "localidade": "Acre"
+        },
+        {
+          "ano": 2021,
+          "produto": "trigo",
+          "localidade": "Amazonas"
+        },
+        {
+          "ano": 2021,
+          "produto": "trigo",
+          "localidade": "Amapá"
+        },
+        {
+          "ano": 2021,
+          "produto": "trigo",
+          "localidade": "Pará"
+        },
+        {
+          "ano": 2021,
+          "produto": "trigo",
+          "localidade": "Tocantins"
+        },
+        {
+          "ano": 2021,
+          "produto": "trigo",
+          "localidade": "Maranhão"
+        },
+        {
+          "ano": 2021,
+          "produto": "trigo",
+          "localidade": "Piauí"
+        },
+        {
+          "ano": 2021,
+          "produto": "trigo",
+          "localidade": "Ceará"
+        },
+        {
+          "ano": 2021,
+          "produto": "trigo",
+          "localidade": "Rio Grande do Norte"
+        },
+        {
+          "ano": 2021,
+          "produto": "trigo",
+          "localidade": "Paraíba"
+        },
+        {
+          "ano": 2021,
+          "produto": "trigo",
+          "localidade": "Pernambuco"
+        },
+        {
+          "ano": 2021,
+          "produto": "trigo",
+          "localidade": "Alagoas"
+        },
+        {
+          "ano": 2021,
+          "produto": "trigo",
+          "localidade": "Sergipe"
+        },
+        {
+          "ano": 2021,
+          "produto": "trigo",
+          "localidade": "Bahia"
+        },
+        {
+          "ano": 2021,
+          "produto": "trigo",
+          "localidade": "Mato Grosso"
+        },
+        {
+          "ano": 2021,
+          "produto": "trigo",
+          "localidade": "Mato Grosso do Sul"
+        },
+        {
+          "ano": 2021,
+          "produto": "trigo",
+          "localidade": "Goiás"
+        },
+        {
+          "ano": 2021,
+          "produto": "trigo",
+          "localidade": "Distrito Federal"
+        },
+        {
+          "ano": 2021,
+          "produto": "trigo",
+          "localidade": "Minas Gerais"
+        },
+        {
+          "ano": 2021,
+          "produto": "trigo",
+          "localidade": "Espírito Santo"
+        },
+        {
+          "ano": 2021,
+          "produto": "trigo",
+          "localidade": "Rio de Janeiro"
+        },
+        {
+          "ano": 2021,
+          "produto": "trigo",
+          "localidade": "São Paulo"
+        },
+        {
+          "ano": 2021,
+          "produto": "trigo",
+          "localidade": "Paraná"
+        },
+        {
+          "ano": 2021,
+          "produto": "trigo",
+          "localidade": "Santa Catarina"
+        },
+        {
+          "ano": 2021,
+          "produto": "trigo",
+          "localidade": "Rio Grande do Sul"
+        }
+      ],
+      "samples": [
+        {
+          "key": {
+            "ano": 2021,
+            "produto": "trigo",
+            "localidade": "Roraima"
+          },
+          "column": "area_plantada",
+          "value": 0.0,
+          "raw_cells": [
+            {
+              "sheet": "Trigo 2021",
+              "cell": "C9",
+              "value": 0.0,
+              "row_label": "RR",
+              "row_label_cell": "A9",
+              "header": "Safra 2021",
+              "header_cell": "C6",
+              "published_unit": "ÁREA (Em mil ha)",
+              "unit_cell": "B5"
+            }
+          ],
+          "conversion": "Escala publicada x1000; sem arredondamento"
+        },
+        {
+          "key": {
+            "ano": 2021,
+            "produto": "trigo",
+            "localidade": "Roraima"
+          },
+          "column": "producao",
+          "value": 0.0,
+          "raw_cells": [
+            {
+              "sheet": "Trigo 2021",
+              "cell": "I9",
+              "value": 0.0,
+              "row_label": "RR",
+              "row_label_cell": "A9",
+              "header": "Safra 2021",
+              "header_cell": "I6",
+              "published_unit": "PRODUÇÃO (Em mil t)",
+              "unit_cell": "H5"
+            }
+          ],
+          "conversion": "Escala publicada x1000; sem arredondamento"
+        },
+        {
+          "key": {
+            "ano": 2021,
+            "produto": "trigo",
+            "localidade": "Roraima"
+          },
+          "column": "rendimento",
+          "value": 0.0,
+          "raw_cells": [
+            {
+              "sheet": "Trigo 2021",
+              "cell": "F9",
+              "value": 0.0,
+              "row_label": "RR",
+              "row_label_cell": "A9",
+              "header": "Safra 2021",
+              "header_cell": "F6",
+              "published_unit": "PRODUTIVIDADE (Em kg/ha)",
+              "unit_cell": "E5"
+            }
+          ],
+          "conversion": "Escala publicada x1; sem arredondamento"
+        },
+        {
+          "key": {
+            "ano": 2021,
+            "produto": "trigo",
+            "localidade": "Roraima"
+          },
+          "column": "ano",
+          "value": 2021,
+          "raw_cells": [
+            {
+              "sheet": "Trigo 2021",
+              "cell": "C6",
+              "value": "Safra 2021"
+            }
+          ],
+          "conversion": "Ano de encerramento do bienio; trigo usa o ano civil publicado"
+        },
+        {
+          "key": {
+            "ano": 2021,
+            "produto": "trigo",
+            "localidade": "Bahia"
+          },
+          "column": "area_plantada",
+          "value": 6100.0,
+          "raw_cells": [
+            {
+              "sheet": "Trigo 2021",
+              "cell": "C25",
+              "value": 6.1,
+              "row_label": "BA",
+              "row_label_cell": "A25",
+              "header": "Safra 2021",
+              "header_cell": "C6",
+              "published_unit": "ÁREA (Em mil ha)",
+              "unit_cell": "B5"
+            }
+          ],
+          "conversion": "Escala publicada x1000; sem arredondamento"
+        },
+        {
+          "key": {
+            "ano": 2021,
+            "produto": "trigo",
+            "localidade": "Bahia"
+          },
+          "column": "producao",
+          "value": 34800.0,
+          "raw_cells": [
+            {
+              "sheet": "Trigo 2021",
+              "cell": "I25",
+              "value": 34.8,
+              "row_label": "BA",
+              "row_label_cell": "A25",
+              "header": "Safra 2021",
+              "header_cell": "I6",
+              "published_unit": "PRODUÇÃO (Em mil t)",
+              "unit_cell": "H5"
+            }
+          ],
+          "conversion": "Escala publicada x1000; sem arredondamento"
+        },
+        {
+          "key": {
+            "ano": 2021,
+            "produto": "trigo",
+            "localidade": "Bahia"
+          },
+          "column": "rendimento",
+          "value": 5700.0,
+          "raw_cells": [
+            {
+              "sheet": "Trigo 2021",
+              "cell": "F25",
+              "value": 5700.0,
+              "row_label": "BA",
+              "row_label_cell": "A25",
+              "header": "Safra 2021",
+              "header_cell": "F6",
+              "published_unit": "PRODUTIVIDADE (Em kg/ha)",
+              "unit_cell": "E5"
+            }
+          ],
+          "conversion": "Escala publicada x1; sem arredondamento"
+        },
+        {
+          "key": {
+            "ano": 2021,
+            "produto": "trigo",
+            "localidade": "Bahia"
+          },
+          "column": "ano",
+          "value": 2021,
+          "raw_cells": [
+            {
+              "sheet": "Trigo 2021",
+              "cell": "C6",
+              "value": "Safra 2021"
+            }
+          ],
+          "conversion": "Ano de encerramento do bienio; trigo usa o ano civil publicado"
+        },
+        {
+          "key": {
+            "ano": 2021,
+            "produto": "trigo",
+            "localidade": "Mato Grosso"
+          },
+          "column": "area_plantada",
+          "value": 0.0,
+          "raw_cells": [
+            {
+              "sheet": "Trigo 2021",
+              "cell": "C27",
+              "value": 0.0,
+              "row_label": "MT",
+              "row_label_cell": "A27",
+              "header": "Safra 2021",
+              "header_cell": "C6",
+              "published_unit": "ÁREA (Em mil ha)",
+              "unit_cell": "B5"
+            }
+          ],
+          "conversion": "Escala publicada x1000; sem arredondamento"
+        },
+        {
+          "key": {
+            "ano": 2021,
+            "produto": "trigo",
+            "localidade": "Mato Grosso"
+          },
+          "column": "producao",
+          "value": 0.0,
+          "raw_cells": [
+            {
+              "sheet": "Trigo 2021",
+              "cell": "I27",
+              "value": 0.0,
+              "row_label": "MT",
+              "row_label_cell": "A27",
+              "header": "Safra 2021",
+              "header_cell": "I6",
+              "published_unit": "PRODUÇÃO (Em mil t)",
+              "unit_cell": "H5"
+            }
+          ],
+          "conversion": "Escala publicada x1000; sem arredondamento"
+        },
+        {
+          "key": {
+            "ano": 2021,
+            "produto": "trigo",
+            "localidade": "Mato Grosso"
+          },
+          "column": "rendimento",
+          "value": 0.0,
+          "raw_cells": [
+            {
+              "sheet": "Trigo 2021",
+              "cell": "F27",
+              "value": 0.0,
+              "row_label": "MT",
+              "row_label_cell": "A27",
+              "header": "Safra 2021",
+              "header_cell": "F6",
+              "published_unit": "PRODUTIVIDADE (Em kg/ha)",
+              "unit_cell": "E5"
+            }
+          ],
+          "conversion": "Escala publicada x1; sem arredondamento"
+        },
+        {
+          "key": {
+            "ano": 2021,
+            "produto": "trigo",
+            "localidade": "Mato Grosso"
+          },
+          "column": "ano",
+          "value": 2021,
+          "raw_cells": [
+            {
+              "sheet": "Trigo 2021",
+              "cell": "C6",
+              "value": "Safra 2021"
+            }
+          ],
+          "conversion": "Ano de encerramento do bienio; trigo usa o ano civil publicado"
+        },
+        {
+          "key": {
+            "ano": 2021,
+            "produto": "trigo",
+            "localidade": "Paraná"
+          },
+          "column": "area_plantada",
+          "value": 1193600.0,
+          "raw_cells": [
+            {
+              "sheet": "Trigo 2021",
+              "cell": "C37",
+              "value": 1193.6,
+              "row_label": "PR",
+              "row_label_cell": "A37",
+              "header": "Safra 2021",
+              "header_cell": "C6",
+              "published_unit": "ÁREA (Em mil ha)",
+              "unit_cell": "B5"
+            }
+          ],
+          "conversion": "Escala publicada x1000; sem arredondamento"
+        },
+        {
+          "key": {
+            "ano": 2021,
+            "produto": "trigo",
+            "localidade": "Paraná"
+          },
+          "column": "producao",
+          "value": 3401800.0,
+          "raw_cells": [
+            {
+              "sheet": "Trigo 2021",
+              "cell": "I37",
+              "value": 3401.8,
+              "row_label": "PR",
+              "row_label_cell": "A37",
+              "header": "Safra 2021",
+              "header_cell": "I6",
+              "published_unit": "PRODUÇÃO (Em mil t)",
+              "unit_cell": "H5"
+            }
+          ],
+          "conversion": "Escala publicada x1000; sem arredondamento"
+        },
+        {
+          "key": {
+            "ano": 2021,
+            "produto": "trigo",
+            "localidade": "Paraná"
+          },
+          "column": "rendimento",
+          "value": 2850.0,
+          "raw_cells": [
+            {
+              "sheet": "Trigo 2021",
+              "cell": "F37",
+              "value": 2850.0,
+              "row_label": "PR",
+              "row_label_cell": "A37",
+              "header": "Safra 2021",
+              "header_cell": "F6",
+              "published_unit": "PRODUTIVIDADE (Em kg/ha)",
+              "unit_cell": "E5"
+            }
+          ],
+          "conversion": "Escala publicada x1; sem arredondamento"
+        },
+        {
+          "key": {
+            "ano": 2021,
+            "produto": "trigo",
+            "localidade": "Paraná"
+          },
+          "column": "ano",
+          "value": 2021,
+          "raw_cells": [
+            {
+              "sheet": "Trigo 2021",
+              "cell": "C6",
+              "value": "Safra 2021"
+            }
+          ],
+          "conversion": "Ano de encerramento do bienio; trigo usa o ano civil publicado"
+        },
+        {
+          "key": {
+            "ano": 2021,
+            "produto": "trigo",
+            "localidade": "Rio Grande do Sul"
+          },
+          "column": "area_plantada",
+          "value": 1145100.0,
+          "raw_cells": [
+            {
+              "sheet": "Trigo 2021",
+              "cell": "C39",
+              "value": 1145.1,
+              "row_label": "RS",
+              "row_label_cell": "A39",
+              "header": "Safra 2021",
+              "header_cell": "C6",
+              "published_unit": "ÁREA (Em mil ha)",
+              "unit_cell": "B5"
+            }
+          ],
+          "conversion": "Escala publicada x1000; sem arredondamento"
+        },
+        {
+          "key": {
+            "ano": 2021,
+            "produto": "trigo",
+            "localidade": "Rio Grande do Sul"
+          },
+          "column": "producao",
+          "value": 3781100.0,
+          "raw_cells": [
+            {
+              "sheet": "Trigo 2021",
+              "cell": "I39",
+              "value": 3781.1,
+              "row_label": "RS",
+              "row_label_cell": "A39",
+              "header": "Safra 2021",
+              "header_cell": "I6",
+              "published_unit": "PRODUÇÃO (Em mil t)",
+              "unit_cell": "H5"
+            }
+          ],
+          "conversion": "Escala publicada x1000; sem arredondamento"
+        },
+        {
+          "key": {
+            "ano": 2021,
+            "produto": "trigo",
+            "localidade": "Rio Grande do Sul"
+          },
+          "column": "rendimento",
+          "value": 3302.0,
+          "raw_cells": [
+            {
+              "sheet": "Trigo 2021",
+              "cell": "F39",
+              "value": 3302.0,
+              "row_label": "RS",
+              "row_label_cell": "A39",
+              "header": "Safra 2021",
+              "header_cell": "F6",
+              "published_unit": "PRODUTIVIDADE (Em kg/ha)",
+              "unit_cell": "E5"
+            }
+          ],
+          "conversion": "Escala publicada x1; sem arredondamento"
+        },
+        {
+          "key": {
+            "ano": 2021,
+            "produto": "trigo",
+            "localidade": "Rio Grande do Sul"
+          },
+          "column": "ano",
+          "value": 2021,
+          "raw_cells": [
+            {
+              "sheet": "Trigo 2021",
+              "cell": "C6",
+              "value": "Safra 2021"
+            }
+          ],
+          "conversion": "Ano de encerramento do bienio; trigo usa o ano civil publicado"
+        }
+      ],
+      "null_columns": [
+        "area_colhida",
+        "valor_producao",
+        "unidade_valor_producao",
+        "condicao_produto"
+      ],
+      "absent_rows": [],
+      "structure_ref": "safra_2020_21_12_trigo",
+      "boundary": {
+        "first_uf": {
+          "cell": "A9",
+          "value": "RR"
+        },
+        "last_uf": {
+          "cell": "A39",
+          "value": "RS"
+        },
+        "last_numeric": {
+          "cell": "J42",
+          "value": 30.8,
+          "ignored": "VAR. %"
+        },
+        "last_row": {
+          "cell": "A44",
+          "value": "Nota: Estimativa em setembro/2021.",
+          "ignored": "nota"
+        }
+      },
+      "year_rule": "CONAB levantamento: ano do encerramento, nao o inicio do bienio",
+      "N3": "Fallback da mesma captura, sem equivalencia PAM contemporanea comprovada",
+      "catalog_reuse_only": true,
+      "extra_file": {
+        "url": "https://www.gov.br/conab/pt-br/atuacao/informacoes-agropecuarias/safras/safra-de-graos/boletim-da-safra-de-graos/12o-levantamento-safra-2020-21/site-previsao-de-safra-por-produto-set-2021.xls",
+        "sha256": "1569ad0cf189f4d55fccf061f4790700780ffd16ad958160b859d5363bcdef6d",
+        "bytes": 1584640,
+        "captured_at": "2026-09-18T11:30:35.636360+00:00",
+        "file": "1569ad0cf189f4d5.xls",
+        "content_type": "application/vnd.ms-excel"
+      }
+    },
+    {
+      "id": "conab_trigo_uf_PR_2021_xls",
+      "r3_case_id": "safra_2025_26_12_trigo",
+      "dataset": "producao_anual",
+      "selection": {
+        "produto": "trigo",
+        "ano": 2021,
+        "nivel": "uf",
+        "uf": "PR"
+      },
+      "file": "1569ad0cf189f4d5.xls",
+      "layout": "levantamento_xls_anual",
+      "key_columns": [
+        "ano",
+        "produto",
+        "localidade"
+      ],
+      "expected_keys": [
+        {
+          "ano": 2021,
+          "produto": "trigo",
+          "localidade": "Paraná"
+        }
+      ],
+      "samples": [
+        {
+          "key": {
+            "ano": 2021,
+            "produto": "trigo",
+            "localidade": "Paraná"
+          },
+          "column": "area_plantada",
+          "value": 1193600.0,
+          "raw_cells": [
+            {
+              "sheet": "Trigo 2021",
+              "cell": "C37",
+              "value": 1193.6,
+              "row_label": "PR",
+              "row_label_cell": "A37",
+              "header": "Safra 2021",
+              "header_cell": "C6",
+              "published_unit": "ÁREA (Em mil ha)",
+              "unit_cell": "B5"
+            }
+          ],
+          "conversion": "Escala publicada x1000; sem arredondamento"
+        },
+        {
+          "key": {
+            "ano": 2021,
+            "produto": "trigo",
+            "localidade": "Paraná"
+          },
+          "column": "producao",
+          "value": 3401800.0,
+          "raw_cells": [
+            {
+              "sheet": "Trigo 2021",
+              "cell": "I37",
+              "value": 3401.8,
+              "row_label": "PR",
+              "row_label_cell": "A37",
+              "header": "Safra 2021",
+              "header_cell": "I6",
+              "published_unit": "PRODUÇÃO (Em mil t)",
+              "unit_cell": "H5"
+            }
+          ],
+          "conversion": "Escala publicada x1000; sem arredondamento"
+        },
+        {
+          "key": {
+            "ano": 2021,
+            "produto": "trigo",
+            "localidade": "Paraná"
+          },
+          "column": "rendimento",
+          "value": 2850.0,
+          "raw_cells": [
+            {
+              "sheet": "Trigo 2021",
+              "cell": "F37",
+              "value": 2850.0,
+              "row_label": "PR",
+              "row_label_cell": "A37",
+              "header": "Safra 2021",
+              "header_cell": "F6",
+              "published_unit": "PRODUTIVIDADE (Em kg/ha)",
+              "unit_cell": "E5"
+            }
+          ],
+          "conversion": "Escala publicada x1; sem arredondamento"
+        },
+        {
+          "key": {
+            "ano": 2021,
+            "produto": "trigo",
+            "localidade": "Paraná"
+          },
+          "column": "ano",
+          "value": 2021,
+          "raw_cells": [
+            {
+              "sheet": "Trigo 2021",
+              "cell": "C6",
+              "value": "Safra 2021"
+            }
+          ],
+          "conversion": "Ano de encerramento do bienio; trigo usa o ano civil publicado"
+        }
+      ],
+      "null_columns": [
+        "area_colhida",
+        "valor_producao",
+        "unidade_valor_producao",
+        "condicao_produto"
+      ],
+      "absent_rows": [],
+      "structure_ref": "safra_2020_21_12_trigo",
+      "boundary": {
+        "first_uf": {
+          "cell": "A9",
+          "value": "RR"
+        },
+        "last_uf": {
+          "cell": "A39",
+          "value": "RS"
+        },
+        "last_numeric": {
+          "cell": "J42",
+          "value": 30.8,
+          "ignored": "VAR. %"
+        },
+        "last_row": {
+          "cell": "A44",
+          "value": "Nota: Estimativa em setembro/2021.",
+          "ignored": "nota"
+        }
+      },
+      "year_rule": "CONAB levantamento: ano do encerramento, nao o inicio do bienio",
+      "N3": "Fallback da mesma captura, sem equivalencia PAM contemporanea comprovada",
+      "catalog_reuse_only": true,
+      "extra_file": {
+        "url": "https://www.gov.br/conab/pt-br/atuacao/informacoes-agropecuarias/safras/safra-de-graos/boletim-da-safra-de-graos/12o-levantamento-safra-2020-21/site-previsao-de-safra-por-produto-set-2021.xls",
+        "sha256": "1569ad0cf189f4d55fccf061f4790700780ffd16ad958160b859d5363bcdef6d",
+        "bytes": 1584640,
+        "captured_at": "2026-09-18T11:30:35.636360+00:00",
+        "file": "1569ad0cf189f4d5.xls",
+        "content_type": "application/vnd.ms-excel"
+      }
+    },
+    {
+      "id": "conab_trigo_brasil_all_2021_xls",
+      "r3_case_id": "safra_2025_26_12_trigo",
+      "dataset": "producao_anual",
+      "selection": {
+        "produto": "trigo",
+        "ano": 2021,
+        "nivel": "brasil"
+      },
+      "file": "1569ad0cf189f4d5.xls",
+      "layout": "levantamento_xls_anual",
+      "key_columns": [
+        "ano",
+        "produto",
+        "localidade"
+      ],
+      "expected_keys": [
+        {
+          "ano": 2021,
+          "produto": "trigo",
+          "localidade": "Brasil"
+        }
+      ],
+      "samples": [
+        {
+          "key": {
+            "ano": 2021,
+            "produto": "trigo",
+            "localidade": "Brasil"
+          },
+          "column": "area_plantada",
+          "value": 2691100.0,
+          "raw_cells": [
+            {
+              "sheet": "Trigo 2021",
+              "cell": "C9",
+              "value": 0.0,
+              "row_label": "RR",
+              "row_label_cell": "A9",
+              "header": "Safra 2021",
+              "header_cell": "C6"
+            },
+            {
+              "sheet": "Trigo 2021",
+              "cell": "C10",
+              "value": 0.0,
+              "row_label": "RO",
+              "row_label_cell": "A10",
+              "header": "Safra 2021",
+              "header_cell": "C6"
+            },
+            {
+              "sheet": "Trigo 2021",
+              "cell": "C11",
+              "value": 0.0,
+              "row_label": "AC",
+              "row_label_cell": "A11",
+              "header": "Safra 2021",
+              "header_cell": "C6"
+            },
+            {
+              "sheet": "Trigo 2021",
+              "cell": "C12",
+              "value": 0.0,
+              "row_label": "AM",
+              "row_label_cell": "A12",
+              "header": "Safra 2021",
+              "header_cell": "C6"
+            },
+            {
+              "sheet": "Trigo 2021",
+              "cell": "C13",
+              "value": 0.0,
+              "row_label": "AP",
+              "row_label_cell": "A13",
+              "header": "Safra 2021",
+              "header_cell": "C6"
+            },
+            {
+              "sheet": "Trigo 2021",
+              "cell": "C14",
+              "value": 0.0,
+              "row_label": "PA",
+              "row_label_cell": "A14",
+              "header": "Safra 2021",
+              "header_cell": "C6"
+            },
+            {
+              "sheet": "Trigo 2021",
+              "cell": "C15",
+              "value": 0.0,
+              "row_label": "TO",
+              "row_label_cell": "A15",
+              "header": "Safra 2021",
+              "header_cell": "C6"
+            },
+            {
+              "sheet": "Trigo 2021",
+              "cell": "C17",
+              "value": 0.0,
+              "row_label": "MA",
+              "row_label_cell": "A17",
+              "header": "Safra 2021",
+              "header_cell": "C6"
+            },
+            {
+              "sheet": "Trigo 2021",
+              "cell": "C18",
+              "value": 0.0,
+              "row_label": "PI",
+              "row_label_cell": "A18",
+              "header": "Safra 2021",
+              "header_cell": "C6"
+            },
+            {
+              "sheet": "Trigo 2021",
+              "cell": "C19",
+              "value": 0.0,
+              "row_label": "CE",
+              "row_label_cell": "A19",
+              "header": "Safra 2021",
+              "header_cell": "C6"
+            },
+            {
+              "sheet": "Trigo 2021",
+              "cell": "C20",
+              "value": 0.0,
+              "row_label": "RN",
+              "row_label_cell": "A20",
+              "header": "Safra 2021",
+              "header_cell": "C6"
+            },
+            {
+              "sheet": "Trigo 2021",
+              "cell": "C21",
+              "value": 0.0,
+              "row_label": "PB",
+              "row_label_cell": "A21",
+              "header": "Safra 2021",
+              "header_cell": "C6"
+            },
+            {
+              "sheet": "Trigo 2021",
+              "cell": "C22",
+              "value": 0.0,
+              "row_label": "PE",
+              "row_label_cell": "A22",
+              "header": "Safra 2021",
+              "header_cell": "C6"
+            },
+            {
+              "sheet": "Trigo 2021",
+              "cell": "C23",
+              "value": 0.0,
+              "row_label": "AL",
+              "row_label_cell": "A23",
+              "header": "Safra 2021",
+              "header_cell": "C6"
+            },
+            {
+              "sheet": "Trigo 2021",
+              "cell": "C24",
+              "value": 0.0,
+              "row_label": "SE",
+              "row_label_cell": "A24",
+              "header": "Safra 2021",
+              "header_cell": "C6"
+            },
+            {
+              "sheet": "Trigo 2021",
+              "cell": "C25",
+              "value": 6.1,
+              "row_label": "BA",
+              "row_label_cell": "A25",
+              "header": "Safra 2021",
+              "header_cell": "C6"
+            },
+            {
+              "sheet": "Trigo 2021",
+              "cell": "C27",
+              "value": 0.0,
+              "row_label": "MT",
+              "row_label_cell": "A27",
+              "header": "Safra 2021",
+              "header_cell": "C6"
+            },
+            {
+              "sheet": "Trigo 2021",
+              "cell": "C28",
+              "value": 35.2,
+              "row_label": "MS",
+              "row_label_cell": "A28",
+              "header": "Safra 2021",
+              "header_cell": "C6"
+            },
+            {
+              "sheet": "Trigo 2021",
+              "cell": "C29",
+              "value": 55.0,
+              "row_label": "GO",
+              "row_label_cell": "A29",
+              "header": "Safra 2021",
+              "header_cell": "C6"
+            },
+            {
+              "sheet": "Trigo 2021",
+              "cell": "C30",
+              "value": 2.8,
+              "row_label": "DF",
+              "row_label_cell": "A30",
+              "header": "Safra 2021",
+              "header_cell": "C6"
+            },
+            {
+              "sheet": "Trigo 2021",
+              "cell": "C32",
+              "value": 73.9,
+              "row_label": "MG",
+              "row_label_cell": "A32",
+              "header": "Safra 2021",
+              "header_cell": "C6"
+            },
+            {
+              "sheet": "Trigo 2021",
+              "cell": "C33",
+              "value": 0.0,
+              "row_label": "ES",
+              "row_label_cell": "A33",
+              "header": "Safra 2021",
+              "header_cell": "C6"
+            },
+            {
+              "sheet": "Trigo 2021",
+              "cell": "C34",
+              "value": 0.0,
+              "row_label": "RJ",
+              "row_label_cell": "A34",
+              "header": "Safra 2021",
+              "header_cell": "C6"
+            },
+            {
+              "sheet": "Trigo 2021",
+              "cell": "C35",
+              "value": 86.0,
+              "row_label": "SP",
+              "row_label_cell": "A35",
+              "header": "Safra 2021",
+              "header_cell": "C6"
+            },
+            {
+              "sheet": "Trigo 2021",
+              "cell": "C37",
+              "value": 1193.6,
+              "row_label": "PR",
+              "row_label_cell": "A37",
+              "header": "Safra 2021",
+              "header_cell": "C6"
+            },
+            {
+              "sheet": "Trigo 2021",
+              "cell": "C38",
+              "value": 93.4,
+              "row_label": "SC",
+              "row_label_cell": "A38",
+              "header": "Safra 2021",
+              "header_cell": "C6"
+            },
+            {
+              "sheet": "Trigo 2021",
+              "cell": "C39",
+              "value": 1145.1,
+              "row_label": "RS",
+              "row_label_cell": "A39",
+              "header": "Safra 2021",
+              "header_cell": "C6"
+            }
+          ],
+          "conversion": "Soma somente UFs, mil ha/ha e mil t/t x1000; rendimento nacional=producao_t*1000/area_ha; ano=encerramento publicado"
+        },
+        {
+          "key": {
+            "ano": 2021,
+            "produto": "trigo",
+            "localidade": "Brasil"
+          },
+          "column": "producao",
+          "value": 8156200.0,
+          "raw_cells": [
+            {
+              "sheet": "Trigo 2021",
+              "cell": "I9",
+              "value": 0.0,
+              "row_label": "RR",
+              "row_label_cell": "A9",
+              "header": "Safra 2021",
+              "header_cell": "I6"
+            },
+            {
+              "sheet": "Trigo 2021",
+              "cell": "I10",
+              "value": 0.0,
+              "row_label": "RO",
+              "row_label_cell": "A10",
+              "header": "Safra 2021",
+              "header_cell": "I6"
+            },
+            {
+              "sheet": "Trigo 2021",
+              "cell": "I11",
+              "value": 0.0,
+              "row_label": "AC",
+              "row_label_cell": "A11",
+              "header": "Safra 2021",
+              "header_cell": "I6"
+            },
+            {
+              "sheet": "Trigo 2021",
+              "cell": "I12",
+              "value": 0.0,
+              "row_label": "AM",
+              "row_label_cell": "A12",
+              "header": "Safra 2021",
+              "header_cell": "I6"
+            },
+            {
+              "sheet": "Trigo 2021",
+              "cell": "I13",
+              "value": 0.0,
+              "row_label": "AP",
+              "row_label_cell": "A13",
+              "header": "Safra 2021",
+              "header_cell": "I6"
+            },
+            {
+              "sheet": "Trigo 2021",
+              "cell": "I14",
+              "value": 0.0,
+              "row_label": "PA",
+              "row_label_cell": "A14",
+              "header": "Safra 2021",
+              "header_cell": "I6"
+            },
+            {
+              "sheet": "Trigo 2021",
+              "cell": "I15",
+              "value": 0.0,
+              "row_label": "TO",
+              "row_label_cell": "A15",
+              "header": "Safra 2021",
+              "header_cell": "I6"
+            },
+            {
+              "sheet": "Trigo 2021",
+              "cell": "I17",
+              "value": 0.0,
+              "row_label": "MA",
+              "row_label_cell": "A17",
+              "header": "Safra 2021",
+              "header_cell": "I6"
+            },
+            {
+              "sheet": "Trigo 2021",
+              "cell": "I18",
+              "value": 0.0,
+              "row_label": "PI",
+              "row_label_cell": "A18",
+              "header": "Safra 2021",
+              "header_cell": "I6"
+            },
+            {
+              "sheet": "Trigo 2021",
+              "cell": "I19",
+              "value": 0.0,
+              "row_label": "CE",
+              "row_label_cell": "A19",
+              "header": "Safra 2021",
+              "header_cell": "I6"
+            },
+            {
+              "sheet": "Trigo 2021",
+              "cell": "I20",
+              "value": 0.0,
+              "row_label": "RN",
+              "row_label_cell": "A20",
+              "header": "Safra 2021",
+              "header_cell": "I6"
+            },
+            {
+              "sheet": "Trigo 2021",
+              "cell": "I21",
+              "value": 0.0,
+              "row_label": "PB",
+              "row_label_cell": "A21",
+              "header": "Safra 2021",
+              "header_cell": "I6"
+            },
+            {
+              "sheet": "Trigo 2021",
+              "cell": "I22",
+              "value": 0.0,
+              "row_label": "PE",
+              "row_label_cell": "A22",
+              "header": "Safra 2021",
+              "header_cell": "I6"
+            },
+            {
+              "sheet": "Trigo 2021",
+              "cell": "I23",
+              "value": 0.0,
+              "row_label": "AL",
+              "row_label_cell": "A23",
+              "header": "Safra 2021",
+              "header_cell": "I6"
+            },
+            {
+              "sheet": "Trigo 2021",
+              "cell": "I24",
+              "value": 0.0,
+              "row_label": "SE",
+              "row_label_cell": "A24",
+              "header": "Safra 2021",
+              "header_cell": "I6"
+            },
+            {
+              "sheet": "Trigo 2021",
+              "cell": "I25",
+              "value": 34.8,
+              "row_label": "BA",
+              "row_label_cell": "A25",
+              "header": "Safra 2021",
+              "header_cell": "I6"
+            },
+            {
+              "sheet": "Trigo 2021",
+              "cell": "I27",
+              "value": 0.0,
+              "row_label": "MT",
+              "row_label_cell": "A27",
+              "header": "Safra 2021",
+              "header_cell": "I6"
+            },
+            {
+              "sheet": "Trigo 2021",
+              "cell": "I28",
+              "value": 52.8,
+              "row_label": "MS",
+              "row_label_cell": "A28",
+              "header": "Safra 2021",
+              "header_cell": "I6"
+            },
+            {
+              "sheet": "Trigo 2021",
+              "cell": "I29",
+              "value": 129.3,
+              "row_label": "GO",
+              "row_label_cell": "A29",
+              "header": "Safra 2021",
+              "header_cell": "I6"
+            },
+            {
+              "sheet": "Trigo 2021",
+              "cell": "I30",
+              "value": 10.7,
+              "row_label": "DF",
+              "row_label_cell": "A30",
+              "header": "Safra 2021",
+              "header_cell": "I6"
+            },
+            {
+              "sheet": "Trigo 2021",
+              "cell": "I32",
+              "value": 175.4,
+              "row_label": "MG",
+              "row_label_cell": "A32",
+              "header": "Safra 2021",
+              "header_cell": "I6"
+            },
+            {
+              "sheet": "Trigo 2021",
+              "cell": "I33",
+              "value": 0.0,
+              "row_label": "ES",
+              "row_label_cell": "A33",
+              "header": "Safra 2021",
+              "header_cell": "I6"
+            },
+            {
+              "sheet": "Trigo 2021",
+              "cell": "I34",
+              "value": 0.0,
+              "row_label": "RJ",
+              "row_label_cell": "A34",
+              "header": "Safra 2021",
+              "header_cell": "I6"
+            },
+            {
+              "sheet": "Trigo 2021",
+              "cell": "I35",
+              "value": 254.6,
+              "row_label": "SP",
+              "row_label_cell": "A35",
+              "header": "Safra 2021",
+              "header_cell": "I6"
+            },
+            {
+              "sheet": "Trigo 2021",
+              "cell": "I37",
+              "value": 3401.8,
+              "row_label": "PR",
+              "row_label_cell": "A37",
+              "header": "Safra 2021",
+              "header_cell": "I6"
+            },
+            {
+              "sheet": "Trigo 2021",
+              "cell": "I38",
+              "value": 315.7,
+              "row_label": "SC",
+              "row_label_cell": "A38",
+              "header": "Safra 2021",
+              "header_cell": "I6"
+            },
+            {
+              "sheet": "Trigo 2021",
+              "cell": "I39",
+              "value": 3781.1,
+              "row_label": "RS",
+              "row_label_cell": "A39",
+              "header": "Safra 2021",
+              "header_cell": "I6"
+            }
+          ],
+          "conversion": "Soma somente UFs, mil ha/ha e mil t/t x1000; rendimento nacional=producao_t*1000/area_ha; ano=encerramento publicado"
+        },
+        {
+          "key": {
+            "ano": 2021,
+            "produto": "trigo",
+            "localidade": "Brasil"
+          },
+          "column": "rendimento",
+          "value": 3030.8052469250492,
+          "raw_cells": [
+            {
+              "sheet": "Trigo 2021",
+              "cell": "C9",
+              "value": 0.0,
+              "row_label": "RR",
+              "row_label_cell": "A9",
+              "header": "Safra 2021",
+              "header_cell": "C6"
+            },
+            {
+              "sheet": "Trigo 2021",
+              "cell": "I9",
+              "value": 0.0,
+              "row_label": "RR",
+              "row_label_cell": "A9",
+              "header": "Safra 2021",
+              "header_cell": "I6"
+            },
+            {
+              "sheet": "Trigo 2021",
+              "cell": "C10",
+              "value": 0.0,
+              "row_label": "RO",
+              "row_label_cell": "A10",
+              "header": "Safra 2021",
+              "header_cell": "C6"
+            },
+            {
+              "sheet": "Trigo 2021",
+              "cell": "I10",
+              "value": 0.0,
+              "row_label": "RO",
+              "row_label_cell": "A10",
+              "header": "Safra 2021",
+              "header_cell": "I6"
+            },
+            {
+              "sheet": "Trigo 2021",
+              "cell": "C11",
+              "value": 0.0,
+              "row_label": "AC",
+              "row_label_cell": "A11",
+              "header": "Safra 2021",
+              "header_cell": "C6"
+            },
+            {
+              "sheet": "Trigo 2021",
+              "cell": "I11",
+              "value": 0.0,
+              "row_label": "AC",
+              "row_label_cell": "A11",
+              "header": "Safra 2021",
+              "header_cell": "I6"
+            },
+            {
+              "sheet": "Trigo 2021",
+              "cell": "C12",
+              "value": 0.0,
+              "row_label": "AM",
+              "row_label_cell": "A12",
+              "header": "Safra 2021",
+              "header_cell": "C6"
+            },
+            {
+              "sheet": "Trigo 2021",
+              "cell": "I12",
+              "value": 0.0,
+              "row_label": "AM",
+              "row_label_cell": "A12",
+              "header": "Safra 2021",
+              "header_cell": "I6"
+            },
+            {
+              "sheet": "Trigo 2021",
+              "cell": "C13",
+              "value": 0.0,
+              "row_label": "AP",
+              "row_label_cell": "A13",
+              "header": "Safra 2021",
+              "header_cell": "C6"
+            },
+            {
+              "sheet": "Trigo 2021",
+              "cell": "I13",
+              "value": 0.0,
+              "row_label": "AP",
+              "row_label_cell": "A13",
+              "header": "Safra 2021",
+              "header_cell": "I6"
+            },
+            {
+              "sheet": "Trigo 2021",
+              "cell": "C14",
+              "value": 0.0,
+              "row_label": "PA",
+              "row_label_cell": "A14",
+              "header": "Safra 2021",
+              "header_cell": "C6"
+            },
+            {
+              "sheet": "Trigo 2021",
+              "cell": "I14",
+              "value": 0.0,
+              "row_label": "PA",
+              "row_label_cell": "A14",
+              "header": "Safra 2021",
+              "header_cell": "I6"
+            },
+            {
+              "sheet": "Trigo 2021",
+              "cell": "C15",
+              "value": 0.0,
+              "row_label": "TO",
+              "row_label_cell": "A15",
+              "header": "Safra 2021",
+              "header_cell": "C6"
+            },
+            {
+              "sheet": "Trigo 2021",
+              "cell": "I15",
+              "value": 0.0,
+              "row_label": "TO",
+              "row_label_cell": "A15",
+              "header": "Safra 2021",
+              "header_cell": "I6"
+            },
+            {
+              "sheet": "Trigo 2021",
+              "cell": "C17",
+              "value": 0.0,
+              "row_label": "MA",
+              "row_label_cell": "A17",
+              "header": "Safra 2021",
+              "header_cell": "C6"
+            },
+            {
+              "sheet": "Trigo 2021",
+              "cell": "I17",
+              "value": 0.0,
+              "row_label": "MA",
+              "row_label_cell": "A17",
+              "header": "Safra 2021",
+              "header_cell": "I6"
+            },
+            {
+              "sheet": "Trigo 2021",
+              "cell": "C18",
+              "value": 0.0,
+              "row_label": "PI",
+              "row_label_cell": "A18",
+              "header": "Safra 2021",
+              "header_cell": "C6"
+            },
+            {
+              "sheet": "Trigo 2021",
+              "cell": "I18",
+              "value": 0.0,
+              "row_label": "PI",
+              "row_label_cell": "A18",
+              "header": "Safra 2021",
+              "header_cell": "I6"
+            },
+            {
+              "sheet": "Trigo 2021",
+              "cell": "C19",
+              "value": 0.0,
+              "row_label": "CE",
+              "row_label_cell": "A19",
+              "header": "Safra 2021",
+              "header_cell": "C6"
+            },
+            {
+              "sheet": "Trigo 2021",
+              "cell": "I19",
+              "value": 0.0,
+              "row_label": "CE",
+              "row_label_cell": "A19",
+              "header": "Safra 2021",
+              "header_cell": "I6"
+            },
+            {
+              "sheet": "Trigo 2021",
+              "cell": "C20",
+              "value": 0.0,
+              "row_label": "RN",
+              "row_label_cell": "A20",
+              "header": "Safra 2021",
+              "header_cell": "C6"
+            },
+            {
+              "sheet": "Trigo 2021",
+              "cell": "I20",
+              "value": 0.0,
+              "row_label": "RN",
+              "row_label_cell": "A20",
+              "header": "Safra 2021",
+              "header_cell": "I6"
+            },
+            {
+              "sheet": "Trigo 2021",
+              "cell": "C21",
+              "value": 0.0,
+              "row_label": "PB",
+              "row_label_cell": "A21",
+              "header": "Safra 2021",
+              "header_cell": "C6"
+            },
+            {
+              "sheet": "Trigo 2021",
+              "cell": "I21",
+              "value": 0.0,
+              "row_label": "PB",
+              "row_label_cell": "A21",
+              "header": "Safra 2021",
+              "header_cell": "I6"
+            },
+            {
+              "sheet": "Trigo 2021",
+              "cell": "C22",
+              "value": 0.0,
+              "row_label": "PE",
+              "row_label_cell": "A22",
+              "header": "Safra 2021",
+              "header_cell": "C6"
+            },
+            {
+              "sheet": "Trigo 2021",
+              "cell": "I22",
+              "value": 0.0,
+              "row_label": "PE",
+              "row_label_cell": "A22",
+              "header": "Safra 2021",
+              "header_cell": "I6"
+            },
+            {
+              "sheet": "Trigo 2021",
+              "cell": "C23",
+              "value": 0.0,
+              "row_label": "AL",
+              "row_label_cell": "A23",
+              "header": "Safra 2021",
+              "header_cell": "C6"
+            },
+            {
+              "sheet": "Trigo 2021",
+              "cell": "I23",
+              "value": 0.0,
+              "row_label": "AL",
+              "row_label_cell": "A23",
+              "header": "Safra 2021",
+              "header_cell": "I6"
+            },
+            {
+              "sheet": "Trigo 2021",
+              "cell": "C24",
+              "value": 0.0,
+              "row_label": "SE",
+              "row_label_cell": "A24",
+              "header": "Safra 2021",
+              "header_cell": "C6"
+            },
+            {
+              "sheet": "Trigo 2021",
+              "cell": "I24",
+              "value": 0.0,
+              "row_label": "SE",
+              "row_label_cell": "A24",
+              "header": "Safra 2021",
+              "header_cell": "I6"
+            },
+            {
+              "sheet": "Trigo 2021",
+              "cell": "C25",
+              "value": 6.1,
+              "row_label": "BA",
+              "row_label_cell": "A25",
+              "header": "Safra 2021",
+              "header_cell": "C6"
+            },
+            {
+              "sheet": "Trigo 2021",
+              "cell": "I25",
+              "value": 34.8,
+              "row_label": "BA",
+              "row_label_cell": "A25",
+              "header": "Safra 2021",
+              "header_cell": "I6"
+            },
+            {
+              "sheet": "Trigo 2021",
+              "cell": "C27",
+              "value": 0.0,
+              "row_label": "MT",
+              "row_label_cell": "A27",
+              "header": "Safra 2021",
+              "header_cell": "C6"
+            },
+            {
+              "sheet": "Trigo 2021",
+              "cell": "I27",
+              "value": 0.0,
+              "row_label": "MT",
+              "row_label_cell": "A27",
+              "header": "Safra 2021",
+              "header_cell": "I6"
+            },
+            {
+              "sheet": "Trigo 2021",
+              "cell": "C28",
+              "value": 35.2,
+              "row_label": "MS",
+              "row_label_cell": "A28",
+              "header": "Safra 2021",
+              "header_cell": "C6"
+            },
+            {
+              "sheet": "Trigo 2021",
+              "cell": "I28",
+              "value": 52.8,
+              "row_label": "MS",
+              "row_label_cell": "A28",
+              "header": "Safra 2021",
+              "header_cell": "I6"
+            },
+            {
+              "sheet": "Trigo 2021",
+              "cell": "C29",
+              "value": 55.0,
+              "row_label": "GO",
+              "row_label_cell": "A29",
+              "header": "Safra 2021",
+              "header_cell": "C6"
+            },
+            {
+              "sheet": "Trigo 2021",
+              "cell": "I29",
+              "value": 129.3,
+              "row_label": "GO",
+              "row_label_cell": "A29",
+              "header": "Safra 2021",
+              "header_cell": "I6"
+            },
+            {
+              "sheet": "Trigo 2021",
+              "cell": "C30",
+              "value": 2.8,
+              "row_label": "DF",
+              "row_label_cell": "A30",
+              "header": "Safra 2021",
+              "header_cell": "C6"
+            },
+            {
+              "sheet": "Trigo 2021",
+              "cell": "I30",
+              "value": 10.7,
+              "row_label": "DF",
+              "row_label_cell": "A30",
+              "header": "Safra 2021",
+              "header_cell": "I6"
+            },
+            {
+              "sheet": "Trigo 2021",
+              "cell": "C32",
+              "value": 73.9,
+              "row_label": "MG",
+              "row_label_cell": "A32",
+              "header": "Safra 2021",
+              "header_cell": "C6"
+            },
+            {
+              "sheet": "Trigo 2021",
+              "cell": "I32",
+              "value": 175.4,
+              "row_label": "MG",
+              "row_label_cell": "A32",
+              "header": "Safra 2021",
+              "header_cell": "I6"
+            },
+            {
+              "sheet": "Trigo 2021",
+              "cell": "C33",
+              "value": 0.0,
+              "row_label": "ES",
+              "row_label_cell": "A33",
+              "header": "Safra 2021",
+              "header_cell": "C6"
+            },
+            {
+              "sheet": "Trigo 2021",
+              "cell": "I33",
+              "value": 0.0,
+              "row_label": "ES",
+              "row_label_cell": "A33",
+              "header": "Safra 2021",
+              "header_cell": "I6"
+            },
+            {
+              "sheet": "Trigo 2021",
+              "cell": "C34",
+              "value": 0.0,
+              "row_label": "RJ",
+              "row_label_cell": "A34",
+              "header": "Safra 2021",
+              "header_cell": "C6"
+            },
+            {
+              "sheet": "Trigo 2021",
+              "cell": "I34",
+              "value": 0.0,
+              "row_label": "RJ",
+              "row_label_cell": "A34",
+              "header": "Safra 2021",
+              "header_cell": "I6"
+            },
+            {
+              "sheet": "Trigo 2021",
+              "cell": "C35",
+              "value": 86.0,
+              "row_label": "SP",
+              "row_label_cell": "A35",
+              "header": "Safra 2021",
+              "header_cell": "C6"
+            },
+            {
+              "sheet": "Trigo 2021",
+              "cell": "I35",
+              "value": 254.6,
+              "row_label": "SP",
+              "row_label_cell": "A35",
+              "header": "Safra 2021",
+              "header_cell": "I6"
+            },
+            {
+              "sheet": "Trigo 2021",
+              "cell": "C37",
+              "value": 1193.6,
+              "row_label": "PR",
+              "row_label_cell": "A37",
+              "header": "Safra 2021",
+              "header_cell": "C6"
+            },
+            {
+              "sheet": "Trigo 2021",
+              "cell": "I37",
+              "value": 3401.8,
+              "row_label": "PR",
+              "row_label_cell": "A37",
+              "header": "Safra 2021",
+              "header_cell": "I6"
+            },
+            {
+              "sheet": "Trigo 2021",
+              "cell": "C38",
+              "value": 93.4,
+              "row_label": "SC",
+              "row_label_cell": "A38",
+              "header": "Safra 2021",
+              "header_cell": "C6"
+            },
+            {
+              "sheet": "Trigo 2021",
+              "cell": "I38",
+              "value": 315.7,
+              "row_label": "SC",
+              "row_label_cell": "A38",
+              "header": "Safra 2021",
+              "header_cell": "I6"
+            },
+            {
+              "sheet": "Trigo 2021",
+              "cell": "C39",
+              "value": 1145.1,
+              "row_label": "RS",
+              "row_label_cell": "A39",
+              "header": "Safra 2021",
+              "header_cell": "C6"
+            },
+            {
+              "sheet": "Trigo 2021",
+              "cell": "I39",
+              "value": 3781.1,
+              "row_label": "RS",
+              "row_label_cell": "A39",
+              "header": "Safra 2021",
+              "header_cell": "I6"
+            }
+          ],
+          "conversion": "Soma somente UFs, mil ha/ha e mil t/t x1000; rendimento nacional=producao_t*1000/area_ha; ano=encerramento publicado"
+        },
+        {
+          "key": {
+            "ano": 2021,
+            "produto": "trigo",
+            "localidade": "Brasil"
+          },
+          "column": "ano",
+          "value": 2021,
+          "raw_cells": [
+            {
+              "sheet": "Trigo 2021",
+              "cell": "C9",
+              "value": 0.0,
+              "row_label": "RR",
+              "row_label_cell": "A9",
+              "header": "Safra 2021",
+              "header_cell": "C6"
+            },
+            {
+              "sheet": "Trigo 2021",
+              "cell": "C10",
+              "value": 0.0,
+              "row_label": "RO",
+              "row_label_cell": "A10",
+              "header": "Safra 2021",
+              "header_cell": "C6"
+            },
+            {
+              "sheet": "Trigo 2021",
+              "cell": "C11",
+              "value": 0.0,
+              "row_label": "AC",
+              "row_label_cell": "A11",
+              "header": "Safra 2021",
+              "header_cell": "C6"
+            },
+            {
+              "sheet": "Trigo 2021",
+              "cell": "C12",
+              "value": 0.0,
+              "row_label": "AM",
+              "row_label_cell": "A12",
+              "header": "Safra 2021",
+              "header_cell": "C6"
+            },
+            {
+              "sheet": "Trigo 2021",
+              "cell": "C13",
+              "value": 0.0,
+              "row_label": "AP",
+              "row_label_cell": "A13",
+              "header": "Safra 2021",
+              "header_cell": "C6"
+            },
+            {
+              "sheet": "Trigo 2021",
+              "cell": "C14",
+              "value": 0.0,
+              "row_label": "PA",
+              "row_label_cell": "A14",
+              "header": "Safra 2021",
+              "header_cell": "C6"
+            },
+            {
+              "sheet": "Trigo 2021",
+              "cell": "C15",
+              "value": 0.0,
+              "row_label": "TO",
+              "row_label_cell": "A15",
+              "header": "Safra 2021",
+              "header_cell": "C6"
+            },
+            {
+              "sheet": "Trigo 2021",
+              "cell": "C17",
+              "value": 0.0,
+              "row_label": "MA",
+              "row_label_cell": "A17",
+              "header": "Safra 2021",
+              "header_cell": "C6"
+            },
+            {
+              "sheet": "Trigo 2021",
+              "cell": "C18",
+              "value": 0.0,
+              "row_label": "PI",
+              "row_label_cell": "A18",
+              "header": "Safra 2021",
+              "header_cell": "C6"
+            },
+            {
+              "sheet": "Trigo 2021",
+              "cell": "C19",
+              "value": 0.0,
+              "row_label": "CE",
+              "row_label_cell": "A19",
+              "header": "Safra 2021",
+              "header_cell": "C6"
+            },
+            {
+              "sheet": "Trigo 2021",
+              "cell": "C20",
+              "value": 0.0,
+              "row_label": "RN",
+              "row_label_cell": "A20",
+              "header": "Safra 2021",
+              "header_cell": "C6"
+            },
+            {
+              "sheet": "Trigo 2021",
+              "cell": "C21",
+              "value": 0.0,
+              "row_label": "PB",
+              "row_label_cell": "A21",
+              "header": "Safra 2021",
+              "header_cell": "C6"
+            },
+            {
+              "sheet": "Trigo 2021",
+              "cell": "C22",
+              "value": 0.0,
+              "row_label": "PE",
+              "row_label_cell": "A22",
+              "header": "Safra 2021",
+              "header_cell": "C6"
+            },
+            {
+              "sheet": "Trigo 2021",
+              "cell": "C23",
+              "value": 0.0,
+              "row_label": "AL",
+              "row_label_cell": "A23",
+              "header": "Safra 2021",
+              "header_cell": "C6"
+            },
+            {
+              "sheet": "Trigo 2021",
+              "cell": "C24",
+              "value": 0.0,
+              "row_label": "SE",
+              "row_label_cell": "A24",
+              "header": "Safra 2021",
+              "header_cell": "C6"
+            },
+            {
+              "sheet": "Trigo 2021",
+              "cell": "C25",
+              "value": 6.1,
+              "row_label": "BA",
+              "row_label_cell": "A25",
+              "header": "Safra 2021",
+              "header_cell": "C6"
+            },
+            {
+              "sheet": "Trigo 2021",
+              "cell": "C27",
+              "value": 0.0,
+              "row_label": "MT",
+              "row_label_cell": "A27",
+              "header": "Safra 2021",
+              "header_cell": "C6"
+            },
+            {
+              "sheet": "Trigo 2021",
+              "cell": "C28",
+              "value": 35.2,
+              "row_label": "MS",
+              "row_label_cell": "A28",
+              "header": "Safra 2021",
+              "header_cell": "C6"
+            },
+            {
+              "sheet": "Trigo 2021",
+              "cell": "C29",
+              "value": 55.0,
+              "row_label": "GO",
+              "row_label_cell": "A29",
+              "header": "Safra 2021",
+              "header_cell": "C6"
+            },
+            {
+              "sheet": "Trigo 2021",
+              "cell": "C30",
+              "value": 2.8,
+              "row_label": "DF",
+              "row_label_cell": "A30",
+              "header": "Safra 2021",
+              "header_cell": "C6"
+            },
+            {
+              "sheet": "Trigo 2021",
+              "cell": "C32",
+              "value": 73.9,
+              "row_label": "MG",
+              "row_label_cell": "A32",
+              "header": "Safra 2021",
+              "header_cell": "C6"
+            },
+            {
+              "sheet": "Trigo 2021",
+              "cell": "C33",
+              "value": 0.0,
+              "row_label": "ES",
+              "row_label_cell": "A33",
+              "header": "Safra 2021",
+              "header_cell": "C6"
+            },
+            {
+              "sheet": "Trigo 2021",
+              "cell": "C34",
+              "value": 0.0,
+              "row_label": "RJ",
+              "row_label_cell": "A34",
+              "header": "Safra 2021",
+              "header_cell": "C6"
+            },
+            {
+              "sheet": "Trigo 2021",
+              "cell": "C35",
+              "value": 86.0,
+              "row_label": "SP",
+              "row_label_cell": "A35",
+              "header": "Safra 2021",
+              "header_cell": "C6"
+            },
+            {
+              "sheet": "Trigo 2021",
+              "cell": "C37",
+              "value": 1193.6,
+              "row_label": "PR",
+              "row_label_cell": "A37",
+              "header": "Safra 2021",
+              "header_cell": "C6"
+            },
+            {
+              "sheet": "Trigo 2021",
+              "cell": "C38",
+              "value": 93.4,
+              "row_label": "SC",
+              "row_label_cell": "A38",
+              "header": "Safra 2021",
+              "header_cell": "C6"
+            },
+            {
+              "sheet": "Trigo 2021",
+              "cell": "C39",
+              "value": 1145.1,
+              "row_label": "RS",
+              "row_label_cell": "A39",
+              "header": "Safra 2021",
+              "header_cell": "C6"
+            }
+          ],
+          "conversion": "Soma somente UFs, mil ha/ha e mil t/t x1000; rendimento nacional=producao_t*1000/area_ha; ano=encerramento publicado"
+        }
+      ],
+      "null_columns": [
+        "area_colhida",
+        "valor_producao",
+        "unidade_valor_producao",
+        "condicao_produto"
+      ],
+      "absent_rows": [],
+      "structure_ref": "safra_2020_21_12_trigo",
+      "boundary": {
+        "first_uf": {
+          "cell": "A9",
+          "value": "RR"
+        },
+        "last_uf": {
+          "cell": "A39",
+          "value": "RS"
+        },
+        "last_numeric": {
+          "cell": "J42",
+          "value": 30.8,
+          "ignored": "VAR. %"
+        },
+        "last_row": {
+          "cell": "A44",
+          "value": "Nota: Estimativa em setembro/2021.",
+          "ignored": "nota"
+        }
+      },
+      "year_rule": "CONAB levantamento: ano do encerramento, nao o inicio do bienio",
+      "N3": "Fallback da mesma captura, sem equivalencia PAM contemporanea comprovada",
+      "catalog_reuse_only": true,
+      "extra_file": {
+        "url": "https://www.gov.br/conab/pt-br/atuacao/informacoes-agropecuarias/safras/safra-de-graos/boletim-da-safra-de-graos/12o-levantamento-safra-2020-21/site-previsao-de-safra-por-produto-set-2021.xls",
+        "sha256": "1569ad0cf189f4d55fccf061f4790700780ffd16ad958160b859d5363bcdef6d",
+        "bytes": 1584640,
+        "captured_at": "2026-09-18T11:30:35.636360+00:00",
+        "file": "1569ad0cf189f4d5.xls",
+        "content_type": "application/vnd.ms-excel"
+      },
+      "published_brasil": {
+        "sheet": "Trigo 2021",
+        "label_cell": "A42",
+        "label": "BRASIL",
+        "values": {
+          "area_plantada": {
+            "cell": "C42",
+            "raw": 2691.1,
+            "published": 2691100.0,
+            "sum_ufs": 2691100.0,
+            "delta": 0.0
+          },
+          "producao": {
+            "cell": "I42",
+            "raw": 8156.200000000001,
+            "published": 8156200.000000001,
+            "sum_ufs": 8156200.0,
+            "delta": -1e-09
+          }
+        },
+        "published_yield": {
+          "cell": "F42",
+          "value": 3031.0
+        },
+        "note": "area/producao soma UFs comparada ao agregado publicado; rendimento continua recalculado"
+      }
+    }
+  ]
+}

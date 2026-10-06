@@ -1,0 +1,9 @@
+{
+ "name": "b3_oi_token_20260916",
+ "source": "b3",
+ "requested_url": "https://arquivos.b3.com.br/api/download/requestname?fileName=DerivativesOpenPosition&date=2026-09-16&recaptchaToken=",
+ "status": 200,
+ "captured_at": "2026-09-18T12:44:16.457081+00:00",
+ "bytes": 934,
+ "sha256": "bab2fb5db153151b729a1bb5c488f13ad9d2ebfadf4a400943f95ba26445ca08"
+}
