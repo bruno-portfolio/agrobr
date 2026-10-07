@@ -35,10 +35,9 @@ logger = _log.get_logger(__name__)
 _SOURCE_METHOD = "httpx+pyogrio+shapefile_zip"
 
 
-def _check_readers(*, geo: bool) -> None:
+def _check_readers() -> None:
     check_pyogrio()
-    if geo:
-        check_geopandas()
+    check_geopandas()
 
 
 def _naturezas(natureza: object) -> tuple[str, ...]:
@@ -210,7 +209,7 @@ async def sigef(
     uf = regions.sigla_uf(uf)
     naturezas = _naturezas(natureza)
     bbox = validate_bbox(bbox)
-    _check_readers(geo=bbox is not None)
+    _check_readers()
     logger.info("acervo_fundiario_sigef", uf=uf, natureza=natureza, bbox=bbox)
 
     df, lidos, fetch_ms, parse_ms = await _read_sigef(
@@ -253,7 +252,7 @@ async def sigef_geo(
     uf = regions.sigla_uf(uf)
     naturezas = _naturezas(natureza)
     bbox = validate_bbox(bbox)
-    _check_readers(geo=True)
+    _check_readers()
     logger.info("acervo_fundiario_sigef_geo", uf=uf, natureza=natureza, bbox=bbox)
 
     gdf, lidos, fetch_ms, parse_ms = await _read_sigef(
@@ -313,7 +312,7 @@ async def snci(
     uf = regions.sigla_uf(uf)
     tema, escolhida = _tema_snci(natureza)
     bbox = validate_bbox(bbox)
-    _check_readers(geo=bbox is not None)
+    _check_readers()
     logger.info("acervo_fundiario_snci", uf=uf, natureza=escolhida, bbox=bbox)
 
     t0 = time.monotonic()
@@ -369,7 +368,7 @@ async def snci_geo(
     uf = regions.sigla_uf(uf)
     tema, escolhida = _tema_snci(natureza)
     bbox = validate_bbox(bbox)
-    _check_readers(geo=True)
+    _check_readers()
     logger.info("acervo_fundiario_snci_geo", uf=uf, natureza=escolhida, bbox=bbox)
 
     t0 = time.monotonic()
@@ -437,7 +436,7 @@ async def assentamentos(
 ) -> DataFrameResult:
     uf_norm = validate_uf(uf)
     bbox = validate_bbox(bbox)
-    _check_readers(geo=bbox is not None)
+    _check_readers()
     logger.info("acervo_fundiario_assentamentos", uf=uf_norm, bbox=bbox)
 
     t0 = time.monotonic()
@@ -487,7 +486,7 @@ async def assentamentos_geo(
 ) -> GeoDataFrameResult:
     uf_norm = validate_uf(uf)
     bbox = validate_bbox(bbox)
-    _check_readers(geo=True)
+    _check_readers()
     logger.info("acervo_fundiario_assentamentos_geo", uf=uf_norm, bbox=bbox)
 
     t0 = time.monotonic()

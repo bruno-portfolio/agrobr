@@ -725,6 +725,7 @@ Catálogo desta versão: **54 datasets e 89 contratos registrados**. Mudanças i
 - **`snapshot create` parcial** — o progresso ia para a saída padrão, e snapshot sem uma das fontes saía com "criado com sucesso" e nenhuma linha avisando. O progresso vai para a saída de erro, a CLI diz `Snapshot criado sem todas as fontes.` com um aviso por fonte, e `SnapshotInfo.errors` traz os erros por fonte (vazio quando todas entraram).
 - **Reconciliação semanal** — `scripts/reconciliar_funai.py` usa o contexto TLS da biblioteca (com o certificado intermediário da FUNAI), e `scripts/reconciliar_ana.py` confere status e tipo da resposta antes de ler o JSON: página de erro em HTML, JSON inválido e erro do ArcGIS viram fonte indisponível, não erro do script
 - **IMEA e ANTAQ** — catálogo que associa a mesma chave a nomes diferentes (indicador do IMEA, mercadoria da ANTAQ) levanta `ParseError`, em vez de ficar com o primeiro ou o último nome; repetição com o mesmo nome segue aceita
+- **Acervo Fundiário sem geopandas** — `sigef`, `snci` e `assentamentos` conferem o geopandas antes do download, também na consulta tabular sem `bbox` (o `pyogrio` exige o geopandas para ler o shapefile; antes, o `ImportError` saía depois de baixar o ZIP)
 
 ### Security
 

@@ -64,21 +64,21 @@ async def test_valid_parameters_require_geo_before_download(
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize(
-    ("api_name", "bbox", "exige"),
+    ("api_name", "bbox"),
     [
-        ("sigef", None, False),
-        ("sigef", (-48.25, -15.9, -48.1, -15.6), True),
-        ("sigef_geo", None, True),
-        ("snci", None, False),
-        ("snci", (-61.0, 2.0, -60.0, 3.0), True),
-        ("snci_geo", None, True),
-        ("assentamentos", None, False),
-        ("assentamentos", (-50.0, -25.0, -35.0, -10.0), True),
-        ("assentamentos_geo", None, True),
+        ("sigef", None),
+        ("sigef", (-48.25, -15.9, -48.1, -15.6)),
+        ("sigef_geo", None),
+        ("snci", None),
+        ("snci", (-61.0, 2.0, -60.0, 3.0)),
+        ("snci_geo", None),
+        ("assentamentos", None),
+        ("assentamentos", (-50.0, -25.0, -35.0, -10.0)),
+        ("assentamentos_geo", None),
     ],
 )
 async def test_geopandas_conferido_antes_do_download_quando_a_leitura_usa(
-    monkeypatch: pytest.MonkeyPatch, api_name: str, bbox: tuple[float, ...] | None, exige: bool
+    monkeypatch: pytest.MonkeyPatch, api_name: str, bbox: tuple[float, ...] | None
 ):
     sem_geopandas = Mock(side_effect=ImportError("Install with: pip install agrobr[geo]"))
     download = AsyncMock(side_effect=RuntimeError("download"))
@@ -87,12 +87,8 @@ async def test_geopandas_conferido_antes_do_download_quando_a_leitura_usa(
     monkeypatch.setattr(api.client, "download_and_cache", download)
     uf = "RR" if api_name.startswith("snci") else "DF"
 
-    with pytest.raises(ImportError if exige else RuntimeError) as caught:
+    with pytest.raises(ImportError, match=r"pip install agrobr\[geo\]"):
         await getattr(api, api_name)(uf=uf, bbox=bbox)
 
-    if exige:
-        assert "pip install agrobr[geo]" in str(caught.value)
-        download.assert_not_awaited()
-    else:
-        sem_geopandas.assert_not_called()
-        download.assert_awaited()
+    sem_geopandas.assert_called_once_with()
+    download.assert_not_awaited()

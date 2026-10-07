@@ -14,7 +14,7 @@
 !!! info "Dependência geoespacial"
     Instale `pip install agrobr[geo]` antes de qualquer consulta. O extra inclui
     `geopandas` e `pyogrio`; a disponibilidade é conferida antes do download dos
-    ZIPs, que podem ter centenas de megabytes.
+    ZIPs, que podem ter centenas de megabytes, inclusive nas consultas tabulares sem `bbox`.
 
 ## Visão Geral
 

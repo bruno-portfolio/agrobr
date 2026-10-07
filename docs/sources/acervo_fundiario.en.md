@@ -14,7 +14,7 @@
 !!! info "Geospatial dependency"
     Install `pip install agrobr[geo]` before any query. The extra includes
     `geopandas` and `pyogrio`; availability is checked before downloading ZIP
-    files that may be hundreds of megabytes.
+    files that may be hundreds of megabytes, including tabular queries without `bbox`.
 
 ## Overview
 
