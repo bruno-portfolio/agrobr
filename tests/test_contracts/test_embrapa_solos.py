@@ -100,6 +100,8 @@ def test_embrapa_official_complete_projection_meets_contract(family, contract, i
     body = (GOLDEN / filename).read_bytes()
     page = parser.parse_page(body, product=family, include_geometry=include_geometry)
     frame = parser.build_frame(page.records, product=family)
+    if family == "perfis":
+        parser.converter_datas(frame)
     assert contract.validate(frame) == (True, [])
     assert frame.dtypes.equals(contract.empty_frame().dtypes)
     assert list(frame) == list(

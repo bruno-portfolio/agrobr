@@ -88,7 +88,7 @@ The table shows the main columns. The result has 85 columns, in the order of the
 contract: the 83 published attributes (under the names above or the layer's original name), `uf_original`
 and `feature_id`. Each row is a horizon or layer; `codigo_pon` identifies the sampling point.
 
-The `ano` column uses nullable `Int64`, and `data_colet` uses `datetime64[ns]`. Source nulls and the literal `NULL` become missing values in these two columns. An unrecognized year or date raises `ParseError`; it is not silently converted to a missing value. Text uses the native pandas dtype (`str` on pandas 3, `object` on pandas 2). Empty tables have the same dtypes as populated tables.
+The `ano` column uses nullable `Int64`, and `data_colet` uses `datetime64[ns]`. Source nulls and the literal `NULL` become missing values in these two columns. Under the [date rule](../guides/normalizacao.en.md#source-dates), a well-formed `data_colet` with a year outside 1900–2099 becomes `NaT`, with a `UserWarning` and the same message in `meta.validation_warnings` (on 2026-10-07, 73 of the layer's 34,464 records, with dates such as `0982-11-01` and `1892-07-14`). An unrecognized year or date, or an impossible date (`2024-02-30`), raises `ParseError`; it is not silently converted to a missing value. Text uses the native pandas dtype (`str` on pandas 3, `object` on pandas 2). Empty tables have the same dtypes as populated tables.
 
 Laboratory values are the text published by Embrapa (the WFS declares `xsd:string`), without conversion:
 numbers with a decimal point, sometimes with float32 noise (`4.400000095367432`), and the text `NULL` for

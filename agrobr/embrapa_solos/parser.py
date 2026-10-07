@@ -3,6 +3,7 @@ from __future__ import annotations
 import hashlib
 import json
 import re
+from datetime import date
 from typing import Any
 
 import pandas as pd
@@ -10,6 +11,7 @@ from pydantic import ValidationError
 
 from agrobr import constants
 from agrobr.exceptions import ParseError
+from agrobr.normalize import dates
 from agrobr.normalize.regions import UFS_VALIDAS
 
 from . import _geometry, _json, models
@@ -252,15 +254,21 @@ def build_frame(records: list[models.Feature], *, product: models.Product) -> pd
             try:
                 if not text.dropna().str.fullmatch(pattern).all():
                     raise ValueError(f"{column} contém texto fora do formato publicado")
-                frame[column] = (
-                    pd.to_numeric(text, errors="raise").astype("Int64")
-                    if column == "ano"
-                    else pd.to_datetime(text, format="%Y-%m-%d", errors="raise").astype(
-                        "datetime64[ns]"
-                    )
-                )
+                if column == "ano":
+                    frame[column] = pd.to_numeric(text, errors="raise").astype("Int64")
+                else:
+                    text.dropna().map(date.fromisoformat)
+                    frame[column] = text
             except (TypeError, ValueError, OverflowError) as exc:
                 raise ParseError(
                     source="embrapa_solos", parser_version=PARSER_VERSION, reason=str(exc)
                 ) from exc
     return frame
+
+
+def converter_datas(frame: pd.DataFrame) -> None:
+    """Converte no lugar `data_colet`, já conferida pelo `build_frame`, em `datetime64[ns]`.
+
+    Data com ano fora de 1900–2099 vira `NaT`, com `UserWarning` e a mensagem em `frame.attrs`.
+    """
+    dates.converter_coluna(frame, "data_colet", fonte="embrapa_solos", formato="%Y-%m-%d")

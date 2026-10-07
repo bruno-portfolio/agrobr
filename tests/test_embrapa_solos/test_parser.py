@@ -1,14 +1,16 @@
 from __future__ import annotations
 
 import json
+import warnings
 from pathlib import Path
 
 import pandas as pd
 import pytest
 
+from agrobr import embrapa_solos
 from agrobr.embrapa_solos import parser
 from agrobr.exceptions import ParseError
-from tests.helpers import embrapa_solos_features
+from tests.helpers import embrapa_solos_features, install_embrapa_solos_wfs
 
 GOLDEN = Path(__file__).parents[1] / "golden_data/embrapa_solos/official_20260907"
 
@@ -101,3 +103,35 @@ def test_calendario_invalido_nao_vira_ausente(page, parse, column, value):
     records = parse(page).records
     with pytest.raises(ParseError):
         parser.build_frame(records, product="perfis")
+
+
+@pytest.mark.parametrize("funcao", [embrapa_solos.perfis, embrapa_solos.perfis_geo])
+async def test_data_colet_com_ano_fora_de_1900_2099_vira_nat_com_aviso(funcao, monkeypatch):
+    features = embrapa_solos_features()
+    if funcao is embrapa_solos.perfis_geo:
+        pytest.importorskip("geopandas")
+        for feature in features:
+            propriedades = feature["properties"]
+            feature["geometry"] = {
+                "type": "Point",
+                "coordinates": [propriedades["gcs_longit"], propriedades["gcs_latitu"]],
+            }
+    features[1]["properties"]["data_colet"] = "0982-11-01"
+    features[4]["properties"]["data_colet"] = "1892-07-14"
+    esperadas = {
+        feature["id"]: None if indice in (1, 4) else feature["properties"]["data_colet"]
+        for indice, feature in enumerate(features)
+    }
+    install_embrapa_solos_wfs(monkeypatch, features)
+    with warnings.catch_warnings(record=True) as capturados:
+        warnings.simplefilter("always")
+        frame, meta = await funcao(max_registros=None, tamanho_pagina=2, return_meta=True)
+    avisos = [str(aviso.message) for aviso in capturados if "data_colet" in str(aviso.message)]
+    assert avisos == [
+        "embrapa_solos: 2 valor(es) de data_colet viraram NaT (data ilegível ou com ano fora de "
+        "1900–2099)."
+    ]
+    assert [aviso for aviso in meta.validation_warnings if "data_colet" in aviso] == avisos
+    assert str(frame["data_colet"].dtype) == "datetime64[ns]"
+    lidas = [None if pd.isna(data) else f"{data:%Y-%m-%d}" for data in frame["data_colet"].tolist()]
+    assert dict(zip(frame["feature_id"], lidas)) == esperadas

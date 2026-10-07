@@ -89,7 +89,7 @@ A tabela mostra as colunas principais. O resultado tem 85 colunas, na ordem do c
 `uf_original` e `feature_id`. Cada linha e um horizonte ou camada; `codigo_pon` identifica o ponto de
 amostragem.
 
-A coluna `ano` usa `Int64` anulável, e `data_colet` usa `datetime64[ns]`. Nulos da fonte e o literal `NULL` viram ausentes nessas duas colunas. Ano ou data fora do formato esperado levanta `ParseError`; não vira ausente silenciosamente. O texto usa o dtype nativo do pandas (`str` no pandas 3, `object` no pandas 2). Tabelas vazias têm os mesmos dtypes das tabelas com registros.
+A coluna `ano` usa `Int64` anulável, e `data_colet` usa `datetime64[ns]`. Nulos da fonte e o literal `NULL` viram ausentes nessas duas colunas. Pela [regra de datas](../guides/normalizacao.md#datas-das-fontes), `data_colet` de formato válido com ano fora de 1900–2099 vira `NaT`, com `UserWarning` e a mesma mensagem em `meta.validation_warnings` (em 07/10/2026, 73 dos 34.464 registros da camada, com datas como `0982-11-01` e `1892-07-14`). Ano ou data fora do formato esperado, ou data impossível (`2024-02-30`), levanta `ParseError`; não vira ausente silenciosamente. O texto usa o dtype nativo do pandas (`str` no pandas 3, `object` no pandas 2). Tabelas vazias têm os mesmos dtypes das tabelas com registros.
 
 Os valores laboratoriais sao o texto publicado pela Embrapa (o WFS declara `xsd:string`), sem conversao:
 numeros com ponto decimal, as vezes com ruido de float32 (`4.400000095367432`), e o texto `NULL` para

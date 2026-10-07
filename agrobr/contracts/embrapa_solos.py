@@ -129,7 +129,8 @@ PERFIS_V3 = SolosContract(
     guarantees=[
         "Todos os 83 atributos publicados estão representados nas 85 colunas",
         "Valores laboratoriais e profundidades permanecem textos literais",
-        "Ano usa Int64 e data_colet usa datetime64[ns]; null e texto NULL viram ausentes",
+        "Ano usa Int64 e data_colet usa datetime64[ns]; null e texto NULL viram ausentes; "
+        "data_colet com ano fora de 1900–2099 vira ausente, com aviso",
         "Nas colunas textuais, null, texto NULL, string vazia, espaços e zero são distintos",
         "Código de ponto e horizonte são preservados sem fundir ocorrências",
         "Feature.id e identificadores publicados não estabelecem chave primária",

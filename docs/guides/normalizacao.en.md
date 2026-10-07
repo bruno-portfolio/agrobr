@@ -243,14 +243,16 @@ lista_safras("2025/26", "2024/25")  # InvalidParameterError (reversed range)
 Dates that arrive from outside as text go through `dates.converter_coluna`, with the same rule on pandas 2 and 3: IBAMA
 (`data_embargo`, `data_desembargo`), Acervo Fundiário (SIGEF, SNCI and settlement dates), CFTC (`data`), INMET (`data` of
 the observations), MapBiomas Alerta (`data_deteccao`, `data_publicacao`), Queimadas (`data_hora_gmt`), ANA
-(`data_construcao`), ANTAQ (`data_atracacao`), ANTT Toll, FUNAI, IMEA (`data_publicacao`) and INCRA.
+(`data_construcao`), ANTAQ (`data_atracacao`), ANTT Toll, FUNAI, IMEA (`data_publicacao`), INCRA and Embrapa Solos
+(`data_colet`).
 
 - An unreadable value, or one with a year outside 1900–2099 (`DATA_ANO_MINIMO` and `DATA_ANO_MAXIMO`), becomes `NaT`. For
   IBAMA, so does an act date on a day after the file's own edition (`ULTIMA_ATUALIZACAO_RELATORIO`).
 - When it discards any value, the query raises a `UserWarning` and puts the same message in `meta.validation_warnings`, with
   the source, the column and the number of present values that became `NaT` (an empty cell does not count).
-- What happens next depends on the source: INMET drops the observation without a date (and the message says so), and CFTC
-  rejects the response with `ParseError`.
+- What happens next depends on the source: INMET drops the observation without a date (and the message says so), CFTC
+  rejects the response with `ParseError`, and Embrapa Solos only takes a well-formed date to the rule: an impossible date
+  (`2024-02-30`) or one outside the published format raises `ParseError`.
 
 **Every date column of the public outputs, from sources and datasets, comes out as `datetime64[ns]`**, with the timezone
 when the source publishes one, in pandas and in polars (`Datetime("ns")`). Without this, the unit varied by source and by

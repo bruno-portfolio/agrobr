@@ -243,14 +243,16 @@ lista_safras("2025/26", "2024/25")  # InvalidParameterError (intervalo invertido
 As datas que chegam de fora como texto passam por `dates.converter_coluna`, com a mesma regra no pandas 2 e no 3: IBAMA
 (`data_embargo`, `data_desembargo`), Acervo Fundiário (datas do SIGEF, do SNCI e dos assentamentos), CFTC (`data`), INMET
 (`data` das observações), MapBiomas Alerta (`data_deteccao`, `data_publicacao`), Queimadas (`data_hora_gmt`), ANA
-(`data_construcao`), ANTAQ (`data_atracacao`), ANTT Pedágio, FUNAI, IMEA (`data_publicacao`) e INCRA.
+(`data_construcao`), ANTAQ (`data_atracacao`), ANTT Pedágio, FUNAI, IMEA (`data_publicacao`), INCRA e Embrapa Solos
+(`data_colet`).
 
 - Valor ilegível, ou com ano fora de 1900–2099 (`DATA_ANO_MINIMO` e `DATA_ANO_MAXIMO`), vira `NaT`. No IBAMA, também a data
   de ato de dia posterior à edição do próprio arquivo (`ULTIMA_ATUALIZACAO_RELATORIO`).
 - Quando descarta algum valor, a consulta emite `UserWarning` e põe a mesma mensagem em `meta.validation_warnings`, com a
   fonte, a coluna e a quantidade de valores presentes que viraram `NaT` (célula vazia não conta).
-- O que vem depois é de cada fonte: o INMET descarta a observação sem data (e a mensagem diz isso), e o CFTC recusa a resposta
-  com `ParseError`.
+- O que vem depois é de cada fonte: o INMET descarta a observação sem data (e a mensagem diz isso), o CFTC recusa a resposta
+  com `ParseError`, e a Embrapa Solos só leva à regra a data de formato válido: data impossível (`2024-02-30`) ou fora do
+  formato publicado levanta `ParseError`.
 
 **Toda coluna de data das saídas públicas, de fontes e datasets, sai em `datetime64[ns]`**, com o fuso quando a fonte publica
 um, em pandas e em polars (`Datetime("ns")`). Sem isso, a unidade variava por fonte e por versão do pandas (`ns` no 2; `s`,

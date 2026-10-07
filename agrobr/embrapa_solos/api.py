@@ -13,7 +13,7 @@ from agrobr.models import MetaInfo
 from agrobr.utils import geo, result
 from agrobr.utils.warnings import warn_once
 
-from . import acquisition, client, metadata, query
+from . import acquisition, client, metadata, parser, query
 
 if TYPE_CHECKING:
     import geopandas as gpd
@@ -72,12 +72,15 @@ async def _fetch(
             ) from None
     logger.info("embrapa_solos_fetch", product=product, include_geometry=include_geometry)
     acquired = await client.fetch_acquisition(validated)
+    if product == "perfis":
+        parser.converter_datas(acquired.frame)
     contract = contracts.PERFIS_V3 if product == "perfis" else contracts.MAPA_V2
     valid, errors = contract.validate(acquired.frame)
     if not valid:
         raise ContractViolationError(dataset=contract.name, violation="; ".join(errors))
     frame = _geoframe(acquired, geopandas) if include_geometry else acquired.frame
     meta = metadata.build_meta(acquired, frame)
+    meta.validation_warnings.extend(acquired.frame.attrs.get(result.ATRIBUTO_AVISOS, []))
     remote = acquired.coverage.remote
     if validated.ordem is not None and not remote.truncated and frame.empty:
         aviso = (
