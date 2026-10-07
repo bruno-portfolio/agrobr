@@ -218,6 +218,7 @@ def parse_geojson_base(
     truncation_event: str,
     on_empty: Literal["empty", "raise"] = "empty",
     warn_null_geom: bool = False,
+    required_cols_per_feature: bool = False,
     crs: str = "EPSG:4326",
 ) -> Any:
     try:
@@ -249,6 +250,17 @@ def parse_geojson_base(
         empty = gpd.GeoDataFrame(columns=output_cols_empty)
         empty = empty.set_geometry("geometry", crs=crs)
         return empty
+
+    if required_cols_per_feature:
+        for i, feature in enumerate(features):
+            properties = feature.get("properties") or {}
+            missing = required_cols - properties.keys()
+            if missing:
+                raise ParseError(
+                    source=source,
+                    parser_version=parser_version,
+                    reason=f"Colunas obrigatorias ausentes na feicao {i}: {sorted(missing)}",
+                )
 
     if max_features is not None and len(features) >= max_features:
         logger.warning(
@@ -453,11 +465,17 @@ async def _fetch_keyset_pages(
         oids = _page_oids(content, oid_field, source=source)
         if not oids:
             break
-        if last_oid is not None and max(oids) <= last_oid:
+        if last_oid is not None and min(oids) <= last_oid:
             raise SourceUnavailableError(
                 source=source,
                 url=url,
                 last_error=f"Paginacao ArcGIS nao avancou alem de {oid_field}={last_oid}",
+            )
+        if any(current <= previous for previous, current in zip(oids, oids[1:])):
+            raise SourceUnavailableError(
+                source=source,
+                url=url,
+                last_error=f"Paginacao ArcGIS sem ordem crescente estrita de {oid_field}",
             )
         pages.append(content)
         collected += len(oids)
@@ -651,6 +669,7 @@ def parse_arcgis_geojson(
             output_cols_empty=colunas_geo,
             truncation_event=f"{source}_truncated",
             warn_null_geom=True,
+            required_cols_per_feature=True,
         )
         if not gdf.empty:
             gdfs.append(gdf)

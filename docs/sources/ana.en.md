@@ -44,9 +44,16 @@ These layers do not represent real-time hydrological measurements.
 | Throttle | 2s pause after the sixth page and each subsequent page |
 | Read timeout | 180s |
 
+Collection requires strictly increasing `OBJECTID` values within each page,
+all greater than the last key of the previous page. Repeated, overlapping,
+or unordered keys raise `SourceUnavailableError`.
+
 Tabular functions request JSON with `returnGeometry=false`; `_geo` variants
 request GeoJSON and retain geometry in EPSG:4326. The spatial `bbox` filter
 applies to both formats.
+Both formats require every requested attribute in each feature. A missing
+attribute raises `ParseError` even when another feature on the same page
+has it; an explicitly declared null value remains allowed.
 
 ## Usage Example
 

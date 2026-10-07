@@ -727,6 +727,8 @@ Catálogo desta versão: **54 datasets e 89 contratos registrados**. Mudanças i
 - **IMEA e ANTAQ** — catálogo que associa a mesma chave a nomes diferentes (indicador do IMEA, mercadoria da ANTAQ) levanta `ParseError`, em vez de ficar com o primeiro ou o último nome; repetição com o mesmo nome segue aceita
 - **Acervo Fundiário sem geopandas** — `sigef`, `snci` e `assentamentos` conferem o geopandas antes do download, também na consulta tabular sem `bbox` (o `pyogrio` exige o geopandas para ler o shapefile; antes, o `ImportError` saía depois de baixar o ZIP)
 - **CFTC na primeira semana do contrato** — as variações que o Socrata omite na primeira semana saem nulas (`Int64`), em vez de `ParseError`; campo obrigatório ausente continua levantando `ParseError`
+- **Paginação ArcGIS por chave** — cada página tem de trazer chaves em ordem crescente estrita e acima da última chave da página anterior; repetição, sobreposição ou retrocesso levanta `SourceUnavailableError`, em vez de seguir com página fora de ordem
+- **Atributos ArcGIS com geometria** — o caminho geoespacial confere os atributos obrigatórios em cada feição antes de montar o GeoDataFrame, como o tabular já fazia; campo ausente levanta `ParseError`, e nulo publicado pela fonte segue nulo
 
 ### Security
 

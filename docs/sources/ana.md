@@ -44,9 +44,16 @@ nao representam medicoes hidrologicas em tempo real.
 | Throttle | Pausa de 2s apos a sexta pagina e as seguintes |
 | Timeout de leitura | 180s |
 
+A coleta exige `OBJECTID` em ordem crescente estrita dentro de cada pagina e
+acima da ultima chave da pagina anterior. Chaves repetidas, sobrepostas ou
+fora de ordem geram `SourceUnavailableError`.
+
 As funcoes tabulares solicitam JSON com `returnGeometry=false`; as variantes
 `_geo` solicitam GeoJSON e mantem a geometria em EPSG:4326. O filtro espacial
 `bbox` e aplicado em ambas as modalidades.
+As duas modalidades exigem todos os atributos pedidos em cada feicao. Um
+atributo ausente gera `ParseError`, mesmo que esteja presente em outra
+feicao da mesma pagina; um valor nulo declarado continua permitido.
 
 ## Exemplo de Uso
 
