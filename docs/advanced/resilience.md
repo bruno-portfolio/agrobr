@@ -231,8 +231,9 @@ ou um catálogo adulterado não faz o agrobr pedir endereço interno da rede do 
 ## Fallback de Fonte
 
 Quando a fonte primária de um dataset falha e uma fonte seguinte responde, o
-agrobr emite `SourceFallbackWarning` com a fonte primária, a categoria e o resumo
-do erro, além do fallback selecionado. O aviso usa `warnings.warn`, portanto pode
+agrobr emite `SourceFallbackWarning` com a fonte primária e, para cada fonte que
+falhou na cascata, seu nome, a categoria e o resumo do erro na ordem das tentativas,
+além do fallback selecionado. O aviso usa `warnings.warn`, portanto pode
 ser capturado ou filtrado pelas ferramentas padrão do Python e segue para stderr.
 
 ### CEPEA

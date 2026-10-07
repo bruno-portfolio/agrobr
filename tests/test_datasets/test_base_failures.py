@@ -84,3 +84,29 @@ async def test_bug_propagado_sem_tentar_fallback(error_type):
         await dataset._try_sources("soja")
     assert caught.value is error
     dataset.info.sources[1].fetch_fn.assert_not_awaited()
+
+
+async def test_aviso_de_fallback_cita_motivo_de_cada_fonte_na_ordem():
+    errors = [
+        exceptions.SourceUnavailableError("source_0", last_error="token ausente"),
+        exceptions.ParseError("source_1", 1, "layout do historico alterado"),
+        httpx.ConnectError("sem conexao com a terceira fonte"),
+        exceptions.ContractViolationError("preco_diario", "coluna valor ausente"),
+    ]
+    categories = ["unavailable", "parse", "network", "contract"]
+    frame = pd.DataFrame({"valor": [145.0]})
+    dataset = _dataset(*errors, frame)
+
+    with pytest.warns(exceptions.SourceFallbackWarning) as caught:
+        result, selected, meta, attempted = await dataset._try_sources("soja")
+
+    assert len(caught) == 1
+    message = str(caught[0].message)
+    reasons = [
+        f"source_{index}: {category}: {str(error)[:120]}"
+        for index, (category, error) in enumerate(zip(categories, errors))
+    ]
+    assert "; ".join(reasons) in message
+    assert "usando fallback 'source_4'" in message
+    assert result is frame and selected == "source_4" and meta is None
+    assert attempted == [f"source_{index}" for index in range(5)]

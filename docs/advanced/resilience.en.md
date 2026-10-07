@@ -230,7 +230,8 @@ user's network or download over `http://`.
 ## Source Fallback
 
 When a dataset's primary source fails and a later source succeeds, agrobr emits
-`SourceFallbackWarning` with the primary source, the error category and summary,
+`SourceFallbackWarning` with the primary source and, for each source that failed
+in the cascade, its name, error category, and summary in attempt order,
 and the selected fallback. The notice uses `warnings.warn`, so standard Python
 tools can capture or filter it, and it goes to stderr.
 

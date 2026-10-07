@@ -204,7 +204,9 @@ class TestTrySourcesErrorPaths:
         with pytest.warns(SourceFallbackWarning) as captured:
             df, meta = await dataset.fetch("soja", return_meta=True)
 
-        assert "(unavailable:" in str(captured[0].message)
+        assert "(cepea: unavailable: cepea unavailable: HTTP 500 after 3 retries)" in str(
+            captured[0].message
+        )
         assert meta.attempted_sources == ["cepea", "reserva"]
         assert meta.selected_source == "reserva"
 

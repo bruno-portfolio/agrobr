@@ -429,7 +429,12 @@ class BaseDataset(ABC):
                 selected, resolved = self._resolve_provenance(source.name, meta, attempted)
                 if len(resolved) > 1:
                     reason = (
-                        f" ({errors[0][1]}: {errors[0][2][:120]})"
+                        " ("
+                        + "; ".join(
+                            f"{name}: {category}: {message[:120]}"
+                            for name, category, message in errors
+                        )
+                        + ")"
                         if errors
                         else _motivo_registrado_pela_fonte(meta)
                     )

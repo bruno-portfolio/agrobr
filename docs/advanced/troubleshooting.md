@@ -47,8 +47,8 @@ except AgrobrError:
 ### `SourceFallbackWarning`
 
 **Causa:** A fonte primária falhou, mas o dataset conseguiu devolver dados de uma
-fonte alternativa. A mensagem informa a fonte original, o motivo resumido da
-falha e o fallback usado. A execução continua normalmente.
+fonte alternativa. A mensagem informa a fonte original, o nome e o motivo resumido
+de cada fonte que falhou na cascata, na ordem das tentativas, e o fallback usado. A execução continua normalmente.
 
 ### `TimeoutError`
 
