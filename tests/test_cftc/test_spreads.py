@@ -87,3 +87,43 @@ async def test_cot_e_dataset_declaram_o_contrato_com_os_spreads(monkeypatch):
     assert {"swap_spread", "outros_spread"} <= set(dataset.columns)
     assert meta.schema_version == "1.1"
     assert meta_dataset.contract_version == "2.0"
+
+
+@pytest.mark.parametrize("camada", ["parser", "api", "dataset"])
+async def test_primeira_semana_isolada_preserva_posicoes_e_variacoes_nulas(monkeypatch, camada):
+    corpo = MANIFESTO["corpos"]["soja_initial"]
+    oficial = json.loads((GOLDEN / corpo["arquivo"]).read_bytes())
+    primeira = [r for r in oficial if r["report_date_as_yyyy_mm_dd"] == "2006-06-13T00:00:00.000"]
+    assert len(primeira) == 1
+    assert not any(c.startswith("change_in_") for c in primeira[0])
+    monkeypatch.setattr(
+        client,
+        "fetch_cot",
+        AsyncMock(return_value=(primeira, corpo["requested_url"], json.dumps(primeira).encode())),
+    )
+
+    if camada == "parser":
+        frame = parser.parse_cot(primeira)
+    elif camada == "api":
+        frame = await cftc.cot("soja", inicio="2006-06-13", fim="2006-06-13")
+    else:
+        frame = await datasets.posicionamento_fundos("soja", inicio="2006-06-13", fim="2006-06-13")
+
+    assert len(frame) == 1
+    assert frame.loc[0, "data"].isoformat() == "2006-06-13T00:00:00"
+    if camada == "dataset":
+        colunas = ["fundos_compra", "fundos_venda", "fundos_saldo"]
+        variacoes = ["variacao_fundos_compra", "variacao_fundos_venda", "variacao_posicoes"]
+        posicoes_abertas = "posicoes_abertas"
+    else:
+        colunas = ["managed_money_long", "managed_money_short", "managed_money_net"]
+        variacoes = [
+            "change_managed_money_long",
+            "change_managed_money_short",
+            "change_open_interest",
+        ]
+        posicoes_abertas = "open_interest"
+    assert frame.loc[0, posicoes_abertas] == 379960
+    assert frame.loc[0, colunas].tolist() == [37243, 50601, -13358]
+    assert frame[variacoes].isna().all().all()
+    assert frame[variacoes].dtypes.astype(str).tolist() == ["Int64"] * 3

@@ -40,7 +40,9 @@ DataFrame with columns: `data`, `commodity`, `contrato`, `codigo_cftc`, `open_in
 `change_managed_money_short`, `change_open_interest`.
 
 Positions in number of contracts (`Int64`, like the changes). The `change_*` columns are
-null in the first week of each contract in the series. The columns follow the CFTC report's names; the
+null in the first week of each contract in the series, even when Socrata omits those fields
+and the query includes only that week. Missing required fields still raise `ParseError`.
+The columns follow the CFTC report's names; the
 `posicionamento_fundos` dataset delivers them in Portuguese.
 
 A `produto` without a mapped contract, a date outside the accepted formats, and `inicio` after `fim` raise

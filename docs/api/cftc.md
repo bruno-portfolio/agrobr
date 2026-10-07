@@ -40,7 +40,9 @@ DataFrame com colunas: `data`, `commodity`, `contrato`, `codigo_cftc`, `open_int
 `change_managed_money_short`, `change_open_interest`.
 
 Posições em número de contratos (`Int64`, como as variações). Colunas `change_*` são
-nulas na primeira semana de cada contrato na série. As colunas seguem os nomes do relatório do CFTC; o dataset
+nulas na primeira semana de cada contrato na série, mesmo quando o Socrata omite esses campos
+e a consulta inclui só essa semana. Campos obrigatórios ausentes continuam gerando `ParseError`.
+As colunas seguem os nomes do relatório do CFTC; o dataset
 `posicionamento_fundos` as entrega em português.
 
 `produto` sem contrato mapeado, data fora dos formatos aceitos e `inicio` depois de `fim` geram

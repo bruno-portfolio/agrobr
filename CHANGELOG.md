@@ -726,6 +726,7 @@ Catálogo desta versão: **54 datasets e 89 contratos registrados**. Mudanças i
 - **Reconciliação semanal** — `scripts/reconciliar_funai.py` usa o contexto TLS da biblioteca (com o certificado intermediário da FUNAI), e `scripts/reconciliar_ana.py` confere status e tipo da resposta antes de ler o JSON: página de erro em HTML, JSON inválido e erro do ArcGIS viram fonte indisponível, não erro do script
 - **IMEA e ANTAQ** — catálogo que associa a mesma chave a nomes diferentes (indicador do IMEA, mercadoria da ANTAQ) levanta `ParseError`, em vez de ficar com o primeiro ou o último nome; repetição com o mesmo nome segue aceita
 - **Acervo Fundiário sem geopandas** — `sigef`, `snci` e `assentamentos` conferem o geopandas antes do download, também na consulta tabular sem `bbox` (o `pyogrio` exige o geopandas para ler o shapefile; antes, o `ImportError` saía depois de baixar o ZIP)
+- **CFTC na primeira semana do contrato** — as variações que o Socrata omite na primeira semana saem nulas (`Int64`), em vez de `ParseError`; campo obrigatório ausente continua levantando `ParseError`
 
 ### Security
 

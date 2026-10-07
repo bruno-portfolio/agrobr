@@ -30,7 +30,11 @@ def parse_cot(records: list[dict[str, Any]]) -> pd.DataFrame:
         )
     df = pd.DataFrame(records)
 
-    missing = [c for c in models.COLUMN_MAP if c not in df.columns]
+    missing = [
+        original
+        for original, renamed in models.COLUMN_MAP.items()
+        if original not in df.columns and renamed not in models.CHANGE_COLUMNS
+    ]
     if missing:
         raise ParseError(
             source="cftc",
@@ -38,7 +42,7 @@ def parse_cot(records: list[dict[str, Any]]) -> pd.DataFrame:
             reason=f"Campos ausentes na resposta Socrata: {missing}",
         )
 
-    df = df[list(models.COLUMN_MAP)].rename(columns=models.COLUMN_MAP)
+    df = df.reindex(columns=list(models.COLUMN_MAP)).rename(columns=models.COLUMN_MAP)
     dates.converter_coluna(df, "data", fonte="cftc", formato="ISO8601")
 
     for col in models.POSITION_COLUMNS:
