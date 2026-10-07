@@ -729,6 +729,7 @@ Catálogo desta versão: **54 datasets e 89 contratos registrados**. Mudanças i
 - **CFTC na primeira semana do contrato** — as variações que o Socrata omite na primeira semana saem nulas (`Int64`), em vez de `ParseError`; campo obrigatório ausente continua levantando `ParseError`
 - **Paginação ArcGIS por chave** — cada página tem de trazer chaves em ordem crescente estrita e acima da última chave da página anterior; repetição, sobreposição ou retrocesso levanta `SourceUnavailableError`, em vez de seguir com página fora de ordem
 - **Atributos ArcGIS com geometria** — o caminho geoespacial confere os atributos obrigatórios em cada feição antes de montar o GeoDataFrame, como o tabular já fazia; campo ausente levanta `ParseError`, e nulo publicado pela fonte segue nulo
+- **Health do CEPEA** — `SourceUnavailableError` no diagnóstico profundo sai como `source_down`, e não mais como `parse_error`
 
 ### Security
 

@@ -14,7 +14,7 @@ from typing import Any
 from agrobr import _log
 from agrobr.alerts.notifier import AlertLevel
 from agrobr.constants import AlertSettings, Fonte
-from agrobr.exceptions import InvalidParameterError
+from agrobr.exceptions import InvalidParameterError, SourceUnavailableError
 from agrobr.health.registry import HEALTH_REGISTRY, SourceHealthConfig
 from agrobr.http.user_agents import UserAgentRotator
 from agrobr.utils.time import utcnow
@@ -312,7 +312,13 @@ async def check_cepea_deep() -> CheckResult:
         latency = (time.monotonic() - start) * 1000
         message = _exception_message(e)
         is_soft_block = "soft block" in message.lower()
-        category = "soft_block" if is_soft_block else "parse_error"
+        category = (
+            "source_down"
+            if isinstance(e, SourceUnavailableError)
+            else "soft_block"
+            if is_soft_block
+            else "parse_error"
+        )
         logger.error("health_check_failed", source="cepea", error=message, category=category)
         return CheckResult(
             source=Fonte.CEPEA,

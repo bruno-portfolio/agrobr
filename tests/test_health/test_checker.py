@@ -12,7 +12,7 @@ import pytest
 
 from agrobr import constants
 from agrobr.constants import Fonte
-from agrobr.exceptions import InvalidParameterError
+from agrobr.exceptions import InvalidParameterError, ParseError, SourceUnavailableError
 from agrobr.health.checker import (
     CheckResult,
     CheckStatus,
@@ -387,3 +387,22 @@ async def test_sfb_health_distingue_contagem_de_erro_http_200(corpo, status):
         mock_cls.return_value.__aexit__ = AsyncMock(return_value=None)
         result = await _check_http(config)
     assert result.status == status
+
+
+@pytest.mark.parametrize(
+    ("error", "category"),
+    [
+        (SourceUnavailableError("cepea", last_error="tentativas esgotadas"), "source_down"),
+        (SourceUnavailableError("cepea", last_error="soft block persistente"), "source_down"),
+        (ParseError("cepea", 1, "coluna ausente"), "parse_error"),
+    ],
+)
+async def test_deep_classifica_indisponibilidade_e_layout(error, category):
+    with patch(
+        "agrobr.cepea.client.fetch_indicador_page", new_callable=AsyncMock, side_effect=error
+    ):
+        result = await check_cepea_deep()
+    assert result.source == Fonte.CEPEA
+    assert result.status == CheckStatus.FAILED
+    assert result.category == category
+    assert result.message == str(error)
