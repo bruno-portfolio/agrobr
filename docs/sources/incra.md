@@ -147,6 +147,10 @@ levanta `InvalidParameterError` citando a atual. A página liga um único PDF: e
 22/09/2026 o arquivo chamado `08_06_2026` trazia o conteúdo de 03/09/2026 (649 processos). Um redirecionamento
 (3xx) da página ou do PDF levanta `SourceUnavailableError` ("Redirecionamento administrativo não demonstrado").
 
+O download administrativo tem teto local de 16 MiB por resposta e 32 MiB no total.
+Ultrapassar qualquer um deles levanta `ResourceLimitError`, com os recibos das tentativas
+em `resources`, sem repetir o pedido por esse motivo.
+
 ## Vínculos (`vinculos_quilombolas`)
 
 Compõe `quilombolas()` (população inteira, sem filtros) e `andamento_quilombola()` pela

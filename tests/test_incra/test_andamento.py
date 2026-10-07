@@ -13,7 +13,12 @@ import pandas as pd
 import pytest
 
 from agrobr import constants, deterministic
-from agrobr.exceptions import InvalidParameterError, ParseError, SourceUnavailableError
+from agrobr.exceptions import (
+    InvalidParameterError,
+    ParseError,
+    ResourceLimitError,
+    SourceUnavailableError,
+)
 from agrobr.incra.andamento import api, client, models, parser
 from tests.test_incra import replay
 
@@ -224,7 +229,7 @@ async def test_andamento_download_body_budget_preserves_partial(monkeypatch):
     async with httpx.AsyncClient(
         transport=httpx.MockTransport(lambda _request: httpx.Response(200, content=b"abc"))
     ) as http:
-        with pytest.raises(SourceUnavailableError, match="Orçamento"):
+        with pytest.raises(ResourceLimitError, match="Orçamento"):
             await downloader.fetch(http, PAGE_URL, "publisher")
     resource = downloader.resources[0]
     assert resource.size_bytes == 3 and not resource.complete_body
@@ -238,7 +243,7 @@ async def test_andamento_download_total_budget_counts_previous_response(monkeypa
         transport=httpx.MockTransport(lambda _request: httpx.Response(200, content=b"abc"))
     ) as http:
         await downloader.request(http, PAGE_URL, "publisher")
-        with pytest.raises(SourceUnavailableError, match="Orçamento"):
+        with pytest.raises(ResourceLimitError, match="Orçamento"):
             await downloader.request(http, PAGE_URL, "pdf")
     assert downloader.total_bytes == 6
     assert [resource.size_bytes for resource in downloader.resources] == [3, 3]
@@ -351,3 +356,26 @@ async def test_andamento_api_missing_polars_precedes_http(monkeypatch):
     with pytest.raises(ImportError, match="polars"):
         await api.andamento_quilombola(as_polars=True)
     fetch.assert_not_called()
+
+
+@pytest.mark.parametrize("limite", ["BODY", "TOTAL_BODY"])
+async def test_andamento_limite_local_preserva_recibos_e_nao_repete(monkeypatch, limite):
+    calls = replay.install_publication(monkeypatch)
+    monkeypatch.setattr(constants, f"INCRA_ANDAMENTO_MAX_{limite}_BYTES", 2)
+
+    with pytest.raises(ResourceLimitError) as caught:
+        await client.fetch_publication()
+
+    error = caught.value
+    assert error.source == "incra"
+    assert error.url == PAGE_URL
+    assert error.reason == "Orçamento de bytes administrativos excedido"
+    assert len(calls) == 1
+    assert len(error.resources) == 1
+    receipt = error.resources[0]
+    assert receipt["error_type"] == "ResourceLimitError"
+    assert receipt["error"] == str(error)
+    assert receipt["status"] == 200
+    assert receipt["size_bytes"] == len((FIXTURE / "publisher.html").read_bytes())
+    assert receipt["complete_body"] is False
+    assert receipt["finished_at"] is not None

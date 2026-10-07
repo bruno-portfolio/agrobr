@@ -139,6 +139,7 @@ handling.
 | `AgrobrError` | Base of all exceptions |
 | `InvalidParameterError` | Invalid user parameter; also a `ValueError` and stops the cascade |
 | `SourceUnavailableError` | The source did not deliver the data: timeout, connection failure or HTTP error status (after the retries, for the statuses that are retried), with the source, the URL and the status, and the httpx exception as `__cause__`. In a dataset, the sources were exhausted without all failures being layout errors: `attempted_sources` and `errors` say which and why |
+| `ResourceLimitError` | Local cap exceeded, including per-response and total bytes in INCRA administrative downloads; stops the cascade without fallback |
 | `NetworkError` | Reserved: still exported, but not raised in 2.0; HTTP error statuses come out as `SourceUnavailableError` |
 | `ParseError` | Layout changed, unexpected HTML/JSON; in a dataset, aggregates `errors` and `attempted_sources` when all sources fail due to layout |
 | `ContractViolationError` | DataFrame doesn't match contract (columns, types) |

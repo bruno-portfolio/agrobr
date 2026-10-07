@@ -148,6 +148,10 @@ INCRA-DQ"). The date in the file name is only the download locator. When they di
 the file named `08_06_2026` carried the content of 2026-09-03 (649 processes). A redirect (3xx) of the page or of
 the PDF raises `SourceUnavailableError` ("Redirecionamento administrativo não demonstrado").
 
+The administrative download has local caps of 16 MiB per response and 32 MiB in total.
+Exceeding either raises `ResourceLimitError`, with attempt receipts in `resources`,
+without retrying the request for that reason.
+
 ## Links (`vinculos_quilombolas`)
 
 Combines `quilombolas()` (whole population, no filters) and `andamento_quilombola()` through

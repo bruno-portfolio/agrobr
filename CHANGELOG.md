@@ -730,6 +730,7 @@ Catálogo desta versão: **54 datasets e 89 contratos registrados**. Mudanças i
 - **Paginação ArcGIS por chave** — cada página tem de trazer chaves em ordem crescente estrita e acima da última chave da página anterior; repetição, sobreposição ou retrocesso levanta `SourceUnavailableError`, em vez de seguir com página fora de ordem
 - **Atributos ArcGIS com geometria** — o caminho geoespacial confere os atributos obrigatórios em cada feição antes de montar o GeoDataFrame, como o tabular já fazia; campo ausente levanta `ParseError`, e nulo publicado pela fonte segue nulo
 - **Health do CEPEA** — `SourceUnavailableError` no diagnóstico profundo sai como `source_down`, e não mais como `parse_error`
+- **Teto local do andamento do INCRA** — passar dos tetos de bytes por resposta ou acumulados levanta `ResourceLimitError` (antes, `SourceUnavailableError`), guarda os recibos em `resources` e não repete o pedido
 
 ### Security
 

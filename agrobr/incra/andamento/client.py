@@ -11,7 +11,7 @@ import httpx
 from bs4 import BeautifulSoup
 
 from agrobr import constants
-from agrobr.exceptions import ParseError, SourceUnavailableError
+from agrobr.exceptions import ParseError, ResourceLimitError, SourceUnavailableError
 from agrobr.http import responses, retry, settings, user_agents
 from agrobr.normalize import encoding
 
@@ -122,13 +122,13 @@ class Download:
                     len(body) > constants.INCRA_ANDAMENTO_MAX_BODY_BYTES
                     or self.total_bytes > constants.INCRA_ANDAMENTO_MAX_TOTAL_BODY_BYTES
                 ):
-                    raise SourceUnavailableError(
-                        "incra", url, "Orçamento de bytes administrativos excedido"
+                    raise ResourceLimitError(
+                        "incra", "Orçamento de bytes administrativos excedido", url=url
                     )
             response._content = bytes(body)
             resource.complete_body = True
             return response
-        except (httpx.HTTPError, SourceUnavailableError) as exc:
+        except (httpx.HTTPError, SourceUnavailableError, ResourceLimitError) as exc:
             resource.error_type, resource.error = type(exc).__name__, str(exc)
             raise
         finally:
@@ -185,7 +185,7 @@ async def fetch_publication() -> models.Acquisition:
             resources=downloader.resources,
             duration_ms=int((time.monotonic() - started) * 1000),
         )
-    except (httpx.HTTPError, SourceUnavailableError, ParseError) as exc:
+    except (httpx.HTTPError, SourceUnavailableError, ParseError, ResourceLimitError) as exc:
         cast(Any, exc).resources = [
             resource.model_dump(mode="json") for resource in downloader.resources
         ]

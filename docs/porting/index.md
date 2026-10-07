@@ -138,6 +138,7 @@ consistente.
 | `AgrobrError` | Base de todas as exceções |
 | `InvalidParameterError` | Parâmetro do usuário inválido; também é `ValueError` e interrompe a cascata |
 | `SourceUnavailableError` | A fonte não entregou o dado: timeout, falha de conexão ou status HTTP de erro (depois dos retries, nos status que se repetem), com a fonte, a URL e o status, e a exceção do httpx em `__cause__`. No dataset, as fontes se esgotaram sem que todas as falhas fossem de layout: `attempted_sources` e `errors` dizem quais e por quê |
+| `ResourceLimitError` | Teto local excedido, incluindo bytes por resposta e acumulados no download administrativo do INCRA; interrompe a cascata sem fallback |
 | `NetworkError` | Reservado: segue exportado, mas não é levantado na 2.0; o status HTTP de erro sai como `SourceUnavailableError` |
 | `ParseError` | Layout mudou, HTML/JSON inesperado; no dataset, agrega `errors` e `attempted_sources` quando todas as fontes falham por layout |
 | `ContractViolationError` | DataFrame não bate com contrato (colunas, tipos) |
