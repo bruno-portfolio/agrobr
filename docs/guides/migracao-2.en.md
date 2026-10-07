@@ -304,7 +304,7 @@ lspa_mt = await datasets.estimativa_safra(
 
 The second call queries January in calendar year 2025. CONAB survey 1 is a different reference; it does not represent January LSPA. Specify the same state when comparing sources, because `uf=None` returns states from CONAB and Brazil from LSPA. See the [complete contract](../contracts/estimativa_safra.md).
 
-**Cut without observations.** When every queried source answers with no data for the cut (for example, a crop year the CONAB sheet does not publish yet), the dataset returns the contract's empty frame, with `UserWarning` and the warning in `meta.validation_warnings`, instead of `SourceUnavailableError`. Code that used the exception to detect "no data" should check `df.empty`. With one source empty and the other down, it remains `SourceUnavailableError`; with the other failing on layout, `ParseError`.
+**Cut without observations.** When every queried source answers with no data for the cut (for example, a crop year the CONAB sheet does not publish yet, or the crop year after the most recent one in the CONAB surveys, with the LSPA not yet covering its year), the dataset returns the contract's empty frame, with `UserWarning` and the warning in `meta.validation_warnings`, instead of `SourceUnavailableError`. Code that used the exception to detect "no data" should check `df.empty`. With one source empty and the other down, it remains `SourceUnavailableError`; with the other failing on layout, `ParseError`.
 
 ## 1. ANDA accepts only the total product
 

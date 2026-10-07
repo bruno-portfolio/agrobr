@@ -1,3 +1,4 @@
+from contextlib import contextmanager
 from datetime import UTC, datetime
 from unittest.mock import AsyncMock, patch
 
@@ -313,3 +314,58 @@ class TestTodasAsFontesVazias:
                 await dataset.fetch("trigo", safra="2022/23")
         assert erro.value.parser_version == 7
         assert [nome for nome, _, _ in erro.value.errors] == ["conab", "ibge_lspa"]
+
+
+LISTAGEM_ATE_2025_26 = [
+    {
+        "safra": "2025/26",
+        "ano_inicio": 2025,
+        "levantamento": 12,
+        "url": "https://www.gov.br/conab/12-levantamento-2025-26.xlsx",
+    }
+]
+
+
+@contextmanager
+def _safra_sem_levantamento():
+    from agrobr.conab import client as conab_client
+    from agrobr.utils import time as time_utils
+
+    with isolated_dataset_case("safra_sem_levantamento") as monkeypatch:
+        monkeypatch.setattr(
+            time_utils, "utcnow_aware", lambda: datetime(2026, 10, 7, 15, 0, tzinfo=UTC)
+        )
+        monkeypatch.setattr(
+            conab_client, "list_levantamentos", AsyncMock(return_value=LISTAGEM_ATE_2025_26)
+        )
+        download = AsyncMock()
+        monkeypatch.setattr(conab_client, "download_xlsx", download)
+        with _lspa() as lspa:
+            yield _fontes_reais()
+    download.assert_not_awaited()
+    lspa.assert_not_awaited()
+
+
+class TestSafraSemLevantamento:
+    async def test_safra_posterior_a_listagem_sai_vazia_com_aviso(self):
+        with _safra_sem_levantamento() as dataset, pytest.warns(UserWarning) as avisos:
+            df, meta = await dataset.fetch("soja", safra="2026/27", return_meta=True)
+        esperado = safra_contract.ESTIMATIVA_SAFRA_V3_1.empty_frame()
+        assert df.empty
+        assert df.dtypes.equals(esperado.dtypes)
+        assert meta.attempted_sources == ["conab", "ibge_lspa"]
+        assert [str(aviso.message) for aviso in avisos] == meta.validation_warnings
+        assert "conab, ibge_lspa" in meta.validation_warnings[0]
+
+    async def test_levantamento_de_safra_posterior_a_listagem_sai_vazio(self):
+        with _safra_sem_levantamento() as dataset, pytest.warns(UserWarning) as avisos:
+            df = await dataset.fetch("soja", safra="2026/27", levantamento=1)
+        assert df.empty
+        assert "conab responderam sem observações" in str(avisos[0].message)
+
+    async def test_safra_antiga_fora_da_listagem_segue_source_unavailable(self):
+        with (
+            _safra_sem_levantamento() as dataset,
+            levanta_exatamente(SourceUnavailableError, match="No levantamento found"),
+        ):
+            await dataset.fetch("soja", safra="2020/21", levantamento=3)

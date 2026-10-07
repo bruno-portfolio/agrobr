@@ -308,7 +308,7 @@ lspa_mt = await datasets.estimativa_safra(
 
 A segunda chamada consulta janeiro do ano civil 2025. O levantamento 1 CONAB é outra referência; não representa janeiro LSPA. Informe a mesma UF ao comparar fontes, pois `uf=None` retorna UFs na CONAB e Brasil no LSPA. Consulte o [contrato completo](../contracts/estimativa_safra.md).
 
-**Recorte sem observações.** Quando todas as fontes consultadas respondem sem dados para o recorte (por exemplo, a safra que a aba da CONAB ainda não publica), o dataset devolve o vazio do contrato, com `UserWarning` e o aviso em `meta.validation_warnings`, e não mais `SourceUnavailableError`. Quem usava a exceção para detectar "sem dado" passa a conferir `df.empty`. Com uma fonte vazia e a outra fora do ar, segue `SourceUnavailableError`; com a outra falhando por layout, `ParseError`.
+**Recorte sem observações.** Quando todas as fontes consultadas respondem sem dados para o recorte (por exemplo, a safra que a aba da CONAB ainda não publica, ou a safra seguinte à mais recente dos levantamentos da CONAB, com o LSPA ainda sem o ano), o dataset devolve o vazio do contrato, com `UserWarning` e o aviso em `meta.validation_warnings`, e não mais `SourceUnavailableError`. Quem usava a exceção para detectar "sem dado" passa a conferir `df.empty`. Com uma fonte vazia e a outra fora do ar, segue `SourceUnavailableError`; com a outra falhando por layout, `ParseError`.
 
 ## 1. ANDA aceita somente o produto total
 

@@ -14,7 +14,7 @@ Crop estimates with an explicit CONAB survey or LSPA reference month. The datase
 
 `levantamento` and `mes` are distinct selectors. Using both, or combining either with an incompatible `fonte`, raises an error before network access. A forced source is not replaced by another source. An unavailable explicit reference raises an error rather than silently selecting another month, survey or source.
 
-When every queried source answers without observations for the selection (product, season, state and selector with no row), the result is the contract's empty frame, with the same dtypes, a `UserWarning` and the warning in `MetaInfo.validation_warnings`. A network or layout failure in any source keeps its error class: with one source empty and the other down the result is `SourceUnavailableError`, and with the other failing on layout it is `ParseError`.
+When every queried source answers without observations for the selection (product, season, state and selector with no row), the result is the contract's empty frame, with the same dtypes, a `UserWarning` and the warning in `MetaInfo.validation_warnings`. A season later than the most recent one the CONAB surveys publish counts as without observations, and so does, in the LSPA, a season whose final year is later than the current one. A network or layout failure in any source keeps its error class: with one source empty and the other down the result is `SourceUnavailableError`, and with the other failing on layout it is `ParseError`.
 
 Without an explicit month, LSPA selects the latest available period with observations. It does not fill a requested month's missing components from earlier months.
 

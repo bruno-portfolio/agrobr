@@ -162,14 +162,18 @@ def _registrando(nome: str, fetch_fn: _FetchFn, registro: dict[str, Exception]) 
 
 async def _fetch_conab(produto: str, **kwargs: Any) -> tuple[pd.DataFrame, MetaInfo | None]:
     from agrobr import conab
+    from agrobr.conab import client as conab_client
 
-    result = await conab.safras(
-        produto,
-        safra=kwargs.get("safra"),
-        uf=kwargs.get("uf"),
-        levantamento=kwargs.get("levantamento"),
-        return_meta=True,
-    )
+    try:
+        result = await conab.safras(
+            produto,
+            safra=kwargs.get("safra"),
+            uf=kwargs.get("uf"),
+            levantamento=kwargs.get("levantamento"),
+            return_meta=True,
+        )
+    except conab_client.SafraNaoPublicadaError as exc:
+        raise _SemObservacoes(source="conab", last_error=exc.last_error) from exc
     df, meta = _unpack_result(result)
     if df.empty:
         raise _SemObservacoes(source="conab", last_error=f"CONAB sem estimativa de {produto}")
@@ -194,9 +198,7 @@ async def _fetch_ibge_lspa(produto: str, **kwargs: Any) -> tuple[pd.DataFrame, M
     corrente = hoje().year
     ano = dates.safra_para_anos(safra)[1] if safra else corrente
     if ano > corrente:
-        raise SourceUnavailableError(
-            source="ibge_lspa", last_error=f"o LSPA ainda não publica {ano}"
-        )
+        raise _SemObservacoes(source="ibge_lspa", last_error=f"o LSPA ainda não publica {ano}")
     safra_resultado = safra or dates.anos_para_safra(ano - 1)
     result = await ibge.lspa(produto, ano=ano, mes=mes, uf=uf, return_meta=True)
     df, meta = _unpack_result(result)

@@ -34,6 +34,10 @@ except ImportError:  # pragma: no cover
 logger = _log.get_logger(__name__)
 
 
+class SafraNaoPublicadaError(SourceUnavailableError):
+    pass
+
+
 async def _fetch_http(url: str) -> bytes:
     headers = UserAgentRotator.get_headers(source="conab")
     async with httpx.AsyncClient(
@@ -438,7 +442,12 @@ async def fetch_safra_xlsx(
         ]
 
     if not filtered:
-        raise SourceUnavailableError(
+        erro = (
+            SafraNaoPublicadaError
+            if safra and int(safra[:4]) > max(int(lev["safra"][:4]) for lev in levantamentos)
+            else SourceUnavailableError
+        )
+        raise erro(
             source="conab",
             url=constants.URLS[constants.Fonte.CONAB]["boletim_graos"],
             last_error=f"No levantamento found for safra={safra}, levantamento={levantamento}",

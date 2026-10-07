@@ -14,7 +14,7 @@ Estimativas de safra com levantamento CONAB ou mês de referência LSPA explíci
 
 `levantamento` e `mes` são seletores distintos. Usar ambos, ou combinar um deles com `fonte` incompatível, gera erro antes da rede. Uma fonte forçada não é substituída por outra. Referência explícita indisponível gera erro, sem seleção silenciosa de outro mês, levantamento ou fonte.
 
-Quando todas as fontes consultadas respondem sem observações para o recorte (produto, safra, UF e seletor sem linha), o resultado é o vazio do contrato, com os mesmos dtypes, um `UserWarning` e o aviso em `MetaInfo.validation_warnings`. Falha de rede ou de layout de alguma fonte mantém a classe do erro: com uma fonte vazia e a outra fora do ar sai `SourceUnavailableError`, e com a outra falhando por layout sai `ParseError`.
+Quando todas as fontes consultadas respondem sem observações para o recorte (produto, safra, UF e seletor sem linha), o resultado é o vazio do contrato, com os mesmos dtypes, um `UserWarning` e o aviso em `MetaInfo.validation_warnings`. Conta como sem observações a safra posterior à mais recente que os levantamentos da CONAB publicam e, no LSPA, a safra cujo ano final é posterior ao corrente. Falha de rede ou de layout de alguma fonte mantém a classe do erro: com uma fonte vazia e a outra fora do ar sai `SourceUnavailableError`, e com a outra falhando por layout sai `ParseError`.
 
 Sem mês explícito, o LSPA seleciona o período mais recente disponível com observações. Não completa componentes ausentes do mês solicitado com meses anteriores.
 
