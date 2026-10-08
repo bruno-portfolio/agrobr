@@ -882,7 +882,7 @@ Com `uf`/`rodovia`, praça sem vínculo único no cadastro sai do resultado com 
 
 `incra.quilombolas()` e `incra.quilombolas_geo()` passam a ler a camada em WFS 2.0.0/JSON e devolvem **22 colunas** (contrato `incra_quilombolas` 2.0): as 10 anteriores, na mesma ordem, seguidas de `feature_id`, `regional`, `processo`, `data_publicacao_2`, `responsavel`, `esfera`, `data_cadastro`, `codigo_sipra`, `descricao`, `data_decreto`, `tipo_levantamento` e `escala`. Selecione colunas pelo nome.
 
-- `data_publicacao`, `data_titulo`, `data_publicacao_2` e `data_decreto` saem em `datetime64[ns]`, e `data_cadastro` em `datetime64[ns, UTC]`. O marcador `0001-01-01` da fonte ("sem data") vira `NaT` sem aviso; outra data fora de 1900–2099 (erro de digitação da fonte) vira `NaT`, com `UserWarning` e aviso em `meta.validation_warnings`. `incra.vinculos_quilombolas` segue a mesma regra nas colunas `perimetro_*`.
+- `data_publicacao`, `data_titulo`, `data_publicacao_2` e `data_decreto` saem em `datetime64[ns]`, e `data_cadastro` em `datetime64[ns, UTC]`. O marcador `0001-01-01` da fonte ("sem data") vira `NaT` sem aviso; outra data fora de 1900–2099 (erro de digitação da fonte), inclusive em `data_cadastro`, vira `NaT`, com `UserWarning` e aviso em `meta.validation_warnings`. `incra.vinculos_quilombolas` segue a mesma regra nas colunas `perimetro_*`.
 - `codigo` e `familias` são `Int64`; `area_ha` é `float64` em hectares publicados; os demais textos usam o dtype padrão do pandas ([§89](#89-tipos-da-saida)).
 - `bbox` usa EPSG:4326, e `quilombolas_geo()` devolve as coordenadas nesse CRS **sem reparo topológico** (o `make_valid` da 1.x saiu).
 - Parâmetros inválidos levantam `InvalidParameterError` antes da rede; o corte por `max_registros` emite `UserWarning`.

@@ -30,14 +30,16 @@ def converter_datas(
     formato: str | None = None,
     dayfirst: bool = False,
     ate: pd.Timestamp | None = None,
+    utc: bool = False,
 ) -> DatasConvertidas:
     """Converte a coluna em datas com o mesmo resultado no pandas 2 e no 3.
 
     Valor ilegível, com ano fora de `DATA_ANO_MINIMO`–`DATA_ANO_MAXIMO` ou, com `ate`, de dia
     posterior a ele vira `NaT`. `descartadas` conta os valores presentes que viraram `NaT`
-    (vazio não conta). A saída é sempre em nanossegundos.
+    (vazio não conta). A saída é sempre em nanossegundos; com `utc`, em UTC, com o texto sem
+    fuso lido como UTC.
     """
-    datas = pd.to_datetime(valores, errors="coerce", format=formato, dayfirst=dayfirst)
+    datas = pd.to_datetime(valores, errors="coerce", format=formato, dayfirst=dayfirst, utc=utc)
     fora = ~datas.dt.year.between(DATA_ANO_MINIMO, DATA_ANO_MAXIMO)
     if ate is not None:
         fora |= datas.dt.normalize() > ate.normalize()
@@ -64,11 +66,12 @@ def converter_coluna(
     dayfirst: bool = False,
     ate: pd.Timestamp | None = None,
     efeito: str = "",
+    utc: bool = False,
 ) -> None:
     """Converte `df[coluna]` com `converter_datas`; havendo descarte, emite `UserWarning` e
     anota a mensagem em `df.attrs`, de onde o `build_source_meta` a leva ao `MetaInfo`."""
     convertidas = converter_datas(
-        df[coluna], fonte=fonte, formato=formato, dayfirst=dayfirst, ate=ate
+        df[coluna], fonte=fonte, formato=formato, dayfirst=dayfirst, ate=ate, utc=utc
     )
     df[coluna] = convertidas.datas
     if not convertidas.descartadas:

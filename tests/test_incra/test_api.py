@@ -90,6 +90,37 @@ async def test_incra_sem_data_vira_nat_calado_e_data_fora_do_intervalo_avisa(mon
     assert sorted(a for a in emitidos_nat if "viraram NaT" in a) == avisos
 
 
+@pytest.mark.parametrize("geo", [False, True])
+async def test_incra_cadastro_fora_de_1900_2099_vira_nat_com_aviso(monkeypatch, geo):
+    if geo:
+        pytest.importorskip("geopandas")
+        base = incra_features(include_geometry=True)[0]
+        features = []
+        for indice in range(3):
+            feature = copy.deepcopy(base)
+            feature["id"] = f"lim_quilombolas_a.{997 + indice}"
+            feature["properties"]["cd_quilomb"] += indice
+            features.append(feature)
+    else:
+        features = incra_features()
+    for feature, cadastro in zip(features, ["0982-11-01T10:00:00Z", "1850-11-01T10:00:00Z"]):
+        feature["properties"]["dt_cadastro"] = cadastro
+    install_incra_wfs(monkeypatch, features)
+    funcao = api.quilombolas_geo if geo else api.quilombolas
+    with warnings.catch_warnings(record=True) as emitidos:
+        warnings.simplefilter("always")
+        frame, meta = await funcao(return_meta=True)
+    aviso = (
+        "incra: 2 valor(es) de data_cadastro viraram NaT (data ilegível ou com ano fora de "
+        "1900–2099)."
+    )
+    assert [str(w.message) for w in emitidos if "data_cadastro" in str(w.message)] == [aviso]
+    assert [texto for texto in meta.validation_warnings if "data_cadastro" in texto] == [aviso]
+    assert str(frame["data_cadastro"].dtype) == "datetime64[ns, UTC]"
+    nulos = frame.set_index("feature_id")["data_cadastro"].isna().to_dict()
+    assert nulos == {feature["id"]: indice < 2 for indice, feature in enumerate(features)}
+
+
 async def test_incra_manifest_origin_and_full_coverage(monkeypatch):
     calls = install_incra_wfs(monkeypatch, incra_features())
     frame, meta = await api.quilombolas(max_registros=None, tamanho_pagina=2, return_meta=True)

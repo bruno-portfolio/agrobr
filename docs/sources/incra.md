@@ -96,8 +96,9 @@ O agrobr valida cada data contra o XSD e a entrega em `datetime64[ns]`; o cadast
 perímetros) e `data_decreto` (2): ele vira `NaT` sem aviso. Outra data fora de 1900–2099 (em
 08/09/2026, `0205-01-28` e `2201-02-15` em `data_publicacao_2` e `0222-11-11` em `data_titulo`,
 erros de digitação da fonte) vira `NaT` com `UserWarning` e aviso em `meta.validation_warnings`, com
-a coluna e a quantidade. O texto sai no dtype padrão do pandas instalado (`str` no pandas 3,
-`object` no 2); nulo, zero, texto vazio e o texto `NULL` são preservados como publicados.
+a coluna e a quantidade; a regra vale também para `data_cadastro`. O texto sai no dtype padrão do
+pandas instalado (`str` no pandas 3, `object` no 2); nulo, zero, texto vazio e o texto `NULL` são
+preservados como publicados.
 
 ### Geometria
 

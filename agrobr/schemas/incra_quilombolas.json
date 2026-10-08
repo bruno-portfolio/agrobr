@@ -69,7 +69,7 @@
     "data_publicacao_2": true,
     "responsavel": true,
     "esfera": true,
-    "data_cadastro": false,
+    "data_cadastro": true,
     "codigo_sipra": true,
     "descricao": true,
     "data_decreto": true,
@@ -256,7 +256,7 @@
     {
       "name": "data_cadastro",
       "type": "datetime",
-      "nullable": false,
+      "nullable": true,
       "unit": null,
       "stable": true,
       "deprecated": false,

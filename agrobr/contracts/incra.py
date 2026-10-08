@@ -120,7 +120,7 @@ def _geographic_column(name: str) -> contracts.Column:
     if name == "area_ha":
         return contracts.Column(name, contracts.ColumnType.FLOAT, nullable=True, unit="ha")
     if name == "data_cadastro":
-        return contracts.Column(name, contracts.ColumnType.DATETIME)
+        return contracts.Column(name, contracts.ColumnType.DATETIME, nullable=True)
     if name in constants.INCRA_DTYPES_TEMPORAIS:
         return contracts.Column(name, contracts.ColumnType.DATE, nullable=True)
     return contracts.Column(name, contracts.ColumnType.STRING, nullable=name != "feature_id")

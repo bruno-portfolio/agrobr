@@ -209,5 +209,4 @@ def converter_datas(frame: pd.DataFrame) -> None:
             frame[coluna] = frame[coluna].mask(frame[coluna] == constants.INCRA_DATA_SEM_DATA)
             dates.converter_coluna(frame, coluna, fonte="incra", formato="%Y-%m-%d")
         else:
-            instantes = pd.to_datetime(frame[coluna], format="ISO8601", utc=True, errors="coerce")
-            frame[coluna] = instantes.dt.as_unit("ns")
+            dates.converter_coluna(frame, coluna, fonte="incra", formato="ISO8601", utc=True)

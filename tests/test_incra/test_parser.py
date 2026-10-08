@@ -10,6 +10,7 @@ import pytest
 
 from agrobr.exceptions import ParseError
 from agrobr.incra import parser
+from agrobr.utils.result import ATRIBUTO_AVISOS
 from tests.helpers import incra_expected_frame
 
 GOLDEN = Path(__file__).parents[1] / "golden_data/incra/wfs_v2_20260908"
@@ -61,6 +62,26 @@ def test_invalid_date_retains_layout_error_context(payload):
     payload["features"][0]["properties"]["dt_public1"] = "2023-02-29"
     with pytest.raises(ParseError, match="dt_public1"):
         parser.parse_page(json.dumps(payload).encode(), include_geometry=False)
+
+
+def test_cadastro_com_ano_fora_de_1900_2099_vira_nat_com_aviso(payload):
+    cadastros = ["0982-11-01T10:00:00Z", "1850-11-01T10:00:00Z", "2026-09-07T13:40:09-03:00"]
+    for feature, cadastro in zip(payload["features"], cadastros):
+        feature["properties"]["dt_cadastro"] = cadastro
+    frame = parser.build_frame(
+        parser.parse_page(json.dumps(payload).encode(), include_geometry=False).records
+    )
+    with pytest.warns(UserWarning) as capturados:
+        parser.converter_datas(frame)
+    aviso = (
+        "incra: 2 valor(es) de data_cadastro viraram NaT (data ilegível ou com ano fora de "
+        "1900–2099)."
+    )
+    assert aviso in [str(capturado.message) for capturado in capturados]
+    assert aviso in frame.attrs[ATRIBUTO_AVISOS]
+    assert str(frame["data_cadastro"].dtype) == "datetime64[ns, UTC]"
+    assert frame["data_cadastro"].isna().tolist() == [True, True] + [False] * (len(frame) - 2)
+    assert (frame["data_cadastro"].iloc[2:] == pd.Timestamp("2026-09-07T16:40:09Z")).all()
 
 
 def test_integer_signed_zero_is_same_value_but_area_signed_zero_is_distinct(payload):

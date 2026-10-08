@@ -96,9 +96,9 @@ time comes as `datetime64[ns, UTC]`. The source uses `0001-01-01` as a "no date"
 `data_titulo` (3 perimeters) and `data_decreto` (2): it becomes `NaT` with no warning. Any other date
 outside 1900–2099 (on 2026-09-08, `0205-01-28` and `2201-02-15` in `data_publicacao_2` and
 `0222-11-11` in `data_titulo`, typos at the source) becomes `NaT` with a `UserWarning` and a warning in
-`meta.validation_warnings`, with the column and the count. Text comes in the installed pandas default
-dtype (`str` on pandas 3, `object` on 2); null, zero, empty text and the text `NULL` are kept as
-published.
+`meta.validation_warnings`, with the column and the count; the rule also covers `data_cadastro`. Text
+comes in the installed pandas default dtype (`str` on pandas 3, `object` on 2); null, zero, empty text
+and the text `NULL` are kept as published.
 
 ### Geometry
 
