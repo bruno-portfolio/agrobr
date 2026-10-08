@@ -829,7 +829,7 @@ Os mínimos de segurança também passam a HTTPX 0.28.1, httpcore 1.0.9, lxml 6.
 
 Atualize as dependências com o pacote: pandas mínimo 2.2.2, Typer 0.26.0, pdfplumber 0.11.10 no extra PDF, pyogrio 0.8.0 no extra geo e polars 0.20.3 no extra polars (o `as_polars=True` dos datasets usa o tipo `String`, que o Polars só tem a partir dele). Esses limites excluem combinações que falhavam no import, na CLI ou na extração numérica de PDFs. O transporte SIDRA passa a HTTP assíncrono direto; sidrapy não é mais uma dependência.
 
-Consultas NASA divididas em blocos falham integralmente se um bloco não puder ser obtido. Erros de agregação são rejeitados antes da rede. Não interprete ausência de medições como cobertura completa.
+Consultas NASA divididas em blocos falham integralmente se um bloco não puder ser obtido. Erros de agregação são rejeitados antes da rede. Início depois de hoje (calendário de Brasília) em `clima_ponto` e `ano` posterior ao corrente em `clima_uf` também levantam `InvalidParameterError` antes da rede; na 1.1.0, a resposta sem nenhum dia virava `ParseError`. Não interprete ausência de medições como cobertura completa.
 
 Na CLI, JSON/CSV ocupa somente stdout; progresso e erros usam stderr. Resultados vazios produzem `[]` ou o cabeçalho CSV. `snapshot list --formato json` vazio produz `[]`. `doctor` expõe erros de cache, respeita as configurações de health e retorna código 1 para erros locais ou indisponibilidade de qualquer fonte consultada. Isso diagnostica a saúde da coleta e não significa, por si só, instalação defeituosa. Avisos como credencial ausente não são confundidos com queda da fonte.
 

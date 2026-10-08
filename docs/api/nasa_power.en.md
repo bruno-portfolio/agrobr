@@ -28,8 +28,8 @@ async def clima_ponto(
 |-----------|------|-------------|
 | `lat` | `float` | Latitude (-90 to 90) |
 | `lon` | `float` | Longitude (-180 to 180) |
-| `inicio` | `str \| date` | Start date (YYYY-MM-DD) |
-| `fim` | `str \| date` | End date (YYYY-MM-DD) |
+| `inicio` | `str \| date` | Start date (YYYY-MM-DD), from 1981-01-01 to today on the Brasília calendar; a future date raises `InvalidParameterError` before the network |
+| `fim` | `str \| date` | End date (YYYY-MM-DD); past today, the series ends at the last published day |
 | `agregacao` | `str` | `"diario"` (default) or `"mensal"` |
 | `as_polars` | `bool` | Return as polars.DataFrame |
 | `return_meta` | `bool` | If True, returns a (DataFrame, MetaInfo) tuple |
@@ -83,7 +83,7 @@ async def clima_uf(
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `uf` | `str` | State code (e.g. "MT", "SP") |
-| `ano` | `int` | Reference year |
+| `ano` | `int` | Reference year, from 1981 to the current year; a later year raises `InvalidParameterError` before the network |
 | `agregacao` | `str` | `"diario"` or `"mensal"` (default) |
 | `as_polars` | `bool` | Return as polars.DataFrame |
 | `return_meta` | `bool` | If True, returns a (DataFrame, MetaInfo) tuple |

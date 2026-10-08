@@ -825,7 +825,7 @@ Security floors also move to HTTPX 0.28.1, httpcore 1.0.9, lxml 6.1.0, requests 
 
 Upgrade dependencies with the package: minimum pandas 2.2.2, Typer 0.26.0, pdfplumber 0.11.10 for PDF, pyogrio 0.8.0 for geo, and polars 0.20.3 for polars (the datasets' `as_polars=True` uses the `String` type, which Polars only has from that version on). These floors exclude combinations that failed during import, CLI execution, or numeric PDF extraction. SIDRA now uses asynchronous HTTP directly; sidrapy is no longer a dependency.
 
-Chunked NASA queries fail entirely when any chunk cannot be fetched. Invalid aggregation is rejected before network access. Missing measurements must not be interpreted as complete coverage.
+Chunked NASA queries fail entirely when any chunk cannot be fetched. Invalid aggregation is rejected before network access. A start after today (Brasília calendar) in `clima_ponto` and a year after the current one in `clima_uf` also raise `InvalidParameterError` before network access; in 1.1.0, the response with no day became `ParseError`. Missing measurements must not be interpreted as complete coverage.
 
 CLI JSON/CSV occupies stdout only; progress and errors use stderr. Empty results produce `[]` or a CSV header. Empty `snapshot list --formato json` produces `[]`. `doctor` exposes cache errors, honors health configurations, and exits with code 1 for local errors or an outage of any checked source. This diagnoses collection health and does not, by itself, mean the installation is defective. Warnings such as missing credentials are not classified as source outages.
 

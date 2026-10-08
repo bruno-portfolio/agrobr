@@ -35,7 +35,7 @@ Também aceitos em `parameters=`: `PS` (`ps_kpa`, kPa), `WS10M` (`vento_10m_ms`,
 
 ## Uso
 
-Consultas longas são divididas em blocos. Se um bloco falhar após os retries, a chamada inteira levanta `SourceUnavailableError`; blocos anteriores não são devolvidos como uma série completa. `clima_ponto` e `clima_uf` aceitam somente `agregacao="diario"` ou `"mensal"`, com validação antes da rede. Isso não implica que todas as variáveis tenham medições em todos os dias: ausências publicadas pela fonte continuam nulas.
+Consultas longas são divididas em blocos. Se um bloco falhar após os retries, a chamada inteira levanta `SourceUnavailableError`; blocos anteriores não são devolvidos como uma série completa. `clima_ponto` e `clima_uf` aceitam somente `agregacao="diario"` ou `"mensal"`, com validação antes da rede. `inicio` vai de 1981-01-01 até hoje, no calendário de Brasília, e o `ano` de `clima_uf`, de 1981 ao ano corrente: início no futuro levanta `InvalidParameterError` antes da rede (a fonte responde sem nenhum dia). O período que começa no passado e passa de hoje sai até o último dia publicado. Isso não implica que todas as variáveis tenham medições em todos os dias: ausências publicadas pela fonte continuam nulas.
 
 ### Dados por ponto (lat/lon)
 

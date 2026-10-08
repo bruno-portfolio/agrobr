@@ -35,7 +35,7 @@ Also accepted in `parameters=`: `PS` (`ps_kpa`, kPa), `WS10M` (`vento_10m_ms`, m
 
 ## Usage
 
-Long queries are split into chunks. If a chunk fails after retries, the entire call raises `SourceUnavailableError`; earlier chunks are not returned as a complete series. Both `clima_ponto` and `clima_uf` accept only `agregacao="diario"` or `"mensal"`, validated before network access. This does not guarantee observations for every variable and day: source-reported missing measurements remain null.
+Long queries are split into chunks. If a chunk fails after retries, the entire call raises `SourceUnavailableError`; earlier chunks are not returned as a complete series. Both `clima_ponto` and `clima_uf` accept only `agregacao="diario"` or `"mensal"`, validated before network access. `inicio` runs from 1981-01-01 to today, on the Brasília calendar, and the `clima_uf` `ano` from 1981 to the current year: a future start raises `InvalidParameterError` before network access (the source answers with no day). A period that starts in the past and runs past today ends at the last published day. This does not guarantee observations for every variable and day: source-reported missing measurements remain null.
 
 ### Point data (lat/lon)
 

@@ -28,8 +28,8 @@ async def clima_ponto(
 |-----------|------|-----------|
 | `lat` | `float` | Latitude (-90 a 90) |
 | `lon` | `float` | Longitude (-180 a 180) |
-| `inicio` | `str \| date` | Data inicial (YYYY-MM-DD) |
-| `fim` | `str \| date` | Data final (YYYY-MM-DD) |
+| `inicio` | `str \| date` | Data inicial (YYYY-MM-DD), de 1981-01-01 até hoje no calendário de Brasília; no futuro, `InvalidParameterError` antes da rede |
+| `fim` | `str \| date` | Data final (YYYY-MM-DD); depois de hoje, a série sai até o último dia publicado |
 | `agregacao` | `str` | `"diario"` (default) ou `"mensal"` |
 | `as_polars` | `bool` | Retorna polars.DataFrame |
 | `return_meta` | `bool` | Se True, retorna tupla (DataFrame, MetaInfo) |
@@ -83,7 +83,7 @@ async def clima_uf(
 | Parametro | Tipo | Descricao |
 |-----------|------|-----------|
 | `uf` | `str` | Sigla UF (ex: "MT", "SP") |
-| `ano` | `int` | Ano de referencia |
+| `ano` | `int` | Ano de referencia, de 1981 ao ano corrente; ano seguinte levanta `InvalidParameterError` antes da rede |
 | `agregacao` | `str` | `"diario"` ou `"mensal"` (default) |
 | `as_polars` | `bool` | Retorna polars.DataFrame |
 | `return_meta` | `bool` | Se True, retorna tupla (DataFrame, MetaInfo) |

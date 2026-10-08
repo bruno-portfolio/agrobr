@@ -1,6 +1,6 @@
 """Testes para a API publica NASA POWER."""
 
-from datetime import date, datetime
+from datetime import UTC, date, datetime
 from unittest.mock import AsyncMock, patch
 
 import pytest
@@ -143,3 +143,40 @@ class TestClimaUf:
     async def test_invalid_uf_raises(self):
         with pytest.raises(ValueError, match="não reconhecida"):
             await api.clima_uf("XX", 2024)
+
+
+@pytest.fixture
+def hoje_em_brasilia_7_out(monkeypatch):
+    from agrobr.utils import time as time_utils
+
+    monkeypatch.setattr(time_utils, "utcnow_aware", lambda: datetime(2026, 10, 8, 1, 0, tzinfo=UTC))
+
+
+@pytest.mark.usefixtures("hoje_em_brasilia_7_out")
+class TestInicioNoFuturo:
+    async def test_inicio_amanha_recusado_antes_da_rede(self):
+        with (
+            patch.object(api.client, "fetch_daily", new_callable=AsyncMock) as fetch,
+            levanta_exatamente(InvalidParameterError, "2026-10-08 no futuro.*até 2026-10-07"),
+        ):
+            await api.clima_ponto(-15.8, -47.9, "2026-10-08", "2026-10-31")
+        fetch.assert_not_awaited()
+
+    async def test_inicio_hoje_vai_a_rede(self):
+        with patch.object(
+            api.client,
+            "fetch_daily",
+            new_callable=AsyncMock,
+            return_value=_mock_nasa_response(dates=["20261007"]),
+        ) as fetch:
+            df = await api.clima_ponto(-15.8, -47.9, "2026-10-07", "2026-10-31")
+        fetch.assert_awaited_once()
+        assert len(df) == 1
+
+    async def test_clima_uf_ano_seguinte_recusado_antes_da_rede(self):
+        with (
+            patch.object(api.client, "fetch_daily", new_callable=AsyncMock) as fetch,
+            levanta_exatamente(InvalidParameterError, "entre 1981 e 2026"),
+        ):
+            await api.clima_uf("MT", 2027)
+        fetch.assert_not_awaited()

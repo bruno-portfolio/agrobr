@@ -10,6 +10,7 @@ from agrobr import _log
 from agrobr.exceptions import InvalidParameterError
 from agrobr.models import MetaInfo
 from agrobr.utils.result import DataFrameResult, build_source_meta
+from agrobr.utils.time import hoje
 
 from . import client, models, output, parser, provenance
 from .models import UF_COORDS
@@ -46,6 +47,13 @@ def _normalize_range(inicio: str | date, fim: str | date) -> tuple[date, date]:
 
     if start < date(1981, 1, 1):
         raise InvalidParameterError("inicio deve ser a partir de 1981-01-01")
+
+    publicado = hoje()
+
+    if start > publicado:
+        raise InvalidParameterError(
+            f"inicio {start.isoformat()} no futuro: a NASA POWER publica até {publicado.isoformat()}"
+        )
 
     return start, end
 
@@ -220,8 +228,10 @@ async def clima_uf(
             f"uf deve ser uma sigla brasileira. UFs disponíveis: {sorted(UF_COORDS.keys())}"
         )
 
-    if isinstance(ano, bool) or not isinstance(ano, int) or not 1981 <= ano <= 9999:
-        raise InvalidParameterError("ano deve ser inteiro entre 1981 e 9999")
+    corrente = hoje().year
+
+    if isinstance(ano, bool) or not isinstance(ano, int) or not 1981 <= ano <= corrente:
+        raise InvalidParameterError(f"ano deve ser inteiro entre 1981 e {corrente}")
 
     uf_upper = uf.upper()
 
