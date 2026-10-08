@@ -64,7 +64,8 @@ print(meta.source)  # "comexstat"
 - O site `balanca.mdic.gov.br` não envia a cadeia completa do certificado. O client verifica o TLS
   por inteiro (hostname incluso), com o certificado intermediário da SERPRO conferido por SHA-256 e
   acrescentado às autoridades (`certifi`, `SSL_CERT_FILE` ou `SSL_CERT_DIR`).
-- Sem cache: cada chamada baixa o CSV anual do fluxo (~100 MB) e filtra em memória, e várias consultas
+- Sem cache: cada chamada baixa o CSV anual do fluxo (~100 MB), valida todas as linhas e filtra em memória (da ordem
+  de 1 minuto por ano consultado), e várias consultas
   do mesmo ano baixam o arquivo de novo. `produto` aceita 1 alias ou 1 prefixo NCM por chamada, sem
   lista; para vários códigos num download só, use o prefixo comum (a API autônoma devolve 1 linha por NCM).
 - Cada CSV anual tem ~100 MB. O download vai para um arquivo temporário e é conferido contra o

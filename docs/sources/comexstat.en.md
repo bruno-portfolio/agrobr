@@ -64,7 +64,8 @@ print(meta.source)  # "comexstat"
 - The site `balanca.mdic.gov.br` does not send the complete certificate chain. The client verifies
   TLS in full (hostname included), with SERPRO's intermediate certificate checked by SHA-256 and added
   to the authorities (`certifi`, `SSL_CERT_FILE` or `SSL_CERT_DIR`).
-- No cache: every call downloads the flow's annual CSV (~100 MB) and filters it in memory, and several
+- No cache: every call downloads the flow's annual CSV (~100 MB), validates every row and filters it in memory (on the
+  order of 1 minute per queried year), and several
   queries for the same year download the file again. `produto` takes 1 alias or 1 NCM prefix per call,
   not a list; for several codes in a single download, use the common prefix (the standalone API returns
   1 row per NCM).
