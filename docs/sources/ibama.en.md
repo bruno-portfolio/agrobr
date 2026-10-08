@@ -91,7 +91,10 @@ SIRGAS 2000 → WGS 84 transformation is a null transformation).
   date with a year outside 1900–2099 (1667 and 2925) and one on a day after the file's own edition
   (`ULTIMA_ATUALIZACAO_RELATORIO`; in the 23/09/2026 edition, 2063, 2080 and 2090) become `NaT`: a term cannot be dated
   after the file that publishes it. The query warns with a `UserWarning` and in `meta.validation_warnings`, with the column
-  and the count. Both date columns come out as `datetime64[ns]`.
+  and the count. Both date columns come out as `datetime64[ns]`. The edition is the latest valid date (year 1900 to
+  2099) in `ULTIMA_ATUALIZACAO_RELATORIO`; an unreadable or out-of-range value does not count. If no value is valid, the
+  query warns that it did not read the edition and did not null the dates after it, and `ultima_atualizacao_relatorio`
+  is `None`.
 - **bbox**: `embargos(bbox=...)` filters by the term's reference point (lat/lon); `embargos_geo(bbox=...)` filters by
   polygon intersection with the box. They can differ: in the example bbox, 9 terms have the point inside and the
   polygon outside, and 4 have the polygon inside and the point outside or missing. A point with both latitude and

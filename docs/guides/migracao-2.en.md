@@ -1317,7 +1317,7 @@ In 2.0, the 6 sources follow a single rule, on both versions:
 - an unreadable value, or one with a year outside 1900–2099, becomes `NaT`, including dates from 1677 to 1899 and from
   2100 to 2262, which 1.1.0 published on both versions;
 - for IBAMA, an embargo or disembargo date on a day after the file's own edition (`ULTIMA_ATUALIZACAO_RELATORIO`) also
-  becomes `NaT`: in the 23/09/2026 edition, the terms dated 2063, 2080 and 2090;
+  becomes `NaT`: in the 23/09/2026 edition, the terms dated 2063, 2080 and 2090. The edition is the latest valid date in the column; with none, the query warns and does not apply this rule;
 - a query that discards values raises a `UserWarning` and puts the same message in `meta.validation_warnings`, with the
   source, the column and the count.
 

@@ -91,7 +91,9 @@ transformação SIRGAS 2000 → WGS 84 da EPSG é nula).
   a data com ano fora de 1900–2099 (1667 e 2925) e a de dia posterior à edição do próprio arquivo
   (`ULTIMA_ATUALIZACAO_RELATORIO`; na de 23/09/2026, 2063, 2080 e 2090): um termo não pode ser datado depois do arquivo que o
   publica. A consulta avisa com `UserWarning` e em `meta.validation_warnings`, com a coluna e a quantidade. As duas colunas
-  de data saem em `datetime64[ns]`.
+  de data saem em `datetime64[ns]`. A edição é a maior data válida (ano de 1900 a 2099) da coluna
+  `ULTIMA_ATUALIZACAO_RELATORIO`; valor ilegível ou fora dessa faixa não conta. Se nenhum valor for válido, a consulta
+  avisa que não leu a edição e não anulou a data posterior a ela, e `ultima_atualizacao_relatorio` sai `None`.
 - **bbox**: `embargos(bbox=...)` filtra pelo ponto de referência (lat/lon) do termo; `embargos_geo(bbox=...)`
   filtra pela interseção do polígono com a caixa. Os dois podem divergir: no bbox do exemplo, 9 termos têm o ponto
   dentro e o polígono fora, e 4 têm o polígono dentro e o ponto fora ou ausente. O ponto com latitude e longitude

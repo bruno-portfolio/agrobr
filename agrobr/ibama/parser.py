@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import warnings
 from typing import Any
 
 import pandas as pd
@@ -9,6 +10,7 @@ from agrobr.exceptions import ParseError
 from agrobr.normalize import dates
 from agrobr.utils.geo import check_geopandas, wkt_within_limits
 from agrobr.utils.io import read_csv_safe
+from agrobr.utils.result import ATRIBUTO_AVISOS
 
 from .models import (
     COLUNAS_SAIDA,
@@ -20,6 +22,8 @@ from .models import (
 logger = _log.get_logger(__name__)
 
 PARSER_VERSION = 4
+
+_FORMATO_DATA = "%Y-%m-%d %H:%M:%S"
 
 
 def _read_embargos(csv_bytes: bytes, columns: list[str]) -> pd.DataFrame:
@@ -34,8 +38,9 @@ def _read_embargos(csv_bytes: bytes, columns: list[str]) -> pd.DataFrame:
 
 
 def _edicao(df: pd.DataFrame) -> str | None:
-    valores = df[EDICAO_COLUMN_CSV].dropna().unique().tolist()
-    return str(max(valores)) if valores else None
+    valores = df[EDICAO_COLUMN_CSV]
+    datas = dates.converter_datas(valores, fonte="ibama", formato=_FORMATO_DATA).datas
+    return None if datas.isna().all() else str(valores.iloc[datas.argmax()])
 
 
 def _normalize(
@@ -49,8 +54,15 @@ def _normalize(
 
     publicacao = pd.to_datetime(edicao, errors="coerce") if edicao else None
     ate = publicacao if isinstance(publicacao, pd.Timestamp) else None
+    if edicao is None and df[EDICAO_COLUMN_CSV].notna().any():
+        aviso = (
+            f"ibama: a edição do arquivo ({EDICAO_COLUMN_CSV}) não foi lida, nenhum valor é data "
+            "válida; a data de ato posterior à edição não foi anulada."
+        )
+        df.attrs.setdefault(ATRIBUTO_AVISOS, []).append(aviso)
+        warnings.warn(aviso, UserWarning, stacklevel=2)
     for coluna in ("data_embargo", "data_desembargo"):
-        dates.converter_coluna(df, coluna, fonte="ibama", formato="%Y-%m-%d %H:%M:%S", ate=ate)
+        dates.converter_coluna(df, coluna, fonte="ibama", formato=_FORMATO_DATA, ate=ate)
     if df["area_embargada_ha"].str.contains(".", regex=False, na=False).any():
         raise ParseError(
             source="ibama",

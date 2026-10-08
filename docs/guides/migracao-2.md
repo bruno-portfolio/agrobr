@@ -1317,7 +1317,7 @@ Na 2.0, as 6 fontes seguem uma regra só, nas 2 versões:
 - valor ilegível ou com ano fora de 1900–2099 vira `NaT`, inclusive as datas de 1677 a 1899 e de 2100 a 2262, que a 1.1.0
   publicava nas 2 versões;
 - no IBAMA, também vira `NaT` a data de embargo ou de desembargo de dia posterior à edição do próprio arquivo
-  (`ULTIMA_ATUALIZACAO_RELATORIO`): na edição de 23/09/2026, os termos datados de 2063, 2080 e 2090;
+  (`ULTIMA_ATUALIZACAO_RELATORIO`): na edição de 23/09/2026, os termos datados de 2063, 2080 e 2090. A edição é a maior data válida da coluna; sem nenhuma, a consulta avisa e não aplica esta regra;
 - a consulta que descarta valores emite `UserWarning` e põe a mesma mensagem em `meta.validation_warnings`, com a fonte, a
   coluna e a quantidade.
 
