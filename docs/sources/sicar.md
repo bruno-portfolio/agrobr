@@ -44,7 +44,8 @@ com filtros server-side (CQL_FILTER) e paginacao transparente.
 ## Notas
 
 - **Formato tabular 2.0:** `imoveis()` usa GeoJSON apenas com os atributos, sem geometria e
-  sem GeoPandas. Datas são UTC, inclusive colunas nulas e resultados vazios. O CSV oficial
+  sem GeoPandas. Datas são UTC, inclusive colunas nulas e resultados vazios, e o resultado vazio
+  tem os dtypes do cheio (texto em `str` no pandas 3 e `object` no 2), na tabela e no `_geo`. O CSV oficial
   mostrou horários sem fuso diferentes dos instantes UTC do JSON e dos limites CQL; não se
   aplica deslocamento fixo para converter capturas CSV antigas
 - **Atualizacao incremental:** `imoveis()`, `imoveis_geo()` e `imoveis_geo_stream()` aceitam

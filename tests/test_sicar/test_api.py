@@ -648,3 +648,25 @@ async def test_parse_roda_fora_do_loop(monkeypatch: pytest.MonkeyPatch):
 
     assert len(threads) == 2
     assert threading.get_ident() not in threads
+
+
+@pytest.mark.parametrize("geo", [False, True])
+async def test_vazio_sai_com_os_dtypes_do_cheio(monkeypatch: pytest.MonkeyPatch, geo: bool):
+    if geo:
+        pytest.importorskip("geopandas")
+        nome, funcao = "fetch_imoveis_geo", api.imoveis_geo
+        cheio, vazio = geo_capture("df_geo_srs4326_count3.json"), geo_capture("df_vazio_geo.json")
+    else:
+        nome, funcao = "fetch_imoveis", api.imoveis
+        cheio = gzip.decompress((R11 / "sicar_df_001.json.gz").read_bytes())
+        vazio = json.dumps(
+            {"type": "FeatureCollection", "features": [], "numberMatched": 0, "numberReturned": 0}
+        ).encode()
+    frames = []
+    for corpo in (cheio, vazio):
+        monkeypatch.setattr(client, nome, AsyncMock(return_value=([corpo], URL)))
+        with helpers.sem_excecao():
+            frames.append(await funcao("DF", municipio=5300108))
+    preenchido, sem_linhas = frames
+    assert not preenchido.empty and sem_linhas.empty
+    assert sem_linhas.dtypes.astype(str).to_dict() == preenchido.dtypes.astype(str).to_dict()

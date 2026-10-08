@@ -6,6 +6,7 @@ import json
 from pathlib import Path
 from typing import Any
 
+import pandas as pd
 import pytest
 
 from agrobr import contracts
@@ -16,18 +17,19 @@ from tests.helpers import collect_failures
 
 FIXTURE = Path(__file__).parents[1] / "golden_data/sicar/selecao_20260906"
 GEO_VAZIO = Path(__file__).parents[1] / "golden_data/sicar/geo_20260922/df_vazio_geo.json"
+TEXTO = str(pd.Series([""]).dtype)
 TIPOS_VAZIOS = {
-    "cod_imovel": "object",
-    "status": "object",
+    "cod_imovel": TEXTO,
+    "status": TEXTO,
     "data_criacao": "datetime64[ns, UTC]",
     "data_atualizacao": "datetime64[ns, UTC]",
     "area_ha": "float64",
-    "condicao": "object",
-    "uf": "object",
-    "municipio": "object",
+    "condicao": TEXTO,
+    "uf": TEXTO,
+    "municipio": TEXTO,
     "cod_municipio_ibge": "Int64",
     "modulos_fiscais": "float64",
-    "tipo": "object",
+    "tipo": TEXTO,
     "cod_municipio": "Int64",
 }
 

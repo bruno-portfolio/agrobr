@@ -44,7 +44,8 @@ with server-side filters (CQL_FILTER) and transparent pagination.
 ## Notes
 
 - **Tabular format 2.0:** `imoveis()` uses GeoJSON attributes only, without geometry or
-  GeoPandas. Dates are UTC, including null columns and empty results. Official CSV clocks
+  GeoPandas. Dates are UTC, including null columns and empty results, and an empty result has
+  the dtypes of a populated one (text as `str` on pandas 3 and `object` on 2), in the table and in `_geo`. Official CSV clocks
   lacked a timezone and differed from the UTC instants in JSON and CQL cutoffs; no fixed
   offset is applied to convert old CSV captures
 - **Incremental update:** `imoveis()`, `imoveis_geo()` and `imoveis_geo_stream()` accept

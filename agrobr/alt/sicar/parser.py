@@ -81,6 +81,8 @@ def _normalize_columns(
     normalized["cod_municipio"] = regions.cod_municipio(normalized["cod_municipio_ibge"])
     for column in ("area_ha", "modulos_fiscais"):
         normalized[column] = normalized[column].astype("float64")
+    for column in ("cod_imovel", "status", "condicao", "uf", "municipio", "tipo"):
+        normalized[column] = normalized[column].astype(pd.Series([""]).dtype)
     result = df.copy()
     for output_column in normalized:
         result[output_column] = normalized[output_column]
