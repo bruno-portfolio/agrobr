@@ -94,7 +94,9 @@ transformação SIRGAS 2000 → WGS 84 da EPSG é nula).
   de data saem em `datetime64[ns]`.
 - **bbox**: `embargos(bbox=...)` filtra pelo ponto de referência (lat/lon) do termo; `embargos_geo(bbox=...)`
   filtra pela interseção do polígono com a caixa. Os dois podem divergir: no bbox do exemplo, 9 termos têm o ponto
-  dentro e o polígono fora, e 4 têm o polígono dentro e o ponto fora ou ausente.
+  dentro e o polígono fora, e 4 têm o polígono dentro e o ponto fora ou ausente. O ponto com latitude e longitude
+  zeradas (não informado) fica fora do filtro de `embargos(bbox=...)`, mesmo numa caixa que contém (0, 0); sem `bbox`,
+  sai como na fonte.
 - **Geometrias**: 1 WKT ilegível (anel aberto) é descartado com aviso no log; 129 polígonos com topologia inválida
   saem como publicados.
 - **Cache de 1 hora**: o CSV (~208 MB) fica em `ibama/termo_embargo.csv` na pasta de cache, com um

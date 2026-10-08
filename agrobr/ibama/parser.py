@@ -70,8 +70,11 @@ def _normalize(
         df = df[df["uf"] == uf]
     if bbox is not None:
         min_lon, min_lat, max_lon, max_lat = bbox
+        nao_informado = df["longitude"].eq(0) & df["latitude"].eq(0)
         df = df[
-            df["longitude"].between(min_lon, max_lon) & df["latitude"].between(min_lat, max_lat)
+            df["longitude"].between(min_lon, max_lon)
+            & df["latitude"].between(min_lat, max_lat)
+            & ~nao_informado
         ]
     return df
 

@@ -94,7 +94,9 @@ SIRGAS 2000 → WGS 84 transformation is a null transformation).
   and the count. Both date columns come out as `datetime64[ns]`.
 - **bbox**: `embargos(bbox=...)` filters by the term's reference point (lat/lon); `embargos_geo(bbox=...)` filters by
   polygon intersection with the box. They can differ: in the example bbox, 9 terms have the point inside and the
-  polygon outside, and 4 have the polygon inside and the point outside or missing.
+  polygon outside, and 4 have the polygon inside and the point outside or missing. A point with both latitude and
+  longitude zero (not reported) is left out of the `embargos(bbox=...)` filter, even in a box that contains (0, 0);
+  without `bbox`, it comes out as in the source.
 - **Geometries**: 1 unreadable WKT (open ring) is dropped with a log warning; 129 polygons with invalid topology are
   returned as published.
 - **1-hour cache**: the CSV (~208 MB) is kept as `ibama/termo_embargo.csv` in the cache folder, with a

@@ -1050,7 +1050,7 @@ tem a foto dessa data (em 23/09/2026 faltavam 2.454 termos, 525 desembargos e 23
 - O download passa de ~47 MB (ZIP) a ~208 MB (CSV sem compressão; a fonte não publica ZIP).
 - `meta.source_details["ultima_atualizacao_relatorio"]` traz a edição lida (horário de Brasília).
 - `embargos_geo(bbox=...)` filtra pela interseção do polígono com a caixa; antes filtrava pelo ponto de referência do
-  termo e devolvia polígonos fora da caixa. `embargos(bbox=...)` continua pelo ponto. Veja a [página da fonte](../sources/ibama.md).
+  termo e devolvia polígonos fora da caixa. `embargos(bbox=...)` continua pelo ponto, e o ponto com latitude e longitude zeradas (não informado na fonte) fica fora do filtro; na 1.1.0, a caixa que contém (0, 0) devolvia esses termos. Veja a [página da fonte](../sources/ibama.md).
 
 ## 37. Censo Agropecuário: linha `Total` publicada
 

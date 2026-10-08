@@ -1047,7 +1047,7 @@ date (on September 23, 2026 they lacked 2,454 terms, 525 disembargos and 237 can
 - The download goes from ~47 MB (ZIP) to ~208 MB (uncompressed CSV; the source publishes no ZIP).
 - `meta.source_details["ultima_atualizacao_relatorio"]` carries the edition read (Brasília time).
 - `embargos_geo(bbox=...)` filters by polygon intersection with the box; before, it filtered by the term's reference
-  point and returned polygons outside the box. `embargos(bbox=...)` still uses the point. See the [source page](../sources/ibama.md).
+  point and returned polygons outside the box. `embargos(bbox=...)` still uses the point, and a point with both latitude and longitude zero (not reported by the source) is left out of the filter; in 1.1.0, a box containing (0, 0) returned those terms. See the [source page](../sources/ibama.md).
 
 ## 37. Agricultural Census: `Total` row published
 

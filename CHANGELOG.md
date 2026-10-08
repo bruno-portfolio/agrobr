@@ -733,6 +733,7 @@ Catálogo desta versão: **54 datasets e 89 contratos registrados**. Mudanças i
 - **Teto local do andamento do INCRA** — passar dos tetos de bytes por resposta ou acumulados levanta `ResourceLimitError` (antes, `SourceUnavailableError`), guarda os recibos em `resources` e não repete o pedido
 - **Aviso de fallback** — o `SourceFallbackWarning` traz o nome, a categoria e o motivo resumido de cada fonte que falhou, na ordem das tentativas; antes, só o da primeira
 - **NASA POWER, início no futuro** — `clima_ponto` com `inicio` depois de hoje (calendário de Brasília) e `clima_uf` com `ano` posterior ao corrente levantam `InvalidParameterError` antes da rede, como a ANP e o `datasets.clima`. Antes, a fonte respondia HTTP 200 sem nenhum dia e a consulta levantava `ParseError` ("Nenhuma data encontrada nos dados"), culpando o layout; `clima_uf` aceitava ano até 9999. O período que começa no passado e passa de hoje segue funcionando e sai até o último dia publicado.
+- **IBAMA, `embargos(bbox=...)` com ponto zerado** — o termo com latitude e longitude iguais a 0, que a fonte usa para "não informado" (4.416 termos na edição de 23/09/2026), fica fora do filtro por `bbox`. Antes, uma caixa que contém (0, 0) devolvia esses termos como se estivessem no ponto. Sem `bbox`, a coordenada segue como na fonte; `embargos_geo` (filtro pelo polígono) não muda.
 
 ### Security
 
