@@ -6,7 +6,7 @@ import re
 import time
 import warnings
 from datetime import date, timedelta
-from typing import Literal, overload
+from typing import Any, Literal, overload
 
 import httpx
 import pandas as pd
@@ -124,13 +124,21 @@ async def ajustes(
     data_str = dia.strftime("%d/%m/%Y")
 
     t0 = time.monotonic()
-    zip_bytes, source_url = await client.fetch_ajustes_zip(data_str)
+    try:
+        zip_bytes, source_url = await client.fetch_ajustes_zip(data_str)
+        sem_pregao = False
+    except client.PregaoNaoPublicadoError as exc:
+        zip_bytes, source_url, sem_pregao = exc.conteudo, exc.url, True
     adquirido = time_utils.utcnow()
     fetch_ms = int((time.monotonic() - t0) * 1000)
     t1 = time.monotonic()
-    df = parser.parse_ajustes_zip(zip_bytes)
-    identidade = df.attrs.pop("identidade")
-    df = df[df["data"] == pd.Timestamp(dia)].reset_index(drop=True)
+    identidade: dict[str, Any] = {}
+    if sem_pregao:
+        df = contracts.get_contract("ajuste_diario").empty_frame()
+    else:
+        df = parser.parse_ajustes_zip(zip_bytes)
+        identidade = df.attrs.pop("identidade")
+        df = df[df["data"] == pd.Timestamp(dia)].reset_index(drop=True)
     parse_ms = int((time.monotonic() - t1) * 1000)
 
     if ticker is not None:

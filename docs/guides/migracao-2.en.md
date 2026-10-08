@@ -1367,6 +1367,9 @@ day's bodies. In 2.0:
   in section 53.
 - `b3.posicoes_abertas_historico`: `source_details["corpos"]` lists each day with a file, with the download URL (token as
   `[REDACTED]`) and `ticket_url`, under the same rule as `historico`. Days without a file are not listed.
+- Day without a session (holiday, weekend or session not yet published): `b3.ajustes` returns the contract's empty
+  frame, with no warning, with the SHA-256 and size of the empty ZIP B3 answers; in `historico`, the day goes to
+  `coverage["empty_dates"]` and not to the incomplete-history warning. In 1.1.0, it raised `SourceUnavailableError`.
 
 Code that compared the hash of 2 downloads of the same session should compare the XML's.
 

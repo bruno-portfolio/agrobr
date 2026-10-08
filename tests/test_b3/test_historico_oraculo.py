@@ -15,7 +15,7 @@ from xml.etree import ElementTree
 import pandas as pd
 import pytest
 
-from agrobr import b3, datasets
+from agrobr import b3, contracts, datasets
 from agrobr.b3 import client, parser
 from agrobr.utils import time as agrobr_time
 from tests.helpers import (
@@ -481,3 +481,80 @@ async def test_posicoes_abertas_historico_lista_cada_corpo_recebido(fim, monkeyp
         assert topo == (client.BASE_URL_ARQUIVOS, None, 0)
     aquisicoes = [datetime.fromisoformat(c["fetch_timestamp"]) for c in corpos]
     assert meta.fetched_at == meta.fetch_timestamp == max(aquisicoes)
+
+
+def _sem_pregao(tmp_path: Path, *dias: date) -> list[dict]:
+    vazio = tmp_path / "zip_sem_pregao.zip"
+    with zipfile.ZipFile(vazio, "w"):
+        pass
+    assert vazio.stat().st_size == 22
+    return [
+        {
+            "match": {
+                "path": client.BASE_URL_ZIP,
+                "params": {"filelist": f"PR{dia:%y%m%d}.zip"},
+                "skip": 0,
+            },
+            "file": str(vazio),
+            "content_type": "application/zip",
+        }
+        for dia in dias
+    ]
+
+
+async def test_ajustes_de_feriado_sai_com_o_vazio_do_contrato(monkeypatch, tmp_path):
+    caso = {"requests": _sem_pregao(tmp_path, date(2026, 9, 7))}
+    install_replay_http(monkeypatch, caso, GOLDEN)
+    with sem_excecao(), warnings.catch_warnings(record=True) as avisos:
+        warnings.simplefilter("always")
+        frame, meta = await b3.ajustes(data="2026-09-07", return_meta=True)
+    esperado = contracts.get_contract("ajuste_diario").empty_frame()
+    assert frame.empty
+    assert frame.columns.tolist() == esperado.columns.tolist()
+    assert frame.dtypes.equals(esperado.dtypes)
+    assert meta.validation_warnings == []
+    assert not [aviso for aviso in avisos if "zona_cinza" not in str(aviso.message)]
+    assert (meta.raw_content_size, meta.source_url.rsplit("=", 1)[1]) == (22, "PR260907.zip")
+
+
+async def test_historico_com_dia_sem_pregao_nao_avisa_incompleto(monkeypatch, tmp_path):
+    caso = _caso(posicoes=[])
+    caso["requests"] += _sem_pregao(tmp_path, date(2026, 9, 23))
+    install_replay_http(monkeypatch, caso, GOLDEN)
+    with sem_excecao(), warnings.catch_warnings(record=True) as avisos:
+        warnings.simplefilter("always")
+        frame, meta = await b3.historico(
+            contrato="boi", inicio=DIAS[0], fim=date(2026, 9, 23), return_meta=True
+        )
+    assert sorted(_publicado_ajustes(frame)) == sorted(
+        linha for dia in DIAS for linha in _ajustes_oficiais(dia, "BGI")
+    )
+    assert meta.source_details["coverage"] == {
+        "status": "all_requests_succeeded",
+        "requested_dates": ["2026-09-21", "2026-09-22", "2026-09-23"],
+        "failed_dates": [],
+        "empty_dates": ["2026-09-23"],
+    }
+    assert meta.validation_warnings == []
+    assert not [aviso for aviso in avisos if "incompleto" in str(aviso.message)]
+
+
+async def test_historico_so_de_dias_sem_pregao_sai_vazio(monkeypatch, tmp_path):
+    dias = [date(2027, 1, 4), date(2027, 1, 5)]
+    install_replay_http(monkeypatch, {"requests": _sem_pregao(tmp_path, *dias)}, GOLDEN)
+    with sem_excecao():
+        frame = await b3.historico(contrato="boi", inicio=dias[0], fim=dias[1])
+    esperado = contracts.get_contract("ajuste_diario").empty_frame()
+    assert frame.empty
+    assert frame.dtypes.equals(esperado.dtypes)
+
+
+async def test_dataset_sem_data_acha_o_pregao_anterior_ao_dia_sem_pregao(monkeypatch, tmp_path):
+    _congelar_relogio(monkeypatch, datetime(2026, 9, 23, 18, tzinfo=UTC))
+    caso = _caso(ajustes=[DIAS[1]], posicoes=[])
+    caso["requests"] += _sem_pregao(tmp_path, date(2026, 9, 23))
+    visto = install_replay_http(monkeypatch, caso, GOLDEN)
+    with sem_excecao():
+        frame = await datasets.futuros_agricolas("boi")
+    assert_replay_served(visto)
+    assert sorted(_publicado_ajustes(frame)) == sorted(_ajustes_oficiais(DIAS[1], "BGI"))

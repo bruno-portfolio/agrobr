@@ -28,6 +28,16 @@ _OI_POLL_SECONDS = 0.05
 _oi_vezes = 0
 
 
+class PregaoNaoPublicadoError(SourceUnavailableError):
+    def __init__(self, url: str, data: str, conteudo: bytes) -> None:
+        super().__init__(
+            source="b3",
+            url=url,
+            last_error=f"ZIP vazio ({len(conteudo)} bytes) — pregão de {data} ainda não publicado",
+        )
+        self.conteudo = conteudo
+
+
 def validate_oi_date(value: str) -> date:
     try:
         parsed = date.fromisoformat(value)
@@ -61,11 +71,7 @@ async def fetch_ajustes_zip(data: str) -> tuple[bytes, str]:
         content = response.content
 
         if len(content) <= 100:
-            raise SourceUnavailableError(
-                source="b3",
-                url=url,
-                last_error=f"ZIP vazio ({len(content)} bytes) — pregão de {data} ainda não publicado",
-            )
+            raise PregaoNaoPublicadoError(url, data, content)
         io_utils.validate_download(
             content,
             kinds=("zip",),

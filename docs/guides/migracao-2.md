@@ -1363,6 +1363,9 @@ dia. Na 2.0:
   topo fica nulo e zero, e `fetched_at`/`fetch_timestamp` são a aquisição mais recente, pela regra da seção 53.
 - `b3.posicoes_abertas_historico`: `source_details["corpos"]` traz cada dia com arquivo, com a URL do download (token como
   `[REDACTED]`) e o `ticket_url`, pela mesma regra do `historico`. Dia sem arquivo não entra.
+- Dia sem pregão (feriado, fim de semana ou pregão ainda não publicado): `b3.ajustes` devolve o vazio do contrato, sem
+  aviso, com o SHA-256 e o tamanho do ZIP vazio que a B3 responde; no `historico`, o dia entra em
+  `coverage["empty_dates"]` e não no aviso de histórico incompleto. Na 1.1.0, levantava `SourceUnavailableError`.
 
 Quem comparava o hash de 2 downloads do mesmo pregão deve comparar o do XML.
 

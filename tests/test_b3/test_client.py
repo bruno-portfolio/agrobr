@@ -83,6 +83,7 @@ class TestFetchAjustesZip:
                 new_callable=AsyncMock,
                 return_value=mock_response,
             ),
-            pytest.raises(SourceUnavailableError, match="ainda não publicado"),
+            levanta_exatamente(client.PregaoNaoPublicadoError, "ainda não publicado") as erro,
         ):
             await client.fetch_ajustes_zip("12/06/2026")
+        assert erro.value.conteudo == mock_response.content
