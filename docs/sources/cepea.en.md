@@ -131,6 +131,8 @@ CEPEA uses Smart TTL - the cache expires automatically at 18:00:
 
 A collection after 18:00, on Saturday or on Sunday is valid until 18:00 of the next business day (Monday to Friday; holidays are not taken into account). A closed period (`fim` before the last 25 calendar days) does not query the page: it comes from the cache, or from the historical series downloaded when it does not yet cover the period, with a null `cache_expires_at`.
 
+`boi` and `boi_gordo`, and `cafe` and `cafe_arabica`, are the same CEPEA indicator, and the cache stores each series once, under the name `datasets.preco_diario` uses (`boi` and `cafe`). Asking by the other name reads the same rows, without downloading the page or the series again, and the `produto` column carries the requested name. Rows that earlier versions stored under the other name remain valid, without a database migration; with both on the same day and location, the usual precedence rule applies (the latest collection from the same source).
+
 ## Helper Functions
 
 ```python

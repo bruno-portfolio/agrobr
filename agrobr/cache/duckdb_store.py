@@ -130,6 +130,25 @@ DO UPDATE SET
 """
 
 
+def _nomes_da_serie(produto: str) -> list[str]:
+    """O nome canônico da série do CEPEA e os apelidos dela (`boi` e `boi_gordo`, `cafe` e `cafe_arabica`).
+
+    O cache grava pelo canônico e lê pelos dois: as linhas gravadas antes sob o apelido continuam valendo.
+    """
+    canonico = constants.CEPEA_SERIE_CANONICA.get(produto.lower(), produto.lower())
+    apelidos = sorted(
+        nome
+        for nome, serie in constants.CEPEA_SERIE_CANONICA.items()
+        if serie == canonico and nome != canonico
+    )
+    return [canonico, *apelidos]
+
+
+def _filtro_da_serie(produto: str) -> tuple[str, list[str]]:
+    nomes = _nomes_da_serie(produto)
+    return f"produto IN ({', '.join('?' * len(nomes))})", nomes
+
+
 def _optional_float(value: Any) -> float | None:
     return None if value is None else float(value)
 
@@ -235,8 +254,9 @@ class DuckDBStore:
         fim: datetime | None = None,
         praca: str | None = None,
     ) -> list[dict[str, Any]]:
-        conditions = ["produto = ?"]
-        params: list[Any] = [produto.lower()]
+        filtro, nomes = _filtro_da_serie(produto)
+        conditions = [filtro]
+        params: list[Any] = list(nomes)
 
         if inicio:
             conditions.append("data >= ?")
@@ -284,6 +304,7 @@ class DuckDBStore:
 
         indicadores = [dict(zip(columns, row)) for row in result]
         for indicador in indicadores:
+            indicador["produto"] = produto.lower()
             texto = indicador["anomalies"]
             indicador["anomalies"] = json.loads(texto) if texto else None
 
@@ -313,8 +334,9 @@ class DuckDBStore:
                 if conn is None:
                     return None
                 coleta: datetime | None
+                filtro, nomes = _filtro_da_serie(produto)
                 [(coleta,)] = conn.execute(
-                    "SELECT max(collected_at) FROM indicadores WHERE produto = ?", [produto.lower()]
+                    f"SELECT max(collected_at) FROM indicadores WHERE {filtro}", nomes
                 ).fetchall()
         except duckdb.Error:
             return None
@@ -326,7 +348,7 @@ class DuckDBStore:
                 return
             conn.execute(
                 "INSERT OR REPLACE INTO cepea_series VALUES (?, ?, ?)",
-                [produto.lower(), publicada_ate, baixada_em],
+                [_nomes_da_serie(produto)[0], publicada_ate, baixada_em],
             )
 
     def serie_cobertura(self, produto: str) -> tuple[date, datetime] | None:
@@ -335,9 +357,11 @@ class DuckDBStore:
             with self._conexao() as conn:
                 if conn is None:
                     return None
+                filtro, nomes = _filtro_da_serie(produto)
                 linha = conn.execute(
-                    "SELECT publicada_ate, baixada_em FROM cepea_series WHERE produto = ?",
-                    [produto.lower()],
+                    "SELECT publicada_ate, baixada_em FROM cepea_series "
+                    f"WHERE {filtro} ORDER BY baixada_em DESC LIMIT 1",
+                    nomes,
                 ).fetchone()
         except duckdb.Error:
             return None
@@ -349,7 +373,7 @@ class DuckDBStore:
             if field in ind and ind[field] is None:
                 raise ValueError(f"{field} must not be null")
         return (
-            ind.get("produto", "").lower(),
+            _nomes_da_serie(ind.get("produto", ""))[0],
             ind.get("praca") or "",
             ind["data"],
             float(ind["valor"]),

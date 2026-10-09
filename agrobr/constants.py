@@ -459,6 +459,11 @@ CEPEA_SERIES: dict[str, tuple[tuple[str, str, str], ...]] = {
     "leite": (("leite", "leitep", ""),),
 }
 
+CEPEA_SERIE_CANONICA: dict[str, str] = {
+    produto: next(nome for nome, outra in CEPEA_SERIES.items() if outra == serie)
+    for produto, serie in CEPEA_SERIES.items()
+}
+
 CEPEA_TABELAS_POR_PRACA = {
     "trigo": {"Paraná": r"TRIGO.*PARANÁ", "Rio Grande do Sul": r"TRIGO.*RIO GRANDE DO SUL"},
 }

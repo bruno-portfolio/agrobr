@@ -131,6 +131,8 @@ O CEPEA usa Smart TTL - o cache expira automaticamente as 18:00:
 
 Coleta depois das 18:00, no sábado ou no domingo vale até as 18:00 do próximo dia útil (segunda a sexta; feriados não entram no cálculo). Um período fechado (`fim` anterior aos últimos 25 dias corridos) não consulta a página: sai do cache, ou da série histórica baixada quando ela ainda não cobre o período, com `cache_expires_at` nulo.
 
+`boi` e `boi_gordo`, e `cafe` e `cafe_arabica`, são o mesmo indicador do CEPEA, e o cache guarda cada série uma vez, pelo nome que o `datasets.preco_diario` usa (`boi` e `cafe`). Pedir pelo outro nome lê as mesmas linhas, sem baixar de novo a página nem a série, e a coluna `produto` sai com o nome pedido. Linhas que versões anteriores gravaram sob o outro nome continuam valendo, sem migração do banco; com as 2 no mesmo dia e praça, vale a regra de precedência de sempre (a coleta mais recente da mesma fonte).
+
 ## Funcoes Auxiliares
 
 ```python

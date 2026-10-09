@@ -132,10 +132,16 @@ async def test_fallback_do_cepea_entrega_as_linhas_de_cada_pagina(
     monkeypatch: pytest.MonkeyPatch,
 ):
     pedidos = cepea_fora_do_ar(monkeypatch)
+    series_no_cache: set[str] = set()
+    reusos = 0
     with collect_failures() as check:
         for produto, caso in CASOS.items():
             if not caso["fallback_cepea"]:
                 continue
+            serie = constants.CEPEA_SERIE_CANONICA.get(produto, produto)
+            do_cache = serie in series_no_cache
+            series_no_cache.add(serie)
+            reusos += do_cache
             with check(produto):
                 datas = [linha["data"] for linha in caso["linhas"]]
                 with sem_excecao():
@@ -156,10 +162,11 @@ async def test_fallback_do_cepea_entrega_as_linhas_de_cada_pagina(
                     for data, praca, valor, unidade, *_ in linhas_do_oraculo(caso)
                 )
                 assert (meta.selected_source, meta.attempted_sources, meta.parser_version) == (
-                    "noticias_agricolas",
-                    ["cepea", "noticias_agricolas"],
-                    NA,
+                    ("cache", ["cache"], NA)
+                    if do_cache
+                    else ("noticias_agricolas", ["cepea", "noticias_agricolas"], NA)
                 )
+    assert reusos >= 1
     assert {url for url in pedidos if url.startswith(COTACOES)} == {
         f"{COTACOES}/{constants.NOTICIAS_AGRICOLAS_PRODUTOS[produto]}"
         for produto, caso in CASOS.items()
