@@ -250,6 +250,7 @@ async def test_posicoes_abertas_historico_reune_as_posicoes_publicadas(
     assert esperado
     assert sorted(_publicado_posicoes(frame)) == sorted(esperado)
     assert meta.validation_warnings == []
+    assert meta.schema_version == contracts.get_contract("posicoes_abertas").version == "1.1"
     for tipo in ("futuro", "opcao"):
         with sem_excecao():
             filtrado = await b3.posicoes_abertas_historico(
@@ -537,6 +538,35 @@ async def test_historico_com_dia_sem_pregao_nao_avisa_incompleto(monkeypatch, tm
     }
     assert meta.validation_warnings == []
     assert not [aviso for aviso in avisos if "incompleto" in str(aviso.message)]
+
+
+async def test_historico_com_corpo_curto_que_nao_e_zip_conta_falha(monkeypatch, tmp_path):
+    corpo = tmp_path / "indisponivel.json"
+    corpo.write_bytes(b'{"message":"Temporarily unavailable"}')
+    caso = _caso(posicoes=[])
+    caso["requests"].append(
+        {
+            "match": {
+                "path": client.BASE_URL_ZIP,
+                "params": {"filelist": "PR260923.zip"},
+                "skip": 0,
+            },
+            "file": str(corpo),
+            "content_type": "application/json",
+        }
+    )
+    install_replay_http(monkeypatch, caso, GOLDEN)
+    with sem_excecao(), warnings.catch_warnings(record=True) as avisos:
+        warnings.simplefilter("always")
+        _, meta = await b3.historico(
+            contrato="boi", inicio=DIAS[0], fim=date(2026, 9, 23), return_meta=True
+        )
+    cobertura = meta.source_details["coverage"]
+    assert cobertura["status"] == "partial"
+    assert [falha["data"] for falha in cobertura["failed_dates"]] == ["2026-09-23"]
+    assert cobertura["empty_dates"] == []
+    assert meta.validation_warnings == ["Histórico B3 incompleto; falha nas datas: 2026-09-23"]
+    assert [aviso for aviso in avisos if "incompleto" in str(aviso.message)]
 
 
 async def test_historico_so_de_dias_sem_pregao_sai_vazio(monkeypatch, tmp_path):

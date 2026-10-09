@@ -69,21 +69,40 @@ class TestFetchPosicoesAbertas:
             await client.fetch_posicoes_abertas("2025-12-19")
 
 
+def _resposta(conteudo: bytes) -> MagicMock:
+    mock_response = MagicMock()
+    mock_response.status_code = 200
+    mock_response.content = conteudo
+    mock_response.raise_for_status = MagicMock()
+    return mock_response
+
+
 class TestFetchAjustesZip:
     @pytest.mark.asyncio
     async def test_zip_vazio_indica_pregao_nao_publicado(self):
-        mock_response = MagicMock()
-        mock_response.status_code = 200
-        mock_response.content = b"\x00" * 22
-        mock_response.raise_for_status = MagicMock()
-
+        zip_vazio = b"PK\x05\x06" + bytes(18)
         with (
             patch(
                 "agrobr.b3.client.retry_on_status",
                 new_callable=AsyncMock,
-                return_value=mock_response,
+                return_value=_resposta(zip_vazio),
             ),
             levanta_exatamente(client.PregaoNaoPublicadoError, "ainda não publicado") as erro,
         ):
             await client.fetch_ajustes_zip("12/06/2026")
-        assert erro.value.conteudo == mock_response.content
+        assert erro.value.conteudo == zip_vazio
+
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize(
+        "conteudo", [b'{"message":"Temporarily unavailable"}', b"\x00" * 22, b""]
+    )
+    async def test_corpo_curto_que_nao_e_zip_vazio_e_falha(self, conteudo):
+        with (
+            patch(
+                "agrobr.b3.client.retry_on_status",
+                new_callable=AsyncMock,
+                return_value=_resposta(conteudo),
+            ),
+            levanta_exatamente(SourceUnavailableError, "muito pequeno"),
+        ):
+            await client.fetch_ajustes_zip("12/06/2026")

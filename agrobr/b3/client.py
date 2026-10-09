@@ -23,6 +23,7 @@ BASE_URL_ARQUIVOS = URLS[Fonte.B3]["arquivos"]
 
 TIMEOUT = get_timeout()
 TIMEOUT_DOWNLOAD = get_timeout(read=120.0)
+_ZIP_VAZIO = b"PK\x05\x06" + bytes(18)
 _OI_LOCK = threading.Lock()
 _OI_POLL_SECONDS = 0.05
 _oi_vezes = 0
@@ -70,7 +71,7 @@ async def fetch_ajustes_zip(data: str) -> tuple[bytes, str]:
         responses.raise_for_status(response, source="b3")
         content = response.content
 
-        if len(content) <= 100:
+        if content == _ZIP_VAZIO:
             raise PregaoNaoPublicadoError(url, data, content)
         io_utils.validate_download(
             content,
