@@ -241,6 +241,8 @@ lista_safras(safra_inicio="2023/24", safra_fim="2024/25")  # ['2023/24', '2024/2
 
 normalizar_safra("abc")          # InvalidParameterError, listing the accepted formats
 anos_para_safra(2024, 2026)      # InvalidParameterError (a season spans two consecutive years)
+validar_safra("2024/23")         # False (non-consecutive years; also "2024/2024" and "2024/1925")
+periodo_safra("2024/23")         # InvalidParameterError (non-consecutive years)
 lista_safras("2025/26", "2024/25")  # InvalidParameterError (reversed range)
 ```
 

@@ -64,6 +64,12 @@ class TestValidarSafra:
                 ("test_invalido", "abc", False),
                 ("test_vazio", "", False),
                 ("test_apenas_ano", "2024", False),
+                ("test_virada_de_seculo", "99/00", True),
+                ("test_virada_de_seculo_completa", "1999/2000", True),
+                ("test_anos_regressivos", "2024/23", False),
+                ("test_anos_regressivos_curta", "24/23", False),
+                ("test_mesmo_ano", "2024/2024", False),
+                ("test_fim_em_outro_seculo", "2024/1925", False),
             ]:
                 with check(case):
                     assert validar_safra(value) is expected
@@ -146,6 +152,14 @@ class TestPeriodoSafra:
 
         assert inicio == date(2024, 7, 1)
         assert fim == date(2025, 6, 30)
+
+    def test_virada_de_seculo(self):
+        assert periodo_safra("1999/2000") == (date(1999, 7, 1), date(2000, 6, 30))
+
+    @pytest.mark.parametrize("safra", ["2024/23", "24/23", "2024/2024", "2024/1925"])
+    def test_anos_nao_consecutivos_recusados(self, safra):
+        with pytest.raises(InvalidParameterError, match="anos consecutivos"):
+            periodo_safra(safra)
 
 
 class TestMesesPt:

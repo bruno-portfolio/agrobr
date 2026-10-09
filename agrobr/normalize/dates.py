@@ -137,11 +137,14 @@ def safra_atual(data: date | None = None) -> str:
 
 
 def validar_safra(safra: str) -> bool:
-    if REGEX_SAFRA_COMPLETA.match(safra):
-        return True
-    if REGEX_SAFRA_CURTA.match(safra):
-        return True
-    return bool(REGEX_SAFRA_BARRA.match(safra))
+    formatos = (REGEX_SAFRA_COMPLETA, REGEX_SAFRA_CURTA, REGEX_SAFRA_BARRA)
+    if not any(regex.match(safra) for regex in formatos):
+        return False
+    try:
+        _anos_consecutivos_da_safra(safra)
+    except InvalidParameterError:
+        return False
+    return True
 
 
 def normalizar_safra(safra: str) -> str:
@@ -220,8 +223,18 @@ def lista_safras(safra_inicio: str, safra_fim: str) -> list[str]:
     return [anos_para_safra(ano) for ano in range(ano_inicio, ano_fim + 1)]
 
 
-def periodo_safra(safra: str) -> tuple[date, date]:
+def _anos_consecutivos_da_safra(safra: str) -> tuple[int, int]:
     ano_inicio, ano_fim = safra_para_anos(safra)
+    barra = REGEX_SAFRA_BARRA.match(re.sub(r"\s*/\s*", "/", safra.strip()))
+    if barra:
+        ano_fim = int(barra.group(2))
+    if ano_fim != ano_inicio + 1:
+        raise InvalidParameterError(f"Safra deve conter anos consecutivos: {safra!r}")
+    return ano_inicio, ano_fim
+
+
+def periodo_safra(safra: str) -> tuple[date, date]:
+    ano_inicio, ano_fim = _anos_consecutivos_da_safra(safra)
 
     data_inicio = date(ano_inicio, INICIO_SAFRA_MES, 1)
     data_fim = date(ano_fim, 6, 30)
