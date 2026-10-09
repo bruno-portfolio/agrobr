@@ -4,13 +4,10 @@ from typing import Any
 
 import pandas as pd
 
-from agrobr import _log
 from agrobr.exceptions import ParseError
 from agrobr.normalize import dates
 
 from . import models
-
-logger = _log.get_logger(__name__)
 
 
 def parse_cot(records: list[dict[str, Any]]) -> pd.DataFrame:

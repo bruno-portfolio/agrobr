@@ -16,7 +16,6 @@ from urllib.parse import urlsplit
 import pandas as pd
 import pydantic
 
-from agrobr import _log
 from agrobr.exceptions import ParseError
 from agrobr.normalize import dates, regions
 from agrobr.normalize.municipalities import MunicipioInfo
@@ -24,8 +23,6 @@ from agrobr.normalize.numeric import parse_numeric_br
 from agrobr.normalize.regions import remover_acentos
 
 from . import models
-
-logger = _log.get_logger(__name__)
 
 PARSER_VERSION = 5
 

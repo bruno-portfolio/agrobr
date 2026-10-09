@@ -8,7 +8,6 @@ from typing import Literal, overload
 
 import pandas as pd
 
-from agrobr import _log
 from agrobr.exceptions import InvalidParameterError
 from agrobr.models import MetaInfo
 from agrobr.utils.result import DataFrameResult, build_source_meta, finalize_result
@@ -16,8 +15,6 @@ from agrobr.utils.validation import parse_data
 
 from . import client, parser
 from .models import PARSER_VERSION, SCHEMA_VERSION, resolve_contract_codes
-
-logger = _log.get_logger(__name__)
 
 
 @overload

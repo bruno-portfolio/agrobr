@@ -11,7 +11,7 @@ from typing import Any, Literal, overload
 
 import pandas as pd
 
-from agrobr import _log, constants, contracts
+from agrobr import constants, contracts
 from agrobr.exceptions import (
     ContractViolationError,
     ParseError,
@@ -35,8 +35,6 @@ from .models import (
     _resolve_periodos,
     get_csv_url,
 )
-
-logger = _log.get_logger(__name__)
 
 
 @overload

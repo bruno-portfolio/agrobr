@@ -6,7 +6,6 @@ from typing import Any, Literal, overload
 
 import pandas as pd
 
-from agrobr import _log
 from agrobr.exceptions import InvalidParameterError
 from agrobr.models import MetaInfo
 from agrobr.utils.result import DataFrameResult, build_source_meta
@@ -14,8 +13,6 @@ from agrobr.utils.time import hoje
 
 from . import client, models, output, parser, provenance
 from .models import UF_COORDS
-
-logger = _log.get_logger(__name__)
 
 
 def _validate_point(lat: object, lon: object) -> tuple[float, float]:

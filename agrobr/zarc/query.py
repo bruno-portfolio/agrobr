@@ -84,7 +84,7 @@ def build_query(
     ):
         if value is not None and (type(value) is not int or value not in allowed):
             raise InvalidParameterError(
-                f"{name} deve ser código inteiro homologado: {sorted(allowed)}"
+                f"{name} deve ser um destes códigos inteiros: {sorted(allowed)}"
             )
     return ZarcQuery(
         cultura=cultura,

@@ -114,7 +114,7 @@ def _extract_multi_produto_sheet(
             if cell_str == "ruim":
                 col_ruim = col_idx
                 header_row = row_idx
-            elif cell_str in ("média", "media", "m\xe9dia"):
+            elif cell_str in ("média", "media"):
                 col_media = col_idx
             elif cell_str == "boa":
                 col_boa = col_idx
@@ -158,8 +158,6 @@ def _extract_multi_produto_sheet(
             (col_media, "media"),
             (col_boa, "boa"),
         ]:
-            if col_idx < 0 or col_idx >= len(df.columns):
-                continue
             pct = _published_percentage(df.iloc[row_idx, col_idx])
             records.append(
                 {
@@ -167,16 +165,8 @@ def _extract_multi_produto_sheet(
                     "data": data_ref,
                     "condicao": condicao,
                     "pct": pct,
-                    "plantio_pct": (
-                        _published_percentage(df.iloc[row_idx, col_plantada])
-                        if col_plantada >= 0
-                        else None
-                    ),
-                    "colheita_pct": (
-                        _published_percentage(df.iloc[row_idx, col_colhida])
-                        if col_colhida >= 0
-                        else None
-                    ),
+                    "plantio_pct": _published_percentage(df.iloc[row_idx, col_plantada]),
+                    "colheita_pct": _published_percentage(df.iloc[row_idx, col_colhida]),
                 }
             )
 

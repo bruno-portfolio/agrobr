@@ -78,7 +78,7 @@ def percentage_format(value: str) -> bool:
     sections = tokens.split(";")[:3]
     flags = {"%" in section for section in sections if section}
     if len(flags) > 1:
-        raise fail("Formato percentual condicional não homologado")
+        raise fail("Formato numérico mistura seções com e sem %; escala do valor ambígua")
     return flags == {True}
 
 

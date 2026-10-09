@@ -291,7 +291,7 @@ class Acquisition:
                 raise SourceUnavailableError(
                     source="conab_custo",
                     url=url,
-                    last_error="Redirecionamento não homologado; catálogo requer revisão",
+                    last_error="Redirecionamento HTTP recusado: a aquisição só aceita resposta direta da URL pedida",
                 )
             if response.headers.get("content-encoding", "identity").lower() != "identity":
                 raise ParseError(

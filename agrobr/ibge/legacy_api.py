@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import time
 import warnings
-from typing import TYPE_CHECKING, Literal, overload
+from typing import Literal, overload
 
 import pandas as pd
 
@@ -19,9 +19,6 @@ from agrobr.utils.result import (
     finalize_result,
 )
 from agrobr.utils.validation import validate_uf
-
-if TYPE_CHECKING:
-    from agrobr.models import MetaInfo
 
 logger = _log.get_logger(__name__)
 

@@ -8,7 +8,7 @@ from typing import Any, Literal
 import httpx
 import pandas as pd
 
-from agrobr import _log, constants
+from agrobr import constants
 from agrobr.constants import URLS, Fonte
 from agrobr.exceptions import ParseError, ResourceLimitError
 from agrobr.http import wfs_transport
@@ -18,9 +18,6 @@ from agrobr.utils.memory import deep_size as _deep_size
 
 from . import acquisition, models, parser
 from . import query as query_module
-
-logger = _log.get_logger(__name__)
-
 
 GEOSERVER_BASE = URLS[Fonte.DESMATAMENTO]["geoserver"]
 

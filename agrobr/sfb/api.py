@@ -184,9 +184,6 @@ async def _fetch_and_parse_geo(
     return gdf
 
 
-# --- cnfp ---
-
-
 @overload
 async def cnfp(
     *,
@@ -326,9 +323,6 @@ async def cnfp_geo(
     )
 
 
-# --- concessoes ---
-
-
 @overload
 async def concessoes(
     *,
@@ -438,9 +432,6 @@ async def concessoes_geo(
         bbox=bbox,
         return_meta=return_meta,
     )
-
-
-# --- ifn_conglomerados ---
 
 
 @overload

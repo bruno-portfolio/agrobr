@@ -29,7 +29,7 @@ async def get_parser_with_fallback(
         raise exceptions.ParseError(
             source="cepea",
             parser_version=0,
-            reason="No parsers registered. CEPEA parser will be implemented in WEEK 3.",
+            reason="Nenhum parser CEPEA registrado",
             html_snippet=html[:200],
         )
 

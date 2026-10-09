@@ -64,8 +64,6 @@ STATUS_VALIDOS = SICAR_STATUS_VALIDOS
 
 TIPO_VALIDOS = SICAR_TIPO_VALIDOS
 
-# dat_criacao tem cobertura nacional, mas o campo data_atualizacao nao existe
-# nestes layers estaduais (causa "400 Bad Request" / ServiceException no WFS).
 UFS_SEM_DATA_ATUALIZACAO = frozenset(
     {"PE", "PI", "PR", "RJ", "RN", "RO", "RR", "RS", "SC", "SE", "SP", "TO"}
 )

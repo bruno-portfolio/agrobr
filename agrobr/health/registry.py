@@ -274,5 +274,4 @@ SOURCE_DATASET_MAP: dict[str, list[str]] = {
 
 
 def get_affected_datasets(source: Fonte) -> list[str]:
-    """Return datasets affected when *source* is down."""
     return list(SOURCE_DATASET_MAP.get(source.value, []))

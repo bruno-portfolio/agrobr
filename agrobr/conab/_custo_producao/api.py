@@ -251,12 +251,6 @@ async def _load(
             contexts, unresolved = inventory(book, resource)
         if unresolved and query.aba is None:
             raise _sem_unicidade(unresolved, candidatos(contexts, query))
-        if query.aba is not None and any(r["aba"] == query.aba for r in unresolved):
-            raise ParseError(
-                source="conab_custo",
-                parser_version=constants.CONAB_CUSTOS_PARSER_VERSION,
-                reason=f"Aba solicitada possui contexto incompatível: {query.aba}",
-            )
         selected = select(contexts, query)
         result = parse_selected(book.read(selected.aba), selected)
     finally:

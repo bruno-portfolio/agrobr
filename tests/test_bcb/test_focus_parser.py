@@ -192,7 +192,7 @@ def test_valores_publicados_sao_preservados_com_diagnostico_exato():
     base = focus_parser.parse_page(encode([dict(ANUAL, baseCalculo=2)]), "anual")
     assert base.records[0].base_calculo == 2
     assert base.warnings == [
-        "Focus linha 1: base_calculo não documentada neste conjunto de capturas; valores preservados."
+        "Focus linha 1: base_calculo fora dos códigos reconhecidos (0 ou 1); valores preservados."
     ]
     detalhes = focus_parser.parse_page(
         encode([dict(ANUAL, IndicadorDetalhe=""), dict(ANUAL, IndicadorDetalhe=None)]), "anual"

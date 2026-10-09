@@ -220,7 +220,9 @@ def _risk(value: Any) -> int | None:
         return None
     number = _integer(value)
     if number not in constants.ZARC_RISK_VALUES:
-        raise ValueError("valor de decêndio não homologado")
+        raise ValueError(
+            f"valor de decêndio fora dos aceitos: {sorted(constants.ZARC_RISK_VALUES)}"
+        )
     return number
 
 
@@ -277,14 +279,18 @@ class ZarcRecord(BaseModel):
     @classmethod
     def soil(cls, value: int) -> int:
         if value not in constants.ZARC_SOIL_CODES:
-            raise ValueError("código de solo não homologado")
+            raise ValueError(
+                f"código de solo fora dos aceitos: {sorted(constants.ZARC_SOIL_CODES)}"
+            )
         return value
 
     @field_validator("ciclo_codigo")
     @classmethod
     def cycle(cls, value: int) -> int:
         if value not in constants.ZARC_CYCLE_CODES:
-            raise ValueError("código de ciclo não homologado")
+            raise ValueError(
+                f"código de ciclo fora dos aceitos: {sorted(constants.ZARC_CYCLE_CODES)}"
+            )
         return value
 
     @field_validator("riscos")

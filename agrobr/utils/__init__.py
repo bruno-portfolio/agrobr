@@ -1,5 +1,3 @@
-"""Utilitários gerais."""
-
 from __future__ import annotations
 
 from agrobr.utils.geo import (

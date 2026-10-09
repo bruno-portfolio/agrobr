@@ -154,7 +154,7 @@ def _statistical_warnings(records: list[focus_models.FocusObservation]) -> list[
             ):
                 issues.append(f"{name} fora dos extremos disponíveis")
         if row.base_calculo not in {None, 0, 1}:
-            issues.append("base_calculo não documentada neste conjunto de capturas")
+            issues.append("base_calculo fora dos códigos reconhecidos (0 ou 1)")
         if issues:
             warnings.append(f"Focus linha {position}: {'; '.join(issues)}; valores preservados.")
     return warnings

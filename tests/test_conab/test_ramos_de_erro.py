@@ -67,7 +67,7 @@ def contexto_sociobio():
             [["Discriminação", "R$/ha", "%"], ["1 - Sementes", 1, 0.1]],
             {(1, 2): "0%;0.00"},
             {},
-            "Formato percentual condicional",
+            "Formato numérico mistura seções com e sem %",
         ),
         ([["Discriminação", "R$/ha"], ["1 - Sementes", "inf"]], {}, {}, "Medida não finita"),
         (
@@ -140,7 +140,7 @@ def test_custos_totais_recusa_total_publicado_duplicado():
             [["Discriminação", "R$/kg", "%"], ["1 - Coleta", 1, 0.1]],
             {(1, 2): "0%;0.00"},
             {},
-            "Formato percentual condicional",
+            "Formato numérico mistura seções com e sem %",
         ),
         (
             [["Discriminação", "R$/kg", "%"], ["1 - Coleta", 1, 1e308]],

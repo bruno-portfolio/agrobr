@@ -230,9 +230,6 @@ def _compute_fingerprint(pages_rows: _RowsByPage) -> str:
     return digest[:16]
 
 
-# === Header columns detection (weekly_shipments) ===
-
-
 def _detect_weekly_columns(
     header_row: list[dict[str, Any]],
 ) -> list[tuple[str, str, float]]:
@@ -304,9 +301,6 @@ def _value_for_column(
         return None
     candidates.sort(key=lambda w: abs(((w["x0"] + w.get("x1", w["x0"])) / 2) - col_x))
     return _parse_value(candidates[0]["text"])
-
-
-# === Sub-parsers ===
 
 
 _PORTS_LOOKUP_NO_ACCENT: dict[str, str] = {
@@ -929,8 +923,6 @@ def _parse_destinations_page(
             continue
         if text.lower().startswith("week"):
             continue
-        if not row:
-            continue
         last = row[-1]["text"]
         if not last.endswith("%"):
             continue
@@ -988,9 +980,6 @@ def _destination_period(text: str) -> tuple[int | None, int | None, int | None]:
     if first is None or last is None or first > last:
         return year, None, None
     return year, first, last
-
-
-# === Orquestrador ===
 
 
 def parse_anec_pdf(pdf_bytes: bytes) -> ParsedReport:

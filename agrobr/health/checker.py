@@ -52,16 +52,9 @@ def _source_down_status(config: SourceHealthConfig) -> CheckStatus:
     return CheckStatus.FAILED
 
 
-# ---------------------------------------------------------------------------
-# Generic HTTP probe
-# ---------------------------------------------------------------------------
-
-
 async def _check_http(config: SourceHealthConfig) -> CheckResult:
-    """Probe a source with a simple HTTP request."""
     import httpx
 
-    # API-key guard
     if (
         config.requires_api_key
         and config.api_key_env_var
@@ -213,11 +206,6 @@ async def _check_http(config: SourceHealthConfig) -> CheckResult:
         )
 
 
-# ---------------------------------------------------------------------------
-# Deep check — CEPEA fingerprint + parse
-# ---------------------------------------------------------------------------
-
-
 async def check_cepea_deep() -> CheckResult:
     """Deep check: fetch CEPEA page, compare fingerprint, parse data."""
     from agrobr.cepea import client as cepea_client
@@ -331,11 +319,6 @@ async def check_cepea_deep() -> CheckResult:
             timestamp=utcnow(),
             category=category,
         )
-
-
-# ---------------------------------------------------------------------------
-# Public API
-# ---------------------------------------------------------------------------
 
 
 async def check_source(source: Fonte, *, deep: bool = False) -> CheckResult:

@@ -4,13 +4,10 @@ import hashlib
 
 from bs4 import BeautifulSoup
 
-from agrobr import _log
 from agrobr.constants import Fonte
 from agrobr.models import Fingerprint
 from agrobr.utils.time import utcnow
 from agrobr.validators.structural import compare_fingerprints as compare_fingerprints
-
-logger = _log.get_logger(__name__)
 
 
 def extract_fingerprint(

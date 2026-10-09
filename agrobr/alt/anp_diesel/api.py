@@ -12,7 +12,7 @@ from typing import Any, Literal, overload
 
 import pandas as pd
 
-from agrobr import _log, constants, contracts
+from agrobr import constants, contracts
 from agrobr.exceptions import InvalidParameterError, ParseError, SourceUnavailableError
 from agrobr.models import MetaInfo
 from agrobr.normalize import municipalities
@@ -37,8 +37,6 @@ from .models import (
     _resolve_periodo_municipio,
     normalize_produto,
 )
-
-logger = _log.get_logger(__name__)
 
 
 def validate_output_options(*, as_polars: bool, return_meta: bool) -> None:

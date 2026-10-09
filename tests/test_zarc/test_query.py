@@ -29,12 +29,12 @@ from tests.helpers import levanta_exatamente, sem_excecao
         ({"safra": "2025/2027"}, "safra deve usar anos consecutivos YYYY/YYYY ou perene"),
         ({"safra": "２０２５/２０２６"}, "safra deve usar anos consecutivos YYYY/YYYY ou perene"),
         ({"safra": "olericola"}, "safra deve usar anos consecutivos YYYY/YYYY ou perene"),
-        ({"solo": True}, "solo deve ser código inteiro homologado"),
-        ({"solo": 1.0}, "solo deve ser código inteiro homologado"),
-        ({"solo": 10}, "solo deve ser código inteiro homologado"),
-        ({"ciclo": "20"}, "ciclo deve ser código inteiro homologado"),
-        ({"ciclo": False}, "ciclo deve ser código inteiro homologado"),
-        ({"ciclo": 23}, "ciclo deve ser código inteiro homologado"),
+        ({"solo": True}, "solo deve ser um destes códigos inteiros: [1, 2, 3, 11"),
+        ({"solo": 1.0}, "solo deve ser um destes códigos inteiros: [1, 2, 3, 11"),
+        ({"solo": 10}, "solo deve ser um destes códigos inteiros: [1, 2, 3, 11"),
+        ({"ciclo": "20"}, "ciclo deve ser um destes códigos inteiros: [13, 19, 20"),
+        ({"ciclo": False}, "ciclo deve ser um destes códigos inteiros: [13, 19, 20"),
+        ({"ciclo": 23}, "ciclo deve ser um destes códigos inteiros: [13, 19, 20"),
     ],
 )
 def test_invalid_selector(kwargs, motivo):

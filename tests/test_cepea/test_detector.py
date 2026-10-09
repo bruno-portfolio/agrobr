@@ -126,6 +126,6 @@ class TestGetParserWithFallback:
 
         with (
             patch("agrobr.cepea.parsers.detector.PARSERS", []),
-            pytest.raises(ParseError, match="No parsers"),
+            pytest.raises(ParseError, match="Nenhum parser CEPEA registrado"),
         ):
             await get_parser_with_fallback("<html>", "soja")

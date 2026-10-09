@@ -1,5 +1,3 @@
-"""Benchmark suite para testes de performance do agrobr."""
-
 from __future__ import annotations
 
 import statistics

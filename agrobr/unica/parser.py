@@ -8,14 +8,11 @@ from typing import Any, NamedTuple
 import openpyxl
 import pandas as pd
 
-from agrobr import _log
 from agrobr.exceptions import ParseError
 from agrobr.normalize.regions import normalizar_uf, remover_acentos
 from agrobr.utils import io as io_utils
 
 from . import models
-
-logger = _log.get_logger(__name__)
 
 SAFRA_CAPA_RE = re.compile(r"S\s*AFRA\s+(\d{4}/\d{4})", re.IGNORECASE)
 POSICAO_RE = re.compile(r"Posi[çc][ãa]o\s+at[ée]\s+(\d{2}/\d{2}/\d{4})", re.IGNORECASE)

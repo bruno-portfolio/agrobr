@@ -253,11 +253,6 @@ async def _fetch_and_parse_geo(
     return gdf
 
 
-# ---------------------------------------------------------------------------
-# hidrografia (bbox required)
-# ---------------------------------------------------------------------------
-
-
 @overload
 async def hidrografia(
     *,
@@ -365,11 +360,6 @@ async def hidrografia_geo(
         max_registros=max_registros,
         return_meta=return_meta,
     )
-
-
-# ---------------------------------------------------------------------------
-# pivos_irrigacao (uf optional, bbox optional)
-# ---------------------------------------------------------------------------
 
 
 @overload
@@ -495,11 +485,6 @@ async def pivos_irrigacao_geo(
     )
 
 
-# ---------------------------------------------------------------------------
-# demanda_irrigacao (bbox required)
-# ---------------------------------------------------------------------------
-
-
 @overload
 async def demanda_irrigacao(
     *,
@@ -609,11 +594,6 @@ async def demanda_irrigacao_geo(
     )
 
 
-# ---------------------------------------------------------------------------
-# disponibilidade_hidrica (bbox optional, no UF field in service)
-# ---------------------------------------------------------------------------
-
-
 @overload
 async def disponibilidade_hidrica(
     *,
@@ -721,11 +701,6 @@ async def disponibilidade_hidrica_geo(
         max_registros=max_registros,
         return_meta=return_meta,
     )
-
-
-# ---------------------------------------------------------------------------
-# massas_dagua (uf or bbox required)
-# ---------------------------------------------------------------------------
 
 
 def _recorte_massas(

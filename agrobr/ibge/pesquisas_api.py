@@ -36,11 +36,6 @@ _LEITE_COLUMNS = [
 ]
 
 
-# ---------------------------------------------------------------------------
-# Silvicultura (PEVS) — tab 291 (produção c194) + tab 5930 (área c734)
-# ---------------------------------------------------------------------------
-
-
 @overload
 async def silvicultura(
     produto: str,
@@ -222,11 +217,6 @@ async def especies_silvicultura_area() -> list[str]:
     return list(client.ESPECIES_SILVICULTURA_AREA.keys())
 
 
-# ---------------------------------------------------------------------------
-# Extração Vegetal (PEVS) — tab 289 (c193)
-# ---------------------------------------------------------------------------
-
-
 @overload
 async def extracao_vegetal(
     produto: str,
@@ -390,11 +380,6 @@ async def produtos_extracao_vegetal() -> list[str]:
     return list(client.PRODUTOS_EXTRACAO_VEGETAL.keys())
 
 
-# ---------------------------------------------------------------------------
-# Leite Trimestral — tab 1086
-# ---------------------------------------------------------------------------
-
-
 @overload
 async def leite_trimestral(
     trimestre: str | list[str] | None = None,
@@ -546,11 +531,6 @@ async def leite_trimestral(
     logger.info("ibge_leite_trimestral_success", records=len(df))
 
     return finalize_result(df, meta, as_polars=as_polars, return_meta=return_meta)
-
-
-# ---------------------------------------------------------------------------
-# PIB Agro — tab 1846 (corrente) / 6612 (real)
-# ---------------------------------------------------------------------------
 
 
 @overload

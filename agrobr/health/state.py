@@ -4,12 +4,9 @@ from __future__ import annotations
 
 from datetime import datetime
 
-from agrobr import _log
 from agrobr.alerts.notifier import AlertLevel
 from agrobr.cache.duckdb_store import get_store
 from agrobr.constants import AlertSettings, Fonte
-
-logger = _log.get_logger(__name__)
 
 
 def close_store() -> None:
@@ -106,7 +103,6 @@ def get_alertable_failures(source: Fonte, settings: AlertSettings | None = None)
 
 
 def get_last_success(source: Fonte) -> datetime | None:
-    """Return the timestamp of the most recent OK check for *source*."""
     store = get_store()
     with store._conexao() as conn:
         if conn is None:
@@ -145,7 +141,6 @@ def should_send_alert(
     if not _category_allows_alert(category, settings):
         return False, None
 
-    # --- recovery: only for outages that were eligible to alert ---
     if current_status == "ok":
         previous = (
             prior_failures
@@ -159,7 +154,6 @@ def should_send_alert(
     failures = get_alertable_failures(source, settings)
     capped_at_warning = category == "soft_block" or current_status != "failed"
 
-    # --- threshold crossings only ---
     if failures == settings.consecutive_failures_critical:
         if capped_at_warning:
             return True, AlertLevel.WARNING

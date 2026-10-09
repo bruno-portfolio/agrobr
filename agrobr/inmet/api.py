@@ -7,15 +7,12 @@ from typing import Any, Literal, overload
 
 import pandas as pd
 
-from agrobr import _log
 from agrobr.exceptions import ParseError, SourceUnavailableError
 from agrobr.models import MetaInfo
 from agrobr.utils import validation
 from agrobr.utils.result import DataFrameResult, build_source_meta, finalize_result
 
 from . import client, historical, models, parser
-
-logger = _log.get_logger(__name__)
 
 
 @overload
