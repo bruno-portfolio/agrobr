@@ -10,7 +10,7 @@ the system holds more than **7.4 million properties** registered across 27 state
 The CAR includes information about:
 
 - Rural property identification
-- Registration status (Active, Pending, Suspended, Cancelled)
+- Registration status (Active, Pending, Suspended, Cancelled and RE, published by SICAR with no official definition found)
 - Total area in hectares
 - Fiscal modules
 - Property type (Rural, Settlement, Indigenous Land)
@@ -29,7 +29,7 @@ with server-side filters (CQL_FILTER) and transparent pagination.
 | Field | Type | Description |
 |-------|------|-----------|
 | cod_imovel | string | Unique property code (UF-IBGE-hash) |
-| status | string | AT (Active), PE (Pending), SU (Suspended), CA (Cancelled) |
+| status | string | AT (Active), PE (Pending), SU (Suspended), CA (Cancelled) and RE (published by SICAR, no official definition found; returned as published) |
 | data_criacao | datetime UTC | Instant of record creation |
 | data_atualizacao | datetime UTC | Last update (nullable) |
 | area_ha | float | Total area in hectares |

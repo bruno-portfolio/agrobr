@@ -20,7 +20,7 @@ df = await agrobr.alt.sicar.imoveis("DF")
 |-----------|------|----------|-------------|
 | uf | str | Yes | State abbreviation (e.g. "MT", "DF", "BA") |
 | municipio | int \| str | No | 7-digit IBGE code (int or str) or the full municipality name, ignoring case and accents (`normalize.resolver_municipio`); it must belong to the state. An ambiguous or unknown name, or a fragment of a name (`"Santa Rita"` does not match `"Santa Rita do Sapucaí"`), raises `InvalidParameterError` listing the candidates. Filters by the code on the layer |
-| status | str | No | AT, PE, SU or CA |
+| status | str | No | AT, PE, SU, CA or RE |
 | tipo | str | No | IRU, AST or PCT |
 | area_min | float | No | Minimum area in hectares |
 | area_max | float | No | Maximum area in hectares |
@@ -45,7 +45,7 @@ repeated feature IDs. See the [full rule](../contracts/cadastro_rural.en.md#mult
 | Column | Type | Description |
 |--------|------|-------------|
 | cod_imovel | str | Unique property code |
-| status | str | AT/PE/SU/CA |
+| status | str | AT/PE/SU/CA/RE |
 | data_criacao | datetime64[ns, UTC] | UTC instant of creation (nullable) |
 | data_atualizacao | datetime64[ns, UTC] | UTC instant of update (nullable) |
 | area_ha | float | Area in hectares |
@@ -109,7 +109,7 @@ Uses `resultType=hits` (five queries: total and four statuses, without downloadi
 
 | Column | Type | Description |
 |--------|------|-------------|
-| total | int | Published features |
+| total | int | Published features; counts every status, and those outside the four columns below (such as `RE`) count only here |
 | ativos | int | Features with status AT |
 | pendentes | int | Features with status PE |
 | suspensos | int | Features with status SU |
@@ -121,7 +121,7 @@ Fetches data, applies the occurrence selection used by `imoveis()`, and aggregat
 
 | Column | Type | Description |
 |--------|------|-------------|
-| total | int | Total properties |
+| total | int | Total properties; counts every status, and those outside the four columns below (such as `RE`) count only here |
 | ativos | int | Properties with status AT |
 | pendentes | int | Properties with status PE |
 | suspensos | int | Properties with status SU |
@@ -159,7 +159,7 @@ gdf = await agrobr.alt.sicar.imoveis_geo("DF")
 |-----------|------|----------|-------------|
 | uf | str | Yes | State abbreviation (e.g. "MT", "DF", "BA") |
 | municipio | int \| str | No | 7-digit IBGE code (int or str) or the full municipality name, ignoring case and accents (`normalize.resolver_municipio`); it must belong to the state. An ambiguous or unknown name, or a fragment of a name (`"Santa Rita"` does not match `"Santa Rita do Sapucaí"`), raises `InvalidParameterError` listing the candidates. Filters by the code on the layer |
-| status | str | No | AT, PE, SU or CA |
+| status | str | No | AT, PE, SU, CA or RE |
 | tipo | str | No | IRU, AST or PCT |
 | area_min | float | No | Minimum area in hectares |
 | area_max | float | No | Maximum area in hectares |
@@ -173,7 +173,7 @@ gdf = await agrobr.alt.sicar.imoveis_geo("DF")
 | Column | Type | Description |
 |--------|------|-------------|
 | cod_imovel | str | Unique property code |
-| status | str | AT/PE/SU/CA |
+| status | str | AT/PE/SU/CA/RE |
 | data_criacao | datetime | Creation date |
 | data_atualizacao | datetime | Last update (nullable) |
 | area_ha | float | Area in hectares |
@@ -232,7 +232,7 @@ async for gdf in agrobr.alt.sicar.imoveis_geo_stream("MT"):
 |-----------|------|----------|-------------|
 | uf | str | Yes | State abbreviation (e.g. "MT", "DF", "BA") |
 | municipio | int \| str | No | 7-digit IBGE code (int or str) or the full municipality name, ignoring case and accents (`normalize.resolver_municipio`); it must belong to the state. An ambiguous or unknown name, or a fragment of a name (`"Santa Rita"` does not match `"Santa Rita do Sapucaí"`), raises `InvalidParameterError` listing the candidates. Filters by the code on the layer |
-| status | str | No | AT, PE, SU or CA |
+| status | str | No | AT, PE, SU, CA or RE |
 | tipo | str | No | IRU, AST or PCT |
 | area_min | float | No | Minimum area in hectares |
 | area_max | float | No | Maximum area in hectares |

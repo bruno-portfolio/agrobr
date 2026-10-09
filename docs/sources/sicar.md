@@ -10,7 +10,7 @@ o sistema contem mais de **7.4 milhoes de imoveis** cadastrados em 27 UFs.
 O CAR inclui informacoes sobre:
 
 - Identificacao do imovel rural
-- Status do cadastro (Ativo, Pendente, Suspenso, Cancelado)
+- Status do cadastro (Ativo, Pendente, Suspenso, Cancelado e RE, publicado pelo SICAR sem definição oficial localizada)
 - Area total em hectares
 - Modulos fiscais
 - Tipo de imovel (Rural, Assentamento, Terra Indigena)
@@ -29,7 +29,7 @@ com filtros server-side (CQL_FILTER) e paginacao transparente.
 | Campo | Tipo | Descricao |
 |-------|------|-----------|
 | cod_imovel | string | Codigo unico do imovel (UF-IBGE-hash) |
-| status | string | AT (Ativo), PE (Pendente), SU (Suspenso), CA (Cancelado) |
+| status | string | AT (Ativo), PE (Pendente), SU (Suspenso), CA (Cancelado) e RE (publicado pelo SICAR, sem definição oficial localizada; sai como publicado) |
 | data_criacao | datetime UTC | Instante de criação do cadastro |
 | data_atualizacao | datetime UTC | Última atualização (nullable) |
 | area_ha | float | Area total em hectares |

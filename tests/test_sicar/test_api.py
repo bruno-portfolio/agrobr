@@ -488,6 +488,42 @@ async def test_condicao_nula_na_fonte_continua_nula(monkeypatch: pytest.MonkeyPa
                 )
 
 
+async def test_status_re_publicado_sai_como_publicado(monkeypatch: pytest.MonkeyPatch):
+    tabular = json.loads(gzip.decompress((SICAR_OFICIAL / "sicar_df_001.json.gz").read_bytes()))
+    tabular["features"][0]["properties"]["status_imovel"] = "RE"
+    codigo = tabular["features"][0]["properties"]["cod_imovel"]
+    fetch = AsyncMock(return_value=([json.dumps(tabular).encode()], URL))
+    monkeypatch.setattr(client, "fetch_imoveis", fetch)
+
+    with helpers.sem_excecao():
+        frame = await sicar.imoveis("DF", municipio=5300108)
+        filtrado = await sicar.imoveis("DF", municipio=5300108, status="re")
+
+    assert frame.loc[frame["cod_imovel"] == codigo, "status"].tolist() == ["RE"]
+    contracts.validate_dataset(frame, "sicar_imoveis")
+    assert fetch.await_args.args == ("DF", "cod_municipio_ibge=5300108 AND status_imovel='RE'")
+    assert "RE" in filtrado["status"].tolist()
+    assert (
+        "RE" in contracts.get_contract("sicar_imoveis").to_dict()["constraints"]["status_allowed"]
+    )
+
+
+async def test_status_re_publicado_sai_como_publicado_geo(monkeypatch: pytest.MonkeyPatch):
+    pytest.importorskip("geopandas")
+    geo = json.loads(geo_capture("df_geo_srs4326_count3.json"))
+    geo["features"][0]["properties"]["status_imovel"] = "RE"
+    codigo = geo["features"][0]["properties"]["cod_imovel"]
+    monkeypatch.setattr(
+        client, "fetch_imoveis_geo", AsyncMock(return_value=([json.dumps(geo).encode()], URL))
+    )
+
+    with helpers.sem_excecao():
+        frame = await api.imoveis_geo("DF", municipio="Brasília")
+
+    assert frame.loc[frame["cod_imovel"] == codigo, "status"].tolist() == ["RE"]
+    contracts.validate_dataset(pd.DataFrame(frame.drop(columns="geometry")), "sicar_imoveis")
+
+
 async def test_geo_incompativel_vira_parse_error(monkeypatch: pytest.MonkeyPatch):
     base = json.loads(geo_capture("df_geo_srs4326_count3.json"))
     misto = copy.deepcopy(base)

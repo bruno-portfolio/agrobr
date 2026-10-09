@@ -899,7 +899,7 @@ MAX_WKT_CHARS: int = 16 * 1024**2
 MAX_WKT_DEPTH: int = 16
 
 SICAR_MAX_VERSOES_DESCARTADAS = 1_000
-SICAR_STATUS_VALIDOS: frozenset[str] = frozenset({"AT", "PE", "SU", "CA"})
+SICAR_STATUS_VALIDOS: frozenset[str] = frozenset({"AT", "PE", "SU", "CA", "RE"})
 SICAR_TIPO_VALIDOS: frozenset[str] = frozenset({"IRU", "AST", "PCT"})
 
 MAPBIOMAS_GEOCODE_PATTERN = r"[0-9]{7}"

@@ -20,7 +20,7 @@ df = await agrobr.alt.sicar.imoveis("DF")
 |-----------|------|-------------|-----------|
 | uf | str | Sim | Sigla da UF (ex: "MT", "DF", "BA") |
 | municipio | int \| str | Nao | Código IBGE de 7 dígitos (int ou str) ou nome inteiro do município, sem diferenciar caixa e acento (`normalize.resolver_municipio`); precisa ser da UF. Nome ambíguo, inexistente ou pedaço de nome (`"Santa Rita"` não casa com `"Santa Rita do Sapucaí"`) gera `InvalidParameterError` com os candidatos. Filtra pelo código na camada |
-| status | str | Nao | AT, PE, SU ou CA |
+| status | str | Nao | AT, PE, SU, CA ou RE |
 | tipo | str | Nao | IRU, AST ou PCT |
 | area_min | float | Nao | Area minima em hectares |
 | area_max | float | Nao | Area maxima em hectares |
@@ -45,7 +45,7 @@ Veja a [regra completa](../contracts/cadastro_rural.md#ocorrencias-do-mesmo-imov
 | Coluna | Tipo | Descricao |
 |--------|------|-----------|
 | cod_imovel | str | Codigo unico do imovel |
-| status | str | AT/PE/SU/CA |
+| status | str | AT/PE/SU/CA/RE |
 | data_criacao | datetime64[ns, UTC] | Instante UTC de criação (nullable) |
 | data_atualizacao | datetime64[ns, UTC] | Instante UTC de atualização (nullable) |
 | area_ha | float | Area em hectares |
@@ -109,7 +109,7 @@ Usa `resultType=hits` (cinco consultas: total e quatro status, sem download de r
 
 | Coluna | Tipo | Descricao |
 |--------|------|-----------|
-| total | int | Feições publicadas |
+| total | int | Feições publicadas; conta todos os status, e os que estão fora das quatro colunas abaixo (como `RE`) entram só aqui |
 | ativos | int | Feições com status AT |
 | pendentes | int | Feições com status PE |
 | suspensos | int | Feições com status SU |
@@ -121,7 +121,7 @@ Busca dados, aplica a seleção de ocorrências de `imoveis()` e agrega client-s
 
 | Coluna | Tipo | Descricao |
 |--------|------|-----------|
-| total | int | Total de imoveis |
+| total | int | Total de imoveis; conta todos os status, e os que estão fora das quatro colunas abaixo (como `RE`) entram só aqui |
 | ativos | int | Imoveis com status AT |
 | pendentes | int | Imoveis com status PE |
 | suspensos | int | Imoveis com status SU |
@@ -159,7 +159,7 @@ gdf = await agrobr.alt.sicar.imoveis_geo("DF")
 |-----------|------|-------------|-----------|
 | uf | str | Sim | Sigla da UF (ex: "MT", "DF", "BA") |
 | municipio | int \| str | Nao | Código IBGE de 7 dígitos (int ou str) ou nome inteiro do município, sem diferenciar caixa e acento (`normalize.resolver_municipio`); precisa ser da UF. Nome ambíguo, inexistente ou pedaço de nome (`"Santa Rita"` não casa com `"Santa Rita do Sapucaí"`) gera `InvalidParameterError` com os candidatos. Filtra pelo código na camada |
-| status | str | Nao | AT, PE, SU ou CA |
+| status | str | Nao | AT, PE, SU, CA ou RE |
 | tipo | str | Nao | IRU, AST ou PCT |
 | area_min | float | Nao | Area minima em hectares |
 | area_max | float | Nao | Area maxima em hectares |
@@ -173,7 +173,7 @@ gdf = await agrobr.alt.sicar.imoveis_geo("DF")
 | Coluna | Tipo | Descricao |
 |--------|------|-----------|
 | cod_imovel | str | Codigo unico do imovel |
-| status | str | AT/PE/SU/CA |
+| status | str | AT/PE/SU/CA/RE |
 | data_criacao | datetime | Data de criacao |
 | data_atualizacao | datetime | Ultima atualizacao (nullable) |
 | area_ha | float | Area em hectares |
@@ -232,7 +232,7 @@ async for gdf in agrobr.alt.sicar.imoveis_geo_stream("MT"):
 |-----------|------|-------------|-----------|
 | uf | str | Sim | Sigla da UF (ex: "MT", "DF", "BA") |
 | municipio | int \| str | Nao | Código IBGE de 7 dígitos (int ou str) ou nome inteiro do município, sem diferenciar caixa e acento (`normalize.resolver_municipio`); precisa ser da UF. Nome ambíguo, inexistente ou pedaço de nome (`"Santa Rita"` não casa com `"Santa Rita do Sapucaí"`) gera `InvalidParameterError` com os candidatos. Filtra pelo código na camada |
-| status | str | Nao | AT, PE, SU ou CA |
+| status | str | Nao | AT, PE, SU, CA ou RE |
 | tipo | str | Nao | IRU, AST ou PCT |
 | area_min | float | Nao | Area minima em hectares |
 | area_max | float | Nao | Area maxima em hectares |

@@ -13,7 +13,7 @@ Rural property records from the Rural Environmental Registry (CAR) by state.
 | Column | Type | Nullable | Description |
 |--------|------|----------|-------------|
 | `cod_imovel` | str | ❌ | Unique property code in CAR |
-| `status` | str | ❌ | Record status: AT, PE, SU, CA |
+| `status` | str | ❌ | Record status: AT, PE, SU, CA or RE |
 | `data_criacao` | datetime64[ns, UTC] | ✅ | UTC instant of record creation |
 | `data_atualizacao` | datetime64[ns, UTC] | ✅ | UTC instant of last update, where available |
 | `area_ha` | float64 | ❌ | Property area in hectares (>= 0) |
@@ -35,7 +35,7 @@ Rural property records from the Rural Environmental Registry (CAR) by state.
 |-----------|------|-------------|
 | `uf` | str | State abbreviation (required) |
 | `municipio` | int \| str | 7-digit IBGE code or the full name of a municipality of the state, ignoring case and accents; an ambiguous or unknown name, or a fragment, raises `InvalidParameterError` listing the candidates |
-| `status` | str | AT (Active), PE (Pending), SU (Suspended), CA (Cancelled) |
+| `status` | str | AT (Active), PE (Pending), SU (Suspended), CA (Cancelled) or RE (published by SICAR; no official definition found) |
 | `tipo` | str | IRU, AST or PCT, following SICAR classification |
 | `area_min` | float | Minimum area in hectares |
 | `area_max` | float | Maximum area in hectares |
@@ -102,7 +102,7 @@ guarantee a consistent snapshot across pages. Contract 2.1 and primary key `[cod
 ## Guarantees
 
 - `cod_imovel` is always non-empty
-- `status` is always AT, PE, SU or CA
+- `status` is always AT, PE, SU, CA or RE. `RE` is returned as published; its official definition has not been found.
 - `tipo` is always IRU, AST or PCT
 - `area_ha` is always >= 0
 - `uf` is always a valid Brazilian state code

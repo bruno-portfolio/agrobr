@@ -13,7 +13,7 @@ Registros de imoveis rurais do Cadastro Ambiental Rural (CAR) por UF.
 | Coluna | Tipo | Nullable | Descricao |
 |--------|------|----------|-----------|
 | `cod_imovel` | str | ❌ | Codigo unico do imovel no CAR |
-| `status` | str | ❌ | Status do registro: AT, PE, SU, CA |
+| `status` | str | ❌ | Status do registro: AT, PE, SU, CA ou RE |
 | `data_criacao` | datetime64[ns, UTC] | ✅ | Instante UTC de criação do registro |
 | `data_atualizacao` | datetime64[ns, UTC] | ✅ | Instante UTC da última atualização, onde disponível |
 | `area_ha` | float64 | ❌ | Area do imovel em hectares (>= 0) |
@@ -35,7 +35,7 @@ Registros de imoveis rurais do Cadastro Ambiental Rural (CAR) por UF.
 |-----------|------|-----------|
 | `uf` | str | Sigla da UF (obrigatorio) |
 | `municipio` | int \| str | Código IBGE de 7 dígitos ou nome inteiro do município da UF, sem diferenciar caixa e acento; ambíguo, inexistente ou pedaço de nome gera `InvalidParameterError` com os candidatos |
-| `status` | str | AT (Ativo), PE (Pendente), SU (Suspenso), CA (Cancelado) |
+| `status` | str | AT (Ativo), PE (Pendente), SU (Suspenso), CA (Cancelado) ou RE (publicado pelo SICAR; definição oficial não localizada) |
 | `tipo` | str | IRU, AST ou PCT, conforme a classificação SICAR |
 | `area_min` | float | Area minima em hectares |
 | `area_max` | float | Area maxima em hectares |
@@ -103,7 +103,7 @@ contagem não garante uma fotografia consistente entre páginas. O contrato 2.1 
 ## Garantias
 
 - `cod_imovel` sempre nao-vazio
-- `status` sempre AT, PE, SU ou CA
+- `status` sempre AT, PE, SU, CA ou RE. `RE` sai como publicado; sua definição oficial não foi localizada.
 - `tipo` sempre IRU, AST ou PCT
 - `area_ha` sempre >= 0
 - `uf` sempre codigo valido de estado brasileiro
