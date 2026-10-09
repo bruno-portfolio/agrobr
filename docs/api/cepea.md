@@ -56,6 +56,11 @@ DataFrame com colunas:
 - `valor_usd`: Preço em US$ publicado na mesma linha pelo CEPEA; `NaN` quando a fonte não divulga (fallback Notícias Agrícolas, histórico em cache anterior à migração 10)
 - `peso_medio_kg`: Peso médio do animal na tabela auxiliar da página (bezerro MS); `NaN` para os demais produtos
 
+As colunas e os tipos são os do contrato [`preco_diario`](../contracts/preco_diario.md), e `meta.schema_version` traz a
+versão dele. A chave é `data`, `produto` e `praca`: sem `praca=`, a função devolve todas as praças publicadas (no trigo,
+Paraná e Rio Grande do Sul na mesma data). O contrato tem a chave `data` e `produto` do dataset `preco_diario`, que reduz
+a uma praça por data; por isso `validate_dataset(df, "preco_diario")` reprova a saída com mais de uma praça por data.
+
 **Exemplo:**
 
 ```python

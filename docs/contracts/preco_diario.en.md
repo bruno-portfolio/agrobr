@@ -59,6 +59,13 @@ If that reference is absent, ties use the location slug in alphabetical
 order; this does not turn a regional series into a national average.
 Use `cepea.indicador()` to retrieve every location.
 
+The output of `cepea.indicador()` has this contract's columns and types, and its `meta.schema_version` carries this
+contract's version (the contract is named `cepea.indicador` in `contract.name` and registered as `preco_diario`). The key
+differs: without `praca=`, the source returns every published location, and its output key is `data`, `produto` and
+`praca`. With more than one location on the same date (wheat: Paraná and Rio Grande do Sul),
+`validate_dataset(df, "preco_diario")` rejects that output for repeated keys. The `data` and `produto` key applies to the
+dataset, which reduces to one location per date.
+
 `data_sources` includes only providers of selected rows. `valor` remains
 `float64`, including the DuckDB cache. With sanity enabled, use
 `json.loads(df.loc[index, "anomalies"])` to read non-null markers.

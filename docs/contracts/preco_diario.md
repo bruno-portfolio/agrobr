@@ -59,6 +59,12 @@ Quando a referência não estiver presente, o desempate usa o slug da praça
 em ordem alfabética; isso não transforma uma série regional em média nacional.
 Para obter todas as praças, use `cepea.indicador()`.
 
+A saída de `cepea.indicador()` tem as colunas e os tipos deste contrato, e o `meta.schema_version` dela traz a versão
+dele (o contrato se chama `cepea.indicador` em `contract.name` e é registrado como `preco_diario`). A chave, não: sem
+`praca=`, a fonte devolve todas as praças publicadas, e a chave da saída dela é `data`, `produto` e `praca`. Com mais de
+uma praça na mesma data (no trigo, Paraná e Rio Grande do Sul), `validate_dataset(df, "preco_diario")` reprova a saída
+por chave repetida. A chave `data` e `produto` vale para o dataset, que reduz a uma praça por data.
+
 `data_sources` contém somente as fontes das linhas selecionadas. A coluna
 `valor` segue `float64` também no cache DuckDB. Com sanity,
 use `json.loads(df.loc[indice, "anomalies"])` para ler marcadores não nulos.

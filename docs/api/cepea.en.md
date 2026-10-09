@@ -57,6 +57,12 @@ DataFrame with columns:
 - `valor_usd`: USD price published by CEPEA in the same row; `NaN` when the source does not publish it (Notícias Agrícolas fallback, history cached before migration 10)
 - `peso_medio_kg`: Average animal weight from the page's auxiliary table (calf, MS); `NaN` for other products
 
+Columns and types are those of the [`preco_diario`](../contracts/preco_diario.md) contract, and `meta.schema_version`
+carries its version. The key is `data`, `produto` and `praca`: without `praca=`, the function returns every published
+location (wheat: Paraná and Rio Grande do Sul on the same date). The contract has the `data` and `produto` key of the
+`preco_diario` dataset, which reduces to one location per date, so `validate_dataset(df, "preco_diario")` rejects output
+with more than one location per date.
+
 **Example:**
 
 ```python
