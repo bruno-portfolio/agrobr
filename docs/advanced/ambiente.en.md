@@ -36,15 +36,15 @@ Set the variables before importing agrobr. In detail:
 | `AGROBR_HTTP_TIMEOUT_READ` | `30` | Read seconds. It is a floor: a source client that sets a longer time keeps its own ([resilience](resilience.md#centralized-http-configuration)). Also applies to the ANTAQ download, which uses requests (the write and pool timeouts do not apply to it) |
 | `AGROBR_HTTP_TIMEOUT_WRITE` | `10` | Write seconds |
 | `AGROBR_HTTP_TIMEOUT_POOL` | `10` | Seconds waiting for a free connection |
-| `AGROBR_HTTP_TIMEOUT_DOWNLOAD_COMEXSTAT` | `300` | Ceiling, in seconds, for the whole download of a Comex Stat file, retries included. `AGROBR_HTTP_TIMEOUT_READ` does not change it; raise this one on a slow network. A finite number greater than `0`; anything else is rejected with `ValidationError` |
-| `AGROBR_HTTP_MAX_RETRIES` | `3` | **Total** attempts per request, counting the first. `0` means `1` (no retry); a negative value is rejected with `ValidationError` |
+| `AGROBR_HTTP_TIMEOUT_DOWNLOAD_COMEXSTAT` | `300` | Ceiling, in seconds, for the whole download of a Comex Stat file, retries included. `AGROBR_HTTP_TIMEOUT_READ` does not change it; raise this one on a slow network. A finite number greater than `0`; anything else is rejected with `pydantic.ValidationError` |
+| `AGROBR_HTTP_MAX_RETRIES` | `3` | **Total** attempts per request, counting the first. `0` means `1` (no retry); a negative value is rejected with `pydantic.ValidationError` |
 | `AGROBR_HTTP_RETRY_BASE_DELAY` | `1.0` | First wait between attempts, in seconds |
 | `AGROBR_HTTP_RETRY_MAX_DELAY` | `30.0` | Cap of the wait between attempts, in seconds |
 | `AGROBR_HTTP_RETRY_EXPONENTIAL_BASE` | `2` | Wait multiplier on each new attempt |
-| `AGROBR_HTTP_RATE_LIMIT_<SOURCE>` | per source | Minimum interval, in seconds, between requests to the source, across the whole process. A finite number greater than or equal to `0` (`0` does not wait); negative, `inf` or `nan` is rejected with `ValidationError` |
+| `AGROBR_HTTP_RATE_LIMIT_<SOURCE>` | per source | Minimum interval, in seconds, between requests to the source, across the whole process. A finite number greater than or equal to `0` (`0` does not wait); negative, `inf` or `nan` is rejected with `pydantic.ValidationError` |
 | `AGROBR_HTTP_RATE_LIMIT_DEFAULT` | `1.0` | Interval of the sources without their own variable, with the same validation |
-| `AGROBR_HTTP_MAX_CONCURRENT_<SOURCE>` | per source | Simultaneous requests to the source. Exists only for `ANA` (1), `ANP_DIESEL` (3), `B3` (3) and `IBGE` (3); a value below 1 is rejected with `ValidationError` |
-| `AGROBR_HTTP_MAX_CONCURRENT_DEFAULT` | `1` | Simultaneous requests of the other sources; below 1 is rejected with `ValidationError` |
+| `AGROBR_HTTP_MAX_CONCURRENT_<SOURCE>` | per source | Simultaneous requests to the source. Exists only for `ANA` (1), `ANP_DIESEL` (3), `B3` (3) and `IBGE` (3); a value below 1 is rejected with `pydantic.ValidationError` |
+| `AGROBR_HTTP_MAX_CONCURRENT_DEFAULT` | `1` | Simultaneous requests of the other sources; below 1 is rejected with `pydantic.ValidationError` |
 
 Interval `<SOURCE>`, with the default in seconds: `ABIOVE` (3), `ACERVO_FUNDIARIO` (3), `ANA` (2), `ANDA` (3), `ANEC` (3),
 `ANP_DIESEL` (2), `ANTAQ` (1), `ANTT_PEDAGIO` (2), `B3` (1), `B3_ARQUIVOS` (5), `BCB` (1), `CEPEA` (5), `CFTC` (2), `CNUC` (2),
@@ -53,6 +53,14 @@ Interval `<SOURCE>`, with the default in seconds: `ABIOVE` (3), `ACERVO_FUNDIARI
 `LISTA_SUJA` (2), `MAPBIOMAS` (2), `MAPBIOMAS_ALERTA` (3), `NASA_POWER` (1), `NOTICIAS_AGRICOLAS` (2), `QUEIMADAS` (1),
 `RIO_VERDE` (3), `RNC` (3), `SFB` (2), `SICAR` (2), `UNICA` (3), `USDA` (1) and `ZARC` (2). A source variable outside these
 lists has no effect. Retry and concurrency details are in [Resilience](resilience.md).
+
+`HTTPSettings` rejects text in a numeric variable, a negative `AGROBR_HTTP_MAX_RETRIES`, a negative or non-finite
+`AGROBR_HTTP_RATE_LIMIT_<SOURCE>`, an `AGROBR_HTTP_MAX_CONCURRENT_<SOURCE>` below 1 and an
+`AGROBR_HTTP_TIMEOUT_DOWNLOAD_COMEXSTAT` that is not positive and finite. The rejection comes as early as `import agrobr`,
+because each client builds the HTTP settings when imported; set after the import, the value is rejected on the next request.
+The exception is `pydantic.ValidationError`, which does not inherit from `AgrobrError` and is not
+`agrobr.exceptions.ValidationError`. A negative `AGROBR_HTTP_RETRY_BASE_DELAY` or `AGROBR_HTTP_RETRY_MAX_DELAY` passes the
+import and raises `InvalidParameterError` on the first request that goes through the retry.
 
 ## Credentials
 
@@ -71,8 +79,9 @@ agrobr does not write credentials to disk. The values of these variables (except
 ## Certificates
 
 `SSL_CERT_FILE` (file) or `SSL_CERT_DIR` (folder) replaces the certificate authorities; without them, `certifi` applies. The
-clients follow the httpx convention, and SICAR and ComexStat, which build their own TLS context, read the same variables. Use
-them on a network with a proxy that re-signs TLS.
+clients follow the httpx convention, and SICAR, ComexStat and FUNAI, which build their own TLS context, read the same
+variables. ANTAQ downloads through `requests`, which does not read them: for it, use `REQUESTS_CA_BUNDLE` (file). Use them
+on a network with a proxy that re-signs TLS.
 
 ## Alerts
 
@@ -100,7 +109,7 @@ Used by the health check and by alert delivery, which are internal infrastructur
 spaces, and missing or empty means off. Any other value (for example, `sim`) raises `InvalidParameterError` on the query.
 
 The alert booleans (`AGROBR_ALERT_ENABLED` and `AGROBR_ALERT_ALERT_ON_*`) take the same values, case-insensitive, but do not
-strip spaces nor accept empty: `' YES '`, the empty variable and any other value raise `ValidationError`.
+strip spaces nor accept empty: `' YES '`, the empty variable and any other value raise `pydantic.ValidationError`.
 
 ## Checking the configuration
 

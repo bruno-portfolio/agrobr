@@ -105,7 +105,7 @@ df = await datasets.posicionamento_fundos("milho")
 df = await datasets.posicionamento_fundos("soja", inicio="2026-01-01", combinado=True)
 ```
 
-Contrato `cftc.cot` v2.0 — primary key `data` + `codigo_cftc`, 22 colunas validadas (as 2 de spread, novas na 1.1, são opcionais).
+Contrato `posicionamento_fundos` 2.0 (`contracts.get_contract("posicionamento_fundos")`): chave primária `data` + `codigo_cftc`, 22 colunas validadas (`swap_spread` e `outros_spread`, novas na 2.0, são opcionais).
 No dataset, as colunas estão em português (`fundos_compra`, `fundos_saldo`, `posicoes_abertas`…), e `combined` se chama
 `combinado`; o mapa está em `agrobr.contracts.datasets.POSICIONAMENTO_FUNDOS_COLUNAS_V2`.
 

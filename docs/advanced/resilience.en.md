@@ -49,9 +49,12 @@ exponential_base = 2
 
 `max_retries` counts the total number of attempts, not only the new ones: the default 3 makes up to 3 requests, with 2
 waits. `AGROBR_HTTP_MAX_RETRIES=0` (or `1`) makes a single request, with no retry; a negative value is rejected at
-validation, with `ValidationError`. In `retry_async` and `with_retry`, `max_attempts=0` also means one attempt,
-`base_delay=0` and `max_delay=0` mean no wait, and a negative value raises `InvalidParameterError`. When the attempts run
-out, the message says `after N attempts`.
+validation, with `pydantic.ValidationError` ([environment variables](ambiente.md)). In `retry_async` and `with_retry`,
+`max_attempts=0` also means one attempt, `base_delay=0` and `max_delay=0` mean no wait, and a negative value raises
+`InvalidParameterError`. When the attempts run out in the source retry (`agrobr.http.retry.retry_on_status`),
+`SourceUnavailableError` comes out, and the message ends in `after N attempts` (`after 1 attempt` with a single attempt),
+after the network error (`ReadTimeout: …`) or the status (`HTTP 503`). `retry_async` and `with_retry` re-raise the last
+original exception, without that phrase.
 
 **Status codes that trigger retry:**
 - 408 Request Timeout
@@ -89,7 +92,7 @@ Each source has its own rate limit, configurable via env vars:
 | ZARC | 2 seconds | `AGROBR_HTTP_RATE_LIMIT_ZARC` |
 | Default | 1 second | `AGROBR_HTTP_RATE_LIMIT_DEFAULT` |
 
-The table shows the main sources; each supported source has its own rate limit (default 1 second), ANTAQ included, which downloads through `requests`. Four internal requests have no variable of their own and use `AGROBR_HTTP_RATE_LIMIT_DEFAULT`: CONAB's production cost and historical series, IBGE's legacy Agricultural Census (FTP), and MAPA PSR; `AGROBR_HTTP_RATE_LIMIT_CONAB` and `AGROBR_HTTP_RATE_LIMIT_IBGE` do not apply to them. Beyond the interval between requests, per-source concurrency is controlled by `AGROBR_HTTP_MAX_CONCURRENT_<SOURCE>` for four sources only: ANA (1), ANP Diesel (3), B3 (3), and IBGE (3); the others use `AGROBR_HTTP_MAX_CONCURRENT_DEFAULT` (1), and another source's variable (for example, `AGROBR_HTTP_MAX_CONCURRENT_CFTC`) has no effect. A value below 1 is rejected at validation, with `ValidationError`. Concurrency is enforced via semaphores that allow parallel requests to different sources. The interval and the concurrency hold for the whole process: across `agrobr.sync` calls (each with its own `asyncio.run`), across loops and across threads. The wait for a slot across threads is capped (`AGROBR_HTTP_TIMEOUT_READ`); at the cap, the request goes ahead with a warning, and the interval still holds.
+The table shows the main sources; each supported source has its own rate limit (default 1 second), ANTAQ included, which downloads through `requests`. Four internal requests have no variable of their own and use `AGROBR_HTTP_RATE_LIMIT_DEFAULT`: CONAB's production cost and historical series, IBGE's legacy Agricultural Census (FTP), and MAPA PSR; `AGROBR_HTTP_RATE_LIMIT_CONAB` and `AGROBR_HTTP_RATE_LIMIT_IBGE` do not apply to them. Beyond the interval between requests, per-source concurrency is controlled by `AGROBR_HTTP_MAX_CONCURRENT_<SOURCE>` for four sources only: ANA (1), ANP Diesel (3), B3 (3), and IBGE (3); the others use `AGROBR_HTTP_MAX_CONCURRENT_DEFAULT` (1), and another source's variable (for example, `AGROBR_HTTP_MAX_CONCURRENT_CFTC`) has no effect. A value below 1 is rejected at validation, with `pydantic.ValidationError`. Concurrency is enforced via semaphores that allow parallel requests to different sources. The interval and the concurrency hold for the whole process: across `agrobr.sync` calls (each with its own `asyncio.run`), across loops and across threads. The wait for a slot across threads is capped (`AGROBR_HTTP_TIMEOUT_READ`); at the cap, the request goes ahead with a warning, and the interval still holds.
 
 ## Centralized HTTP Configuration
 
@@ -110,9 +113,11 @@ export AGROBR_HTTP_RETRY_MAX_DELAY=30.0
 ```
 
 Source clients set the read timeout above the 30 s default: ComexStat 120 s; ZARC, PSR and SICAR 180 s;
-INMET 600 s; the others between 30 and 300 s, in each `client.py`'s `get_timeout(read=...)`.
+INMET historical ZIPs 600 s (the INMET observational API and station catalog keep the 30 s default); the others between
+30 and 300 s, in each `client.py`'s `get_timeout(read=...)`.
 `AGROBR_HTTP_TIMEOUT_READ` works as a minimum: when larger than the client's value, it wins; when smaller,
-the client's value stays. `CONNECT`, `WRITE` and `POOL` apply to every source HTTP client.
+the client's value stays. `CONNECT`, `WRITE` and `POOL` apply to every httpx source client; for ANTAQ, which uses
+`requests`, only `CONNECT` and `READ` apply.
 
 Via code:
 

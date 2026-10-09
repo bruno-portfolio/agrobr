@@ -959,11 +959,12 @@
             <button class="copy-code" id="copyExample" type="button" aria-label="Copiar exemplo Python"><svg class="icon" aria-hidden="true"><use href="#i-copy"/></svg></button>
           </div>
           <div class="code-body" id="codeBody">
-            <pre id="asyncExample"><code><span class="kw">from</span> agrobr <span class="kw">import</span> datasets
+            <pre id="asyncExample"><code><span class="kw">import</span> asyncio
+<span class="kw">from</span> agrobr <span class="kw">import</span> datasets
 
-df = <span class="kw">await</span> datasets.<span class="fn">preco_diario</span>(
+df = asyncio.<span class="fn">run</span>(datasets.<span class="fn">preco_diario</span>(
     <span class="str">"soja"</span>
-)
+))
 
 df.<span class="fn">head</span>()</code></pre>
             <pre id="syncExample" hidden><code><span class="kw">from</span> agrobr.sync <span class="kw">import</span> datasets
@@ -1881,7 +1882,7 @@ df.<span class="fn">head</span>()</code></pre>
             <div class="source-item"><dt>CEPEA/ESALQ</dt><dd>Preços agrícolas</dd></div>
             <div class="source-item"><dt>CONAB</dt><dd>Safras e produção</dd></div>
             <div class="source-item"><dt>IBGE/SIDRA</dt><dd>Estatísticas do Brasil</dd></div>
-            <div class="source-item"><dt>NASA POWER</dt><dd>Climatologia global</dd></div>
+            <div class="source-item"><dt>NASA POWER</dt><dd>Clima global diário e mensal</dd></div>
             <div class="source-item"><dt>INMET</dt><dd>Meteorologia</dd></div>
             <div class="source-item"><dt>BCB/SICOR</dt><dd>Crédito rural</dd></div>
             <div class="source-item"><dt>B3</dt><dd>Futuros agrícolas</dd></div>

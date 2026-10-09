@@ -32,7 +32,7 @@ async def moagem_quinzenal(
 **Returns:**
 
 DataFrame with columns: `data`, `quinzena`, `safra`, `produto`, `regiao`, `valor`,
-`valor_safra_anterior`, `variacao_pct`, `unidade` (t for cane/sugar, m³ for ethanol).
+`valor_safra_anterior`, `variacao_pct`, `unidade` (`t` for cane/sugar, `m3` for ethanol).
 
 Values are **cumulative** for the crop year up to each biweekly period. Covers only the
 crop year of the current report + comparison with the previous one — the source does not

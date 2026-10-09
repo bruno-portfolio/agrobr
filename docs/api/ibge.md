@@ -37,7 +37,7 @@ async def pam(
 | `ano` | `int \| str \| list[int] \| None` | Ano(s). Default: último disponível |
 | `uf` | `str \| None` | Filtrar por UF (ex: 'MT') |
 | `nivel` | `Literal['brasil', 'uf', 'municipio']` | Nível: 'brasil', 'uf', 'municipio' |
-| `variaveis` | `list[str] \| None` | Variáveis específicas |
+| `variaveis` | `list[str] \| None` | Variáveis pedidas. Padrão: `area_plantada`, `area_colhida`, `producao` e `rendimento`; `valor_producao` só vem quando pedido (`variaveis=[..., 'valor_producao']`), e sem ele a coluna sai nula |
 | `as_polars` | `bool` | Retornar como polars.DataFrame |
 | `return_meta` | `bool` | Retorna `(df, MetaInfo)` com proveniência |
 
@@ -94,7 +94,7 @@ async def lspa(
 | `produto` | `str` | Código do produto |
 | `ano` | `int \| str \| None` | Ano. Default: atual |
 | `mes` | `int \| str \| None` | Mês (1-12). Sem filtro: meses disponíveis do ano solicitado |
-| `uf` | `str \| None` | Filtrar por UF |
+| `uf` | `str \| None` | UF da consulta. Sem `uf`, a saída é só o total Brasil; para várias UFs, faça uma chamada por UF |
 | `as_polars` | `bool` | Retornar como polars.DataFrame |
 | `return_meta` | `bool` | Retorna `(df, MetaInfo)` com proveniência |
 
@@ -550,7 +550,7 @@ async def censo_agro_historico(
 |-----------|------|-----------|
 | `tema` | `str` | Tema da série histórica (ver tabela abaixo) |
 | `ano` | `int \| list[int] \| None` | Ano(s) censal(ais). Default: todos os disponíveis |
-| `uf` | `str \| None` | Filtrar por UF (ex: 'SP'). Só aplicado em nivel='uf' |
+| `uf` | `str \| None` | Filtrar por UF (ex: 'SP'). Exige `nivel='uf'`; com `'brasil'` ou `'regiao'`, levanta `InvalidParameterError` |
 | `nivel` | `Literal['brasil', 'regiao', 'uf']` | Nível: 'brasil', 'regiao', 'uf' (municipal NÃO disponível) |
 | `as_polars` | `bool` | Retornar como polars.DataFrame |
 | `return_meta` | `bool` | Retorna `(df, MetaInfo)` com proveniência |
@@ -1113,7 +1113,7 @@ Os valores publicados não são convertidos implicitamente. `unidade_producao`, 
 
 O símbolo SIDRA `-` significa zero numérico e é preservado como zero; `..`, `...` e `X` permanecem ausentes. Municípios com produção zero não são eliminados. O contrato `producao_anual` é 2.2; as quatro colunas descritivas e o `localidade_cod` são opcionais no contrato e entregues pela API PAM.
 
-O parser PAM 2 preserva também localidades e medidas inteiramente ausentes ou suprimidas. Duas observações para a mesma localidade, ano e medida, inclusive aliases de variável que colidem, geram `ParseError`; variáveis sem mapeamento também são recusadas. Não há seleção silenciosa do primeiro valor. O schema da API PAM é 2.1 (2.0 mais o `localidade_cod`); o contrato do dataset é 2.2, com `cod_municipio`.
+O parser PAM 2 preserva também localidades e medidas inteiramente ausentes ou suprimidas. Duas observações para a mesma localidade, ano e medida, inclusive aliases de variável que colidem, geram `ParseError`; variáveis sem mapeamento também são recusadas. Não há seleção silenciosa do primeiro valor. O schema da API PAM é o do contrato `producao_anual`, 2.2 (`meta.schema_version`); a API entrega as 14 colunas, sem o `cod_municipio`, que só o dataset `producao_anual` acrescenta.
 
 Nas APIs PEVS, `variavel="valor_producao"` preserva a unidade monetária publicada em `unidade` e retorna `valor` como `float64`, mesmo quando todos os valores são inteiros. O parser é 2; os contratos de silvicultura e extrativismo estão em 1.1.
 

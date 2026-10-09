@@ -57,7 +57,7 @@ Long format: each row holds one variable/value pair.
 
 | Theme | Variable | Unit |
 |------|----------|------|
-| `efetivo_rebanho` | `estabelecimentos` | units |
+| `efetivo_rebanho` | `estabelecimentos` (2017 only) | units |
 | `efetivo_rebanho` | `cabecas` | head |
 | `uso_terra` | `estabelecimentos` | units |
 | `uso_terra` | `area` | hectares |

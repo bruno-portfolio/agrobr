@@ -57,7 +57,7 @@ Long format: cada linha tem um par variavel/valor.
 
 | Tema | Variavel | Unidade |
 |------|----------|---------|
-| `efetivo_rebanho` | `estabelecimentos` | unidades |
+| `efetivo_rebanho` | `estabelecimentos` (só 2017) | unidades |
 | `efetivo_rebanho` | `cabecas` | cabecas |
 | `uso_terra` | `estabelecimentos` | unidades |
 | `uso_terra` | `area` | hectares |

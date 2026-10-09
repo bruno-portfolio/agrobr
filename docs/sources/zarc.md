@@ -23,7 +23,7 @@ Dados publicados como CSV no portal [dados.agricultura.gov.br](https://dados.agr
 | Campo | Tipo | Descricao |
 |-------|------|-----------|
 | cultura | string | Nome canonico da cultura (ex: "soja", "milho_1", "trigo") |
-| safra | string | "2025/2026" ou "perene" |
+| safra | string | Ano-safra (`"2025/2026"`); na tábua de `safra="perene"`, `"perene"`, `"olericola"` ou `"sem_safra"` |
 | geocodigo | string | Codigo IBGE do municipio (7 digitos) |
 | uf | string | Sigla da UF |
 | municipio | string | Nome do municipio |

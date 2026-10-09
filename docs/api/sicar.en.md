@@ -131,7 +131,7 @@ Fetches data, applies the occurrence selection used by `imoveis()`, and aggregat
 | modulos_fiscais_medio | float | Mean fiscal modules |
 | por_tipo_IRU | int | Rural properties |
 | por_tipo_AST | int | Settlements |
-| por_tipo_PCT | int | Indigenous lands |
+| por_tipo_PCT | int | Properties with `tipo` = `PCT` |
 
 ### Examples
 

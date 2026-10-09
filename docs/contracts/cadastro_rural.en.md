@@ -62,10 +62,10 @@ The filter supports millisecond precision. Zeros beyond the third decimal place 
 
 ## Multiple occurrences and provenance
 
-For a tabular query using a single route, the dataset identifies the source as `sicar` in `attempted_sources` and `selected_source`; the `sicar.imoveis()` API uses `sicar_wfs`. Both preserve acquisition details in `source_details["sicar"]`.
+For a tabular query using a single route, the dataset identifies the source as `sicar` in `attempted_sources` and `selected_source`; the `agrobr.alt.sicar.imoveis()` API uses `sicar_wfs`. Both preserve acquisition details in `source_details["sicar"]`.
 
 The source may publish multiple occurrences of one `cod_imovel` with different feature IDs.
-The dataset and `sicar.imoveis()` return one row per code among occurrences matching the query
+The dataset and `agrobr.alt.sicar.imoveis()` return one row per code among occurrences matching the query
 filters. After validating the complete scan, they choose one comparison field for the entire
 group: `data_atualizacao` if every occurrence has an update timestamp; otherwise `data_criacao`
 if every occurrence has a creation timestamp; otherwise the feature ID. The latest timestamp in

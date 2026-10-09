@@ -210,7 +210,7 @@ licença: "O acesso ao dado é livre."). A `hidrografia` é outra camada: só as
 | `pivos_irrigacao` | `OBJECTID`, `CD_GEOCMU`, `NM_MUNICIP`, `NM_ESTADO`, `REGIAO_HID`, `HECTARES` |
 | `demanda_irrigacao` | `OBJECTID`, `ID`, `COBACIA`, `DSVERSAO`, `VZMAXMEN`, `VZMESSEC`, `VZMESIRR`, `VZMEDANO` |
 | `disponibilidade_hidrica` | `OBJECTID`, `ID`, `NUAREAMONT`, `DISPQ95`, `NMRIO`, `DEDOMINIAL`, `DSVERSAO` |
-| `massas_dagua` | os 19 campos da tabela de colunas das massas d'água |
+| `massas_dagua` | `FID` e os 18 campos da tabela de colunas das massas d'água (o `FID` não sai) |
 
 Contagem oficial zero devolve um resultado vazio valido, com as colunas publicadas;
 nas variantes `_geo`, o resultado vazio tambem sai em EPSG:4326. A presenca

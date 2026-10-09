@@ -84,7 +84,7 @@ Contra a cópia de 2008 só em imagem, a versão de hoje confirma 22,6 % casas a
 | `unidade_lida` | str | ✅ | Unidade pela marca da nota do volume ou pelo rótulo da coluna |
 | `valor` | Int64 | ✅ | Número confirmado |
 | `valor_lido` | Int64 | ✅ | Número lido |
-| `marcador` | str | ✅ | "-", "...", "x" quando a casa traz um sinal |
+| `marcador` | str | ✅ | "-", ".." ou "..." quando a casa traz um sinal |
 | `status` | str | ❌ | Ver a tabela acima |
 | `reparado` | bool | ❌ | O grupo de milhar da esquerda foi recuperado por releitura do recorte; `False` em todas as casas desta versão |
 

@@ -62,10 +62,10 @@ O filtro suporta precisão de milissegundos. Zeros além da terceira casa são r
 
 ## Ocorrências do mesmo imóvel e proveniência
 
-Na consulta tabular com uma única rota, o dataset identifica a fonte como `sicar` em `attempted_sources` e `selected_source`; a API `sicar.imoveis()` usa `sicar_wfs`. Ambos preservam os detalhes da aquisição em `source_details["sicar"]`.
+Na consulta tabular com uma única rota, o dataset identifica a fonte como `sicar` em `attempted_sources` e `selected_source`; a API `agrobr.alt.sicar.imoveis()` usa `sicar_wfs`. Ambos preservam os detalhes da aquisição em `source_details["sicar"]`.
 
 A fonte pode publicar mais de uma ocorrência do mesmo `cod_imovel`, com ids de feature distintos.
-O dataset e `sicar.imoveis()` entregam uma linha por código entre as ocorrências que satisfazem os
+O dataset e `agrobr.alt.sicar.imoveis()` entregam uma linha por código entre as ocorrências que satisfazem os
 filtros da consulta. Depois de validar a varredura completa, escolhem a base de comparação uma vez
 por grupo: `data_atualizacao` se todas as ocorrências tiverem esse campo preenchido; senão
 `data_criacao` se todas tiverem criação; senão o id da feature. Fica a maior data na base escolhida.

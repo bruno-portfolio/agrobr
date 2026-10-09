@@ -49,7 +49,7 @@ DataFrame with columns:
 - `data`: Indicator date
 - `produto`: Product name
 - `praca`: Quotation location
-- `valor`: Value in BRL/unit
+- `valor`: Value in BRL per unit of the `unidade` column; for cotton, in BRL cents per pound (`cBRL/lb`)
 - `unidade`: Unit (e.g. 'BRL/sc60kg')
 - `fonte`: Data source ('cepea' or 'noticias_agricolas')
 - `metodologia`: Indicator methodology
@@ -110,7 +110,7 @@ async def ultimo(
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `produto` | `str` | Desired product |
-| `praca` | `str \| None` | Quotation location. Accepts a slug from `pracas()` or the source display label; `None` does not filter |
+| `praca` | `str \| None` | Quotation location. Accepts a slug from `pracas()` or the source display label; `None` does not filter, except for milk, where `None` returns BRASIL |
 | `offline` | `bool` | Use local cache only |
 
 **Returns:**

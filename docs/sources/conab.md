@@ -152,7 +152,7 @@ As flags `as_polars` e `return_meta` são somente nomeadas. As saídas vazias de
 
 ```python
 produtos = await conab.produtos()
-# ['soja', 'milho', 'arroz', 'feijao', 'algodao', 'trigo', ...]
+# ['soja', 'milho', 'milho_1', 'milho_2', 'milho_3', 'arroz', ...]
 ```
 
 ## UFs Disponiveis

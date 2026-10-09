@@ -1,7 +1,7 @@
 # Fontes de Dados
 
 O agrobr integra dados de 41 fontes de dados agricolas.
-As funções de dados das fontes aceitam `return_meta=True`; a Notícias Agrícolas, fallback do CEPEA, tem a proveniência no `cepea.indicador(..., return_meta=True)`.
+As funções de dados das fontes que devolvem tabela aceitam `return_meta=True` (`cepea.ultimo`, que devolve um `Indicador`, não aceita); a Notícias Agrícolas, fallback do CEPEA, tem a proveniência no `cepea.indicador(..., return_meta=True)`.
 O que tem garantia de SemVer em cada fonte está na [API pública](../api/index.md).
 
 ## Visao Geral
@@ -11,7 +11,7 @@ O que tem garantia de SemVer em cada fonte está na [API pública](../api/index.
 | [CEPEA/ESALQ](cepea.md) | Precos | Diaria | Commodities agricolas |
 | [CONAB](conab.md) | Safras, custos, serie historica, [progresso semanal](conab_progresso.md), [CEASA/PROHORT](conab_ceasa.md) | Mensal/Semanal/Diaria | Producao nacional |
 | [IBGE/SIDRA](ibge.md) | Estatisticas | Anual/Mensal/Trimestral | Dados oficiais (PAM, LSPA, PPM, Abate, PEVS, Leite, PIB, Censo), malha municipal e áreas urbanizadas (WFS geo) |
-| [NASA POWER](nasa_power.md) | Climatologia | Diaria | Global, grid 0.5 grau |
+| [NASA POWER](nasa_power.md) | Clima diário e mensal | Diaria | Global, grid 0.5 grau |
 | [BCB](bcb.md) | Crédito rural, séries temporais, câmbio/boletins e expectativas | Varia por serviço | Cultura/UF, série, moeda/boletim ou indicador |
 | [ComexStat](comexstat.md) | Exportacoes | Semanal | NCM/UF |
 | [ANDA](anda.md) | Fertilizantes | Mensal | UF/mes |
@@ -20,7 +20,7 @@ O que tem garantia de SemVer em cada fonte está na [API pública](../api/index.
 | [USDA PSD](usda.md) | Oferta/demanda internacional | Mensal | Commodities globais |
 | [IMEA](imea.md) | Cotacoes e indicadores MT | Diaria | Mato Grosso |
 | [DERAL](deral.md) | Condicao lavouras PR | Semanal | Parana |
-| [INMET](inmet.md) | Meteorologia | Diaria | 600+ estacoes (dados exigem token) |
+| [INMET](inmet.md) | Meteorologia | Diaria | 600+ estações (API observacional exige token; ZIPs históricos são públicos) |
 | [Notícias Agrícolas](noticias_agricolas.md) | Cotações (fallback CEPEA) | Diária | Commodities |
 | [Queimadas/INPE](queimadas.md) | Focos de calor | Diária | 6 biomas, 13 satélites |
 | [Desmatamento PRODES/DETER](desmatamento.md) | Desmatamento + alertas | Anual/Diária | Amazônia, Cerrado, Pantanal |
@@ -32,7 +32,7 @@ O que tem garantia de SemVer em cada fonte está na [API pública](../api/index.
 | [ANTT Pedagio](antt_pedagio.md) | Fluxo de veiculos em pracas de pedagio | Mensal | 200+ pracas, 2010+ |
 | [MAPA PSR](mapa_psr.md) | Apolices e sinistros seguro rural | Anual | 27 UFs, 2006+ |
 | [SICAR](sicar.md) | Cadastro Ambiental Rural | Continua | 27 UFs, 7.4M+ imoveis |
-| [ZARC](zarc.md) | Zoneamento Agrícola de Risco Climático | Semanal | 32 culturas, todos os municípios |
+| [ZARC](zarc.md) | Zoneamento Agrícola de Risco Climático | Semanal | 107 culturas no catálogo; municípios de cada publicação |
 | [Agrofit/MAPA](defensivos.md) | Agrotoxicos registrados | Continua | ~8K formulados, ~267K autorizacoes |
 | [FUNAI Terras Indigenas](funai.md) | Terras indigenas (WFS geo) | Continua | 665 TIs, todas as UFs |
 | [ICMBio UCs Federais](icmbio.md) | Unidades de conservacao federais (WFS geo) | Continua | 347 UCs federais, sem RPPN |
@@ -77,7 +77,7 @@ asyncio.run(main())
 
 ## Estrutura do MetaInfo
 
-O objeto `MetaInfo` contem as seguintes informacoes:
+O objeto `MetaInfo` traz, entre outros, os campos abaixo; a lista completa, com `validation_warnings`, `source_details`, `schema_version`, `attempted_sources`, `selected_source` e `fetch_timestamp`, está em [Contratos](../contracts/index.md#metainfo). `cache_key` e `cache_expires_at` podem ser nulos; preenchidos, não indicam que o dado veio do cache: para isso, use `from_cache`.
 
 | Campo | Tipo | Descricao |
 |-------|------|-----------|
@@ -86,8 +86,8 @@ O objeto `MetaInfo` contem as seguintes informacoes:
 | `source_method` | str | Metodo de acesso (httpx, cache) |
 | `fetched_at` | datetime | Momento da coleta |
 | `from_cache` | bool | Se veio do cache local |
-| `cache_key` | str | Chave no cache |
-| `cache_expires_at` | datetime | Quando o cache expira |
+| `cache_key` | str \| None | Chave no cache |
+| `cache_expires_at` | datetime \| None | Quando o cache expira |
 | `records_count` | int | Quantidade de registros |
 | `columns` | list | Colunas retornadas |
 | `fetch_duration_ms` | int | Tempo de fetch em ms |

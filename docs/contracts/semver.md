@@ -1,7 +1,7 @@
 # Política de Versionamento (Semver)
 
 O agrobr segue [Semantic Versioning 2.0.0](https://semver.org/) com granularidade
-por dataset. Cada dataset tem `schema_version` proprio (independente de `lib_version`).
+por dataset. Cada dataset tem `schema_version` proprio (independente da versão da biblioteca, `agrobr_version` no `MetaInfo`).
 
 ## Regras
 
@@ -33,6 +33,7 @@ pode quebrar codigo downstream que depende do schema atual.
 |---|---|---|---|
 | `data` | `date` | obrigatória | v0.4.0 |
 | `produto` | `str` | obrigatória | v0.4.0 |
+| `praca` | `str` | opcional | v0.4.0 |
 | `valor` | `float` | obrigatória, > 0 | v0.4.0 |
 | `unidade` | `str` | obrigatória | v0.4.0 |
 | `fonte` | `str` | obrigatória | v0.6.0 |

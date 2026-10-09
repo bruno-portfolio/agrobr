@@ -146,5 +146,5 @@ print(pivot.to_string(index=False))
 - **Dados:** % plantio e colheita por cultura x estado
 - **Formato:** XLSX
 - **Serie:** Safra atual + comparativo ano anterior + media 5 anos
-- **Licenca:** Dados publicos governo federal (livre)
+- **Licenca:** CC BY-ND 3.0 (rodapé da ficha da planilha), classificação `livre`: reprodução comercial com atribuição à CONAB, sem distribuir adaptações protegidas. Veja [Licenças](../licenses.md)
 - **Portal:** [Progresso de Safra](https://www.gov.br/conab/pt-br/atuacao/informacoes-agropecuarias/safras/progresso-de-safra)

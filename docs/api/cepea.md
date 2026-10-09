@@ -48,7 +48,7 @@ DataFrame com colunas:
 - `data`: Data do indicador
 - `produto`: Nome do produto
 - `praca`: Praça de cotação
-- `valor`: Valor em R$/unidade
+- `valor`: Valor em R$ por unidade da coluna `unidade`; no algodão, em centavos de R$ por libra-peso (`cBRL/lb`)
 - `unidade`: Unidade (ex: 'BRL/sc60kg')
 - `fonte`: Fonte dos dados ('cepea' ou 'noticias_agricolas')
 - `metodologia`: Metodologia do indicador
@@ -108,7 +108,7 @@ async def ultimo(
 | Parâmetro | Tipo | Descrição |
 |-----------|------|-----------|
 | `produto` | `str` | Produto desejado |
-| `praca` | `str \| None` | Praça de cotação. Aceita o slug de `pracas()` ou o rótulo exibido pela fonte; `None` não filtra |
+| `praca` | `str \| None` | Praça de cotação. Aceita o slug de `pracas()` ou o rótulo exibido pela fonte; `None` não filtra, exceto no leite, em que `None` devolve o BRASIL |
 | `offline` | `bool` | Usar apenas cache local |
 
 **Retorno:**

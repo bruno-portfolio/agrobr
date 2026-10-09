@@ -13,7 +13,7 @@ O CAR inclui informacoes sobre:
 - Status do cadastro (Ativo, Pendente, Suspenso, Cancelado e RE, publicado pelo SICAR sem definição oficial localizada)
 - Area total em hectares
 - Modulos fiscais
-- Tipo de imovel (Rural, Assentamento, Terra Indigena)
+- Tipo de imovel (IRU Rural, AST Assentamento, PCT conforme publicado pelo SICAR)
 - Municipio e codigo IBGE
 
 ## Acesso via WFS
@@ -38,7 +38,7 @@ com filtros server-side (CQL_FILTER) e paginacao transparente.
 | municipio | string | Nome do municipio |
 | cod_municipio_ibge | int | Codigo IBGE do municipio |
 | modulos_fiscais | float | Numero de modulos fiscais |
-| tipo | string | IRU (Rural), AST (Assentamento), PCT (Terra Indigena) |
+| tipo | string | IRU (Rural), AST (Assentamento), PCT (tipo publicado pelo SICAR) |
 | cod_municipio | int | Código IBGE de 7 dígitos (igual a `cod_municipio_ibge`); anulável |
 
 ## Notas

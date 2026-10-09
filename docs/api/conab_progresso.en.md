@@ -146,5 +146,5 @@ print(pivot.to_string(index=False))
 - **Data:** % planting and harvest per crop x state
 - **Format:** XLSX
 - **Series:** Current crop year + previous-year comparison + 5-year average
-- **License:** Public federal government data (livre)
+- **License:** CC BY-ND 3.0 (footer of the workbook's publication page), classified as `livre`: commercial reproduction with attribution to CONAB, without distributing protected adaptations. See [Licenses](../licenses.md)
 - **Portal:** [Progresso de Safra](https://www.gov.br/conab/pt-br/atuacao/informacoes-agropecuarias/safras/progresso-de-safra)

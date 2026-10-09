@@ -28,7 +28,7 @@ async def focos(
 |-----------|------|-------------|
 | `ano` | `int` | Year (e.g. 2024) |
 | `mes` | `int` | Month (1-12) |
-| `dia` | `int \| None` | Specific day (1-31). If None, fetches the whole month |
+| `dia` | `int \| None` | Specific day (1-31). INPE only keeps the daily file for the last few days: an older day raises `SourceUnavailableError` (use the whole month). If None, fetches the whole month |
 | `uf` | `str \| None` | Filter by state (e.g. "MT", "SP"). Case insensitive |
 | `bioma` | `str \| None` | Filter by biome (e.g. "Amazonia", "Cerrado"). Accents are optional; unknown values raise `ValueError` |
 | `satelite` | `str \| None` | Filter by satellite (e.g. "AQUA_M-T", "NOAA-20"), case-insensitive; without it, hotspots from every satellite come back. A satellite absent from the period file raises `InvalidParameterError` with the published ones, after download |
@@ -59,13 +59,16 @@ The 4 numeric columns are `float64`, with `NaN` where the source publishes -999 
 **Example:**
 
 ```python
+from datetime import date, timedelta
+
 from agrobr import queimadas
 
 # All fire hotspots in September/2024
 df = await queimadas.focos(ano=2024, mes=9)
 
-# Fire hotspots for a specific day
-df = await queimadas.focos(ano=2024, mes=9, dia=15)
+# Fire hotspots for a specific day (yesterday): INPE only keeps the daily file for the last few days
+yesterday = date.today() - timedelta(days=1)
+df = await queimadas.focos(ano=yesterday.year, mes=yesterday.month, dia=yesterday.day)
 
 # Filter by state
 df = await queimadas.focos(ano=2024, mes=9, uf="MT")

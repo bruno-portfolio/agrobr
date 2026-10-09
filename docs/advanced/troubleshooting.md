@@ -50,9 +50,10 @@ except AgrobrError:
 fonte alternativa. A mensagem informa a fonte original, o nome e o motivo resumido
 de cada fonte que falhou na cascata, na ordem das tentativas, e o fallback usado. A execução continua normalmente.
 
-### `TimeoutError`
+### Timeout (`SourceUnavailableError` com `ReadTimeout` ou `ConnectTimeout`)
 
-**Causa:** Requisição demorou muito.
+**Causa:** a fonte não respondeu no prazo. Esgotadas as tentativas, sai `SourceUnavailableError`; na maioria das fontes, a
+mensagem traz o tipo do timeout e `after N attempts`.
 
 **Soluções:**
 
@@ -178,7 +179,7 @@ df = await cepea.indicador('soja', force_refresh=True)
 
 ## Problemas com Polars
 
-### `ImportError: polars not found`
+### `ImportError: polars é necessário para as_polars=True`
 
 **Causa:** Polars não instalado.
 
@@ -243,8 +244,19 @@ agrobr --verbose cepea indicador soja
 import logging
 
 logging.basicConfig(level=logging.DEBUG)             # todos os logs, na saída de erro
-logging.getLogger("agrobr").setLevel(logging.INFO)   # ou só o nível do agrobr
 ```
+
+Para só o agrobr, em `INFO`:
+
+```python
+import logging
+
+logging.basicConfig()                                # um handler na saída de erro
+logging.getLogger("agrobr").setLevel(logging.INFO)
+```
+
+Sem um handler, como o do `basicConfig`, o Python só imprime de `WARNING` para cima: o `setLevel` sozinho não mostra os
+logs de `INFO`.
 
 O agrobr não configura o structlog: a configuração do structlog da sua aplicação vale só para os logs dela, e os do agrobr
 seguem no `logging`.
@@ -303,7 +315,10 @@ df = cepea.indicador('soja')
 
 ### Posso usar com proxies?
 
-Atualmente não há suporte nativo. Considere configurar proxy a nível de sistema.
+O agrobr não tem opção de proxy própria. Os clientes HTTP (o httpx e, na ANTAQ, o requests) seguem as variáveis
+`HTTPS_PROXY`, `HTTP_PROXY` e `NO_PROXY` do ambiente: nenhum deles desliga essa leitura. O Chromium do Playwright, usado
+pela CONAB, é aberto sem a opção `proxy`: o agrobr não repassa proxy a ele. Com proxy que reassina o TLS, veja também os
+[certificados](ambiente.md#certificados).
 
 ### Os dados são gratuitos?
 

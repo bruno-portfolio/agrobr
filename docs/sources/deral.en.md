@@ -56,8 +56,8 @@ Oats, sugarcane, canola and cassava have parser aliases, but do not appear in th
 report editions. The source and the dataset accept the eight crops above, the `milho` and
 `feijao` filters, which select both published seasons, and agrobr synonyms (`"Soja"`,
 `"soybean"`, `"milho 2ª safra"`). Any other name raises `InvalidParameterError` with the list,
-before any request. The dataset advertises only the eight crops above, whose availability
-varies by edition.
+before any request. The dataset advertises the eight crops above plus the `feijao` and `milho` filters (10 values),
+whose availability varies by edition.
 
 ## Risk Note
 

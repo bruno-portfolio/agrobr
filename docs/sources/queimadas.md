@@ -77,8 +77,11 @@ asyncio.run(main())
 ### Focos Diarios
 
 ```python
-# Focos de um dia especifico
-df = await queimadas.focos(ano=2024, mes=9, dia=15)
+from datetime import date, timedelta
+
+# Focos de um dia específico (ontem): o INPE só mantém o arquivo diário dos últimos dias
+ontem = date.today() - timedelta(days=1)
+df = await queimadas.focos(ano=ontem.year, mes=ontem.month, dia=ontem.day)
 ```
 
 ### Filtros Combinados

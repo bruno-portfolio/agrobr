@@ -1,7 +1,7 @@
 # Data Sources
 
 agrobr integrates data from 41 agricultural data sources.
-Source data functions accept `return_meta=True`; Notícias Agrícolas, the CEPEA fallback, carries its provenance in `cepea.indicador(..., return_meta=True)`.
+Source data functions that return a table accept `return_meta=True` (`cepea.ultimo`, which returns an `Indicador`, does not); Notícias Agrícolas, the CEPEA fallback, carries its provenance in `cepea.indicador(..., return_meta=True)`.
 What has a SemVer guarantee in each source is in the [public API](../api/index.md).
 
 ## Overview
@@ -11,7 +11,7 @@ What has a SemVer guarantee in each source is in the [public API](../api/index.m
 | [CEPEA/ESALQ](cepea.md) | Prices | Daily | Agricultural commodities |
 | [CONAB](conab.md) | Crops, costs, historical series, [weekly progress](conab_progresso.md), [CEASA/PROHORT](conab_ceasa.md) | Monthly/Weekly/Daily | National production |
 | [IBGE/SIDRA](ibge.md) | Statistics | Annual/Monthly/Quarterly | Official data (PAM, LSPA, PPM, Slaughter, PEVS, Milk, GDP, Census), municipal mesh and urbanized areas (WFS geo) |
-| [NASA POWER](nasa_power.md) | Climatology | Daily | Global, 0.5 degree grid |
+| [NASA POWER](nasa_power.md) | Daily and monthly weather | Daily | Global, 0.5 degree grid |
 | [BCB](bcb.en.md) | Rural credit, time series, exchange-rate bulletins, and forecasts | Varies by service | Crop/state, series, currency/bulletin, or indicator |
 | [ComexStat](comexstat.md) | Exports | Weekly | NCM/state |
 | [ANDA](anda.md) | Fertilizers | Monthly | State/month |
@@ -20,7 +20,7 @@ What has a SemVer guarantee in each source is in the [public API](../api/index.m
 | [USDA PSD](usda.md) | International supply/demand | Monthly | Global commodities |
 | [IMEA](imea.md) | MT quotes and indicators | Daily | Mato Grosso |
 | [DERAL](deral.md) | PR crop condition | Weekly | Paraná |
-| [INMET](inmet.md) | Meteorology | Daily | 600+ stations (data requires token) |
+| [INMET](inmet.md) | Meteorology | Daily | 600+ stations (observational API requires a token; historical ZIPs are public) |
 | [Notícias Agrícolas](noticias_agricolas.md) | Quotes (CEPEA fallback) | Daily | Commodities |
 | [Queimadas/INPE](queimadas.md) | Fire hotspots | Daily | 6 biomes, 13 satellites |
 | [Deforestation PRODES/DETER](desmatamento.md) | Deforestation + alerts | Annual/Daily | Amazônia, Cerrado, Pantanal |
@@ -32,7 +32,7 @@ What has a SemVer guarantee in each source is in the [public API](../api/index.m
 | [ANTT Pedagio](antt_pedagio.md) | Vehicle traffic at toll plazas | Monthly | 200+ plazas, 2010+ |
 | [MAPA PSR](mapa_psr.md) | Rural insurance policies and claims | Annual | 27 states, 2006+ |
 | [SICAR](sicar.md) | Rural Environmental Registry (CAR) | Continuous | 27 states, 7.4M+ properties |
-| [ZARC](zarc.md) | Agricultural Climate Risk Zoning | Weekly | 32 crops, all municipalities |
+| [ZARC](zarc.md) | Agricultural Climate Risk Zoning | Weekly | 107 crops in the catalogue; municipalities of each publication |
 | [Agrofit/MAPA](defensivos.md) | Registered pesticides | Continuous | ~8K formulated products, ~267K authorizations |
 | [FUNAI Indigenous Lands](funai.md) | Indigenous lands (WFS geo) | Continuous | 665 territories, all states |
 | [ICMBio Federal Conservation Units](icmbio.md) | Federal conservation units (WFS geo) | Continuous | 347 federal units, without private reserves |
@@ -77,7 +77,7 @@ asyncio.run(main())
 
 ## MetaInfo Structure
 
-The `MetaInfo` object contains the following information:
+The `MetaInfo` object includes, among others, the fields below; the full list, with `validation_warnings`, `source_details`, `schema_version`, `attempted_sources`, `selected_source` and `fetch_timestamp`, is in [Contracts](../contracts/index.md#metainfo). `cache_key` and `cache_expires_at` may be null; when filled, they do not mean the data came from the cache: use `from_cache` for that.
 
 | Field | Type | Description |
 |-------|------|-------------|
@@ -86,8 +86,8 @@ The `MetaInfo` object contains the following information:
 | `source_method` | str | Access method (httpx, cache) |
 | `fetched_at` | datetime | Collection timestamp |
 | `from_cache` | bool | Whether it came from the local cache |
-| `cache_key` | str | Cache key |
-| `cache_expires_at` | datetime | When the cache expires |
+| `cache_key` | str \| None | Cache key |
+| `cache_expires_at` | datetime \| None | When the cache expires |
 | `records_count` | int | Number of records |
 | `columns` | list | Returned columns |
 | `fetch_duration_ms` | int | Fetch time in ms |

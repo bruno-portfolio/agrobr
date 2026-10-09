@@ -90,7 +90,7 @@ df, meta = await nasa_power.clima_uf("MT", ano=2024, return_meta=True)
 | `data` | datetime | Data da observacao |
 | `lat` | float | Latitude do ponto |
 | `lon` | float | Longitude do ponto |
-| `uf` | str | Sigla da UF (quando usado clima_uf) |
+| `uf` | str | Sigla da UF em `clima_uf`; em `clima_ponto`, texto vazio (`""`) |
 | `temp_media` | float | Temperatura media (C) |
 | `temp_max` | float | Temperatura maxima (C) |
 | `temp_min` | float | Temperatura minima (C) |

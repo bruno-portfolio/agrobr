@@ -152,7 +152,7 @@ The `as_polars` and `return_meta` flags are keyword-only. Empty `safras`, `balan
 
 ```python
 produtos = await conab.produtos()
-# ['soja', 'milho', 'arroz', 'feijao', 'algodao', 'trigo', ...]
+# ['soja', 'milho', 'milho_1', 'milho_2', 'milho_3', 'arroz', ...]
 ```
 
 ## Available States

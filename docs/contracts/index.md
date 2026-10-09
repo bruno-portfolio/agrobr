@@ -12,7 +12,7 @@ Validação é automática: todo `fetch()` de dataset valida o DataFrame contra 
 | **Nomes estáveis** | Colunas nunca mudam de nome (só adicionam) |
 | **Colunas estáveis presentes** | Toda coluna `stable` existe no DataFrame; `nullable` permite valores nulos, não ausência da coluna |
 | **Tipos só alargam** | int→float ok, float→int nunca |
-| **Datas ISO-8601** | Sempre YYYY-MM-DD |
+| **Datas tipadas** | Colunas de data saem como `datetime64` (pandas), não como texto `YYYY-MM-DD`; com hora e fuso quando a fonte publica (ex.: `datetime64[ns, UTC]`) |
 | **Unidades explícitas** | Coluna dedicada |
 | **Breaking = Major** | Quebras só em versão major |
 | **Primary keys** | Quando há chave definida, suas colunas existem e a combinação é única |

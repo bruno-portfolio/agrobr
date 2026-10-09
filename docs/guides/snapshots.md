@@ -1,6 +1,6 @@
 # Snapshots e modo determinístico
 
-Snapshots exportam conjuntos de dados para arquivos Parquet. O modo determinístico é um recurso separado: `preco_diario` aplica corte de data e execução offline, enquanto outros datasets podem usar o contexto apenas para selecionar um ano ou registrar proveniência. Não há garantia global de execução sem rede para todos os datasets.
+Snapshots exportam conjuntos de dados para arquivos Parquet. O modo determinístico é um recurso separado: `preco_diario` aplica corte de data e execução offline, enquanto outros datasets usam o contexto para selecionar um ano, consultam a fonte corrente com aviso ou recusam o contexto com `InvalidParameterError` (lista em [Reprodutibilidade](../advanced/reproducibility.md)). Não há garantia global de execução sem rede para todos os datasets.
 
 Em `clima`, o ano do contexto é o padrão do modo UF quando `ano` é omitido. Os dados não são truncados na data do snapshot e as revisões INMET/NASA não são congeladas; o modo estação mantém `inicio`/`fim`. `meta.source_details.deterministic` explicita essas limitações. A exportação por `create_snapshot()` continua limitada às fontes listadas abaixo e não inclui ZIPs climáticos.
 
@@ -78,7 +78,7 @@ async with datasets.deterministic("2025-12-31"):
     historico = await datasets.preco_diario("milho", fim="2025-06-30")
 ```
 
-O contexto não garante modo offline para os demais datasets; cada contrato define seu comportamento. Quem consulta a fonte corrente avisa em `validation_warnings` e com `UserWarning` que o dado não é o da data. `cadastro_rural` rejeita `deterministic` antes da rede, pois os filtros SICAR consultam registros correntes e não recuperam versões históricas do cadastro. O context manager usa `contextvars`, portanto o estado é seguro entre threads e tarefas assíncronas.
+O contexto não garante modo offline para os demais datasets; cada contrato define seu comportamento. Quem consulta a fonte corrente avisa em `validation_warnings` e com `UserWarning` que o dado não é o da data; 22 datasets recusam o contexto antes de I/O, com `InvalidParameterError` (lista em [Reprodutibilidade](../advanced/reproducibility.md)), entre eles os descritos abaixo. `cadastro_rural` rejeita `deterministic` antes da rede, pois os filtros SICAR consultam registros correntes e não recuperam versões históricas do cadastro. O context manager usa `contextvars`, portanto o estado é seguro entre threads e tarefas assíncronas.
 
 Os [quatro datasets Agrofit](../api/defensivos_datasets.md) também recusam esse contexto, antes de cache ou HTTP. Os CSVs são exportações correntes, e o bundle de cache identifica a coleta original; nenhum deles reconstitui arbitrariamente o cadastro de outra data. A ausência de contexto permite uso normal do cache, sem atribuir um snapshot histórico.
 
@@ -109,7 +109,7 @@ df = load_from_snapshot("cepea", "soja")
 set_mode("normal")
 ```
 
-O argumento `snapshot` define o nome padrão usado por `load_from_snapshot()`. `snapshot_path` define o diretório base usado tanto na criação quanto na leitura. `set_mode()` não ativa o context manager de `datasets`, e o campo `network_enabled` da configuração não bloqueia requests HTTP.
+O argumento `snapshot` recebe uma data ISO (`AAAA-MM-DD`; outro texto levanta `ValueError`) e define o nome padrão usado por `load_from_snapshot()`: serve para snapshot com nome de data, como o padrão do `create_snapshot()`. Para outro nome, passe `snapshot_name=`. `snapshot_path` define o diretório base usado tanto na criação quanto na leitura. `set_mode()` não ativa o context manager de `datasets`, e o campo `network_enabled` da configuração não bloqueia requests HTTP.
 
 A CLI não tem comando para ativar um snapshot: o `snapshot use` da 1.x saiu na 2.0, porque não alterava execuções futuras. Para ler um snapshot, use `load_from_snapshot()`; o modo determinístico não lê os arquivos do snapshot.
 

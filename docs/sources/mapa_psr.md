@@ -107,7 +107,7 @@ depois da descarga.
 
 ## Colunas — `apolices`
 
-Mesmas colunas de `sinistros`, mais:
+Mesmas colunas de `sinistros`, mais `taxa`. Em `apolices`, `valor_indenizacao` é anulável e vale 0 ou nulo na apólice sem sinistro, `evento` sai vazio (`""`) na apólice sem sinistro e `seguradora` não é nula (faz parte da chave).
 
 Nas apólices, `valor_premio` sai como publicado pelo MAPA, inclusive quando negativo, com `UserWarning` e `meta.validation_warnings`. Nos sinistros, o contrato mantém `valor_premio` ≥ 0.
 

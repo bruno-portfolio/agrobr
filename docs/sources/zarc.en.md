@@ -23,7 +23,7 @@ Data published as CSV on the [dados.agricultura.gov.br](https://dados.agricultur
 | Field | Type | Description |
 |-------|------|-----------|
 | cultura | string | Canonical crop name (e.g. "soja", "milho_1", "trigo") |
-| safra | string | "2025/2026" or "perene" |
+| safra | string | Crop year (`"2025/2026"`); in the `safra="perene"` table, `"perene"`, `"olericola"` or `"sem_safra"` |
 | geocodigo | string | IBGE code of the municipality (7 digits) |
 | uf | string | State abbreviation |
 | municipio | string | Municipality name |

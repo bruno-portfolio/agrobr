@@ -76,9 +76,9 @@ A legenda também depende da coleção: no recurso municipal 10, classe 13 corre
 
 | Codigo | Classe | Nivel 0 |
 |--------|--------|---------|
-| 3 | Formacao Florestal | Natural |
-| 4 | Formacao Savanica | Natural |
-| 12 | Formacao Campestre | Natural |
+| 3 | Formação Florestal | Natural |
+| 4 | Formação Savânica | Natural |
+| 12 | Formação Campestre | Natural |
 | 15 | Pastagem | Antropic |
 | 18 | Agricultura | Antropic |
 | 39 | Soja | Antropic |
@@ -86,8 +86,10 @@ A legenda também depende da coleção: no recurso municipal 10, classe 13 corre
 | 40 | Arroz | Antropic |
 | 9 | Silvicultura | Antropic |
 | 21 | Mosaico de Usos | Antropic |
-| 24 | Area Urbanizada | Antropic |
+| 24 | Área Urbanizada | Antropic |
 | 33 | Rio, Lago e Oceano | Natural |
+
+A coluna `classe` traz o rótulo exatamente como acima; para filtrar, prefira `classe_id`.
 
 ---
 

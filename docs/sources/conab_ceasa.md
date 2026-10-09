@@ -46,7 +46,7 @@ Frutas e hortaliças seguem os grupos do painel oficial "Hortaliças e Frutas" d
 A API retorna uma matriz pivot (48 linhas x 44 colunas):
 - Coluna 0: nome do produto com unidade (ex: "TOMATE (KG)")
 - Colunas 1-43: preco por CEASA (null = nao comercializado)
-- Headers das colunas contem data por CEASA (ex: "CEAGESP - SAO PAULO\r(13/02/2026)")
+- Headers das colunas contem data por CEASA (ex: "CEAGESP \rSAO PAULO\r(13/02/2026)/Preco (R$)")
 
 O parser unpivota a matriz para formato long-form com 7 colunas.
 

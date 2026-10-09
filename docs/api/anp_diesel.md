@@ -113,7 +113,7 @@ df = alt.anp_diesel.vendas_diesel()
 ## Notas
 
 - Fonte: [ANP Gov.br](https://www.gov.br/anp/) — licenca `livre` (Decreto 8.777/2016)
-- Dados: XLSX bulk (precos 2013+), CSV (volumes)
+- Dados: XLSX bulk (preços municipais desde 2022; por UF e Brasil desde 2013), CSV (volumes). No nível municipal, `inicio` ou `fim` fora de 2022 até o ano corrente levanta `InvalidParameterError` antes da rede
 - Planilhas municipais grandes são baixadas integralmente; não há cache persistente.
 
 ## Períodos de preços e catálogo

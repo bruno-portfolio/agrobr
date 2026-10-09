@@ -49,7 +49,7 @@ In API 2.0, territorial filters and flags are passed by keyword. PAM, LSPA, PPM,
 
 Closed domains normalize case and accents; invalid parameters raise `InvalidParameterError` before any query. `variaveis=[]`, unknown variables and empty year lists are rejected. Forestry and plant extraction validate years from 1974 through the current year. The historical census accepts an integer year or a nonempty list of integer years published for the topic.
 
-Each empty SIDRA query emits a warning and records the same text in `MetaInfo.validation_warnings`, including after another empty query for the same table and period. Empty results preserve columns and dtypes: years/codes use `Int64`, measures use `float64`, quarter labels remain text, and text follows the installed pandas default. `animais_abatidos` uses `Int64` (contract 2.0); fractional head counts raise `ParseError`. PAM preserves its 14 output columns, with unrequested measures set to null.
+Each empty SIDRA query emits a warning and records the same text in `MetaInfo.validation_warnings`, including after another empty query for the same table and period. Empty results preserve columns and dtypes: years/codes use `Int64`, measures use `float64`, quarter labels remain text, and text follows the installed pandas default. `animais_abatidos` uses `Int64` since contract 2.0 (current: 2.1, which adds `categoria` to the output and the key); fractional head counts raise `ParseError`. PAM preserves its 14 output columns, with unrequested measures set to null.
 
 ## Available Surveys
 
@@ -289,7 +289,7 @@ df, meta = await ibge.lspa('soja', ano=2024, return_meta=True)
 
 ```python
 produtos = await ibge.produtos_pam()
-# ['soja', 'milho', 'arroz', 'feijao', 'trigo', 'cafe', ...]
+# ['soja', 'milho', 'arroz', 'feijao', 'trigo', 'algodao', 'cafe', ...]
 ```
 
 ## LSPA Products
@@ -305,7 +305,7 @@ Note: In LSPA, `milho_1` and `milho_2` refer to the first and second maize crops
 
 ```python
 ufs = await ibge.ufs()
-# ['AC', 'AL', 'AM', 'AP', 'BA', 'CE', 'DF', ...]
+# ['RO', 'AC', 'AM', 'RR', 'PA', 'AP', 'TO', ...]  (IBGE code order)
 ```
 
 ## Usage - PPM
@@ -417,6 +417,7 @@ asyncio.run(main())
 | `localidade` | str | State |
 | `localidade_cod` | int | IBGE code of the locality |
 | `especie` | str | bovino, suino or frango |
+| `categoria` | str | Cattle herd type: `total` (default), `bois`, `vacas`, `novilhos`, `novilhas` or `vitelos`; `total` for hogs and chickens |
 | `animais_abatidos` | Int64 | Quantity slaughtered (head) |
 | `peso_carcacas` | float | Total carcass weight (kg) |
 | `fonte` | str | "ibge_abate" |
@@ -489,6 +490,7 @@ asyncio.run(main())
 | `agrotoxicos` | Pesticide use | — | 1459 | 6851 |
 | `praticas_agricolas` | Agricultural practices | — | 837 | 8561 |
 | `irrigacao` | Irrigation | — | 855 | 6857 |
+| `despesa_adubos` | Fertilizer expenses | — | — | 6899 |
 
 ```python
 temas = await ibge.temas_censo_agro()
@@ -693,7 +695,7 @@ Bursts of SIDRA queries may trigger a Cloudflare anti-bot check (`challenge`). W
 
 ## Periods and historical coverage
 
-PAM before 1988 may omit planted area. `datasets.producao_anual` represents that absence with nullable `Float64`; production value also remains null when not requested. Other measures are not automatically supplied, so source changes remain visible.
+PAM before 1988 may omit planted area. `datasets.producao_anual` represents that absence as `NaN` in the `float64` column; production value also remains null when not requested. Other measures are not automatically supplied, so source changes remain visible.
 
 PPM rejects future years with `InvalidParameterError`, including through `datasets.pecuaria_municipal`. Slaughter, quarterly milk, and agricultural GDP accept `2025-4`, `2025-T4`, `2025T4`, `2025/4`, and `2025Q4`, normalized to `202504`. Invalid formats are rejected before network access.
 

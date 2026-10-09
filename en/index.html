@@ -959,11 +959,12 @@
             <button class="copy-code" id="copyExample" type="button" aria-label="Copy Python example"><svg class="icon" aria-hidden="true"><use href="#i-copy"/></svg></button>
           </div>
           <div class="code-body" id="codeBody">
-            <pre id="asyncExample"><code><span class="kw">from</span> agrobr <span class="kw">import</span> datasets
+            <pre id="asyncExample"><code><span class="kw">import</span> asyncio
+<span class="kw">from</span> agrobr <span class="kw">import</span> datasets
 
-df = <span class="kw">await</span> datasets.<span class="fn">preco_diario</span>(
+df = asyncio.<span class="fn">run</span>(datasets.<span class="fn">preco_diario</span>(
     <span class="str">"soja"</span>
-)
+))
 
 df.<span class="fn">head</span>()</code></pre>
             <pre id="syncExample" hidden><code><span class="kw">from</span> agrobr.sync <span class="kw">import</span> datasets
@@ -1881,7 +1882,7 @@ df.<span class="fn">head</span>()</code></pre>
             <div class="source-item"><dt>CEPEA/ESALQ</dt><dd>Agricultural prices</dd></div>
             <div class="source-item"><dt>CONAB</dt><dd>Crops and production</dd></div>
             <div class="source-item"><dt>IBGE/SIDRA</dt><dd>Brazilian statistics</dd></div>
-            <div class="source-item"><dt>NASA POWER</dt><dd>Global climatology</dd></div>
+            <div class="source-item"><dt>NASA POWER</dt><dd>Global daily and monthly weather</dd></div>
             <div class="source-item"><dt>INMET</dt><dd>Weather observations</dd></div>
             <div class="source-item"><dt>BCB/SICOR</dt><dd>Rural credit</dd></div>
             <div class="source-item"><dt>B3</dt><dd>Agricultural futures</dd></div>
@@ -1981,7 +1982,7 @@ df.<span class="fn">head</span>()</code></pre>
     tickerToggle.addEventListener('click', () => {
       const paused = tickerTrack.classList.toggle('paused');
       tickerToggle.setAttribute('aria-pressed', String(paused));
-      tickerToggle.setAttribute('aria-label', paused ? 'Resume prices' : 'Pause prices');
+      tickerToggle.setAttribute('aria-label', paused ? 'Resume quotes' : 'Pause quotes');
       tickerToggle.querySelector('use').setAttribute('href', paused ? '#i-play' : '#i-pause');
     });
     tickerTrack.parentElement.addEventListener('focus', () => {

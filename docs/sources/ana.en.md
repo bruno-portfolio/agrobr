@@ -212,7 +212,7 @@ lines (BHO), no polygons.
 | `pivos_irrigacao` | `OBJECTID`, `CD_GEOCMU`, `NM_MUNICIP`, `NM_ESTADO`, `REGIAO_HID`, `HECTARES` |
 | `demanda_irrigacao` | `OBJECTID`, `ID`, `COBACIA`, `DSVERSAO`, `VZMAXMEN`, `VZMESSEC`, `VZMESIRR`, `VZMEDANO` |
 | `disponibilidade_hidrica` | `OBJECTID`, `ID`, `NUAREAMONT`, `DISPQ95`, `NMRIO`, `DEDOMINIAL`, `DSVERSAO` |
-| `massas_dagua` | the 19 fields in the water bodies column table |
+| `massas_dagua` | `FID` and the 18 fields in the water bodies column table (`FID` is not returned) |
 
 An official count of zero returns a valid empty result with the published columns;
 in the `_geo` variants the empty result is also in EPSG:4326. A field containing a null

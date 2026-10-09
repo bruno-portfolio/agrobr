@@ -36,15 +36,15 @@ Defina as variáveis antes de importar o agrobr. Em detalhe:
 | `AGROBR_HTTP_TIMEOUT_READ` | `30` | Segundos de leitura. Vale como mínimo: o cliente da fonte que fixa um tempo maior fica com o dele ([resiliência](resilience.md#configuracao-http-centralizada)). Vale também no download da ANTAQ, que usa o requests (os timeouts de escrita e de pool não se aplicam a ele) |
 | `AGROBR_HTTP_TIMEOUT_WRITE` | `10` | Segundos de escrita |
 | `AGROBR_HTTP_TIMEOUT_POOL` | `10` | Segundos de espera por uma conexão livre |
-| `AGROBR_HTTP_TIMEOUT_DOWNLOAD_COMEXSTAT` | `300` | Teto, em segundos, do download inteiro de um arquivo do Comex Stat, novas tentativas incluídas. O `AGROBR_HTTP_TIMEOUT_READ` não mexe nele; suba este em rede lenta. Número finito maior que `0`; o resto é recusado com `ValidationError` |
-| `AGROBR_HTTP_MAX_RETRIES` | `3` | **Total** de tentativas por pedido, contando a primeira. `0` vale `1` (sem retry); negativo é recusado com `ValidationError` |
+| `AGROBR_HTTP_TIMEOUT_DOWNLOAD_COMEXSTAT` | `300` | Teto, em segundos, do download inteiro de um arquivo do Comex Stat, novas tentativas incluídas. O `AGROBR_HTTP_TIMEOUT_READ` não mexe nele; suba este em rede lenta. Número finito maior que `0`; o resto é recusado com `pydantic.ValidationError` |
+| `AGROBR_HTTP_MAX_RETRIES` | `3` | **Total** de tentativas por pedido, contando a primeira. `0` vale `1` (sem retry); negativo é recusado com `pydantic.ValidationError` |
 | `AGROBR_HTTP_RETRY_BASE_DELAY` | `1.0` | Primeira espera entre tentativas, em segundos |
 | `AGROBR_HTTP_RETRY_MAX_DELAY` | `30.0` | Teto da espera entre tentativas, em segundos |
 | `AGROBR_HTTP_RETRY_EXPONENTIAL_BASE` | `2` | Fator da espera a cada nova tentativa |
-| `AGROBR_HTTP_RATE_LIMIT_<FONTE>` | por fonte | Intervalo mínimo, em segundos, entre pedidos à fonte, no processo inteiro. Número finito maior ou igual a `0` (`0` não espera); negativo, `inf` ou `nan` é recusado com `ValidationError` |
+| `AGROBR_HTTP_RATE_LIMIT_<FONTE>` | por fonte | Intervalo mínimo, em segundos, entre pedidos à fonte, no processo inteiro. Número finito maior ou igual a `0` (`0` não espera); negativo, `inf` ou `nan` é recusado com `pydantic.ValidationError` |
 | `AGROBR_HTTP_RATE_LIMIT_DEFAULT` | `1.0` | Intervalo das fontes sem variável própria, com a mesma validação |
-| `AGROBR_HTTP_MAX_CONCURRENT_<FONTE>` | por fonte | Pedidos simultâneos à fonte. Só existe para `ANA` (1), `ANP_DIESEL` (3), `B3` (3) e `IBGE` (3); valor menor que 1 é recusado com `ValidationError` |
-| `AGROBR_HTTP_MAX_CONCURRENT_DEFAULT` | `1` | Pedidos simultâneos das demais fontes; menor que 1 é recusado com `ValidationError` |
+| `AGROBR_HTTP_MAX_CONCURRENT_<FONTE>` | por fonte | Pedidos simultâneos à fonte. Só existe para `ANA` (1), `ANP_DIESEL` (3), `B3` (3) e `IBGE` (3); valor menor que 1 é recusado com `pydantic.ValidationError` |
+| `AGROBR_HTTP_MAX_CONCURRENT_DEFAULT` | `1` | Pedidos simultâneos das demais fontes; menor que 1 é recusado com `pydantic.ValidationError` |
 
 `<FONTE>` do intervalo, com o padrão em segundos: `ABIOVE` (3), `ACERVO_FUNDIARIO` (3), `ANA` (2), `ANDA` (3), `ANEC` (3),
 `ANP_DIESEL` (2), `ANTAQ` (1), `ANTT_PEDAGIO` (2), `B3` (1), `B3_ARQUIVOS` (5), `BCB` (1), `CEPEA` (5), `CFTC` (2), `CNUC` (2),
@@ -53,6 +53,14 @@ Defina as variáveis antes de importar o agrobr. Em detalhe:
 `LISTA_SUJA` (2), `MAPBIOMAS` (2), `MAPBIOMAS_ALERTA` (3), `NASA_POWER` (1), `NOTICIAS_AGRICOLAS` (2), `QUEIMADAS` (1),
 `RIO_VERDE` (3), `RNC` (3), `SFB` (2), `SICAR` (2), `UNICA` (3), `USDA` (1) e `ZARC` (2). Variável de fonte fora das listas
 não tem efeito. O detalhe do retry e da concorrência está em [Resiliência](resilience.md).
+
+O `HTTPSettings` recusa texto em variável numérica, `AGROBR_HTTP_MAX_RETRIES` negativo, `AGROBR_HTTP_RATE_LIMIT_<FONTE>`
+negativo ou não finito, `AGROBR_HTTP_MAX_CONCURRENT_<FONTE>` menor que 1 e `AGROBR_HTTP_TIMEOUT_DOWNLOAD_COMEXSTAT` que não
+seja positivo e finito. Essa recusa vem já no `import agrobr`, porque cada cliente monta as configurações HTTP ao ser
+importado; definido depois do import, o valor é recusado no pedido seguinte. A exceção é a `pydantic.ValidationError`, que
+não herda de `AgrobrError` e não é a `agrobr.exceptions.ValidationError`. `AGROBR_HTTP_RETRY_BASE_DELAY` e
+`AGROBR_HTTP_RETRY_MAX_DELAY` negativos passam no import e levantam `InvalidParameterError` no primeiro pedido que passa
+pelo retry.
 
 ## Credenciais
 
@@ -71,8 +79,9 @@ O agrobr não grava credencial em disco. Os valores destas variáveis (menos o `
 ## Certificados
 
 `SSL_CERT_FILE` (arquivo) ou `SSL_CERT_DIR` (pasta) troca as autoridades certificadoras; sem elas, vale o `certifi`. Os
-clientes seguem a convenção do httpx, e o SICAR e a ComexStat, que montam um contexto TLS próprio, leem as mesmas variáveis.
-Use em rede com proxy que reassina o TLS.
+clientes seguem a convenção do httpx, e o SICAR, a ComexStat e a FUNAI, que montam um contexto TLS próprio, leem as mesmas
+variáveis. A ANTAQ baixa pelo `requests`, que não as lê: para ela, use `REQUESTS_CA_BUNDLE` (arquivo). Use em rede com
+proxy que reassina o TLS.
 
 ## Alertas
 
@@ -101,7 +110,7 @@ saem, e ausente ou vazia vale desligada. Outro valor (por exemplo, `sim`) levant
 
 Os booleanos dos alertas (`AGROBR_ALERT_ENABLED` e `AGROBR_ALERT_ALERT_ON_*`) aceitam os mesmos valores, sem distinção de
 caixa, mas não tiram os espaços nem aceitam o vazio: `' YES '`, a variável vazia e qualquer outro valor levantam
-`ValidationError`.
+`pydantic.ValidationError`.
 
 ## Ver a configuração
 

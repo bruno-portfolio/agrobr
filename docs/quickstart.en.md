@@ -76,25 +76,26 @@ print(f"Corn: R$ {ultimo.valor}")
 
 | Product | Description | Unit |
 |---------|-------------|------|
-| `soja` | Soybean grain (Paranaguá) | BRL/60kg bag |
-| `soja_parana` | Soybean (Paraná) | BRL/60kg bag |
-| `milho` | Corn (Campinas) | BRL/60kg bag |
+| `soja` | Soybean grain (Paranaguá) | BRL/sc60kg |
+| `soja_parana` | Soybean (Paraná) | BRL/sc60kg |
+| `milho` | Corn (Campinas) | BRL/sc60kg |
 | `boi` / `boi_gordo` | Live cattle (São Paulo) | BRL/@ |
-| `cafe` / `cafe_arabica` | Arabica coffee (São Paulo) | BRL/60kg bag |
-| `cafe_robusta` | Robusta/Conilon coffee (Espírito Santo) | BRL/60kg bag |
+| `bezerro` | Feeder calf (Mato Grosso do Sul) | BRL/cabeca |
+| `cafe` / `cafe_arabica` | Arabica coffee (São Paulo) | BRL/sc60kg |
+| `cafe_robusta` | Robusta/Conilon coffee (Espírito Santo) | BRL/sc60kg |
 | `algodao` | Cotton lint | cBRL/lb |
 | `trigo` | Wheat (Paraná + RS) | BRL/ton |
-| `arroz` | Paddy rice (ESALQ/BBM) | BRL/50kg bag |
-| `acucar` | Crystal sugar | BRL/50kg bag |
-| `acucar_refinado` | Refined amorphous sugar | BRL/50kg bag |
+| `arroz` | Paddy rice (ESALQ/BBM) | BRL/sc50kg |
+| `acucar` | Crystal sugar | BRL/sc50kg |
+| `acucar_refinado` | Refined amorphous sugar | BRL/kg |
 | `etanol_hidratado` | Hydrous ethanol (weekly) | BRL/L |
 | `etanol_anidro` | Anhydrous ethanol (weekly) | BRL/L |
 | `frango_congelado` | Frozen chicken | BRL/kg |
 | `frango_resfriado` | Chilled chicken | BRL/kg |
 | `suino` | Live hog | BRL/kg |
 | `leite` | Farm-gate milk | BRL/L |
-| `laranja_industria` | Industry orange | BRL/40.8kg box |
-| `laranja_in_natura` | Pera orange (fresh) | BRL/40.8kg box |
+| `laranja_industria` | Industry orange | BRL/cx40.8kg |
+| `laranja_in_natura` | Pera orange (fresh) | BRL/cx40.8kg |
 
 ## CONAB - Crop Surveys
 
@@ -200,7 +201,7 @@ async def main():
     # Generic aliases — automatically expand into sub-crops
     df = await ibge.lspa('milho', ano=2024)   # → milho_1 + milho_2
     df = await ibge.lspa('feijao', ano=2024)  # → feijao_1 + feijao_2 + feijao_3
-    df = await ibge.lspa('batata', ano=2024)  # → batata_1 + batata_2
+    df = await ibge.lspa('batata', ano=2024)  # → batata_1 + batata_2 + batata_3
 
 asyncio.run(main())
 ```
@@ -376,7 +377,7 @@ asyncio.run(main())
 
 ## Using Polars
 
-Every API supports returning Polars for better performance:
+Functions that return a table accept `as_polars=True` (the `_geo` outputs, the catalogs and `cepea.ultimo` do not have the option):
 
 ```python
 import asyncio
@@ -476,8 +477,7 @@ df = await cepea.indicador("soja", offline=True)
 from agrobr import cepea
 from agrobr.exceptions import (
     SourceUnavailableError,
-    ParseError,
-    ValidationError
+    ParseError
 )
 
 async def main():
@@ -489,9 +489,9 @@ async def main():
         df = await cepea.indicador('soja', offline=True)
     except ParseError as e:
         print(f"Parsing error: {e.reason}")
-    except ValidationError as e:
-        print(f"Invalid data: {e.field} = {e.value}")
 ```
+
+`cepea.indicador` does not raise `ValidationError`: with `validate_sanity=True`, anomalies go to the `anomalies` column and to `meta.validation_warnings`.
 
 ## Interactive Notebook
 

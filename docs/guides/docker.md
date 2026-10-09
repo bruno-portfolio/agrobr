@@ -54,7 +54,7 @@ docker run --rm -v "$(pwd)":/work agrobr python /work/meu_script.py
 
 A imagem default ja inclui os extras `browser` (Playwright + Chromium) e `pdf` (pdfplumber), necessarios para CONAB e para ANDA, ANEC, UNICA, Lista Suja (rota PDF), Rio Verde e o andamento do INCRA, respectivamente.
 
-O `--build-arg EXTRAS` **substitui** o default. Para adicionar extras, inclua os defaults:
+O `--build-arg EXTRAS` **substitui** o default, e o `browser` tem de ficar na lista: o build roda `playwright install chromium` sempre. Para adicionar extras, inclua os defaults:
 
 ```bash
 docker build --build-arg EXTRAS="browser,pdf,polars" -t agrobr:extras .

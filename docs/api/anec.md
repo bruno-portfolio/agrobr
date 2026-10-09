@@ -97,8 +97,10 @@ async def destinos(
 
 Colunas: `produto`, `destino`, `share_pct`, `ano`, `mes_inicio`, `mes_fim`.
 
-As três funções usam `ano`, `semana`, `produto`, `use_cache`, `as_polars` e
-`return_meta` com o mesmo comportamento documentado em `embarques()`.
+As três funções usam `ano`, `semana`, `use_cache`, `as_polars` e `return_meta` como
+`embarques()`. `produto` aceita os mesmos aliases, com duas diferenças: `comparacao_anual()` aceita também
+`"total_products"`, o agregado publicado; `destinos()` aceita só soja, farelo de soja, milho e trigo, e outro
+produto levanta `InvalidParameterError` antes do download.
 
 ## Artigos e PDFs
 

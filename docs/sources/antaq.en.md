@@ -153,8 +153,8 @@ the `mercadoria` filter only matches the short name.
 **Units and labels.** `peso_bruto_ton` is in tonnes: the published text loses the thousands dot and
 the decimal comma becomes a dot. `QTCarga` has no unit published by ANTAQ nor stated in the body
 (the scale suggests kilograms for fertilizers and pieces for support cargo; that is an inference,
-not a published unit) - `qt_carga` is copied unconverted. A missing
-`TEU` becomes 0. `ano`/`mes` are the published atracacao period (`Ano` and `Mes`, the latter as
+not a published unit) - `qt_carga` is copied unconverted. A `TEU`
+with no published value comes out null (`<NA>` in `Int64`); a published zero is kept. `ano`/`mes` are the published atracacao period (`Ano` and `Mes`, the latter as
 pt-BR text such as `jan`), not the date: an atracacao started on 2023-12-22 appears with `ano=2024`
 and `mes=1`.
 

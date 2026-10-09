@@ -46,7 +46,7 @@ Fruits and vegetables follow the groups of PROHORT's official "Hortaliças e Fru
 The API returns a pivot matrix (48 rows x 44 columns):
 - Column 0: product name with unit (e.g. "TOMATE (KG)")
 - Columns 1-43: price per CEASA (null = not traded)
-- Column headers contain the date per CEASA (e.g. "CEAGESP - SAO PAULO\r(13/02/2026)")
+- Column headers contain the date per CEASA (e.g. "CEAGESP \rSAO PAULO\r(13/02/2026)/Preco (R$)")
 
 The parser unpivots the matrix into long-form format with 7 columns.
 

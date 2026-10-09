@@ -108,7 +108,7 @@ empty result, after the download.
 
 ## Columns — `apolices`
 
-Same columns as `sinistros`, plus:
+Same columns as `sinistros`, plus `taxa`. In `apolices`, `valor_indenizacao` is nullable and is 0 or null for a policy without a claim, `evento` is empty (`""`) for a policy without a claim, and `seguradora` is never null (it is part of the key).
 
 In policies, `valor_premio` is returned as MAPA publishes it, including negative values, with `UserWarning` and `meta.validation_warnings`. For claims, the contract keeps `valor_premio` ≥ 0.
 

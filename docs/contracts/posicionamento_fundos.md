@@ -12,6 +12,8 @@ via relatório Commitments of Traders (COT Disaggregated) do CFTC.
 ## Uso
 
 ```python
+from agrobr import datasets
+
 df = await datasets.posicionamento_fundos("soja")
 df = await datasets.posicionamento_fundos("milho", inicio="2026-01-01")
 df = await datasets.posicionamento_fundos("acucar", combinado=True)  # futuros + opções

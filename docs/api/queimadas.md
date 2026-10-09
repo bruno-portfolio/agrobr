@@ -28,7 +28,7 @@ async def focos(
 |-----------|------|-----------|
 | `ano` | `int` | Ano (ex: 2024) |
 | `mes` | `int` | Mes (1-12) |
-| `dia` | `int \| None` | Dia especifico (1-31). Se None, busca mes completo |
+| `dia` | `int \| None` | Dia especifico (1-31). O INPE só mantém o arquivo diário dos últimos dias: dia mais antigo levanta `SourceUnavailableError` (use o mês inteiro). Se None, busca mes completo |
 | `uf` | `str \| None` | Filtrar por UF (ex: "MT", "SP"). Case insensitive |
 | `bioma` | `str \| None` | Filtrar por bioma (ex: "Amazonia", "Cerrado"). Aceita com ou sem acentos; valor desconhecido levanta `ValueError` |
 | `satelite` | `str \| None` | Filtrar por satelite (ex: "AQUA_M-T", "NOAA-20"), sem diferenciar caixa; sem filtro, vêm os focos de todos os satélites. Satélite que não aparece no arquivo do período levanta `InvalidParameterError` com os publicados, depois do download |
@@ -59,13 +59,16 @@ As 4 colunas numéricas saem em `float64`, com `NaN` onde a fonte publica -999 o
 **Exemplo:**
 
 ```python
+from datetime import date, timedelta
+
 from agrobr import queimadas
 
 # Todos os focos de setembro/2024
 df = await queimadas.focos(ano=2024, mes=9)
 
-# Focos de um dia especifico
-df = await queimadas.focos(ano=2024, mes=9, dia=15)
+# Focos de um dia específico (ontem): o INPE só mantém o arquivo diário dos últimos dias
+ontem = date.today() - timedelta(days=1)
+df = await queimadas.focos(ano=ontem.year, mes=ontem.month, dia=ontem.day)
 
 # Filtrar por UF
 df = await queimadas.focos(ano=2024, mes=9, uf="MT")

@@ -37,7 +37,7 @@ async def pam(
 | `ano` | `int \| str \| list[int] \| None` | Year(s). Default: latest available |
 | `uf` | `str \| None` | Filter by state (e.g. 'MT') |
 | `nivel` | `Literal['brasil', 'uf', 'municipio']` | Level: 'brasil', 'uf', 'municipio' |
-| `variaveis` | `list[str] \| None` | Specific variables |
+| `variaveis` | `list[str] \| None` | Requested variables. Default: `area_plantada`, `area_colhida`, `producao` and `rendimento`; `valor_producao` is returned only when requested (`variaveis=[..., 'valor_producao']`), otherwise the column is null |
 | `as_polars` | `bool` | Return as polars.DataFrame |
 | `return_meta` | `bool` | Returns a `(df, MetaInfo)` tuple with provenance |
 
@@ -94,7 +94,7 @@ async def lspa(
 | `produto` | `str` | Product code |
 | `ano` | `int \| str \| None` | Year. Default: current |
 | `mes` | `int \| str \| None` | Month (1-12). Without a filter: available months in the requested year |
-| `uf` | `str \| None` | Filter by state |
+| `uf` | `str \| None` | State to query. Without `uf`, the output is the Brazil total only; for several states, make one call per state |
 | `as_polars` | `bool` | Return as polars.DataFrame |
 | `return_meta` | `bool` | Returns a `(df, MetaInfo)` tuple with provenance |
 
@@ -550,7 +550,7 @@ async def censo_agro_historico(
 |-----------|------|-------------|
 | `tema` | `str` | Historical series theme (see table below) |
 | `ano` | `int \| list[int] \| None` | Census year(s). Default: all available |
-| `uf` | `str \| None` | Filter by state (e.g. 'SP'). Only applied at nivel='uf' |
+| `uf` | `str \| None` | Filter by state (e.g. 'SP'). Requires `nivel='uf'`; with `'brasil'` or `'regiao'`, it raises `InvalidParameterError` |
 | `nivel` | `Literal['brasil', 'regiao', 'uf']` | Level: 'brasil', 'regiao', 'uf' (municipal NOT available) |
 | `as_polars` | `bool` | Return as polars.DataFrame |
 | `return_meta` | `bool` | Returns a `(df, MetaInfo)` tuple with provenance |
@@ -1115,7 +1115,7 @@ Published values are not implicitly converted. `unidade_producao`, `unidade_rend
 
 SIDRA's `-` symbol means numeric zero and remains zero; `..`, `...`, and `X` remain missing. Municipalities with zero production are retained. The `producao_anual` contract is 2.2; the four descriptive columns and `localidade_cod` are optional in the contract and supplied by the PAM API.
 
-PAM parser 2 also preserves localities and measures whose values are entirely missing or suppressed. Two observations for the same locality, year and measure, including colliding variable aliases, raise `ParseError`; unmapped variables are also rejected. The reader does not silently select the first value. The PAM API schema is 2.1 (2.0 plus `localidade_cod`); the dataset contract is 2.2, with `cod_municipio`.
+PAM parser 2 also preserves localities and measures whose values are entirely missing or suppressed. Two observations for the same locality, year and measure, including colliding variable aliases, raise `ParseError`; unmapped variables are also rejected. The reader does not silently select the first value. The PAM API schema is that of the `producao_anual` contract, 2.2 (`meta.schema_version`); the API returns the 14 columns without `cod_municipio`, which only the `producao_anual` dataset adds.
 
 In the PEVS APIs, `variavel="valor_producao"` preserves the published monetary unit in `unidade` and returns `valor` as `float64`, even when all values are whole numbers. The parser is version 2; forestry and plant extraction contracts are at 1.1.
 

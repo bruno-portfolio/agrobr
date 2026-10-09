@@ -17,8 +17,10 @@ df = await agrobr.desmatamento.prodes(bioma="Cerrado", ano=2022, uf="MT")
 | Parameter | Type | Required | Description |
 |-----------|------|----------|-------------|
 | `bioma` | `str` | No | Biome: "Amazonia", "Cerrado", "Caatinga", "Mata Atlantica", "Pantanal", "Pampa". Default: "Cerrado" |
-| `ano` | `int` | No | Year (e.g. 2022). If None, all years |
+| `ano` | `int` | No | Year (e.g. 2022). If None, all years, up to the `max_registros` cap |
 | `uf` | `str` | No | Filter by state (e.g. "MT") |
+| `max_registros` | `int \| None` | No | Cap on features read; default 50,000. `None` reads the whole selection. If the cap cuts the selection, a `UserWarning` reports the WFS total and the number returned |
+| `tamanho_pagina` | `int \| None` | No | Features per WFS page; default 500, maximum 2,000 |
 | `as_polars` | `bool` | No | Return as polars.DataFrame |
 | `return_meta` | `bool` | No | If True, returns `(DataFrame, MetaInfo)` |
 
@@ -33,6 +35,8 @@ df = await agrobr.desmatamento.prodes(bioma="Cerrado", ano=2022, uf="MT")
 | `satelite` | str | Satellite used |
 | `sensor` | str | Satellite sensor |
 | `bioma` | str | Queried biome |
+
+Each row is one published feature. Besides these, the output carries `feature_id`, `uuid`, `fid`, `estado_original`, `path_row`, `class_name`, `def_cloud`, `julian_day`, `image_date`, `scene_id`, `publish_year`, `source` and `pub_date` (20 columns, `desmatamento_prodes_feicoes` 2.0 contract). `uf` is null when the published state is not recognized; the original text is kept in `estado_original`.
 
 ### Available Biomes (PRODES)
 
@@ -75,6 +79,8 @@ desmatamento_em_car = gpd.sjoin(gdf, car)
 | `bioma` | `str` | No | Biome: "Amazonia", "Cerrado", "Caatinga", "Mata Atlantica", "Pantanal", "Pampa". Default: "Cerrado" |
 | `ano` | `int` | No | Year (e.g. 2022). If None, all years |
 | `uf` | `str` | No | Filter by state (e.g. "MT") |
+| `max_registros` | `int \| None` | No | Cap on features read; default 10,000. `None` reads the whole selection |
+| `tamanho_pagina` | `int \| None` | No | Features per WFS page; default 100, maximum 500 |
 | `return_meta` | `bool` | No | If True, returns `(GeoDataFrame, MetaInfo)` |
 
 ### Returned Columns
@@ -89,6 +95,8 @@ desmatamento_em_car = gpd.sjoin(gdf, car)
 | `sensor` | str | Satellite sensor |
 | `bioma` | str | Queried biome |
 | `geometry` | geometry | MultiPolygon EPSG:4326 |
+
+Each row is one published feature, with the same 20 columns as `prodes()` plus `geometry`.
 
 ### Notes
 
@@ -122,6 +130,8 @@ df = await agrobr.desmatamento.deter(
 | `inicio` | `str`, `date` or `datetime` | No | Start date: `date`, `datetime` (the time is dropped) or text `YYYY-MM-DD` or `DD/MM/YYYY` |
 | `fim` | `str`, `date` or `datetime` | No | End date, in the same formats; before `inicio` raises `InvalidParameterError` |
 | `classe` | `str` | No | Filter by alert class |
+| `max_registros` | `int \| None` | No | Cap on features read; default 50,000. `None` reads the whole selection. If the cap cuts the selection, a `UserWarning` reports the WFS total and the number returned |
+| `tamanho_pagina` | `int \| None` | No | Features per WFS page; default 500, maximum 2,000 |
 | `as_polars` | `bool` | No | Return as polars.DataFrame |
 | `return_meta` | `bool` | No | If True, returns `(DataFrame, MetaInfo)` |
 
@@ -138,6 +148,8 @@ df = await agrobr.desmatamento.deter(
 | `satelite` | str | Satellite used |
 | `sensor` | str | Satellite sensor |
 | `bioma` | str | Queried biome |
+
+Each row is one published feature. Besides these, the output carries `feature_id`, `gid`, `uf_original`, `quadrant`, `path_row`, `areauckm`, `uc`, `publish_month`, `created_date` and `areatotalkm` (19 columns, `desmatamento_deter_feicoes` 2.0 contract). `uf` is null when the published state is not recognized; the original text is kept in `uf_original`.
 
 ### DETER Classes
 
@@ -187,6 +199,8 @@ alertas_em_imoveis = gpd.sjoin(gdf, imoveis[["cod_imovel", "geometry"]], predica
 | `inicio` | `str`, `date` or `datetime` | No | Start date: `date`, `datetime` (the time is dropped) or text `YYYY-MM-DD` or `DD/MM/YYYY` |
 | `fim` | `str`, `date` or `datetime` | No | End date, in the same formats; before `inicio` raises `InvalidParameterError` |
 | `classe` | `str` | No | Filter by alert class |
+| `max_registros` | `int \| None` | No | Cap on features read; default 10,000. `None` reads the whole selection |
+| `tamanho_pagina` | `int \| None` | No | Features per WFS page; default 100, maximum 500 |
 | `return_meta` | `bool` | No | If True, returns `(GeoDataFrame, MetaInfo)` |
 
 ### Returned Columns
@@ -203,6 +217,8 @@ alertas_em_imoveis = gpd.sjoin(gdf, imoveis[["cod_imovel", "geometry"]], predica
 | `sensor` | str | Satellite sensor |
 | `bioma` | str | Queried biome |
 | `geometry` | geometry | MultiPolygon EPSG:4326 |
+
+Each row is one published feature, with the same 19 columns as `deter()` plus `geometry`.
 
 ### Notes
 
@@ -229,4 +245,4 @@ gdf = sync.desmatamento.deter_geo(bioma="Amazônia", uf="PA", inicio="2024-01-01
 - **DETER**: Near Real-Time Deforestation Detection System
 - **Provider**: INPE — National Institute for Space Research
 - **API**: TerraBrasilis GeoServer (WFS)
-- **License**: Federal government public data — free to use with attribution
+- **License**: CC BY-SA 4.0 (INPE), classified as `livre`: commercial use allowed with attribution to INPE; shared adaptations follow ShareAlike. See [Licenses](../licenses.md)

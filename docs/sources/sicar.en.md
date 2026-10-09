@@ -13,7 +13,7 @@ The CAR includes information about:
 - Registration status (Active, Pending, Suspended, Cancelled and RE, published by SICAR with no official definition found)
 - Total area in hectares
 - Fiscal modules
-- Property type (Rural, Settlement, Indigenous Land)
+- Property type (IRU Rural, AST Settlement, PCT as published by SICAR)
 - Municipality and IBGE code
 
 ## Access via WFS
@@ -38,7 +38,7 @@ with server-side filters (CQL_FILTER) and transparent pagination.
 | municipio | string | Municipality name |
 | cod_municipio_ibge | int | Municipality IBGE code |
 | modulos_fiscais | float | Number of fiscal modules |
-| tipo | string | IRU (Rural), AST (Settlement), PCT (Indigenous Land) |
+| tipo | string | IRU (Rural), AST (Settlement), PCT (type published by SICAR) |
 | cod_municipio | int | 7-digit IBGE code (same as `cod_municipio_ibge`); nullable |
 
 ## Notes

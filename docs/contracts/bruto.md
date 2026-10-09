@@ -468,7 +468,7 @@ revalidação condicional de recursos concluídos ou coleta incremental na vers�
 
 ## Uso completo
 
-As chamadas abaixo cobrem todos os recursos do núcleo. A bbox urbana é apenas um
+As chamadas abaixo cobrem 17 dos 19 recursos: ficam fora o CNFP (`sfb`/`cnfp`), cujo Brasil inteiro pede `tamanho_pagina=20` e `max_bytes_pagina` de 24 MiB, e o SICAR (`sicar`/`imoveis`), que exige a UF. A bbox urbana é apenas um
 exemplo de recorte, não uma garantia de quantidade ou tempo de aquisição.
 
 ```python

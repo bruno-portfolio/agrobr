@@ -27,23 +27,23 @@
 - **Type**: Authorized mirror of CEPEA indicators
 - **Use**: When enabled and available for the requested product
 
-## Available Products (22 products)
+## Available Products (22 identifiers, 20 indicators)
 
 Calf also carries `valor_usd` (Valor US$ column) and `peso_medio_kg` (the page's Peso Médio table); other products fill `valor_usd` whenever CEPEA publishes the dollar price.
 
 | Product | Main Market | Unit | Frequency |
 |---------|-----------------|---------|------------|
-| Soybean | Paranagua/PR | BRL/sc 60kg | Daily |
-| Soybean Parana | Parana | BRL/sc 60kg | Daily |
-| Corn | Campinas/SP | BRL/sc 60kg | Daily |
+| Soybean | Paranagua/PR | BRL/sc60kg | Daily |
+| Soybean Parana | Parana | BRL/sc60kg | Daily |
+| Corn | Campinas/SP | BRL/sc60kg | Daily |
 | Calf | Mato Grosso do Sul | BRL/cabeca | Daily |
 | Live Cattle | Sao Paulo/SP | BRL/@ | Daily |
-| Arabica Coffee | Sao Paulo/SP | BRL/sc 60kg | Daily |
-| Robusta Coffee | Espirito Santo | BRL/sc 60kg | Daily |
+| Arabica Coffee | Sao Paulo/SP | BRL/sc60kg | Daily |
+| Robusta Coffee | Espirito Santo | BRL/sc60kg | Daily |
 | Wheat | Parana + RS | BRL/ton | Daily |
 | Cotton | Sao Paulo/SP | cBRL/lb | Daily |
-| Rough rice | Rio Grande do Sul | BRL/sc 50kg | Daily |
-| Crystal sugar | Sao Paulo/SP | BRL/sc 50kg | Daily |
+| Rough rice | Rio Grande do Sul | BRL/sc50kg | Daily |
+| Crystal sugar | Sao Paulo/SP | BRL/sc50kg | Daily |
 | Refined sugar | São Paulo/SP | BRL/kg | Daily |
 | Hydrous ethanol | Sao Paulo/SP | BRL/L | Weekly |
 | Anhydrous ethanol | Sao Paulo/SP | BRL/L | Weekly |
@@ -51,8 +51,8 @@ Calf also carries `valor_usd` (Valor US$ column) and `peso_medio_kg` (the page's
 | Chilled chicken | Sao Paulo/SP | BRL/kg | Daily |
 | Live hog | MG, PR, RS, SC, and SP (source market terms preserved) | BRL/kg | Daily |
 | Milk | State and BRASIL, at the producer | BRL/L | Monthly |
-| Orange (industry) | Sao Paulo/SP | BRL/cx 40,8kg | Daily |
-| Orange (fresh) | Sao Paulo/SP | BRL/cx 40,8kg | Daily |
+| Orange (industry) | Sao Paulo/SP | BRL/cx40.8kg | Daily |
+| Orange (fresh) | Sao Paulo/SP | BRL/cx40.8kg | Daily |
 
 ## CEPEA Methodology
 
@@ -117,6 +117,9 @@ print(meta.from_cache)  # True/False
 | `unidade` | str | No | Unit (BRL/sc60kg, etc) |
 | `fonte` | str | No | Data source |
 | `metodologia` | str | Yes | Methodology description |
+| `anomalies` | str | Yes | Row flags as JSON text (e.g. `["valor_mantido"]`); null when there is no flag |
+| `valor_usd` | float | Yes | Dollar price published on the same row; null when CEPEA does not publish it, on Notícias Agrícolas fallback rows and in cache rows older than migration 10 |
+| `peso_medio_kg` | float | Yes | Calf average weight (kg); null for the other products |
 
 ## Cache
 
@@ -138,11 +141,11 @@ A collection after 18:00, on Saturday or on Sunday is valid until 18:00 of the n
 ```python
 # List available products
 produtos = await cepea.produtos()
-# ['soja', 'soja_parana', 'milho', 'bezerro', 'boi', 'boi_gordo',
-#  'cafe', 'cafe_arabica', 'cafe_robusta', 'algodao',
-#  'trigo', 'arroz', 'acucar', 'acucar_refinado', 'etanol_hidratado',
-#  'etanol_anidro', 'frango_congelado', 'frango_resfriado', 'suino', 'leite',
-#  'laranja_industria', 'laranja_in_natura']
+# ['soja', 'soja_parana', 'milho', 'bezerro', 'cafe', 'cafe_arabica',
+#  'cafe_robusta', 'boi', 'boi_gordo', 'trigo', 'algodao', 'arroz',
+#  'acucar', 'acucar_refinado', 'frango_congelado', 'frango_resfriado', 'suino',
+#  'etanol_hidratado', 'etanol_anidro', 'leite', 'laranja_industria',
+#  'laranja_in_natura']
 
 # List markets for a product
 pracas = await cepea.pracas('soja')

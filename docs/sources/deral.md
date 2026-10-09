@@ -56,8 +56,8 @@ Aveia, cana, canola e mandioca têm alias no parser, mas não aparecem nessas ed
 relatório semanal. A fonte e o dataset aceitam as oito culturas acima, os filtros `milho` e
 `feijao`, que selecionam as duas safras publicadas, e os sinônimos do agrobr (`"Soja"`,
 `"soybean"`, `"milho 2ª safra"`). Outro nome levanta `InvalidParameterError` com a lista, antes
-da rede. O dataset anuncia somente as oito culturas acima, cuja disponibilidade varia conforme
-a edição.
+da rede. O dataset anuncia as oito culturas acima e os filtros `feijao` e `milho` (10 valores), cuja
+disponibilidade varia conforme a edição.
 
 ## Nota de Risco
 

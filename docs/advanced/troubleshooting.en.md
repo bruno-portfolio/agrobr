@@ -50,9 +50,10 @@ except AgrobrError:
 alternative source. The message identifies the original source, the name and short
 failure reason of each source that failed in the cascade, in attempt order, and the fallback used. Execution continues normally.
 
-### `TimeoutError`
+### Timeout (`SourceUnavailableError` with `ReadTimeout` or `ConnectTimeout`)
 
-**Cause:** The request took too long.
+**Cause:** the source did not answer in time. Once the attempts run out, `SourceUnavailableError` comes out; for most
+sources, the message carries the timeout type and `after N attempts`.
 
 **Solutions:**
 
@@ -178,7 +179,7 @@ df = await cepea.indicador('soja', force_refresh=True)
 
 ## Polars Issues
 
-### `ImportError: polars not found`
+### `ImportError: polars é necessário para as_polars=True`
 
 **Cause:** Polars not installed.
 
@@ -243,8 +244,19 @@ agrobr --verbose cepea indicador soja
 import logging
 
 logging.basicConfig(level=logging.DEBUG)             # all logs, on standard error
-logging.getLogger("agrobr").setLevel(logging.INFO)   # or only agrobr's level
 ```
+
+For agrobr only, at `INFO`:
+
+```python
+import logging
+
+logging.basicConfig()                                # a handler on standard error
+logging.getLogger("agrobr").setLevel(logging.INFO)
+```
+
+Without a handler, such as `basicConfig`'s, Python only prints `WARNING` and above: `setLevel` alone does not show the
+`INFO` logs.
 
 agrobr does not configure structlog: your application's structlog configuration applies only to its own logs, and agrobr's
 stay in `logging`.
@@ -303,7 +315,10 @@ df = cepea.indicador('soja')
 
 ### Can I use it with proxies?
 
-There is currently no native support. Consider configuring a proxy at the system level.
+agrobr has no proxy option of its own. The HTTP clients (httpx and, for ANTAQ, requests) follow the `HTTPS_PROXY`,
+`HTTP_PROXY` and `NO_PROXY` environment variables: none of them turns that lookup off. The Playwright Chromium used by
+CONAB is launched without the `proxy` option: agrobr does not pass a proxy to it. With a proxy that re-signs TLS, see
+also the [certificates](ambiente.md#certificates).
 
 ### Is the data free?
 

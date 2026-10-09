@@ -108,8 +108,8 @@ Nas mesmas 11 séries, 116 abas têm o contexto reconhecido e o corpo recusado, 
 | arroz irrigado | 7 | medida em coluna sem cabeçalho: Cachoeira do Sul-RS 2009–2010; medida inválida (`#REF!` ou `.`): Camaquã-RS 2014–2016, Massaranduba-SC-2013, Meleiro-SC-2013 |
 | café conilon | 1 | medida em coluna sem cabeçalho: Ji-Paraná-RO-2014 |
 
-Milho 2ª safra, algodão e feijão 2ª/3ª safras não têm aba recusada nessas séries. O cabeçalho de rendimento
-`kg/sc 60 kg`, não reconhecido, responde por 59 das recusas.
+Milho 2ª safra, algodão e feijão 2ª/3ª safras não têm aba recusada nessas séries. Os cabeçalhos de rendimento
+`kg/sc 60 kg` e `kg/sc 50 kg`, não reconhecidos, respondem por 59 das recusas.
 
 A lista cobre só essas 11 séries. Outras culturas têm recusas pelos mesmos motivos, por exemplo
 C. de Camaragibe-AL 2014–2016 e S. L. do Quitunde-AL-2017 na cana (medida em coluna sem cabeçalho) e

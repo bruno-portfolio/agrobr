@@ -1,6 +1,6 @@
 # Notícias Agrícolas — CEPEA Fallback
 
-> Notícias Agrícolas is classified as `zona_cinza` because no publisher-specific reuse license was found for its quotations. A generic rights reservation does not establish a specific prohibition on reusing every numerical fact, nor does it grant permission over protected reports or databases. CEPEA-origin data retains CC BY-NC 4.0, with attribution and permission for commercial use. Automatic fallback remains and emits the publisher's warning in addition to the original source's warning. When CEPEA and Notícias Agrícolas appear in `MetaInfo.data_sources`, `MetaInfo.license` is `nc`.
+> Notícias Agrícolas is classified as `zona_cinza` because no publisher-specific reuse license was found for its quotations. A generic rights reservation does not establish a specific prohibition on reusing every numerical fact, nor does it grant permission over protected reports or databases. CEPEA-origin data retains CC BY-NC 4.0: attribution is required, and commercial use requires the holder's authorization. Automatic fallback remains and emits the publisher's warning in addition to the original source's warning. When CEPEA and Notícias Agrícolas appear in `MetaInfo.data_sources`, `MetaInfo.license` is `nc`.
 
 !!! info "Fallback active"
     This module is the primary fallback to work around Cloudflare protection

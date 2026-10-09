@@ -131,7 +131,7 @@ Busca dados, aplica a seleção de ocorrências de `imoveis()` e agrega client-s
 | modulos_fiscais_medio | float | Media de modulos fiscais |
 | por_tipo_IRU | int | Imoveis rurais |
 | por_tipo_AST | int | Assentamentos |
-| por_tipo_PCT | int | Terras indigenas |
+| por_tipo_PCT | int | Imoveis com `tipo` = `PCT` |
 
 ### Exemplos
 

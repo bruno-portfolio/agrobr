@@ -152,7 +152,7 @@ completa (`Mercadoria`) nao e publicada, e o filtro `mercadoria` casa apenas com
 milhar e troca a virgula por ponto. `QTCarga` nao tem unidade publicada pela ANTAQ nem informada no corpo
 (a escala sugere quilos em fertilizantes e unidades em carga de apoio; e inferencia, nao unidade
 publicada) - `qt_carga` e copiado sem conversao.
-`TEU` ausente vira 0. `ano`/`mes` sao o periodo publicado da atracacao (`Ano` e `Mes`, este ultimo
+`TEU` sem valor publicado sai nulo (`<NA>` em `Int64`); o zero publicado é preservado. `ano`/`mes` sao o periodo publicado da atracacao (`Ano` e `Mes`, este ultimo
 em texto pt-BR como `jan`), nao a data: uma atracacao iniciada em 22/12/2023 aparece com `ano=2024`
 e `mes=1`.
 

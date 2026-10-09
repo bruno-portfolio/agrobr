@@ -27,23 +27,23 @@
 - **Tipo**: Mirror autorizado dos indicadores CEPEA
 - **Uso**: Quando habilitado e disponível para o produto consultado
 
-## Produtos Disponíveis (22 produtos)
+## Produtos Disponíveis (22 identificadores, 20 indicadores)
 
 O bezerro traz também `valor_usd` (coluna Valor US$) e `peso_medio_kg` (tabela Peso Médio da página); os demais produtos preenchem `valor_usd` quando o CEPEA publica o dólar.
 
 | Produto | Praca Principal | Unidade | Frequencia |
 |---------|-----------------|---------|------------|
-| Soja | Paranagua/PR | BRL/sc 60kg | Diaria |
-| Soja Parana | Parana | BRL/sc 60kg | Diaria |
-| Milho | Campinas/SP | BRL/sc 60kg | Diaria |
+| Soja | Paranagua/PR | BRL/sc60kg | Diaria |
+| Soja Parana | Parana | BRL/sc60kg | Diaria |
+| Milho | Campinas/SP | BRL/sc60kg | Diaria |
 | Bezerro | Mato Grosso do Sul | BRL/cabeca | Diária |
 | Boi Gordo | Sao Paulo/SP | BRL/@ | Diaria |
-| Cafe Arabica | Sao Paulo/SP | BRL/sc 60kg | Diaria |
-| Cafe Robusta | Espirito Santo | BRL/sc 60kg | Diaria |
+| Cafe Arabica | Sao Paulo/SP | BRL/sc60kg | Diaria |
+| Cafe Robusta | Espirito Santo | BRL/sc60kg | Diaria |
 | Trigo | Parana + RS | BRL/ton | Diaria |
 | Algodao | Sao Paulo/SP | cBRL/lb | Diaria |
-| Arroz em casca | Rio Grande do Sul | BRL/sc 50kg | Diaria |
-| Acucar cristal | Sao Paulo/SP | BRL/sc 50kg | Diaria |
+| Arroz em casca | Rio Grande do Sul | BRL/sc50kg | Diaria |
+| Acucar cristal | Sao Paulo/SP | BRL/sc50kg | Diaria |
 | Açúcar refinado | São Paulo/SP | BRL/kg | Diária |
 | Etanol hidratado | Sao Paulo/SP | BRL/L | Semanal |
 | Etanol anidro | Sao Paulo/SP | BRL/L | Semanal |
@@ -51,8 +51,8 @@ O bezerro traz também `valor_usd` (coluna Valor US$) e `peso_medio_kg` (tabela 
 | Frango resfriado | Sao Paulo/SP | BRL/kg | Diaria |
 | Suíno vivo | MG, PR, RS, SC e SP (condição da praça preservada) | BRL/kg | Diária |
 | Leite | UF e BRASIL, ao produtor | BRL/L | Mensal |
-| Laranja industria | Sao Paulo/SP | BRL/cx 40,8kg | Diaria |
-| Laranja in natura | Sao Paulo/SP | BRL/cx 40,8kg | Diaria |
+| Laranja industria | Sao Paulo/SP | BRL/cx40.8kg | Diaria |
+| Laranja in natura | Sao Paulo/SP | BRL/cx40.8kg | Diaria |
 
 ## Metodologia CEPEA
 
@@ -117,6 +117,9 @@ print(meta.from_cache)  # True/False
 | `unidade` | str | Nao | Unidade (BRL/sc60kg, etc) |
 | `fonte` | str | Nao | Fonte dos dados |
 | `metodologia` | str | Sim | Descricao da metodologia |
+| `anomalies` | str | Sim | Marcas da linha como texto JSON (ex.: `["valor_mantido"]`); nulo sem marca |
+| `valor_usd` | float | Sim | Preço em dólar publicado na mesma linha; nulo quando o CEPEA não divulga, nas linhas do fallback Notícias Agrícolas e no cache anterior à migração 10 |
+| `peso_medio_kg` | float | Sim | Peso médio do bezerro (kg); nulo nos demais produtos |
 
 ## Cache
 
@@ -138,11 +141,11 @@ Coleta depois das 18:00, no sábado ou no domingo vale até as 18:00 do próximo
 ```python
 # Lista produtos disponiveis
 produtos = await cepea.produtos()
-# ['soja', 'soja_parana', 'milho', 'bezerro', 'boi', 'boi_gordo',
-#  'cafe', 'cafe_arabica', 'cafe_robusta', 'algodao',
-#  'trigo', 'arroz', 'acucar', 'acucar_refinado', 'etanol_hidratado',
-#  'etanol_anidro', 'frango_congelado', 'frango_resfriado', 'suino', 'leite',
-#  'laranja_industria', 'laranja_in_natura']
+# ['soja', 'soja_parana', 'milho', 'bezerro', 'cafe', 'cafe_arabica',
+#  'cafe_robusta', 'boi', 'boi_gordo', 'trigo', 'algodao', 'arroz',
+#  'acucar', 'acucar_refinado', 'frango_congelado', 'frango_resfriado', 'suino',
+#  'etanol_hidratado', 'etanol_anidro', 'leite', 'laranja_industria',
+#  'laranja_in_natura']
 
 # Lista pracas para um produto
 pracas = await cepea.pracas('soja')

@@ -77,8 +77,11 @@ asyncio.run(main())
 ### Daily Hotspots
 
 ```python
-# Hotspots of a specific day
-df = await queimadas.focos(ano=2024, mes=9, dia=15)
+from datetime import date, timedelta
+
+# Hotspots of a specific day (yesterday): INPE only keeps the daily file for the last few days
+yesterday = date.today() - timedelta(days=1)
+df = await queimadas.focos(ano=yesterday.year, mes=yesterday.month, dia=yesterday.day)
 ```
 
 ### Combined Filters

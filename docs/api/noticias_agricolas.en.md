@@ -3,7 +3,7 @@
 The Noticias Agricolas module republishes CEPEA/ESALQ indicators and serves as an automatic fallback when direct access to CEPEA fails (Cloudflare).
 
 !!! warning "zona_cinza"
-    Notícias Agrícolas is classified as `zona_cinza` because no publisher-specific reuse license was found for its quotations. A generic rights reservation does not establish a specific prohibition on reusing every numerical fact, nor does it grant permission over protected reports or databases. CEPEA-origin data retains CC BY-NC 4.0, with attribution and permission for commercial use. Automatic fallback remains and emits the publisher's warning in addition to the original source's warning. When CEPEA and Notícias Agrícolas appear in `MetaInfo.data_sources`, `MetaInfo.license` is `nc`.
+    Notícias Agrícolas is classified as `zona_cinza` because no publisher-specific reuse license was found for its quotations. A generic rights reservation does not establish a specific prohibition on reusing every numerical fact, nor does it grant permission over protected reports or databases. CEPEA-origin data retains CC BY-NC 4.0: attribution is required, and commercial use requires the holder's authorization. Automatic fallback remains and emits the publisher's warning in addition to the original source's warning. When CEPEA and Notícias Agrícolas appear in `MetaInfo.data_sources`, `MetaInfo.license` is `nc`.
 
 !!! note "Internal use"
     This module is **not called directly by the user**. It is invoked automatically by the CEPEA module as a fallback. Documented here for technical reference.

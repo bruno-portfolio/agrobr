@@ -110,7 +110,7 @@ In the same 11 series, 116 sheets have a recognized context and a rejected body,
 | conilon coffee | 1 | measure in a column without header: Ji-Paraná-RO-2014 |
 
 Corn 2nd crop, cotton and beans 2nd/3rd crops have no rejected sheet in these series. The unrecognized
-`kg/sc 60 kg` yield header accounts for 59 of the rejections.
+`kg/sc 60 kg` and `kg/sc 50 kg` yield headers account for 59 of the rejections.
 
 The list covers only these 11 series. Other crops have rejections for the same reasons, for example
 C. de Camaragibe-AL 2014–2016 and S. L. do Quitunde-AL-2017 for sugarcane (measure in a column without header) and Cruz das

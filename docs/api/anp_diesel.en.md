@@ -113,7 +113,7 @@ df = alt.anp_diesel.vendas_diesel()
 ## Notes
 
 - Source: [ANP Gov.br](https://www.gov.br/anp/) — `livre` license (Decree 8,777/2016)
-- Data: bulk XLSX (prices 2013+), CSV (volumes)
+- Data: bulk XLSX (municipal prices since 2022; state and Brazil prices since 2013), CSV (volumes). At municipality level, an `inicio` or `fim` outside 2022 through the current year raises `InvalidParameterError` before any request
 - Large municipal workbooks are downloaded in full; there is no persistent cache.
 
 ## Price periods and catalogue

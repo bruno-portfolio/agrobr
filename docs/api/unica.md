@@ -32,7 +32,7 @@ async def moagem_quinzenal(
 **Retorno:**
 
 DataFrame com colunas: `data`, `quinzena`, `safra`, `produto`, `regiao`, `valor`,
-`valor_safra_anterior`, `variacao_pct`, `unidade` (t para cana/açúcar, m³ para etanol).
+`valor_safra_anterior`, `variacao_pct`, `unidade` (`t` para cana/açúcar, `m3` para etanol).
 
 Valores **acumulados** da safra até cada quinzena. Cobre apenas a safra do relatório
 vigente + comparativo com a anterior — a fonte não publica histórico longo quinzenal.

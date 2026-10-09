@@ -31,7 +31,7 @@ the data's classification reaches `MetaInfo.license`.
 | **IMEA** | Public series without a verified license; non-public files have an express restriction | Check the scope and terms | `zona_cinza` | [Terms of Use](https://imea.com.br/imea-site/termo-de-uso.html) |
 | **DERAL** | State public data; access law and Paraná Decree 10,285 | Yes, under the stated conditions | `livre` | [Terms/basis](https://www.legislacao.pr.gov.br/legislacao/listarAtosAno.do?action=exibirImpressao&codAto=114209) |
 | **INMET** | INMET's own published observations | Yes, under the stated conditions | `livre` | [Terms/basis](https://portal.inmet.gov.br/dadoshistoricos) |
-| **Notícias Agrícolas** | Private publisher without its own quotation license; CEPEA origin CC BY-NC 4.0 | CEPEA origin: permission for commercial use | `zona_cinza` | — |
+| **Notícias Agrícolas** | Private publisher without its own quotation license; CEPEA origin CC BY-NC 4.0 | CEPEA origin: requires the holder's authorization | `zona_cinza` | — |
 | **Queimadas/INPE** | Public data; FAQ and federal legal basis | Yes, under the stated conditions | `livre` | [Terms/basis](https://data.inpe.br/queimadas/faq/) |
 | **Desmatamento PRODES/DETER** | CC BY-SA 4.0 | Yes, under the stated conditions | `livre` | [Terms/basis](https://terrabrasilis.dpi.inpe.br/citacoes-e-licenca-de-uso/) |
 | **MapBiomas** | CC BY 4.0 — land cover and land use | Yes, under the stated conditions | `livre` | [Terms/basis](https://brasil.mapbiomas.org/faq/?tema=dados) |
@@ -93,7 +93,7 @@ ANEC remains `zona_cinza`. The inspected portal and annual-statistics area provi
 
 ### Notícias Agrícolas
 
-Notícias Agrícolas is classified as `zona_cinza` because no publisher-specific reuse license was found for its quotations. A generic rights reservation does not establish a specific prohibition on reusing every numerical fact, nor does it grant permission over protected reports or databases. CEPEA-origin data retains CC BY-NC 4.0, with attribution and permission for commercial use. Automatic fallback remains and emits the publisher's warning in addition to the original source's warning. When CEPEA and Notícias Agrícolas appear in `MetaInfo.data_sources`, `MetaInfo.license` is `nc`.
+Notícias Agrícolas is classified as `zona_cinza` because no publisher-specific reuse license was found for its quotations. A generic rights reservation does not establish a specific prohibition on reusing every numerical fact, nor does it grant permission over protected reports or databases. CEPEA-origin data retains CC BY-NC 4.0: attribution is required, and commercial use requires the holder's authorization. Automatic fallback remains and emits the publisher's warning in addition to the original source's warning. When CEPEA and Notícias Agrícolas appear in `MetaInfo.data_sources`, `MetaInfo.license` is `nc`.
 
 ### B3 (Brasil, Bolsa, Balcão)
 

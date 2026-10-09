@@ -76,9 +76,9 @@ The legend also depends on the collection: in municipal resource 10, class 13 me
 
 | Code | Class | Level 0 |
 |--------|--------|---------|
-| 3 | Formacao Florestal | Natural |
-| 4 | Formacao Savanica | Natural |
-| 12 | Formacao Campestre | Natural |
+| 3 | Formação Florestal | Natural |
+| 4 | Formação Savânica | Natural |
+| 12 | Formação Campestre | Natural |
 | 15 | Pastagem | Antropic |
 | 18 | Agricultura | Antropic |
 | 39 | Soja | Antropic |
@@ -86,8 +86,10 @@ The legend also depends on the collection: in municipal resource 10, class 13 me
 | 40 | Arroz | Antropic |
 | 9 | Silvicultura | Antropic |
 | 21 | Mosaico de Usos | Antropic |
-| 24 | Area Urbanizada | Antropic |
+| 24 | Área Urbanizada | Antropic |
 | 33 | Rio, Lago e Oceano | Natural |
+
+The `classe` column carries the label exactly as above; to filter, prefer `classe_id`.
 
 ---
 

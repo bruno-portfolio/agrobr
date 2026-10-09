@@ -86,7 +86,7 @@ Against the 2008 image-only copy, today's version confirms 22.6% more cells.
 | `unidade_lida` | str | ✅ | Unit from the volume's note mark or from the column label |
 | `valor` | Int64 | ✅ | Confirmed number |
 | `valor_lido` | Int64 | ✅ | Number read |
-| `marcador` | str | ✅ | "-", "...", "x" when the cell carries a sign |
+| `marcador` | str | ✅ | "-", ".." or "..." when the cell carries a sign |
 | `status` | str | ❌ | See the table above |
 | `reparado` | bool | ❌ | The leftmost thousands group was recovered by re-reading the crop; `False` in every cell of this version |
 

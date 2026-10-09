@@ -97,8 +97,10 @@ async def destinos(
 
 Columns: `produto`, `destino`, `share_pct`, `ano`, `mes_inicio`, `mes_fim`.
 
-All three functions use `ano`, `semana`, `produto`, `use_cache`, `as_polars`,
-and `return_meta` with the same behavior documented for `embarques()`.
+All three functions use `ano`, `semana`, `use_cache`, `as_polars` and `return_meta` as
+`embarques()` does. `produto` accepts the same aliases, with two differences: `comparacao_anual()` also accepts
+`"total_products"`, the published aggregate; `destinos()` accepts only soybean, soybean meal, maize and wheat, and
+any other product raises `InvalidParameterError` before download.
 
 ## Articles and PDFs
 

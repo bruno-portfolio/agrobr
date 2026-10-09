@@ -12,7 +12,7 @@ Validation is automatic: every dataset `fetch()` validates the DataFrame against
 | **Stable names** | Columns are never renamed (only added) |
 | **Stable columns present** | Every `stable` column exists in the DataFrame; `nullable` permits null values, not an absent column |
 | **Types only widen** | int→float ok, float→int never |
-| **ISO-8601 dates** | Always YYYY-MM-DD |
+| **Typed dates** | Date columns come out as `datetime64` (pandas), not as `YYYY-MM-DD` text; with time and time zone when the source publishes them (e.g. `datetime64[ns, UTC]`) |
 | **Explicit units** | Dedicated column |
 | **Breaking = Major** | Breaking changes only in major versions |
 | **Primary keys** | Where a key is defined, its columns exist and their combination is unique |

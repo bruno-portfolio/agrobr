@@ -13,6 +13,8 @@ B3 agricultural futures — daily settlements, history and open interest.
 ### Settlements (default)
 
 ```python
+from agrobr import datasets
+
 df = await datasets.futuros_agricolas("boi", data="2025-03-05")
 ```
 

@@ -13,6 +13,8 @@ Futuros agrícolas B3 — ajustes diários, histórico e posições abertas.
 ### Ajustes (default)
 
 ```python
+from agrobr import datasets
+
 df = await datasets.futuros_agricolas("boi", data="2025-03-05")
 ```
 

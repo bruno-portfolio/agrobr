@@ -473,7 +473,7 @@ remote page resumption, conditional revalidation of completed resources or incre
 
 ## Complete usage
 
-These calls cover every core resource. The urban bbox is only a selection example,
+These calls cover 17 of the 19 resources: CNFP (`sfb`/`cnfp`), whose whole-of-Brazil request needs `tamanho_pagina=20` and a 24 MiB `max_bytes_pagina`, and SICAR (`sicar`/`imoveis`), which requires a state, are left out. The urban bbox is only a selection example,
 not a guarantee of acquisition volume or duration.
 
 ```python
