@@ -48,6 +48,12 @@ the name matches in full, ignoring case, accents and repeated spaces, and never 
 not `"Santa Rita do Sapucaí"`). A name shared by several municipalities, an unknown name, a code outside the
 registry or a municipality from another state raise `InvalidParameterError` listing the candidates.
 
+Former spellings that sources still publish lead to the current municipality: `"Açu"` (Assú/RN), `"Arês"` (Arez/RN),
+`"São Luiz"` (São Luiz do Anauá/RR), `"Fortaleza do Tabocão"` (Tabocão/TO), `"Santo Antônio do Leverger"`
+(Santo Antônio de Leverger/MT), `"Muquém de São Francisco"` (Muquém do São Francisco/BA) and `"Poxoréo"` (Poxoréu/MT),
+as listed in IBGE's Municipal Toponymic Changes. An acute accent (`´`), a backtick (`` ` ``) or typographic quotes
+(`’`, `‘`) in place of the apostrophe count as `'`: `"Conquista D´Oeste"`, as FUNAI publishes it, is Conquista D'Oeste/MT.
+
 `ibge_para_municipio`, `buscar_municipios`, `coordenada_para_municipio` and `resolver_municipio` return copies: changing the returned
 dict does not affect the next query.
 

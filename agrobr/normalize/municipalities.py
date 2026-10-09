@@ -12,9 +12,15 @@ from agrobr.normalize import regions
 
 _NOMES_ANTERIORES: dict[int, tuple[str, ...]] = {
     1400605: ("São Luiz",),
+    1708254: ("Fortaleza do Tabocão",),
     2400208: ("Açu",),
     2401206: ("Arês",),
+    2922250: ("Muquém de São Francisco",),
+    5107008: ("Poxoréo",),
+    5107800: ("Santo Antônio do Leverger",),
 }
+
+_APOSTROFOS = str.maketrans(dict.fromkeys("\u00b4`\u2019\u2018", "'"))
 
 
 class MunicipioInfo(TypedDict):
@@ -24,7 +30,7 @@ class MunicipioInfo(TypedDict):
 
 
 def _remover_acentos(texto: str) -> str:
-    nfkd = unicodedata.normalize("NFKD", texto)
+    nfkd = unicodedata.normalize("NFKD", texto.translate(_APOSTROFOS))
     return "".join(c for c in nfkd if not unicodedata.combining(c))
 
 
@@ -152,7 +158,8 @@ def resolver_municipio(valor: int | str, uf: str | None = None) -> MunicipioInfo
     """Identifica um município pelo código IBGE de 7 dígitos ou pelo nome inteiro.
 
     O nome é comparado sem caixa, acento e espaços repetidos, e nunca por pedaço: `"Santa Rita"`
-    não casa com `"Santa Rita do Sapucaí"`. Nomes anteriores conhecidos (`"Açu"`) levam ao atual.
+    não casa com `"Santa Rita do Sapucaí"`. Nomes anteriores conhecidos (`"Açu"`, `"Poxoréo"`) levam ao
+    atual, e acento agudo, crase ou aspas tipográficas no lugar do apóstrofo (`"D´Oeste"`) contam como `'`.
 
     Raises:
         InvalidParameterError: código fora do cadastro, nome inexistente, nome de mais de um

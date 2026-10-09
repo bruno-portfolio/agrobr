@@ -253,9 +253,32 @@ def test_ufs_conferem_a_dtb_2025():
         ("Arês", "RN", 2401206),
         ("São Luiz do Anauá", "RR", 1400605),
         ("São Luiz", "RR", 1400605),
+        ("Tabocão", "TO", 1708254),
+        ("Fortaleza do Tabocão", "TO", 1708254),
+        ("Santo Antônio de Leverger", "MT", 5107800),
+        ("Santo Antônio do Leverger", "MT", 5107800),
+        ("Muquém do São Francisco", "BA", 2922250),
+        ("Muquém de São Francisco", "BA", 2922250),
+        ("Poxoréu", "MT", 5107008),
+        ("Poxoréo", "MT", 5107008),
     ],
 )
 def test_nome_atual_e_nome_anterior_encontram_o_municipio(nome, uf, codigo):
+    assert municipio_para_ibge(nome, uf) == codigo
+
+
+@pytest.mark.parametrize(
+    ("nome", "uf", "codigo"),
+    [
+        ("Conquista D\u00b4Oeste", "MT", 5103361),
+        ("Diamante D\u00b4Oeste", "PR", 4107157),
+        ("Conquista D\u2019Oeste", "MT", 5103361),
+        ("Diamante D\u2018Oeste", "PR", 4107157),
+        ("Diamante D`Oeste", "PR", 4107157),
+    ],
+)
+def test_apostrofo_tipografico_ou_acento_agudo_conta_como_apostrofo(nome, uf, codigo):
+    assert resolver_municipio(nome, uf)["codigo_ibge"] == codigo
     assert municipio_para_ibge(nome, uf) == codigo
 
 

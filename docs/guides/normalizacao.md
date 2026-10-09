@@ -48,6 +48,12 @@ por inteiro, sem caixa, acento e espaços repetidos, e nunca por pedaço (`"Sant
 Sapucaí"`). Nome de mais de um município, nome inexistente, código fora do cadastro ou município de outra UF
 levantam `InvalidParameterError` com os candidatos.
 
+Grafias anteriores que as fontes ainda publicam levam ao município atual: `"Açu"` (Assú/RN), `"Arês"` (Arez/RN),
+`"São Luiz"` (São Luiz do Anauá/RR), `"Fortaleza do Tabocão"` (Tabocão/TO), `"Santo Antônio do Leverger"`
+(Santo Antônio de Leverger/MT), `"Muquém de São Francisco"` (Muquém do São Francisco/BA) e `"Poxoréo"` (Poxoréu/MT),
+conforme as Alterações Toponímicas Municipais do IBGE. Acento agudo (`´`), crase (`` ` ``) e aspas tipográficas (`’`,
+`‘`) no lugar do apóstrofo contam como `'`: `"Conquista D´Oeste"`, como a FUNAI publica, é Conquista D'Oeste/MT.
+
 `ibge_para_municipio`, `buscar_municipios`, `coordenada_para_municipio` e `resolver_municipio` devolvem cópias: alterar o dicionário
 devolvido não muda a consulta seguinte.
 
