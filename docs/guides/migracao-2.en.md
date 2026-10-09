@@ -194,7 +194,7 @@ The `formulados`, `autorizacoes`, and `tecnicos` APIs retain their previous colu
 
 Pass `nr_registro` as exact text, retaining leading zeros and accents, such as `"00301"` or `"14017/Pré-Mistura"`. Empty, numeric, and boolean filters and unknown arguments now raise `InvalidParameterError` before network access. `situacao="TRUE"` compares published text without inferring registration validity; technical products do not accept this filter.
 
-The cache now uses versioned ZIPs by family, including composition, types, and provenance. Old files are preserved, but the first call with the new parser requires a fresh acquisition. `use_cache=False` skips reading and writing. On cache hits, `MetaInfo.fetched_at` and the hash identify the original acquisition; `fetch_timestamp` identifies the current query. Current CSVs cannot reconstruct a historical registration database by date. See [API and contracts](../api/defensivos.md).
+The cache now uses versioned ZIPs by family, including composition, types, and provenance. Old files are preserved, but the first call with the new parser requires a fresh acquisition. `use_cache=False` skips reading and writing. On cache hits, `MetaInfo.fetched_at`, `fetch_timestamp` and the hash identify the original acquisition; `timestamp` is the time of the current query. Current CSVs cannot reconstruct a historical registration database by date. See [API and contracts](../api/defensivos.md).
 
 ## cadastro_rural: SICAR filters and temporal context
 

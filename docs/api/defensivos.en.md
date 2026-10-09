@@ -60,7 +60,7 @@ Repeated ingredients at different positions retain separate rows. Composition is
 
 ## Filters, cache, and provenance
 
-Filters accept `str | None`. Empty text, numbers, booleans, invalid `tipo`, and unknown arguments raise `InvalidParameterError` before cache or network access. Registration and `organicos` use exact equality; other text filters search literal substrings, ignoring case. `situacao` uses textual equality, ignoring surrounding whitespace and case.
+Filters accept `str | None`. Empty text, numbers, booleans, invalid `tipo`, unknown arguments, and non-boolean `use_cache`, `as_polars` or `return_meta` raise `InvalidParameterError` before cache or network access. Registration and `organicos` use exact equality; other text filters search literal substrings, ignoring case. `situacao` uses textual equality, ignoring surrounding whitespace and case.
 
 Situation remains the original text. The September 6, 2026 capture contained only `TRUE` for formulated products. This token is not converted into a registration-validity classification or an application recommendation.
 

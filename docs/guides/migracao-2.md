@@ -198,7 +198,7 @@ As APIs `formulados`, `autorizacoes` e `tecnicos` preservam suas colunas anterio
 
 Informe `nr_registro` como texto exato, preservando zeros e acentos, como `"00301"` ou `"14017/Pré-Mistura"`. Filtros vazios, numéricos ou booleanos e argumentos desconhecidos agora geram `InvalidParameterError` antes da rede. `situacao="TRUE"` compara o texto publicado sem inferir vigência; técnicos não aceitam esse filtro.
 
-O cache passa a ZIPs versionados por família, incluindo composição, tipos e proveniência. Arquivos antigos ficam preservados, mas a primeira chamada com o parser novo precisa coletar novamente. `use_cache=False` ignora leitura e gravação. Em cache, `MetaInfo.fetched_at` e o hash identificam a coleta original; `fetch_timestamp` identifica a consulta atual. Os CSVs correntes não reconstituem um cadastro histórico por data. Veja [API e contratos](../api/defensivos.md).
+O cache passa a ZIPs versionados por família, incluindo composição, tipos e proveniência. Arquivos antigos ficam preservados, mas a primeira chamada com o parser novo precisa coletar novamente. `use_cache=False` ignora leitura e gravação. Em cache, `MetaInfo.fetched_at`, `fetch_timestamp` e o hash identificam a coleta original; `timestamp` é a hora da consulta atual. Os CSVs correntes não reconstituem um cadastro histórico por data. Veja [API e contratos](../api/defensivos.md).
 
 ## cadastro_rural: filtros SICAR e contexto temporal
 

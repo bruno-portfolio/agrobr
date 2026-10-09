@@ -20,14 +20,18 @@ logger = _log.get_logger(__name__)
 
 
 def _validate_query(
-    kind: str, filters: dict[str, str | None], extras: dict[str, Any], use_cache: bool
+    kind: str,
+    filters: dict[str, str | None],
+    extras: dict[str, Any],
+    flags: dict[str, bool],
 ) -> dict[str, str]:
     if kind not in ("formulados", "tecnicos"):
         raise InvalidParameterError("tipo deve ser formulados ou tecnicos")
     if extras:
         raise InvalidParameterError(f"Parâmetros não suportados: {', '.join(sorted(extras))}")
-    if not isinstance(use_cache, bool):
-        raise InvalidParameterError("use_cache deve ser booleano")
+    for name, flag in flags.items():
+        if not isinstance(flag, bool):
+            raise InvalidParameterError(f"{name} deve ser booleano")
     selected = {}
     for name, value in filters.items():
         if value is None:
@@ -142,7 +146,12 @@ async def _query(
     return_meta: bool,
     use_cache: bool,
 ) -> result_utils.DataFrameResult:
-    selected = _validate_query(kind, filters, extras, use_cache)
+    selected = _validate_query(
+        kind,
+        filters,
+        extras,
+        {"use_cache": use_cache, "as_polars": as_polars, "return_meta": return_meta},
+    )
     result_utils.check_polars(as_polars)
     acquired = await _load_snapshot(kind, use_cache)
     started = time.monotonic()

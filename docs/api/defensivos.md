@@ -60,7 +60,7 @@ Ingredientes repetidos em posições diferentes continuam como linhas distintas.
 
 ## Filtros, cache e proveniência
 
-Todos os filtros aceitam `str | None`. Texto vazio, números, booleanos, `tipo` inválido e parâmetros desconhecidos geram `InvalidParameterError` antes de acessar cache ou rede. Registro e `organicos` usam comparação exata; os demais filtros textuais buscam trechos literais sem distinguir maiúsculas. `situacao` usa igualdade textual sem espaços externos ou diferença de caixa.
+Todos os filtros aceitam `str | None`. Texto vazio, números, booleanos, `tipo` inválido, parâmetros desconhecidos e `use_cache`, `as_polars` ou `return_meta` que não sejam booleanos geram `InvalidParameterError` antes de acessar cache ou rede. Registro e `organicos` usam comparação exata; os demais filtros textuais buscam trechos literais sem distinguir maiúsculas. `situacao` usa igualdade textual sem espaços externos ou diferença de caixa.
 
 A situação original é preservada como texto. A captura de 06/09/2026 apresentou apenas `TRUE` nos formulados. Esse token não é convertido em uma classificação de vigência ou em recomendação de aplicação.
 
