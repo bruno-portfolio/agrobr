@@ -86,6 +86,7 @@ razão entre eles é o `nivel_cobertura`.
 - Dados desde 2006 (início do PSR)
 - Sinistros: `valor_indenizacao` sempre > 0, `evento` sempre preenchido
 - Apólices: `valor_indenizacao` pode ser null/0
+- Apólices: `valor_premio` (prêmio líquido) sai como o MAPA publica, inclusive negativo, com o aviso "PSR: N apólice(s) com valor_premio negativo publicado pelo MAPA, mantido como publicado: ..." (`UserWarning` e `meta.validation_warnings`). Em 09/10/2026, a base 2006–2025 tinha 1 caso em 1.712.384 apólices (020001576/2010, -100,00). `area_total` e as outras colunas monetárias seguem ≥ 0, e nos sinistros `valor_premio` também
 
 ## Exemplo
 

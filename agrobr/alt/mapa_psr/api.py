@@ -249,6 +249,8 @@ async def _fetch(
     df_out = pd.concat(dfs, ignore_index=True) if dfs else empty
     df_out = df_out.sort_values("ano_apolice").reset_index(drop=True)
     df_out, colapsadas = _colapsar_reenvios(df_out, contrato)
+    if not sinistros and (aviso := _aviso_de_premio_negativo(df_out)):
+        avisos.append(aviso)
     parse_ms += int((time.monotonic() - t1) * 1000)
 
     source_url = next(iter(urls.values()), CATALOGO_URL)
@@ -316,6 +318,26 @@ def _colapsar_reenvios(df: pd.DataFrame, contrato: str) -> tuple[pd.DataFrame, d
             got=df.loc[conflitos, chave].drop_duplicates().to_dict("records"),
         )
     return df, resumo
+
+
+def _aviso_de_premio_negativo(df: pd.DataFrame) -> str | None:
+    """Aviso com a contagem de apólices com prêmio líquido negativo, que saem como o MAPA publica.
+
+    Em 09/10/2026, a base 2006-2025 tinha 1 caso em 1.712.384 apólices (020001576/2010, -100,00).
+    """
+    if "valor_premio" not in df.columns:
+        return None
+    negativas = df[df["valor_premio"] < 0]
+    if negativas.empty:
+        return None
+    exemplos = [
+        f"{linha.nr_apolice}/{linha.ano_apolice}" for linha in negativas.head(10).itertuples()
+    ]
+    resto = f" e mais {len(negativas) - 10}" if len(negativas) > 10 else ""
+    return (
+        f"PSR: {len(negativas)} apólice(s) com valor_premio negativo publicado pelo MAPA, mantido "
+        f"como publicado: {', '.join(exemplos)}{resto}"
+    )
 
 
 def _aviso_de_cobertura(ultima: date | None, inicio: int | None, fim: int | None) -> str | None:

@@ -110,6 +110,8 @@ empty result, after the download.
 
 Same columns as `sinistros`, plus:
 
+In policies, `valor_premio` is returned as MAPA publishes it, including negative values, with `UserWarning` and `meta.validation_warnings`. For claims, the contract keeps `valor_premio` ≥ 0.
+
 | Column | Type | Nullable | Description |
 |---|---|---|---|
 | `taxa` | float | Yes | Premium rate as a fraction (0.1369 = 13.69%): net premium ÷ guarantee limit, as published by MAPA |

@@ -109,6 +109,8 @@ depois da descarga.
 
 Mesmas colunas de `sinistros`, mais:
 
+Nas apólices, `valor_premio` sai como publicado pelo MAPA, inclusive quando negativo, com `UserWarning` e `meta.validation_warnings`. Nos sinistros, o contrato mantém `valor_premio` ≥ 0.
+
 | Coluna | Tipo | Nullable | Descricao |
 |---|---|---|---|
 | `taxa` | float | Sim | Taxa do prêmio em fração (0,1369 = 13,69%): prêmio líquido ÷ limite de garantia, como o MAPA publica |

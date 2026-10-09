@@ -176,7 +176,7 @@
       "stable": true,
       "deprecated": false,
       "description": "",
-      "min_value": 0,
+      "min_value": null,
       "max_value": null
     },
     {
@@ -326,7 +326,6 @@
   "constraints": {
     "no_duplicates": true,
     "area_total_min": 0,
-    "valor_premio_min": 0,
     "valor_subvencao_min": 0,
     "valor_limite_garantia_min": 0,
     "valor_indenizacao_min": 0

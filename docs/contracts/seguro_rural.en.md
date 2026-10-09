@@ -86,6 +86,7 @@ ratio is `nivel_cobertura`.
 - Data since 2006 (PSR inception)
 - Claims: `valor_indenizacao` is always > 0, `evento` is always filled
 - Policies: `valor_indenizacao` may be null/0
+- Policies: `valor_premio` (net premium) is returned as MAPA publishes it, negative included, with the warning "PSR: N apólice(s) com valor_premio negativo publicado pelo MAPA, mantido como publicado: ..." (`UserWarning` and `meta.validation_warnings`). On 2026-10-09, the 2006–2025 base had 1 such case in 1,712,384 policies (020001576/2010, -100.00). `area_total` and the other monetary columns remain ≥ 0, and so does `valor_premio` in claims
 
 ## Example
 

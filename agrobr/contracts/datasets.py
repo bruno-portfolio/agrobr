@@ -1291,7 +1291,6 @@ MAPA_PSR_APOLICES_V2 = Contract(
             nullable=True,
             unit="BRL",
             stable=True,
-            min_value=0,
         ),
         Column(
             name="valor_subvencao",
