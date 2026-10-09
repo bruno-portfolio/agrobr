@@ -277,6 +277,7 @@ async def abate(
     trimestre: str | list[str] | None = None,
     *,
     uf: str | None = None,
+    categoria: str = "total",
     as_polars: bool = False,
     return_meta: bool = False,
 ) -> pd.DataFrame | pl.DataFrame  # (df, MetaInfo) se return_meta=True
@@ -289,6 +290,7 @@ async def abate(
 | `especie` | `str` | Espécie: 'bovino', 'suino', 'frango' |
 | `trimestre` | `str \| list[str] \| None` | Trimestre YYYYQQ (ex: '202303'). Default: último disponível |
 | `uf` | `str \| None` | Filtrar por UF (ex: 'PR') |
+| `categoria` | `str` | Tipo de rebanho, só no bovino (classificação 18 da tabela 1092): 'total' (padrão), 'bois', 'vacas', 'novilhos', 'novilhas', 'vitelos' ou 'todas' (o total e as 5 categorias). No suíno e no frango, só 'total'; outro valor levanta `InvalidParameterError` antes da rede |
 | `as_polars` | `bool` | Retornar como polars.DataFrame |
 | `return_meta` | `bool` | Retorna `(df, MetaInfo)` com proveniência |
 
@@ -307,6 +309,8 @@ async def abate(
 | `animais_abatidos` | Quantidade de animais abatidos | cabeças |
 | `peso_carcacas` | Peso total das carcaças | kg |
 
+A coluna `categoria` diz o tipo de rebanho da linha (`total` no suíno e no frango). Com `categoria='todas'`, cada UF e trimestre sai em 6 linhas. No 3º trimestre de 2023, bois, vacas, novilhos e novilhas somam o total em 21 das 27 UFs; nas outras 6, o IBGE omite alguma categoria por sigilo (célula `X`, nula na saída). `vitelos` saiu sem dado (`...`, nulo) em todas as UFs.
+
 **Exemplo:**
 
 ```python
@@ -314,6 +318,12 @@ from agrobr import ibge
 
 # Abate bovino por UF
 df = await ibge.abate('bovino', trimestre='202303')
+
+# Participação de fêmeas (vacas + novilhas) no abate bovino, por UF
+df = await ibge.abate('bovino', trimestre='202303', categoria='todas')
+cabecas = df.pivot(index='localidade', columns='categoria', values='animais_abatidos')
+femeas = (cabecas['vacas'] + cabecas['novilhas']) / cabecas['total']
+# Mato Grosso: (365.311 + 306.266) / 1.602.321 = 0,419
 
 # Abate de frango no Paraná
 df = await ibge.abate('frango', trimestre='202303', uf='PR')

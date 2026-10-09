@@ -65,6 +65,7 @@ _ABATE_COLUMNS = [
     "localidade",
     "localidade_cod",
     "especie",
+    "categoria",
     "animais_abatidos",
     "peso_carcacas",
     "fonte",
@@ -607,7 +608,29 @@ def _detect_abate_columns(df: pd.DataFrame) -> dict[str, str]:
             col_map[dc] = "trimestre_cod"
             col_map[name_col] = "trimestre_nome"
 
+    codigos_rebanho = set(client.CATEGORIAS_ABATE_BOVINO.values())
+    for dc in (f"D{i}C" for i in range(4, 10)):
+        if dc in df.columns and df[dc].astype(str).isin(codigos_rebanho).any():
+            col_map[dc] = "categoria_cod"
+            break
+
     return {k: v for k, v in col_map.items() if k in df.columns}
+
+
+def _com_categoria(df: pd.DataFrame, categoria: str) -> pd.DataFrame:
+    """A coluna da classificação 18 (tipo de rebanho) vira ``categoria``; sem ela na resposta (suíno,
+    frango e o pedido de uma categoria só), toda linha é da categoria pedida."""
+    df = df.copy()
+    if "categoria_cod" not in df.columns:
+        if categoria == "todas" and not df.empty:
+            raise _erro_layout_abate("sem a classificação 18 (tipo de rebanho)")
+        df["categoria"] = categoria
+        return df
+    rotulos = {codigo: nome for nome, codigo in client.CATEGORIAS_ABATE_BOVINO.items()}
+    df["categoria"] = df["categoria_cod"].astype(str).map(rotulos)
+    if df["categoria"].isna().any():
+        raise _erro_layout_abate("com tipo de rebanho fora do pedido")
+    return df
 
 
 def _erro_layout_abate(motivo: str) -> ParseError:
@@ -630,6 +653,7 @@ def _merge_cabecas_peso(df: pd.DataFrame, especie_lower: str) -> pd.DataFrame:
 
     if not merge_keys:
         raise _erro_layout_abate("sem trimestre nem localidade")
+    merge_keys.append("categoria")
     if cabecas.empty and peso.empty:
         raise _erro_layout_abate("sem as variáveis 284 e 285")
     if df.duplicated(merge_keys + ["variavel_cod"]).any():
@@ -673,6 +697,7 @@ async def abate(
     trimestre: str | list[str] | None = None,
     *,
     uf: str | None = None,
+    categoria: str = "total",
     as_polars: Literal[False] = False,
     return_meta: Literal[False] = False,
 ) -> pd.DataFrame: ...
@@ -684,6 +709,7 @@ async def abate(
     trimestre: str | list[str] | None = None,
     *,
     uf: str | None = None,
+    categoria: str = "total",
     as_polars: bool = False,
     return_meta: Literal[False] = False,
 ) -> DataFrame: ...
@@ -695,6 +721,7 @@ async def abate(
     trimestre: str | list[str] | None = None,
     *,
     uf: str | None = None,
+    categoria: str = "total",
     as_polars: Literal[False] = False,
     return_meta: Literal[True],
 ) -> tuple[pd.DataFrame, MetaInfo]: ...
@@ -706,6 +733,7 @@ async def abate(
     trimestre: str | list[str] | None = None,
     *,
     uf: str | None = None,
+    categoria: str = "total",
     as_polars: bool = False,
     return_meta: Literal[True],
 ) -> tuple[DataFrame, MetaInfo]: ...
@@ -716,6 +744,7 @@ async def abate(
     trimestre: str | list[str] | None = None,
     *,
     uf: str | None = None,
+    categoria: str = "total",
     as_polars: bool = False,
     return_meta: bool = False,
 ) -> DataFrameResult:
@@ -728,17 +757,25 @@ async def abate(
         fetched_at=utcnow(),
         attempted_sources=["ibge_abate"],
         selected_source="ibge_abate",
-        schema_version="2.0",
-        contract_version="2.0",
+        schema_version=contracts.get_contract("abate_trimestral").version,
+        contract_version=contracts.get_contract("abate_trimestral").version,
     )
     logger.info(
         "ibge_abate_request",
         especie=especie,
         trimestre=trimestre,
         uf=uf,
+        categoria=categoria,
     )
 
     especie_lower = normalizar_opcao(especie, "Espécie", client.ESPECIES_ABATE)
+    categoria = normalizar_opcao(
+        categoria, "Tipo de rebanho", [*client.CATEGORIAS_ABATE_BOVINO, "todas"]
+    )
+    if especie_lower != "bovino" and categoria != "total":
+        raise InvalidParameterError(
+            f"Categoria {categoria!r} só existe no abate bovino; para {especie_lower}, use 'total'"
+        )
 
     table_code = client.TABELAS_ABATE[especie_lower]
     var_codes = ",".join(client.VARIAVEIS_ABATE.values())
@@ -752,7 +789,10 @@ async def abate(
         "12529": "118225",
     }
     if especie_lower == "bovino":
-        classifications["18"] = "992"
+        codigos = client.CATEGORIAS_ABATE_BOVINO
+        classifications["18"] = (
+            list(codigos.values()) if categoria == "todas" else codigos[categoria]
+        )
 
     df = await client.fetch_sidra(
         table_code=table_code,
@@ -773,6 +813,7 @@ async def abate(
     if "trimestre_cod" in df.columns:
         df["trimestre"] = df["trimestre_cod"].astype(str)
 
+    df = _com_categoria(df, categoria)
     df = _merge_cabecas_peso(df, especie_lower)
 
     meta.fetch_duration_ms = int((time.perf_counter() - fetch_start) * 1000)
@@ -785,6 +826,7 @@ async def abate(
             "trimestre": trimestre,
             "territorial_level": territorial_level,
             "ibge_code": ibge_code,
+            "categoria": categoria,
         },
         schema_version=meta.schema_version,
     )

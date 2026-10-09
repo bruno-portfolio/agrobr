@@ -1,0 +1,33 @@
+{
+  "descricao": "SIDRA tabela 1092 (abate de bovinos), 3º trimestre de 2023, variáveis 284 (animais abatidos) e 285 (peso das carcaças), referência temporal Total do trimestre (12716/115236), inspeção Total (12529/118225) e tipo de rebanho (classificação 18) Total, Bois, Vacas, Novilhos, Novilhas e Vitelos e vitelas. Todas as UFs (n3/all, o pedido sem uf) e Mato Grosso (n3/51). Corpos inteiros como a SIDRA respondeu, pedidos na URL que o cliente monta (/h/n, p antes de v). Oráculo: o V de cada célula, por D1C (localidade), D3C (variável) e D6C (tipo de rebanho). Na legenda da SIDRA, '-' é zero absoluto, 'X' é dado omitido (sigilo) e '...' é dado não disponível: no corpo UF, 22, 28 e 54 células (as 54 são Vitelos e vitelas, em todas as UFs).",
+  "licenca": "livre",
+  "tipo_de_rebanho": {
+    "fonte": "metadados da tabela 1092 na API de agregados do IBGE, consultados em 08/10/2026",
+    "categorias": {
+      "992": "Total",
+      "55": "Bois",
+      "56": "Vacas",
+      "111734": "Novilhos",
+      "111735": "Novilhas",
+      "57": "Vitelos e vitelas"
+    }
+  },
+  "corpos": {
+    "UF": {
+      "arquivo": "UF.json",
+      "requested_url": "https://apisidra.ibge.gov.br/values/t/1092/n3/all/h/n/p/202303/v/284,285/c12716/115236/c12529/118225/c18/992,55,56,111734,111735,57",
+      "status": 200,
+      "bytes": 136592,
+      "sha256": "80a1f3fa9fc5cb83efa0d444e6a97417f0b8abd9a57a9714232083bb829948ab",
+      "fetched_at": "2026-10-08T16:03:18+00:00"
+    },
+    "MT": {
+      "arquivo": "MT.json",
+      "requested_url": "https://apisidra.ibge.gov.br/values/t/1092/n3/51/h/n/p/202303/v/284,285/c12716/115236/c12529/118225/c18/992,55,56,111734,111735,57",
+      "status": 200,
+      "bytes": 5093,
+      "sha256": "c2fb9c514173a9ace458cb195cb24789bd3cc486d307188970261fa57971ff82",
+      "fetched_at": "2026-10-08T16:03:24+00:00"
+    }
+  }
+}

@@ -1962,7 +1962,7 @@ voltar vazio ou casar outra data, sem aviso: use
 
 | Função | Coluna | 1.1.0 | 2.0 |
 |---|---|---|---|
-| `ibge.abate`, `datasets.abate_trimestral` | `animais_abatidos` | `float64` | `Int64` (contrato 2.0) |
+| `ibge.abate`, `datasets.abate_trimestral` | `animais_abatidos` | `float64` | `Int64` (contrato 2.1) |
 | `bcb.sgs`, `datasets.series_economicas` | `codigo` | `int64` | `Int64` (contrato `bcb_sgs` 3.0) |
 | `alt.antt_pedagio.pracas_pedagio` | `km_m`, `ano_do_pnv_snv` | texto | `float64`, `Int64` |
 | `mapbiomas_alerta.alertas`, `alertas_geo` | `alert_code` | `int64` | `Int64` |
@@ -1991,7 +1991,7 @@ MapBiomas Alerta (com o CRS `EPSG:4326` no `_geo`), `ibama.embargos_geo`, `icmbi
 
 | Contrato | 1.1.0 | 2.0 |
 |---|---|---|
-| `abate_trimestral` | 1.0 | 2.0 |
+| `abate_trimestral` | 1.0 | 2.1 |
 | `antt_pedagio_pracas` | 1.0 | 2.0 |
 | `condicao_lavouras` | 1.0 | 2.0 |
 | `movimentacao_portuaria` | 1.0 | 2.0 |

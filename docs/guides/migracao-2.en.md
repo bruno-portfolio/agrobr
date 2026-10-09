@@ -1979,7 +1979,7 @@ warning.
 
 | Function | Column | 1.1.0 | 2.0 |
 |---|---|---|---|
-| `ibge.abate`, `datasets.abate_trimestral` | `animais_abatidos` | `float64` | `Int64` (contract 2.0) |
+| `ibge.abate`, `datasets.abate_trimestral` | `animais_abatidos` | `float64` | `Int64` (contract 2.1) |
 | `bcb.sgs`, `datasets.series_economicas` | `codigo` | `int64` | `Int64` (contract `bcb_sgs` 3.0) |
 | `alt.antt_pedagio.pracas_pedagio` | `km_m`, `ano_do_pnv_snv` | text | `float64`, `Int64` |
 | `mapbiomas_alerta.alertas`, `alertas_geo` | `alert_code` | `int64` | `Int64` |
@@ -2008,7 +2008,7 @@ get `int64`, `astype("int64")` when there are no nulls.
 
 | Contract | 1.1.0 | 2.0 |
 |---|---|---|
-| `abate_trimestral` | 1.0 | 2.0 |
+| `abate_trimestral` | 1.0 | 2.1 |
 | `antt_pedagio_pracas` | 1.0 | 2.0 |
 | `condicao_lavouras` | 1.0 | 2.0 |
 | `movimentacao_portuaria` | 1.0 | 2.0 |

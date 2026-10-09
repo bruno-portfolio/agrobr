@@ -70,6 +70,7 @@ def amostra_abate_trimestral() -> pd.DataFrame:
                 "localidade": "Brasil",
                 "localidade_cod": 1,
                 "especie": "bovino",
+                "categoria": "total",
                 "animais_abatidos": 8500000.0,
                 "peso_carcacas": 2200000.0,
                 "fonte": "ibge_abate",

@@ -303,14 +303,25 @@ IBGE_ABATE_V1 = Contract(
 
 IBGE_ABATE_V2 = dataclasses.replace(
     copy.deepcopy(IBGE_ABATE_V1),
-    version="2.0",
+    version="2.1",
     effective_from="2.0.0",
+    primary_key=[*IBGE_ABATE_V1.primary_key, "categoria"],
     columns=[
         dataclasses.replace(column, type=ColumnType.INTEGER)
         if column.name == "animais_abatidos"
         else copy.deepcopy(column)
         for column in IBGE_ABATE_V1.columns
     ],
+)
+IBGE_ABATE_V2.columns.insert(
+    [column.name for column in IBGE_ABATE_V2.columns].index("especie") + 1,
+    Column(
+        name="categoria",
+        type=ColumnType.STRING,
+        nullable=False,
+        stable=True,
+        description="Tipo de rebanho do bovino (total, bois, vacas, novilhos, novilhas, vitelos); 'total' no suíno e no frango.",
+    ),
 )
 
 IBGE_CENSO_AGRO_V1 = Contract(

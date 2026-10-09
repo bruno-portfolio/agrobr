@@ -277,6 +277,7 @@ async def abate(
     trimestre: str | list[str] | None = None,
     *,
     uf: str | None = None,
+    categoria: str = "total",
     as_polars: bool = False,
     return_meta: bool = False,
 ) -> pd.DataFrame | pl.DataFrame  # (df, MetaInfo) when return_meta=True
@@ -289,6 +290,7 @@ async def abate(
 | `especie` | `str` | Species: 'bovino', 'suino', 'frango' |
 | `trimestre` | `str \| list[str] \| None` | Quarter YYYYQQ (e.g. '202303'). Default: latest available |
 | `uf` | `str \| None` | Filter by state (e.g. 'PR') |
+| `categoria` | `str` | Herd type, cattle only (classification 18 of table 1092): 'total' (default), 'bois' (steers), 'vacas' (cows), 'novilhos' (young steers), 'novilhas' (heifers), 'vitelos' (calves) or 'todas' (the total and the 5 categories). For swine and chicken, only 'total'; any other value raises `InvalidParameterError` before the network |
 | `as_polars` | `bool` | Return as polars.DataFrame |
 | `return_meta` | `bool` | Returns a `(df, MetaInfo)` tuple with provenance |
 
@@ -307,6 +309,8 @@ async def abate(
 | `animais_abatidos` | Number of slaughtered animals | head |
 | `peso_carcacas` | Total carcass weight | kg |
 
+The `categoria` column holds the row's herd type (`total` for swine and chicken). With `categoria='todas'`, each state and quarter comes out in 6 rows. In Q3 2023, steers, cows, young steers and heifers add up to the total in 21 of the 27 states; in the other 6, IBGE suppresses some category for confidentiality (cell `X`, null in the output). `vitelos` came out without data (`...`, null) in every state.
+
 **Example:**
 
 ```python
@@ -314,6 +318,12 @@ from agrobr import ibge
 
 # Cattle slaughter by state
 df = await ibge.abate('bovino', trimestre='202303')
+
+# Share of females (cows + heifers) in cattle slaughter, by state
+df = await ibge.abate('bovino', trimestre='202303', categoria='todas')
+cabecas = df.pivot(index='localidade', columns='categoria', values='animais_abatidos')
+femeas = (cabecas['vacas'] + cabecas['novilhas']) / cabecas['total']
+# Mato Grosso: (365,311 + 306,266) / 1,602,321 = 0.419
 
 # Chicken slaughter in Paraná
 df = await ibge.abate('frango', trimestre='202303', uf='PR')

@@ -218,6 +218,9 @@ async def test_public_values_match_raw_aggregates_oracle(
     if call.startswith("pam_"):
         assert set(frame.columns) == {*case["columns"], "valor_producao"}
         assert frame["valor_producao"].isna().all()
+    elif call.startswith("abate_"):
+        assert frame.drop(columns="categoria").columns.tolist() == case["columns"]
+        assert set(frame["categoria"]) == {"total"}
     else:
         assert list(frame.columns) == case["columns"]
     assert_replay_samples(frame, case)
@@ -290,6 +293,8 @@ async def test_pesquisas_sem_dado_devolvem_colunas_da_resposta_real_e_avisam(
             with check(call), warnings.catch_warnings(record=True) as avisos:
                 warnings.simplefilter("always")
                 frame, _ = await CALLS[call]()
+                if call.startswith("abate_"):
+                    frame = frame.drop(columns="categoria")
                 assert list(frame.columns) == SUMMARY[call]["columns"]
                 assert frame.empty
                 assert any("sem dado" in str(aviso.message) for aviso in avisos)
@@ -302,3 +307,25 @@ async def test_ibge_sem_cache_nao_promete_vencimento(call: str, monkeypatch: pyt
         warnings.simplefilter("ignore")
         _, meta = await CALLS[call]()
     assert (meta.from_cache, meta.cache_expires_at) == (False, None)
+
+
+@pytest.mark.parametrize(
+    "call,contrato,versao",
+    [
+        ("ppm_bovino_uf_2023", "pecuaria_municipal", "1.1"),
+        ("silvicultura_2023", "silvicultura", "1.1"),
+        ("extracao_vegetal_2023", "extrativismo_vegetal", "1.1"),
+        ("censo_efetivo_2017_uf", "censo_agropecuario", "1.2"),
+        ("censo_historico_estab", "censo_agropecuario_historico", "1.1"),
+    ],
+)
+async def test_fonte_informa_a_versao_do_contrato_da_saida(
+    call: str, contrato: str, versao: str, monkeypatch: pytest.MonkeyPatch
+):
+    seen = _fallback_frame(call, monkeypatch)
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        _, meta = await CALLS[call]()
+    assert_replay_served(seen)
+    assert meta.schema_version == contracts.get_contract(contrato).version == versao
+    assert meta.cache_key is not None and meta.cache_key.endswith(f"|sv{versao}")

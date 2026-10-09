@@ -1,18 +1,20 @@
 {
   "name": "ibge.abate",
-  "schema_version": "2.0",
+  "schema_version": "2.1",
   "effective_from": "2.0.0",
   "breaking_policy": "major",
   "primary_key": [
     "trimestre",
     "especie",
-    "localidade"
+    "localidade",
+    "categoria"
   ],
   "required_columns": [
     "trimestre",
     "localidade",
     "localidade_cod",
     "especie",
+    "categoria",
     "animais_abatidos",
     "peso_carcacas",
     "fonte"
@@ -22,6 +24,7 @@
     "localidade": "str",
     "localidade_cod": "int",
     "especie": "str",
+    "categoria": "str",
     "animais_abatidos": "int",
     "peso_carcacas": "float",
     "fonte": "str"
@@ -31,6 +34,7 @@
     "localidade": true,
     "localidade_cod": true,
     "especie": false,
+    "categoria": false,
     "animais_abatidos": true,
     "peso_carcacas": true,
     "fonte": false
@@ -77,6 +81,17 @@
       "stable": true,
       "deprecated": false,
       "description": "",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "categoria",
+      "type": "str",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "Tipo de rebanho do bovino (total, bois, vacas, novilhos, novilhas, vitelos); 'total' no suíno e no frango.",
       "min_value": null,
       "max_value": null
     },

@@ -19,8 +19,11 @@ async def _fetch_ibge_abate(produto: str, **kwargs: Any) -> tuple[pd.DataFrame, 
 
     trimestre = kwargs.get("trimestre")
     uf = kwargs.get("uf")
+    categoria = kwargs.get("categoria", "total")
 
-    result = await ibge.abate(produto, trimestre=trimestre, uf=uf, return_meta=True)
+    result = await ibge.abate(
+        produto, trimestre=trimestre, uf=uf, categoria=categoria, return_meta=True
+    )
 
     return _unpack_result(result)
 
@@ -41,7 +44,7 @@ ABATE_TRIMESTRAL_INFO = DatasetInfo(
         "suino",
         "frango",
     ],
-    contract_version="2.0",
+    contract_version="2.1",
     update_frequency="quarterly",
     typical_latency="T+2 meses",
     source_url=SIDRA_BASE,
@@ -62,6 +65,7 @@ class AbateTrimestralDataset(BaseDataset):
         trimestre: str | list[str] | None = None,
         *,
         uf: str | None = None,
+        categoria: str = "total",
         return_meta: bool = False,
     ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]:
         logger.info(
@@ -71,7 +75,7 @@ class AbateTrimestralDataset(BaseDataset):
         snapshot = get_snapshot()
 
         df, source_name, source_meta, attempted = await self._try_sources(
-            produto, trimestre=trimestre, uf=uf
+            produto, trimestre=trimestre, uf=uf, categoria=categoria
         )
 
         self._validate_contract(df)
@@ -95,6 +99,7 @@ async def abate_trimestral(
     trimestre: str | list[str] | None = None,
     *,
     uf: str | None = None,
+    categoria: str = "total",
     return_meta: Literal[False] = False,
     as_polars: Literal[False] = False,
 ) -> pd.DataFrame: ...
@@ -106,6 +111,7 @@ async def abate_trimestral(
     trimestre: str | list[str] | None = None,
     *,
     uf: str | None = None,
+    categoria: str = "total",
     return_meta: Literal[False] = False,
     as_polars: bool = False,
 ) -> DataFrame: ...
@@ -117,6 +123,7 @@ async def abate_trimestral(
     trimestre: str | list[str] | None = None,
     *,
     uf: str | None = None,
+    categoria: str = "total",
     return_meta: Literal[True],
     as_polars: Literal[False] = False,
 ) -> tuple[pd.DataFrame, MetaInfo]: ...
@@ -128,6 +135,7 @@ async def abate_trimestral(
     trimestre: str | list[str] | None = None,
     *,
     uf: str | None = None,
+    categoria: str = "total",
     return_meta: Literal[True],
     as_polars: bool = False,
 ) -> tuple[DataFrame, MetaInfo]: ...
@@ -138,9 +146,15 @@ async def abate_trimestral(
     trimestre: str | list[str] | None = None,
     *,
     uf: str | None = None,
+    categoria: str = "total",
     return_meta: bool = False,
     as_polars: bool = False,
 ) -> DataFrameResult:
     return await _abate_trimestral.fetch(  # type: ignore[call-arg]
-        produto, trimestre=trimestre, uf=uf, return_meta=return_meta, as_polars=as_polars
+        produto,
+        trimestre=trimestre,
+        uf=uf,
+        categoria=categoria,
+        return_meta=return_meta,
+        as_polars=as_polars,
     )

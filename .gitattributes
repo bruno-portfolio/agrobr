@@ -160,3 +160,4 @@ tests/golden_data/ibge/bruto_malha_4674_20261003/** -text
 tests/golden_data/ibge/bruto_urbana_4674_20261003/** -text
 tests/golden_data/sicar/bruto_imoveis_4674_20261003/** -text
 tests/golden_data/conab_ceasa/precos_20261006/** -text
+tests/golden_data/ibge/abate_bovino_categorias_20261008/** -text

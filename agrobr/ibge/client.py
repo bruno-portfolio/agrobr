@@ -137,6 +137,15 @@ VARIAVEIS_ABATE = {
 
 ESPECIES_ABATE = ["bovino", "suino", "frango"]
 
+CATEGORIAS_ABATE_BOVINO = {
+    "total": "992",
+    "bois": "55",
+    "vacas": "56",
+    "novilhos": "111734",
+    "novilhas": "111735",
+    "vitelos": "57",
+}
+
 TABELAS_CENSO_AGRO: dict[str, dict[str, str]] = {
     "efetivo_rebanho": {"1995": "323", "2017": "6907"},
     "uso_terra": {"1995": "316", "2017": "6881"},

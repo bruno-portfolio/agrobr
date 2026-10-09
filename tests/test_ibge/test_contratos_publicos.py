@@ -139,7 +139,7 @@ async def test_abate_polars_preserva_contagem_e_valor_publicado(monkeypatch, cam
     assert frame.schema["peso_carcacas"] == pl.Float64
     assert_replay_samples(pd.DataFrame(frame.to_dicts()), replay.ORACLE_CASES[caso])
     if return_meta:
-        assert resultado[1].contract_version == "2.0"
+        assert resultado[1].contract_version == "2.1"
 
 
 @pytest.mark.parametrize("uf", [51, [], {}, "", "  ", "XX"])
