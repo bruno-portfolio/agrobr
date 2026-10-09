@@ -57,7 +57,7 @@ DataFrame with columns:
 
 `programa` uses the current name from the official table for every crop year: `0152` is published as PROIRRIGA even before 07/2021, when the code was Moderinfra (the official description records the change on 2021-07-01).
 
-**Absence is not zero.** A `uf`, `programa` or `tipo_seguro` filter on a source body without the matching column raises `ParseError` instead of returning the total of all. In the aggregation by state or by program, `valor`, `area_financiada` and `qtd_contratos` are null in a group where any record lacks the value; when the same group has both known and missing values, `MetaInfo.validation_warnings` records a warning.
+**Absence is not zero.** A `uf`, `programa` or `tipo_seguro` filter on a source body without the matching column raises `ParseError` instead of returning the total of all. In the aggregation by state or by program, `valor`, `area_financiada` and `qtd_contratos` are null in a group where any record lacks the value; when the same group has both known and missing values, `MetaInfo.validation_warnings` records a warning. A missing value is null, but a year, month or contract count published as nonnumeric text or as a fraction raises `ParseError` with the column, the record and the published value.
 
 **Crop year in progress.** The crop year containing today (July to June) is still receiving contracts, and its total changes until the crop year ends. When the result includes it, `credito_rural` warns in `validation_warnings` and `UserWarning` and records in `source_details` the crop year (`safra_em_curso`) and the issuance months covered (`meses_cobertos`, `"YYYY-MM"`).
 
@@ -128,6 +128,7 @@ async def credito_rural_total(
 - **No Brazil row.** SICOR publishes no national total: the Brazil total is the sum of the states.
 - **Partial crop year.** The current crop year is partial; `MetaInfo.source_details["meses"]` holds the first and last month with data and the number of months.
 - **Crop-year query × sum of the monthly queries.** The function requests the crop year in a single query (split by month only when the response hits the Olinda record limit), and SICOR may return numbers that differ from the sum of month-by-month queries. On 2026-09-26, for crop year 2026/27 (July and August), 51 state × purpose pairs diverged: for `custeio` in AC, 274 contracts and R$ 56,788,261.98 in the crop-year query, against 272 and R$ 56,541,830.82 in the monthly ones. The cause was not identified, and agrobr reproduces the body received.
+- **Year, month or count that is not an integer.** `AnoEmissao`, `MesEmissao` or the contract count published as nonnumeric text or as a fraction raise `ParseError` with the column, the record and the published value, instead of truncating the fraction or failing with a raw error. In the crop-year filter (here and in `credito_rural`), a missing year or month also raises `ParseError`: without them, the record has no crop year.
 - **No BigQuery fallback**: `attempted_sources` is `["bcb_odata"]`.
 - The total by state and purpose matches the sum of the municipalities (`CusteioInvestimentoComercialIndustrialSemFiltros`) and, for operating costs, investment and marketing, the by-product sum of `credito_rural` (checked for 2022 and 2023).
 

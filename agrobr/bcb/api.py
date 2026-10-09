@@ -33,6 +33,7 @@ from .models import (
 )
 from .parser import (
     PARSER_VERSION,
+    _inteiros,
     agregar_por_programa,
     agregar_por_uf,
     nomear_dimensoes_do_registro,
@@ -504,7 +505,11 @@ async def credito_rural_total(
     contracts.validate_dataset(df, bcb_sicor.BCB_CREDITO_RURAL_TOTAL_V1)
     parse_ms = int((time.monotonic() - t1) * 1000)
 
-    meses = sorted({(int(r["AnoEmissao"]), int(r["MesEmissao"])) for r in dados})
+    emissao = [
+        _inteiros(pd.Series([r.get(campo) for r in dados], name=campo, dtype=object))
+        for campo in ("AnoEmissao", "MesEmissao")
+    ]
+    meses = sorted({(int(ano), int(mes)) for ano, mes in zip(*emissao, strict=True)})
     proveniencia = _proveniencia(aquisicao) if aquisicao.paginas else {"source_details": {}}
     meta = build_source_meta(
         "bcb_credito",

@@ -57,7 +57,7 @@ DataFrame com colunas:
 
 `programa` usa o nome vigente da tabela oficial em todas as safras: o `0152` sai como PROIRRIGA também antes de 07/2021, quando o código era o Moderinfra (a descrição oficial registra a troca em 01/07/2021).
 
-**Ausência não é zero.** Filtro `uf`, `programa` ou `tipo_seguro` com o corpo da fonte sem a coluna correspondente levanta `ParseError`, em vez de devolver o total de todos. Na agregação por UF ou por programa, `valor`, `area_financiada` e `qtd_contratos` saem nulos no grupo em que algum registro não traz o valor; quando o mesmo grupo tem valores conhecidos e ausentes, `MetaInfo.validation_warnings` registra o aviso.
+**Ausência não é zero.** Filtro `uf`, `programa` ou `tipo_seguro` com o corpo da fonte sem a coluna correspondente levanta `ParseError`, em vez de devolver o total de todos. Na agregação por UF ou por programa, `valor`, `area_financiada` e `qtd_contratos` saem nulos no grupo em que algum registro não traz o valor; quando o mesmo grupo tem valores conhecidos e ausentes, `MetaInfo.validation_warnings` registra o aviso. Valor ausente sai nulo, mas ano, mês ou quantidade de contratos publicados com texto não numérico ou fração levantam `ParseError` com a coluna, o registro e o valor publicado.
 
 **Safra em curso.** A safra que contém a data de hoje (julho a junho) ainda recebe contratos, e o total dela muda até o fim da safra. Quando o resultado a traz, o `credito_rural` avisa em `validation_warnings` e em `UserWarning` e registra em `source_details` a safra (`safra_em_curso`) e os meses de emissão cobertos (`meses_cobertos`, `"AAAA-MM"`).
 
@@ -128,6 +128,7 @@ async def credito_rural_total(
 - **Sem linha Brasil.** O SICOR não publica total do país: o total do Brasil é a soma das UFs.
 - **Safra parcial.** A safra corrente é parcial; `MetaInfo.source_details["meses"]` traz o primeiro e o último mês com dado e a quantidade de meses.
 - **Consulta por safra × soma das mensais.** A função pede a safra numa consulta só (fatiada por mês só quando a resposta bate no limite de registros da Olinda), e o SICOR pode devolver números diferentes da soma das consultas mês a mês. Em 26/09/2026, na safra 2026/27 (julho e agosto), 51 pares UF × finalidade divergiram: no custeio do AC, 274 contratos e R$ 56.788.261,98 na consulta por safra, contra 272 e R$ 56.541.830,82 nas mensais. A causa não foi identificada, e o agrobr reproduz o corpo recebido.
+- **Ano, mês ou quantidade que não é inteiro.** `AnoEmissao`, `MesEmissao` ou a quantidade de contratos publicados como texto não numérico ou fração levantam `ParseError` com a coluna, o registro e o valor publicado, em vez de truncar a fração ou cair com erro cru. No filtro de safra (aqui e no `credito_rural`), ano ou mês ausente também levanta `ParseError`: sem eles, o registro não tem safra.
 - **Sem fallback BigQuery**: `attempted_sources` é `["bcb_odata"]`.
 - O total por UF e finalidade fecha com a soma dos municípios (`CusteioInvestimentoComercialIndustrialSemFiltros`) e, em custeio, investimento e comercialização, com a soma por produto do `credito_rural` (conferido em 2022 e 2023).
 

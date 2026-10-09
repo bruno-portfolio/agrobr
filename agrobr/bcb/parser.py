@@ -72,6 +72,20 @@ def nomear_dimensoes_do_registro(df: pd.DataFrame) -> pd.DataFrame:
     return _enriquecer_dimensoes(df.copy(), ENRIQUECIMENTO_REGISTRO_MAP)
 
 
+def _inteiros(publicado: pd.Series) -> pd.Series:
+    numeros = pd.to_numeric(publicado, errors="coerce")
+    invalidos = (numeros.isna() & publicado.notna()) | (numeros.notna() & numeros.mod(1).ne(0))
+    if invalidos.any():
+        posicao = int(invalidos.to_numpy().argmax())
+        raise ParseError(
+            source="bcb",
+            parser_version=PARSER_VERSION,
+            reason=f"{publicado.name} não inteiro no registro {posicao + 1}: "
+            f"{publicado.astype(object).iloc[posicao]!r}",
+        )
+    return numeros.astype("Int64")
+
+
 def parse_credito_rural(
     dados: list[dict[str, Any]],
     finalidade: str = "custeio",
@@ -95,7 +109,7 @@ def parse_credito_rural(
 
     for col in ("ano_emissao", "mes_emissao", "qtd_contratos"):
         if col in df.columns:
-            df[col] = pd.to_numeric(df[col], errors="coerce").astype("Int64")
+            df[col] = _inteiros(df[col])
 
     if "ano_emissao" in df.columns:
         from agrobr.normalize.dates import INICIO_SAFRA_MES, anos_para_safra
@@ -141,8 +155,19 @@ def parse_credito_rural_total(
     from agrobr.bcb import models
     from agrobr.normalize.dates import INICIO_SAFRA_MES, anos_para_safra
 
+    campos_inteiros = (
+        "AnoEmissao",
+        "MesEmissao",
+        *(models.SICOR_TOTAL_FINALIDADES[finalidade][0] for finalidade in finalidades),
+    )
+    inteiros = {
+        campo: _inteiros(
+            pd.Series([registro.get(campo) for registro in dados], name=campo, dtype=object)
+        )
+        for campo in campos_inteiros
+    }
     somas: dict[tuple[str, str, str, str | None], tuple[int, list[float]]] = {}
-    for registro in dados:
+    for posicao, registro in enumerate(dados):
         faltando = [campo for campo in models.SICOR_TOTAL_CAMPOS if registro.get(campo) is None]
         if faltando:
             raise ParseError(
@@ -150,12 +175,13 @@ def parse_credito_rural_total(
                 parser_version=PARSER_VERSION,
                 reason=f"RegiaoUF sem {faltando}: {registro}",
             )
-        ano, mes = int(registro["AnoEmissao"]), int(registro["MesEmissao"])
+        ano = int(inteiros["AnoEmissao"].iloc[posicao])
+        mes = int(inteiros["MesEmissao"].iloc[posicao])
         inicio = ano if mes >= INICIO_SAFRA_MES else ano - 1
         programa = str(registro["cdPrograma"]).strip() if agregacao == "programa" else None
         for finalidade in finalidades:
             campo_qtd, campo_valor = models.SICOR_TOTAL_FINALIDADES[finalidade]
-            qtd, valor = registro[campo_qtd], registro[campo_valor]
+            qtd, valor = int(inteiros[campo_qtd].iloc[posicao]), registro[campo_valor]
             if qtd == 0 and valor == 0:
                 continue
             chave = (

@@ -9,6 +9,7 @@ from typing import Any, cast
 from urllib.parse import quote
 
 import httpx
+import pandas as pd
 import pydantic
 
 from agrobr import _log
@@ -21,7 +22,7 @@ from agrobr.http.user_agents import UserAgentRotator
 from agrobr.normalize.dates import INICIO_SAFRA_MES
 from agrobr.utils.time import utcnow_aware
 
-from . import models
+from . import models, parser
 
 logger = _log.get_logger(__name__)
 
@@ -154,15 +155,30 @@ async def _fetch_odata(
         return cast(dict[str, Any], payload)
 
 
-def _pertence_a_safra(record: dict[str, Any], ano_inicio: int) -> bool:
-    try:
-        ano = int(record.get("AnoEmissao") or 0)
-        mes = int(record.get("MesEmissao") or 0)
-    except (TypeError, ValueError):
-        return False
-    if mes >= INICIO_SAFRA_MES:
-        return ano == ano_inicio
-    return ano == ano_inicio + 1
+def _na_safra(records: list[dict[str, Any]], ano_inicio: int) -> list[dict[str, Any]]:
+    """Os registros emitidos na safra que começa em julho de `ano_inicio`.
+
+    Ano ou mês que não identifica a safra (texto, fração ou ausente) levanta `ParseError` com a
+    coluna e o registro, em vez de tirar o registro da safra calado.
+    """
+    emissao = {
+        campo: parser._inteiros(
+            pd.Series([record.get(campo) for record in records], name=campo, dtype=object)
+        )
+        for campo in ("AnoEmissao", "MesEmissao")
+    }
+    for campo, valores in emissao.items():
+        if valores.isna().any():
+            posicao = int(valores.isna().to_numpy().argmax())
+            raise ParseError(
+                source="bcb",
+                parser_version=parser.PARSER_VERSION,
+                reason=f"{campo} ausente no registro {posicao + 1}: a safra do registro não tem como "
+                "ser identificada",
+            )
+    anos, meses = emissao["AnoEmissao"], emissao["MesEmissao"]
+    inicio = anos.where(meses >= INICIO_SAFRA_MES, anos - 1)
+    return [record for record, ano in zip(records, inicio, strict=True) if ano == ano_inicio]
 
 
 def _resolve_uf_sigla(cd_uf: str | None) -> str | None:
@@ -288,7 +304,7 @@ async def fetch_credito_rural(
     filtered = all_records
 
     if ano_inicio is not None:
-        filtered = [r for r in filtered if _pertence_a_safra(r, ano_inicio)]
+        filtered = _na_safra(filtered, ano_inicio)
 
     if uf_sigla:
         filtered = [r for r in filtered if str(r.get("nomeUF", "")).strip().upper() == uf_sigla]
@@ -318,11 +334,12 @@ async def fetch_credito_rural_total(
     records = await _fetch_credito_records(
         TOTAL_ENDPOINT, server_filters, list(models.SICOR_TOTAL_CAMPOS)
     )
+    if ano_inicio is not None:
+        records = _na_safra(records, ano_inicio)
     return [
         record
         for record in records
-        if (ano_inicio is None or _pertence_a_safra(record, ano_inicio))
-        and (uf_sigla is None or str(record.get("nomeUF", "")).strip().upper() == uf_sigla)
+        if uf_sigla is None or str(record.get("nomeUF", "")).strip().upper() == uf_sigla
     ]
 
 

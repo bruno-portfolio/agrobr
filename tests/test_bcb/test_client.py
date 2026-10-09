@@ -28,16 +28,10 @@ SAFRA_2023 = (
 
 
 def test_safra_vai_de_julho_a_junho():
-    dentro = [("2023", "07"), ("2023", "12"), ("2024", "01"), ("2024", "06")]
+    dentro = [("2023", "07"), ("2023", "12"), ("2024", "01"), (2024.0, 6)]
     fora = [("2023", "06"), ("2024", "07")]
-    assert [
-        client._pertence_a_safra({"AnoEmissao": a, "MesEmissao": m}, 2023) for a, m in dentro
-    ] == [True] * 4
-    assert [
-        client._pertence_a_safra({"AnoEmissao": a, "MesEmissao": m}, 2023) for a, m in fora
-    ] == [False] * 2
-    assert not client._pertence_a_safra({"MesEmissao": "07"}, 2023)
-    assert not client._pertence_a_safra({"AnoEmissao": "x", "MesEmissao": "07"}, 2023)
+    registros = [{"AnoEmissao": a, "MesEmissao": m} for a, m in dentro + fora]
+    assert client._na_safra(registros, 2023) == registros[: len(dentro)]
 
 
 async def test_olinda_repete_falhas_transitorias_e_recusa_as_definitivas():
