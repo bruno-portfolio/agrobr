@@ -177,15 +177,18 @@ sem cabeçalho de medida reconhecido e continuam recusadas.
 ## Exemplo
 
 ```python
-from agrobr import contracts, datasets
+from agrobr import conab, contracts, datasets
 
+catalogo = await conab.catalogo_custos("soja")
 df, meta = await datasets.custo_producao(
     "soja", uf="BA",
-    planilha="serie-historica-custos-soja-1997-a-2025.xls",
+    planilha=catalogo["planilha"].iloc[-1],
     aba="Barreiras-BA-2025", return_meta=True,
 )
 contracts.validate_dataset(df, "custo_producao")
 ```
+
+O nome da planilha traz o último ano da série e muda a cada edição nova da CONAB (`serie-historica-custos-soja-1997-a-2025.xls` virou `serie-historica-custos-soja-1997-a-2026.xls`): tire-o de `catalogo_custos`, que lista as planilhas em ordem alfabética. Um nome fora do catálogo atual levanta `InvalidParameterError` com as planilhas do catálogo.
 
 `agrobr/schemas/custo_producao.json` · `get_contract("custo_producao")`.
 

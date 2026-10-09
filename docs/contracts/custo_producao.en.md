@@ -178,15 +178,18 @@ without a recognized measure header and remain rejected.
 ## Example
 
 ```python
-from agrobr import contracts, datasets
+from agrobr import conab, contracts, datasets
 
+catalogo = await conab.catalogo_custos("soja")
 df, meta = await datasets.custo_producao(
     "soja", uf="BA",
-    planilha="serie-historica-custos-soja-1997-a-2025.xls",
+    planilha=catalogo["planilha"].iloc[-1],
     aba="Barreiras-BA-2025", return_meta=True,
 )
 contracts.validate_dataset(df, "custo_producao")
 ```
+
+The workbook name carries the last year of the series and changes with each new CONAB edition (`serie-historica-custos-soja-1997-a-2025.xls` became `serie-historica-custos-soja-1997-a-2026.xls`): take it from `catalogo_custos`, which lists the workbooks in alphabetical order. A name outside the current catalog raises `InvalidParameterError` listing the catalog workbooks.
 
 `agrobr/schemas/custo_producao.json` · `get_contract("custo_producao")`.
 

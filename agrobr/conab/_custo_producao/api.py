@@ -56,6 +56,13 @@ def prepare_query(
 
 
 def _resource(resources: list[models.RecursoCusto], requested: str | None) -> models.RecursoCusto:
+    if requested is not None and all(r.planilha != requested for r in resources):
+        raise InvalidParameterError(
+            f"Planilha não está no catálogo atual da CONAB: {requested}. "
+            f"Planilhas no catálogo ({len(resources)}): "
+            f"{lista_curta([r.planilha for r in resources]) or 'nenhuma'}. "
+            "Use catalogo_custos(produto) para ver o nome atual da planilha."
+        )
     selected = [r for r in resources if requested is None or r.planilha == requested]
     if len(selected) != 1:
         raise InvalidParameterError(

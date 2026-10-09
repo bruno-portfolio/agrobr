@@ -5,8 +5,14 @@ from typing import Any
 import pandas as pd
 import pytest
 
-from agrobr import datasets
+from agrobr import conab, datasets
 from agrobr.exceptions import ContractViolationError, SourceUnavailableError
+
+
+async def _planilha_atual(produto: str) -> str:
+    catalogo = await conab.catalogo_custos(produto)
+    return str(catalogo["planilha"].iloc[-1])
+
 
 LIVE_CASES: dict[str, tuple[tuple[Any, ...], dict[str, Any]]] = {
     "cotacoes_cambio": ((), {"data": "04/09/2026"}),
@@ -39,11 +45,7 @@ LIVE_CASES: dict[str, tuple[tuple[Any, ...], dict[str, Any]]] = {
     "cultivares_registradas": ((), {"nr_registro": "42039"}),
     "custo_producao": (
         ("soja",),
-        {
-            "uf": "BA",
-            "planilha": "serie-historica-custos-soja-1997-a-2025.xls",
-            "aba": "Barreiras-BA-2025",
-        },
+        {"uf": "BA", "aba": "Barreiras-BA-2025"},
     ),
     "defensivos_formulados": ((), {"nr_registro": "08725"}),
     "custo_sociobiodiversidade": (("acai",), {"uf": "AM", "ano": 2024}),
@@ -122,6 +124,8 @@ async def test_dataset_live_satisfies_contract(
 ):
     args, kwargs = LIVE_CASES[dataset_name]
     apply_live_policy(dataset_name, kwargs)
+    if dataset_name == "custo_producao":
+        kwargs = {**kwargs, "planilha": await _planilha_atual(*args)}
 
     try:
         result, meta = await datasets.get_dataset(dataset_name).fetch(

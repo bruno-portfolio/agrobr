@@ -180,7 +180,7 @@ from agrobr import conab
 catalogo = await conab.catalogo_custos("soja")
 df, meta = await conab.custo_producao(
     "soja", uf="BA",
-    planilha="serie-historica-custos-soja-1997-a-2025.xls",
+    planilha=catalogo["planilha"].iloc[-1],
     aba="Barreiras-BA-2025", return_meta=True,
 )
 ```
