@@ -106,7 +106,8 @@ FUTUROS_AGRICOLAS_INFO = DatasetInfo(
     source_institution="B3",
     unit=(
         "cotação por unidade da mercadoria na coluna unidade (BRL/@, BRL/sc60kg, USD/sc60kg, "
-        "BRL/m3, USD/ton); ajuste_por_contrato em BRL ou USD por contrato; posições em contratos"
+        "BRL/m3, USD/ton); ajuste_por_contrato em BRL por contrato, também nos cotados em USD; "
+        "posições em contratos"
     ),
     license="zona_cinza",
 )

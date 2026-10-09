@@ -89,12 +89,15 @@ PK: `[data, ticker, vencimento_codigo]`
 | `ajuste_por_contrato` | FLOAT | Y |
 | `unidade` | STRING | Y |
 
-No boi gordo (BGI), o `ajuste_atual` do último dia de negociação não é a liquidação do contrato, que usa a média de 5 dias
-úteis do Indicador do Boi Gordo. No milho (CCM), o ajuste do vencimento é a liquidação.
+No boi gordo (BGI), o `ajuste_atual` do último dia de negociação não é a liquidação do contrato, que usa a média de 5
+publicações do índice de liquidação: o Indicador do Boi DATAGRO a partir do vencimento de fevereiro de 2025 (BGIG25) e o
+Indicador do Boi Gordo CEPEA/B3 até o de janeiro de 2025 (BGIF25), pelo Ofício Circular B3 135/2024-PRE. O `preco_diario`
+do agrobr publica o indicador CEPEA, não o DATAGRO. No milho (CCM), o ajuste do vencimento é a liquidação.
 
-`ajuste_por_contrato` é o valor do ajuste por contrato, na moeda de cotação: reais em BGI, CCM, CNL e ETH, e dólares em ICF,
-SJC e SOY. A moeda é o prefixo de `unidade` (`BRL` ou `USD`); o valor é por contrato, e não por unidade de cotação. Somar a
-coluna entre produtos mistura moedas.
+`ajuste_por_contrato` é o valor do ajuste por contrato em reais em todos os contratos, inclusive nos cotados em dólar (ICF,
+SJC e SOY): é o valor que a B3 publica, já convertido. Em 15/09/2026, o ICF K27 teve variação de −7,75 USD/sc (100 sacas,
+US$ −775) e `ajuste_por_contrato` de −3.991,79. O prefixo de `unidade` (`BRL` ou `USD`) é a moeda de `ajuste_anterior`,
+`ajuste_atual` e `variacao`, não a desta coluna. O valor é por contrato, e não por unidade de cotação.
 
 ### `tipo="posicoes"` / `tipo="oi_historico"` → `POSICOES_ABERTAS_V1`
 

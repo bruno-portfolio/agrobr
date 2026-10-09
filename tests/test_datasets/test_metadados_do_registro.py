@@ -68,7 +68,7 @@ def test_comercio_internacional_publica_a_classificacao_restrito():
 def test_futuros_agricolas_unit_cita_a_unidade_de_cada_contrato():
     unit = datasets.info("futuros_agricolas")["unit"]
     assert sorted(u for u in set(b3_models.UNIDADES.values()) if u not in unit) == []
-    assert "ajuste_por_contrato" in unit
+    assert "ajuste_por_contrato em BRL por contrato, também nos cotados em USD" in unit
     assert "posições em contratos" in unit
 
 

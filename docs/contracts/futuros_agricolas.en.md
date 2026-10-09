@@ -91,11 +91,15 @@ PK: `[data, ticker, vencimento_codigo]`
 | `unidade` | STRING | Y |
 
 For live cattle (BGI), the `ajuste_atual` of the last trading day is not the contract's final settlement, which uses the
-5-business-day average of the Live Cattle Indicator. For corn (CCM), the settlement at expiry is the final settlement.
+average of 5 publications of the settlement index: the DATAGRO Live Cattle Indicator from the February 2025 expiry (BGIG25)
+onward, and the CEPEA/B3 Live Cattle Indicator up to the January 2025 expiry (BGIF25), per B3 Circular Letter 135/2024-PRE.
+agrobr's `preco_diario` publishes the CEPEA indicator, not DATAGRO's. For corn (CCM), the settlement at expiry is the final
+settlement.
 
-`ajuste_por_contrato` is the settlement value per contract, in the quote currency: reais for BGI, CCM, CNL and ETH, and dollars
-for ICF, SJC and SOY. The currency is the prefix of `unidade` (`BRL` or `USD`); the value is per contract, not per quote unit.
-Summing the column across products mixes currencies.
+`ajuste_por_contrato` is the settlement value per contract in reais for every contract, including the dollar-quoted ones
+(ICF, SJC and SOY): it is the value B3 publishes, already converted. On 2026-09-15, ICF K27 changed by −7.75 USD/bag
+(100 bags, US$ −775) and `ajuste_por_contrato` was −3,991.79. The prefix of `unidade` (`BRL` or `USD`) is the currency of
+`ajuste_anterior`, `ajuste_atual` and `variacao`, not of this column. The value is per contract, not per quote unit.
 
 ### `tipo="posicoes"` / `tipo="oi_historico"` → `POSICOES_ABERTAS_V1`
 
