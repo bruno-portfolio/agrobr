@@ -14,6 +14,8 @@ desconhecido: nelas, nem o `autospec` nem o `bind` acusam `zarc.zoneamento(cultu
 ou `desmatamento.deter(data_inicio=...)`. Confira essas chamadas contra a tabela da
 [§85](#85-nomes-de-parametro-o-mesmo-vocabulario-em-toda-a-api).
 
+**Servidor MCP e plugin do QGIS.** Versões compatíveis com a 2.0: [`agrobr-mcp`](https://pypi.org/project/agrobr-mcp/) 0.2.0 ou posterior e [`agrobr-qgis`](https://plugins.qgis.org/plugins/agrobr_qgis/) 0.2.0 ou posterior (publicado depois da agrobr 2.0). As versões 0.1.x dos dois usam a API da 1.x: com elas, mantenha `agrobr<2` até atualizar o servidor ou o plugin.
+
 ## Resumo: o que quebra
 
 Em ordem de risco. Cada linha aponta a seção com o detalhe.

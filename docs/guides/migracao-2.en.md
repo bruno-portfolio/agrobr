@@ -14,6 +14,8 @@ rejects an unknown one: there, neither `autospec` nor `bind` flags `zarc.zoneame
 `mapbiomas.cobertura(estado=...)` or `desmatamento.deter(data_inicio=...)`. Check those calls against the table in
 [§85](#85-parameter-names-one-vocabulary-across-the-api).
 
+**MCP server and QGIS plugin.** Versions compatible with 2.0: [`agrobr-mcp`](https://pypi.org/project/agrobr-mcp/) 0.2.0 or later and [`agrobr-qgis`](https://plugins.qgis.org/plugins/agrobr_qgis/) 0.2.0 or later (released after agrobr 2.0). Version 0.1.x of either uses the 1.x API: with it, keep `agrobr<2` until you upgrade the server or the plugin.
+
 ## Summary: what breaks
 
 In order of risk. Each line points to the section with the details.
