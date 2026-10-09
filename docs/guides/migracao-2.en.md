@@ -855,6 +855,8 @@ For coffee (`cafe`, `cafe_arabica`, `cafe_conilon`), ES, RJ and SP came out with
 
 For `cana`, the Área sheet of the agricultural spreadsheet is harvested area (official title "Série Histórica de Área Colhida"). It moves to the new optional column `area_colhida_mil_ha` of contract 1.1, and `area_plantada_mil_ha` stays null for this product. In 1.x, this value came out as planted area: switch the column where you read sugarcane `area_plantada_mil_ha`. For total area, use `cana_area_total`.
 
+**Silent change: `algodao` in the historical series.** In 1.1.0, `conab.serie_historica("algodao")` returned the production and yield of cottonseed (the seed), because the last sheet of each metric in CONAB's spreadsheet overwrote the earlier ones. In 2.0, `algodao` is seed cotton (lint plus seed); the seed moves to `algodao_caroco`, with `algodao_pluma` for lint (#112); area is the same in all three. On the same spreadsheet (September 2026), BA 2023/24, `algodao` gives 1,686.4 thousand t and 4,874 kg/ha in 2.0, against 978.1 thousand t and 2,826.9 kg/ha in 1.1.0 (about 1.7×). To keep the 1.x series, replace `algodao` with `algodao_caroco`; do not join `algodao` series stored with 1.x to 2.0 queries.
+
 ## 23. Prices and production values follow each row's unit
 
 In `preco_diario`, `valor` uses `unidade`: cotton in `cBRL/lb` requires division by 100 for display in BRL/lb. In PEVS, production value uses currency, whereas production quantity uses the product's physical unit. Preserve the historical units supplied by SIDRA when combining periods.

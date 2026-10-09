@@ -859,6 +859,8 @@ No café (`cafe`, `cafe_arabica`, `cafe_conilon`), ES, RJ e SP saíam com `regia
 
 Em `cana`, a aba Área da planilha agrícola é a área colhida (título oficial "Série Histórica de Área Colhida"). Ela passa para a coluna opcional nova `area_colhida_mil_ha` do contrato 1.1, e `area_plantada_mil_ha` fica nula nesse produto. Na 1.x, esse valor saía como área plantada: troque a coluna onde lia `area_plantada_mil_ha` da cana. Para a área total, use `cana_area_total`.
 
+**Muda calado: `algodao` na série histórica.** Na 1.1.0, `conab.serie_historica("algodao")` devolvia a produção e a produtividade do caroço de algodão (a semente), porque a última aba de cada métrica na planilha da CONAB sobrescrevia as anteriores. Na 2.0, `algodao` é o algodão em caroço (pluma mais semente), e a semente passa a `algodao_caroco`, com `algodao_pluma` para a pluma (#112); a área é a mesma nos três. Na mesma planilha (setembro de 2026), BA 2023/24, `algodao` dá 1.686,4 mil t e 4.874 kg/ha na 2.0, contra 978,1 mil t e 2.826,9 kg/ha na 1.1.0 (cerca de 1,7×). Para manter a série da 1.x, troque `algodao` por `algodao_caroco`; não junte séries de `algodao` gravadas com a 1.x a consultas da 2.0.
+
 ## 23. Preços e valores de produção respeitam a unidade da linha
 
 Em `preco_diario`, `valor` está em `unidade`: algodão em `cBRL/lb` exige divisão por 100 para exibição em BRL/lb. Na PEVS, o valor de produção usa moeda, enquanto quantidade produzida usa a unidade física do produto. Preserve as unidades históricas informadas pelo SIDRA ao combinar períodos.
