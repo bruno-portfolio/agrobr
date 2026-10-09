@@ -7,6 +7,7 @@ import pytest
 
 from agrobr.conab.ceasa import models, parser
 from agrobr.exceptions import ParseError
+from agrobr.utils.result import datas_em_ns
 
 GOLDEN_DIR = Path(__file__).parent.parent / "golden_data" / "conab_ceasa" / "precos_sample"
 
@@ -24,8 +25,17 @@ class TestParseEdgeCases:
     def test_empty_resultset(self):
         df = parser.parse_precos({"resultset": [], "metadata": []})
         assert len(df) == 0
-        for col in models.COLUNAS_SAIDA:
-            assert col in df.columns
+        assert list(df.columns) == models.COLUNAS_SAIDA
+        assert df.dtypes.equals(datas_em_ns(parser.parse_precos(_precos_json())).dtypes)
+
+    def test_linhas_sem_preco_saem_vazio_tipado(self):
+        resposta = _precos_json()
+        resposta["resultset"] = [
+            [linha[0]] + [None] * (len(linha) - 1) for linha in resposta["resultset"]
+        ]
+        df = parser.parse_precos(resposta)
+        assert len(df) == 0
+        assert df.dtypes.equals(datas_em_ns(parser.parse_precos(_precos_json())).dtypes)
 
     @pytest.mark.parametrize(
         "cabecalho",

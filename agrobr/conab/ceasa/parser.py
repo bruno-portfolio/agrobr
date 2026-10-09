@@ -7,6 +7,7 @@ from typing import Any
 
 import pandas as pd
 
+from agrobr import contracts
 from agrobr.exceptions import ParseError
 
 from .models import (
@@ -66,7 +67,7 @@ def parse_precos(precos_json: dict[str, Any]) -> pd.DataFrame:
             reason="Resposta de preços sem a lista 'resultset'",
         )
     if not resultset:
-        return pd.DataFrame(columns=COLUNAS_SAIDA)
+        return contracts.get_contract("preco_atacado").empty_frame()[COLUNAS_SAIDA]
 
     metadata = precos_json.get("metadata", [])
     if not isinstance(metadata, list):
@@ -140,4 +141,6 @@ def parse_precos(precos_json: dict[str, Any]) -> pd.DataFrame:
             stacklevel=2,
         )
 
+    if not records:
+        return contracts.get_contract("preco_atacado").empty_frame()[COLUNAS_SAIDA]
     return pd.DataFrame(records, columns=COLUNAS_SAIDA)
