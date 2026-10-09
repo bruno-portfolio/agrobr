@@ -158,7 +158,9 @@ def _geographic_match(record: models.TrafegoRecord, state: Pipeline) -> bool:
     selected = state.validated
     if selected.uf is None and selected.rodovia is None:
         return True
-    values = state.mapping.get((record.concessionaria, record.praca), (None, None, None))
+    values = state.mapping.get(
+        parser.chave_praca(record.concessionaria, record.praca), (None, None, None)
+    )
     unknown = False
     for index, name in ((0, "rodovia"), (1, "uf")):
         expected = getattr(selected, name)
@@ -368,16 +370,14 @@ def _enrich(frame: pd.DataFrame, state: Pipeline) -> None:
         return
     predicted = state.mapping_bytes + size + rows * 32 + 16384
     state.check(predicted, "enrichment_preallocation")
-    matched = sum(
-        (concession, plaza) in state.mapping
+    chaves = [
+        parser.chave_praca(concession, plaza)
         for concession, plaza in zip(frame["concessionaria"], frame["praca"], strict=True)
-    )
+    ]
+    matched = sum(chave in state.mapping for chave in chaves)
     for index, name in enumerate(("rodovia", "uf", "municipio")):
         frame[name] = pd.Series(
-            [
-                state.mapping.get((concession, plaza), (None, None, None))[index]
-                for concession, plaza in zip(frame["concessionaria"], frame["praca"], strict=True)
-            ],
+            [state.mapping.get(chave, (None, None, None))[index] for chave in chaves],
             index=frame.index,
             dtype=pd.StringDtype(storage="python"),
         )

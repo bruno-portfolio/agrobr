@@ -267,19 +267,35 @@ def compare_plazas(frame: pd.DataFrame, expected: list[dict[str, Any]]) -> dict[
     }
 
 
+RENOMEADAS = {
+    "autopista fernão dias": "motiva minas sp",
+    "cro": "nova rota do oeste",
+    "eco050": "ecovias minas goiás",
+    "eco101": "ecovias capixaba",
+    "ecoponte": "ecovias ponte",
+    "ecoriominas": "ecovias rio minas",
+    "msvia": "pantanal",
+}
+
+
+def plaza_key(concessionaria: str, praca: str) -> tuple[str, str]:
+    nome = " ".join(concessionaria.split()).casefold()
+    return RENOMEADAS.get(nome, nome), " ".join(praca.split()).casefold()
+
+
 def compare_enrichment(
     frame: pd.DataFrame, plazas: list[dict[str, Any]], state: str | None = None
 ) -> dict[str, Any]:
     groups: dict[tuple[str, str], set[tuple[Any, ...]]] = collections.defaultdict(set)
     for row in plazas:
-        groups[row["concessionaria"].strip(), row["praca_de_pedagio"].strip()].add(
+        groups[plaza_key(row["concessionaria"], row["praca_de_pedagio"])].add(
             (row["rodovia"], row["uf"], row["municipio"])
         )
     unique = {key: next(iter(values)) for key, values in groups.items() if len(values) == 1}
     problems = 0
     record: Any
     for record in frame.itertuples(index=False):
-        expected = unique.get((record.concessionaria, record.praca), (None, None, None))
+        expected = unique.get(plaza_key(record.concessionaria, record.praca), (None, None, None))
         actual = tuple(
             None if pd.isna(value) else value
             for value in (record.rodovia, record.uf, record.municipio)

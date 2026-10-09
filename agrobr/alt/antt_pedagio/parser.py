@@ -4,6 +4,7 @@ import csv
 import io
 import re
 from collections.abc import Callable
+from functools import lru_cache
 from typing import Any, BinaryIO, Literal
 
 import pandas as pd
@@ -139,6 +140,31 @@ def parse_pracas(content: bytes) -> pd.DataFrame:
     return parse_pracas_file(io.BytesIO(content))
 
 
+_NOMES_ANTERIORES_CONCESSIONARIA: dict[str, str] = {
+    "AUTOPISTA FERNÃO DIAS": "MOTIVA MINAS SP",
+    "CRO": "NOVA ROTA DO OESTE",
+    "ECO050": "ECOVIAS MINAS GOIÁS",
+    "ECO101": "ECOVIAS CAPIXABA",
+    "ECOPONTE": "ECOVIAS PONTE",
+    "ECORIOMINAS": "ECOVIAS RIO MINAS",
+    "MSVIA": "PANTANAL",
+}
+_NOMES_ATUAIS = {
+    antigo.casefold(): atual.casefold()
+    for antigo, atual in _NOMES_ANTERIORES_CONCESSIONARIA.items()
+}
+
+
+@lru_cache(maxsize=4096)
+def chave_praca(concessionaria: str, praca: str) -> tuple[str, str]:
+    """Chave do cadastro de praças: sem diferença de caixa nem de espaços, sem tirar acento.
+
+    O nome anterior da concessionária (o tráfego de 2023 ainda publica ``CRO``) vira o do cadastro.
+    """
+    nome = " ".join(concessionaria.split()).casefold()
+    return _NOMES_ATUAIS.get(nome, nome), " ".join(praca.split()).casefold()
+
+
 def _nullable_text(value: Any) -> str | None:
     return None if value is None or pd.isna(value) else str(value)
 
@@ -157,17 +183,19 @@ def build_pracas_enrichment(
         if not concession or not concession.strip() or not plaza or not plaza.strip():
             missing += 1
             continue
-        concession, plaza = concession.strip(), plaza.strip()
         values = (
             _nullable_text(row.get("rodovia")),
             _nullable_text(row.get("uf")),
             _nullable_text(row.get("municipio")),
         )
-        groups.setdefault((concession, plaza), set()).add(values)
+        groups.setdefault(chave_praca(concession, plaza), set()).add(values)
     mapping = {key: next(iter(values)) for key, values in groups.items() if len(values) == 1}
     conflicts = [key for key, values in groups.items() if len(values) > 1]
     return mapping, {
-        "matching": "concessionaria/praca without outer spaces; no casefold/first or row multiplication",
+        "matching": (
+            "concessionaria/praca with casefold and collapsed spaces, former concessionaire names "
+            "mapped to the registry name; no accent folding/fuzzy/first or row multiplication"
+        ),
         "source_rows": len(frame),
         "matched_unique_keys": len(mapping),
         "missing_key_rows": missing,

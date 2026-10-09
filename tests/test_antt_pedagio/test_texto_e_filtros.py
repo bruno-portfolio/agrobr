@@ -3,10 +3,11 @@ from __future__ import annotations
 import csv
 import io
 import warnings
+from decimal import Decimal
 
 import pytest
 
-from agrobr.alt.antt_pedagio import api
+from agrobr.alt.antt_pedagio import api, parser
 from agrobr.exceptions import InvalidParameterError
 from tests.helpers import install_anttpedagio_source, levanta_exatamente
 from tests.test_antt_pedagio import oficial
@@ -35,7 +36,7 @@ async def test_texto_do_fluxo_sem_espaco_externo_e_sentido_em_maiusculas(monkeyp
         "CRESCENTE": 815_020,
         "DECRESCENTE": 360_621,
     }
-    assert int(frame.loc[frame["uf"].notna(), "volume"].sum()) == 1_168_115
+    assert int(frame.loc[frame["uf"].notna(), "volume"].sum()) == 1_175_641
 
 
 @pytest.mark.parametrize(
@@ -104,3 +105,65 @@ async def test_coluna_municipal_e_depreciada_com_aviso(monkeypatch, colunas, avi
     assert ("municipal" in frame) is avisa
     assert bool(futuros) is avisa
     assert [texto for texto in meta.validation_warnings if "'municipal'" in texto] == futuros
+
+
+def _volume(linhas: list[dict[str, str]]) -> int:
+    return sum(
+        int(Decimal(linha["volume_total"].replace(",", ".")))
+        for linha in linhas
+        if oficial.countable(linha["volume_total"])
+    )
+
+
+@pytest.mark.parametrize("filtro", [{"uf": "MT"}, {"rodovia": "BR-163"}])
+async def test_nome_anterior_da_concessionaria_casa_o_cadastro(monkeypatch, filtro):
+    frame, _, avisos = await _fluxo(monkeypatch, **filtro)
+    cro = [
+        linha
+        for linha in oficial.rows(oficial.load("mensal_2023.csv"))
+        if linha["concessionaria"] == "CRO"
+    ]
+    da_cro = frame[frame["concessionaria"] == "CRO"]
+    assert set(frame["concessionaria"]) == {"CRO"}
+    assert int(da_cro["volume"].sum()) == _volume(cro) > 0
+    assert set(zip(da_cro["praca"], da_cro["rodovia"], da_cro["uf"])) == {("P1", "BR-163", "MT")}
+    assert not [aviso for aviso in avisos if "sem vínculo" in aviso]
+
+
+async def test_caixa_mista_casa_o_cadastro_e_par_sem_cadastro_segue_no_aviso(monkeypatch):
+    corpo = oficial.load("abril_2021_caixa.csv")
+    install_anttpedagio_source(
+        monkeypatch, {"volume-2021.csv": corpo}, plazas=oficial.load("pracas.csv")
+    )
+    with warnings.catch_warnings(record=True) as capturados:
+        warnings.simplefilter("always")
+        frame, meta = await api.fluxo_pedagio(
+            ano=2021, inicio="2021-04-01", fim="2021-04-01", uf="RS", return_meta=True
+        )
+    linhas = oficial.rows(corpo)
+    ecosul = [linha for linha in linhas if linha["concessionaria"] == "Ecosul"]
+    via_bahia = [linha for linha in linhas if linha["concessionaria"] == "VIA BAHIA"]
+    assert set(frame["concessionaria"]) == {"Ecosul"} and set(frame["uf"]) == {"RS"}
+    assert int(frame["volume"].sum()) == _volume(ecosul) > 0
+    exclusoes = [str(aviso.message) for aviso in capturados if "sem vínculo" in str(aviso.message)]
+    assert len(exclusoes) == 1 and exclusoes[0] in meta.validation_warnings
+    assert f"{len(via_bahia)} registros (volume={_volume(via_bahia)}) de 1 pares" in exclusoes[0]
+    assert "(VIA BAHIA/Praça 1)" in exclusoes[0]
+
+
+def test_chave_sem_caixa_nem_espaco_nao_funde_concessionarias_nem_tira_acento():
+    mapa, diagnostico = parser.build_pracas_enrichment(
+        parser.parse_pracas(oficial.load("pracas.csv"))
+    )
+    assert diagnostico["conflicting_keys"] == 0
+    assert mapa[parser.chave_praca("CRO", "P1")][:2] == ("BR-163", "MT")
+    assert mapa[parser.chave_praca("CRO", "P2")][:2] == ("BR-364", "MT")
+    assert mapa[parser.chave_praca("AUTOPISTA LITORAL SUL", "P1")][:2] == ("BR-376", "PR")
+    assert parser.chave_praca("CRO", "P1") != parser.chave_praca("AUTOPISTA LITORAL SUL", "P1")
+    assert parser.chave_praca("MSVIA", "P1-Mundo Novo") == parser.chave_praca(
+        "PANTANAL", "P1-Mundo Novo"
+    )
+    assert parser.chave_praca(" Ecosul ", "Praça  Capão Seco") == parser.chave_praca(
+        "ECOSUL", "PRAÇA CAPÃO SECO"
+    )
+    assert parser.chave_praca("ECOSUL", "Praca Capao Seco") not in mapa
