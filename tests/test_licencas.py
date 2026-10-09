@@ -168,6 +168,7 @@ def test_info_do_dataset_diz_as_licencas_de_cada_fonte():
         ("lista_suja", "CC BY-ND 3.0", "lista_suja"),
         ("desmatamento", "CC BY-SA 4.0", "desmatamento"),
         ("mapbiomas_alerta", "CC BY-SA 3.0 BR", "mapbiomas_alerta"),
+        ("conab.progresso", "CC BY-ND 3.0", "conab_progresso"),
     ],
 )
 def test_docstring_e_pagina_da_fonte_trazem_a_licenca_da_doc(pacote, licenca, pagina):

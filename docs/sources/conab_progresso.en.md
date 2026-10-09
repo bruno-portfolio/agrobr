@@ -9,7 +9,7 @@
 | **Access** | XLSX via the gov.br portal (Plone CMS) |
 | **Format** | XLSX (openpyxl, calamine fallback) |
 | **Authentication** | None |
-| **License** | Public federal government data (free) |
+| **License** | CC BY-ND 3.0 (footer of the workbook's publication page), classified as `livre`: commercial reproduction with attribution to CONAB, without distributing protected adaptations. See [Licenses](../licenses.md) |
 | **Frequency** | Weekly |
 
 ## Data Origin

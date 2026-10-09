@@ -9,7 +9,7 @@
 | **Acesso** | XLSX via portal gov.br (Plone CMS) |
 | **Formato** | XLSX (openpyxl, fallback calamine) |
 | **Autenticacao** | Nenhuma |
-| **Licenca** | Dados publicos governo federal (livre) |
+| **Licenca** | CC BY-ND 3.0 (rodapé da ficha da planilha), classificação `livre`: reprodução comercial com atribuição à CONAB, sem distribuir adaptações protegidas. Veja [Licenças](../licenses.md) |
 | **Frequencia** | Semanal |
 
 ## Origem dos Dados
