@@ -12,7 +12,7 @@ import pandas as pd
 from agrobr import _log, contracts
 from agrobr.exceptions import InvalidParameterError
 from agrobr.models import MetaInfo
-from agrobr.utils.geo import check_geopandas
+from agrobr.utils.geo import avisar_geometrias_invalidas, check_geopandas
 from agrobr.utils.result import (
     DataFrameResult,
     GeoDataFrameResult,
@@ -354,8 +354,10 @@ async def imoveis_geo(
         )
         meta.validation_warnings.extend(validation_warnings)
         meta.source_details["sicar"] = sicar_details
+        avisar_geometrias_invalidas(gdf, "SICAR", meta, stacklevel=2)
         return gdf, meta
 
+    avisar_geometrias_invalidas(gdf, "SICAR", stacklevel=2)
     return gdf
 
 

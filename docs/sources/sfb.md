@@ -125,6 +125,7 @@ asyncio.run(main())
 - **Campos obrigatórios**: todo campo pedido ao serviço (`outFields`) tem de vir em cada feição de cada página no tabular e em cada página nas variantes `_geo`. O serviço manda todos, nulos inclusive, então campo ausente é mudança de layout e levanta `ParseError` com o nome do campo, em vez de devolver a coluna a menos
 - **Tabular sem geometria**: `cnfp()`, `concessoes()` e `ifn_conglomerados()` pedem `returnGeometry=false` (a 1ª página do CNFP nacional cai de 378 MB para 0,5 MB); a geometria só vem nas funções `_geo`
 - **Unidades e CRS**: área em hectares como publicada (`area_ha` no CNFP, `hectares` nas concessões), sem recálculo pela geometria. A geometria é pedida em EPSG:4326 (`outSR=4326`) e reprojetada pelo servidor (o CNFP é guardado em 3857 e as concessões em 4674)
+- **Geometria inválida**: a geometria sai como o servidor publica, sem reparo; havendo geometria não nula inválida, `cnfp_geo`, `concessoes_geo` e `ifn_conglomerados_geo` avisam (`UserWarning` e `meta.validation_warnings`: "SFB cnfp: N de M geometrias inválidas como publicadas pela fonte; use make_valid antes de operações espaciais.") e põem a contagem em `meta.source_details` (`geometrias_invalidas`, `geometrias`). Sem inválidas, nada muda
 - **Parâmetros**: argumento desconhecido levanta `TypeError` antes da rede; `uf`, `bioma` e `categoria` inválidos levantam `InvalidParameterError`; `bbox` inválido levanta `ValueError`
 - **Filtros compostos**: CNFP e IFN aceitam filtro por bioma alem de uf e bbox
 

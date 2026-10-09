@@ -887,6 +887,7 @@ Com `uf`/`rodovia`, praça sem vínculo único no cadastro sai do resultado com 
 - `data_publicacao`, `data_titulo`, `data_publicacao_2` e `data_decreto` saem em `datetime64[ns]`, e `data_cadastro` em `datetime64[ns, UTC]`. O marcador `0001-01-01` da fonte ("sem data") vira `NaT` sem aviso; outra data fora de 1900–2099 (erro de digitação da fonte), inclusive em `data_cadastro`, vira `NaT`, com `UserWarning` e aviso em `meta.validation_warnings`. `incra.vinculos_quilombolas` segue a mesma regra nas colunas `perimetro_*`.
 - `codigo` e `familias` são `Int64`; `area_ha` é `float64` em hectares publicados; os demais textos usam o dtype padrão do pandas ([§89](#89-tipos-da-saida)).
 - `bbox` usa EPSG:4326, e `quilombolas_geo()` devolve as coordenadas nesse CRS **sem reparo topológico** (o `make_valid` da 1.x saiu).
+- O Acervo Fundiário segue a mesma regra: `sigef_geo`, `snci_geo` e `assentamentos_geo` deixam de reparar o polígono com `make_valid` e o entregam como o INCRA publica, possivelmente inválido, com aviso e contagem no `MetaInfo`. Antes de área, interseção ou junção espacial, use `gdf["geometry"] = gdf.geometry.make_valid()`.
 - Parâmetros inválidos levantam `InvalidParameterError` antes da rede; o corte por `max_registros` emite `UserWarning`.
 
 Novas funções: `incra.andamento_quilombola()` (quadro "Andamento dos processos", PDF) e `incra.vinculos_quilombolas()` (relação por NUP), ambas com `agrobr[pdf]`. Veja a [página da fonte](../sources/incra.md).

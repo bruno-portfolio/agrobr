@@ -26,7 +26,13 @@ from agrobr.http.settings import get_timeout
 from agrobr.models import MetaInfo
 from agrobr.normalize import municipalities
 from agrobr.normalize.regions import UFS
-from agrobr.utils.geo import check_geopandas, fetch_wfs, parse_wfs_hits, validate_bbox
+from agrobr.utils.geo import (
+    avisar_geometrias_invalidas,
+    check_geopandas,
+    fetch_wfs,
+    parse_wfs_hits,
+    validate_bbox,
+)
 from agrobr.utils.result import (
     DataFrameResult,
     GeoDataFrameResult,
@@ -413,6 +419,8 @@ async def _adquirir(consulta: Consulta, *, geo: bool) -> tuple[Any, MetaInfo]:
     meta.fetched_at = acquired_at
     meta.fetch_timestamp = acquired_at
     meta.timestamp = datetime.now(UTC)
+    if geo:
+        avisar_geometrias_invalidas(frame, f"IBGE {camada.nome}", meta)
     return frame, meta
 
 

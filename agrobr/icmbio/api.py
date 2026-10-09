@@ -16,7 +16,7 @@ from agrobr.exceptions import (
     ResourceLimitError,
 )
 from agrobr.models import MetaInfo
-from agrobr.utils.geo import check_geopandas, validate_bbox
+from agrobr.utils.geo import avisar_geometrias_invalidas, check_geopandas, validate_bbox
 from agrobr.utils.result import DataFrameResult, GeoDataFrameResult, build_source_meta
 from agrobr.utils.validation import validate_bioma, validate_uf
 
@@ -323,6 +323,8 @@ async def ucs_geo(
             "returned_features": len(gdf),
             "count_url": count_url,
         }
+        avisar_geometrias_invalidas(gdf, "ICMBio", meta, stacklevel=2)
         return gdf, meta
 
+    avisar_geometrias_invalidas(gdf, "ICMBio", stacklevel=2)
     return gdf

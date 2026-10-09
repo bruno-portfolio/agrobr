@@ -185,3 +185,7 @@ the warnings of both sources, each with its prefix (`incra_geoserver: …`, `inc
 - Perimeters and the PDF are acquired at different moments, with no joint snapshot.
 - `codigo`, `processo` and `feature_id` are not primary keys; repeated occurrences are kept.
 - The WFS count and the PDF change without notice; agrobr records hashes and dates of every resource in `MetaInfo`.
+
+## Invalid geometry
+
+Geometry from the `_geo` outputs is returned as the source publishes it, without repair; an invalid geometry raises a warning and a count in `MetaInfo`. See [Published geometries](../guides/normalizacao.en.md#published-geometries).

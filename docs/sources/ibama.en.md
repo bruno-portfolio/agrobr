@@ -127,3 +127,7 @@ and bbox are refused.
 **Personal data:** the file contains the names and CPF/CNPJ of the embargoed individuals and companies, columns the
 table functions do not read. Whoever stores the raw file stores personal data and must process it in accordance with
 the LGPD. See the [raw collection API](../api/bruto.md) and the [manifest contract](../contracts/bruto.md).
+
+## Invalid geometry
+
+Geometry from the `_geo` outputs is returned as the source publishes it, without repair; an invalid geometry raises a warning and a count in `MetaInfo`. See [Published geometries](../guides/normalizacao.en.md#published-geometries).

@@ -16,7 +16,7 @@ from agrobr.exceptions import InvalidParameterError, ParseError, ResourceLimitEr
 from agrobr.models import MetaInfo
 from agrobr.normalize import municipalities
 from agrobr.normalize.regions import remover_acentos
-from agrobr.utils.geo import check_geopandas, validate_bbox
+from agrobr.utils.geo import avisar_geometrias_invalidas, check_geopandas, validate_bbox
 from agrobr.utils.result import (
     ATRIBUTO_AVISOS,
     DataFrameResult,
@@ -285,6 +285,8 @@ async def _adquirir(consulta: Consulta, *, geo: bool) -> tuple[Any, MetaInfo]:
     meta.fetched_at = acquired_at
     meta.fetch_timestamp = acquired_at
     meta.timestamp = datetime.now(UTC)
+    if geo:
+        avisar_geometrias_invalidas(frame, "CNUC", meta)
     return frame, meta
 
 

@@ -97,6 +97,8 @@ async def _fetch(
         raise ContractViolationError(dataset=contract.name, violation="; ".join(errors))
     frame = _geoframe(acquired, gpd) if include_geometry else acquired.frame
     meta = metadata.build_meta(acquired, frame)
+    if include_geometry:
+        geo.avisar_geometrias_invalidas(frame, product, meta)
     if product == "PRODES" and validated.year is not None and acquired.frame.empty:
         aviso = (
             f"PRODES sem feição no WFS para {validated.biome}/{validated.year} (ano ainda não "

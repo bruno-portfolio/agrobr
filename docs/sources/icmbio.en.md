@@ -83,3 +83,7 @@ In `ucs_geo`, an area or year out of numeric format raises `ParseError`, as in `
 filters apply to the downloaded layer (in `ucs`, they go into the server query): `MetaInfo` records the selection in
 `source_details["query"]`, the filters applied to the result in `source_details["filtros_locais"]` and the acquisition
 time in `fetched_at`/`fetch_timestamp`.
+
+## Invalid geometry
+
+Geometry from the `_geo` outputs is returned as the source publishes it, without repair; an invalid geometry raises a warning and a count in `MetaInfo`. See [Published geometries](../guides/normalizacao.en.md#published-geometries).

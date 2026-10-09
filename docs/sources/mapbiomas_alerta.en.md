@@ -145,3 +145,7 @@ instead of returning empty dictionaries.
 - Requires an authentication token (env `AGROBR_MAPBIOMAS_ALERTA_TOKEN` or `token=` parameter), which expires
 - The query does not filter by state or municipality; the API has `territoryIds`, which agrobr does not expose
 - Throttle after 5 pages (3s wait)
+
+## Invalid geometry
+
+Geometry from the `_geo` outputs is returned as the source publishes it, without repair; an invalid geometry raises a warning and a count in `MetaInfo`. See [Published geometries](../guides/normalizacao.en.md#published-geometries).

@@ -11,7 +11,7 @@ import pandas as pd
 from agrobr import _log
 from agrobr.exceptions import InvalidParameterError
 from agrobr.models import MetaInfo
-from agrobr.utils.geo import check_geopandas, validate_bbox
+from agrobr.utils.geo import avisar_geometrias_invalidas, check_geopandas, validate_bbox
 from agrobr.utils.result import (
     DataFrameResult,
     GeoDataFrameResult,
@@ -246,8 +246,10 @@ async def _fetch_and_parse_geo(
         _avisar_corte(
             meta, layer_key, total=total, devolvidas=len(gdf), max_registros=max_registros
         )
+        avisar_geometrias_invalidas(gdf, f"ANA {layer_key}", meta)
         return gdf, meta
     _avisar_corte(None, layer_key, total=total, devolvidas=len(gdf), max_registros=max_registros)
+    avisar_geometrias_invalidas(gdf, f"ANA {layer_key}")
     return gdf
 
 
@@ -787,6 +789,8 @@ async def _fetch_massas(
     _avisar_corte(
         meta, "massas_dagua", total=total, devolvidas=len(df), max_registros=max_registros
     )
+    if geo:
+        avisar_geometrias_invalidas(df, "ANA massas_dagua", meta)
     return df, meta
 
 

@@ -13,7 +13,7 @@ from agrobr.exceptions import InvalidParameterError
 from agrobr.models import MetaInfo
 from agrobr.utils import tasks
 from agrobr.utils import time as time_utils
-from agrobr.utils.geo import check_geopandas, validate_bbox
+from agrobr.utils.geo import avisar_geometrias_invalidas, check_geopandas, validate_bbox
 from agrobr.utils.result import (
     DataFrameResult,
     GeoDataFrameResult,
@@ -303,8 +303,10 @@ async def alertas_geo(
             "mapbiomas_alerta_graphql_geo",
             tipo_data,
         )
+        avisar_geometrias_invalidas(gdf, "MapBiomas Alerta", meta, stacklevel=2)
         return gdf, meta
 
+    avisar_geometrias_invalidas(gdf, "MapBiomas Alerta", stacklevel=2)
     return gdf
 
 

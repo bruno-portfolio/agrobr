@@ -139,3 +139,7 @@ horizontes com as tres medidas; `saturacao_bases` = 100 x S / T e `ctc` = S + H 
 - Cobertura de perfis nao e uniforme (PronaSolos ainda em execucao)
 - Mapa pedologico na escala 1:5.000.000 (visao nacional, nao cadastral)
 - CC BY-NC 3.0 BR: redistribuicao comercial requer autorizacao
+
+## Geometria inválida
+
+A geometria das saídas `_geo` sai como a fonte publica, sem reparo; geometria inválida gera aviso e contagem no `MetaInfo`. Veja [Geometrias publicadas](../guides/normalizacao.md#geometrias-publicadas).

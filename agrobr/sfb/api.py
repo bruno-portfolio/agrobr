@@ -10,7 +10,7 @@ import pandas as pd
 from agrobr import _log
 from agrobr.exceptions import InvalidParameterError
 from agrobr.models import MetaInfo
-from agrobr.utils.geo import check_geopandas, validate_bbox
+from agrobr.utils.geo import avisar_geometrias_invalidas, check_geopandas, validate_bbox
 from agrobr.utils.result import (
     DataFrameResult,
     GeoDataFrameResult,
@@ -178,7 +178,9 @@ async def _fetch_and_parse_geo(
         )
         if ifn is not None:
             _ifn_provenance(meta, ifn)
+        avisar_geometrias_invalidas(gdf, f"SFB {layer_key}", meta)
         return gdf, meta
+    avisar_geometrias_invalidas(gdf, f"SFB {layer_key}")
     return gdf
 
 

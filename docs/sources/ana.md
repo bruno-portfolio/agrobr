@@ -251,3 +251,7 @@ Veja a [API da coleta bruta](../api/bruto.md) e o [contrato do manifesto](../con
 `source_details` publica `hash_kind="resource_manifest_sha256"`, `manifest_encoding="canonical_json_utf8"`, `manifest_fields=["query", "resources"]`, `query` e `resources`. A consulta lógica contém `fonte`, `recurso`, `where`, `bbox`, `max_registros` e `formato`; `resources` preserva a ordem da aquisição e contém `pagina` (a partir de 1), `sha256` e `bytes`.
 
 Uma única página conserva o hash e o tamanho do corpo; zero páginas conserva hash nulo e tamanho zero. Dados, colunas, tipos, geometrias, CRS, requisições e `source_url` das APIs tabulares/geográficas permanecem iguais. O manifesto de hashes do `MetaInfo` não armazena corpos; use a coleta bruta para preservá-los em disco.
+
+## Geometria inválida
+
+A geometria das saídas `_geo` sai como a fonte publica, sem reparo; geometria inválida gera aviso e contagem no `MetaInfo`. Veja [Geometrias publicadas](../guides/normalizacao.md#geometrias-publicadas).

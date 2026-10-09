@@ -276,6 +276,25 @@ dates.converter_datas(pd.Series(["2024-01-02", "1667-05-31"]), fonte="exemplo")
 # DatasConvertidas(datas=[Timestamp('2024-01-02'), NaT] as datetime64[ns], descartadas=1)
 ```
 
+## Published geometries
+
+Polygon `_geo` outputs return geometry as the source publishes it, without repair: `desmatamento.prodes_geo` and
+`deter_geo`, SFB (`cnfp_geo`, `concessoes_geo`, `ifn_conglomerados_geo`), `ibama.embargos_geo`,
+`funai.terras_indigenas_geo`, `icmbio.ucs_geo`, `cnuc.ucs_geo`, `incra.quilombolas_geo`, `sicar.imoveis_geo`,
+`mapbiomas_alerta.alertas_geo`, ANA (`hidrografia_geo`, `pivos_irrigacao_geo`, `demanda_irrigacao_geo`,
+`disponibilidade_hidrica_geo`, `massas_dagua_geo`), Embrapa Solos (`mapa_solos_geo`, `perfis_geo`), IBGE
+(`malha_municipal_geo`, `areas_urbanizadas_geo`) and Acervo Fundiário (`sigef_geo`, `snci_geo`, `assentamentos_geo`).
+
+- An invalid non-null geometry (self-intersection, ring with too few points) raises a `UserWarning` and adds the same
+  sentence to `meta.validation_warnings`, with the count in `meta.source_details` (`geometrias_invalidas`,
+  `geometrias`): "IBAMA embargos: 1 de 23 geometrias inválidas como publicadas pela fonte; use make_valid antes de
+  operações espaciais.". Null geometry does not count. Without invalid geometries, nothing changes.
+- In the official IBAMA extract used by the tests, 1 of 23 polygons is invalid; in a PRODES extract in Pará, 292 of
+  1,728. The check costs about 6 µs per polygon.
+- Points (`queimadas.focos_geo`) are not checked, nor is `sicar.imoveis_geo_stream`, which yields block by block (a
+  warning per block would be noise); check with `gdf.geometry.is_valid` if needed.
+- For area, intersection or spatial joins, repair first: `gdf["geometry"] = gdf.geometry.make_valid()`.
+
 ## Units
 
 Conversion between Brazilian agricultural units: bags, tonnes, bushels, arrobas, hectares.

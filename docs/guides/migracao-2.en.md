@@ -883,6 +883,7 @@ With `uf`/`rodovia`, a plaza without a unique registry link is dropped from the 
 - `data_publicacao`, `data_titulo`, `data_publicacao_2` and `data_decreto` are `datetime64[ns]`, and `data_cadastro` is `datetime64[ns, UTC]`. The source's `0001-01-01` placeholder ("no date") becomes `NaT` without a warning; any other date outside 1900–2099 (a typo in the source), including in `data_cadastro`, becomes `NaT`, with a `UserWarning` and a warning in `meta.validation_warnings`. `incra.vinculos_quilombolas` follows the same rule in the `perimetro_*` columns.
 - `codigo` and `familias` are `Int64`; `area_ha` is `float64` in published hectares; the other texts use the pandas default dtype ([§89](#89-output-dtypes)).
 - `bbox` uses EPSG:4326, and `quilombolas_geo()` returns coordinates in that CRS **without topology repair** (the 1.x `make_valid` is gone).
+- Acervo Fundiário follows the same rule: `sigef_geo`, `snci_geo` and `assentamentos_geo` no longer repair the polygon with `make_valid` and return it as INCRA publishes it, possibly invalid, with a warning and a count in `MetaInfo`. Before area, intersection or spatial joins, use `gdf["geometry"] = gdf.geometry.make_valid()`.
 - Invalid parameters raise `InvalidParameterError` before any request; truncation by `max_registros` emits a `UserWarning`.
 
 New functions: `incra.andamento_quilombola()` (the "Andamento dos processos" PDF table) and `incra.vinculos_quilombolas()` (NUP links), both with `agrobr[pdf]`. See the [source page](../sources/incra.md).

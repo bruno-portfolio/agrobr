@@ -107,3 +107,7 @@ If the complete read (with no `max_registros` cut) matches no TI with the reques
 - Only polygonal Indigenous lands (points and lines excluded)
 - Data reflects the current state of the FUNAI GeoServer
 - License: reproduction with source citation under FUNAI's term for geoprocessing and maps; the gov.br portal footer states CC BY-ND 3.0 for site content
+
+## Invalid geometry
+
+Geometry from the `_geo` outputs is returned as the source publishes it, without repair; an invalid geometry raises a warning and a count in `MetaInfo`. See [Published geometries](../guides/normalizacao.en.md#published-geometries).

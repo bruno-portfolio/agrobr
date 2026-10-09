@@ -4,8 +4,9 @@ import asyncio
 import json
 import math
 import re
+import warnings
 from numbers import Real
-from typing import Any, Literal, NotRequired, TypedDict
+from typing import TYPE_CHECKING, Any, Literal, NotRequired, TypedDict
 from urllib.parse import quote, urlencode
 
 import httpx
@@ -17,6 +18,9 @@ from agrobr.exceptions import InvalidParameterError, ParseError, SourceUnavailab
 from agrobr.http import responses
 from agrobr.http.retry import retry_on_status
 from agrobr.http.user_agents import UserAgentRotator
+
+if TYPE_CHECKING:
+    from agrobr.models import MetaInfo
 
 logger = _log.get_logger(__name__)
 
@@ -46,6 +50,40 @@ def check_geopandas() -> Any:
         raise ImportError(
             "geopandas is required for geo functions. Install with: pip install agrobr[geo]"
         ) from None
+
+
+def geometrias_invalidas(gdf: Any, fonte: str) -> tuple[str, dict[str, int]] | None:
+    """Conta as geometrias não nulas inválidas como a fonte publica, sem reparar.
+
+    Devolve o aviso e as contagens (``geometrias_invalidas``, ``geometrias``), ou ``None`` sem inválidas.
+    """
+    presentes = ~gdf.geometry.isna()
+    invalidas = int((presentes & ~gdf.geometry.is_valid).sum())
+    if not invalidas:
+        return None
+    geometrias = int(presentes.sum())
+    return (
+        f"{fonte}: {invalidas} de {geometrias} geometrias inválidas como publicadas pela fonte; "
+        "use make_valid antes de operações espaciais.",
+        {"geometrias_invalidas": invalidas, "geometrias": geometrias},
+    )
+
+
+def avisar_geometrias_invalidas(
+    gdf: Any, fonte: str, meta: MetaInfo | None = None, *, stacklevel: int = 3
+) -> None:
+    """``UserWarning`` de ``geometrias_invalidas``; com ``meta``, anota o aviso e as contagens.
+
+    ``stacklevel`` é o de um ``warnings.warn`` feito por quem chama.
+    """
+    invalidas = geometrias_invalidas(gdf, fonte)
+    if invalidas is None:
+        return
+    aviso, contagem = invalidas
+    warnings.warn(aviso, UserWarning, stacklevel=stacklevel + 1)
+    if meta is not None:
+        meta.validation_warnings.append(aviso)
+        meta.source_details.update(contagem)
 
 
 def wkt_within_limits(text: str) -> bool:

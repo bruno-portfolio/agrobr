@@ -275,6 +275,25 @@ dates.converter_datas(pd.Series(["2024-01-02", "1667-05-31"]), fonte="exemplo")
 # DatasConvertidas(datas=[Timestamp('2024-01-02'), NaT] em datetime64[ns], descartadas=1)
 ```
 
+## Geometrias publicadas
+
+As saídas `_geo` de polígono entregam a geometria como a fonte publica, sem reparo: `desmatamento.prodes_geo` e
+`deter_geo`, SFB (`cnfp_geo`, `concessoes_geo`, `ifn_conglomerados_geo`), `ibama.embargos_geo`,
+`funai.terras_indigenas_geo`, `icmbio.ucs_geo`, `cnuc.ucs_geo`, `incra.quilombolas_geo`, `sicar.imoveis_geo`,
+`mapbiomas_alerta.alertas_geo`, ANA (`hidrografia_geo`, `pivos_irrigacao_geo`, `demanda_irrigacao_geo`,
+`disponibilidade_hidrica_geo`, `massas_dagua_geo`), Embrapa Solos (`mapa_solos_geo`, `perfis_geo`), IBGE
+(`malha_municipal_geo`, `areas_urbanizadas_geo`) e Acervo Fundiário (`sigef_geo`, `snci_geo`, `assentamentos_geo`).
+
+- Geometria não nula inválida (autointerseção, anel com poucos pontos) gera `UserWarning` e a mesma frase em
+  `meta.validation_warnings`, com a contagem em `meta.source_details` (`geometrias_invalidas`, `geometrias`):
+  "IBAMA embargos: 1 de 23 geometrias inválidas como publicadas pela fonte; use make_valid antes de operações
+  espaciais.". Geometria nula não conta. Sem inválidas, nada muda.
+- No recorte oficial do IBAMA dos testes, 1 de 23 polígonos é inválido; num recorte do PRODES no Pará, 292 de 1.728. A
+  conferência custa cerca de 6 µs por polígono.
+- Pontos (`queimadas.focos_geo`) não passam pela conferência, nem `sicar.imoveis_geo_stream`, que entrega bloco a bloco
+  (o aviso a cada bloco viraria ruído); confira com `gdf.geometry.is_valid` se precisar.
+- Para área, interseção ou junção espacial, repare antes: `gdf["geometry"] = gdf.geometry.make_valid()`.
+
 ## Unidades
 
 Conversão entre unidades agrícolas brasileiras: sacas, toneladas, bushels, arrobas, hectares.

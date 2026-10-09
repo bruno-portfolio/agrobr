@@ -119,3 +119,7 @@ Matching counts do not guarantee a transactional snapshot. With several pages, `
 ## Raw collection
 
 `agrobr.bruto.coletar("sicar", "imoveis", uf=..., ...)` stores the original GeoJSON pages of the state's layer in the native CRS (`EPSG:4674`) with every attribute, using the client's TLS session and pauses. It keeps every published version of a property and counts by `feature.id`, not by `cod_imovel`. Because SICAR publishes no sortable identifier, pages use `sortBy=cod_imovel A,dat_criacao A`, and the collection only closes `ok` when the pair (`cod_imovel`, `dat_criacao`) strictly increases: two versions with the same `dat_criacao` end the collection with an error. An `ok` proves the order of what arrived in that collection, not that the pair is unique across the whole database. The bbox is optional. See the [raw collection API](../api/bruto.md) and the [manifest contract](../contracts/bruto.md).
+
+## Invalid geometry
+
+Geometry from the `_geo` outputs is returned as the source publishes it, without repair; an invalid geometry raises a warning and a count in `MetaInfo`. See [Published geometries](../guides/normalizacao.en.md#published-geometries).

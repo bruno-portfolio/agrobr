@@ -126,3 +126,7 @@ são recusadas.
 **Dado pessoal:** o arquivo traz nome e CPF/CNPJ das pessoas físicas e jurídicas embargadas, colunas que as funções de
 tabela não leem. Quem guarda o arquivo bruto guarda dado pessoal e deve tratá-lo conforme a LGPD. Veja a
 [API da coleta bruta](../api/bruto.md) e o [contrato do manifesto](../contracts/bruto.md).
+
+## Geometria inválida
+
+A geometria das saídas `_geo` sai como a fonte publica, sem reparo; geometria inválida gera aviso e contagem no `MetaInfo`. Veja [Geometrias publicadas](../guides/normalizacao.md#geometrias-publicadas).

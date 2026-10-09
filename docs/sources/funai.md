@@ -107,3 +107,7 @@ aparece ali.
 - Apenas TIs poligonais (pontos e linhas excluidos)
 - Dados refletem o estado atual do GeoServer FUNAI
 - Licença: reprodução com citação da fonte, pelo termo da FUNAI para geoprocessamento e mapas; o rodapé do portal gov.br declara CC BY-ND 3.0 para o conteúdo do site
+
+## Geometria inválida
+
+A geometria das saídas `_geo` sai como a fonte publica, sem reparo; geometria inválida gera aviso e contagem no `MetaInfo`. Veja [Geometrias publicadas](../guides/normalizacao.md#geometrias-publicadas).

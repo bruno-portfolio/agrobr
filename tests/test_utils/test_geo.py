@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import warnings
 from unittest.mock import AsyncMock, patch
 
 import httpx
@@ -10,10 +11,12 @@ import pytest
 from agrobr.constants import MAX_WKT_CHARS, MAX_WKT_DEPTH
 from agrobr.exceptions import InvalidParameterError, ParseError, SourceUnavailableError
 from agrobr.utils.geo import (
+    avisar_geometrias_invalidas,
     fetch_arcgis_count,
     fetch_arcgis_layer,
     fetch_arcgis_layer_with_total,
     fetch_wfs,
+    geometrias_invalidas,
     parse_wfs_hits,
     validate_bbox,
     wkt_within_limits,
@@ -699,3 +702,38 @@ def test_wkt_within_limits():
     assert not wkt_within_limits("(" * (MAX_WKT_DEPTH + 1))
     assert not wkt_within_limits(")(" * (MAX_WKT_DEPTH + 1))
     assert not wkt_within_limits("POINT (1 1)" + " " * MAX_WKT_CHARS)
+
+
+def test_geometrias_invalidas_conta_as_nao_nulas_e_avisa_sem_reparar():
+    gpd = pytest.importorskip("geopandas")
+    shapely_geometry = pytest.importorskip("shapely.geometry")
+    gravata = shapely_geometry.Polygon([(0, 0), (1, 1), (1, 0), (0, 1), (0, 0)])
+    quadrado = shapely_geometry.box(0, 0, 1, 1)
+    esperado = (
+        "X: 1 de 2 geometrias inválidas como publicadas pela fonte; use make_valid antes de operações espaciais.",
+        {"geometrias_invalidas": 1, "geometrias": 2},
+    )
+    assert geometrias_invalidas(gpd.GeoDataFrame(geometry=[gravata, quadrado]), "X") == esperado
+    assert (
+        geometrias_invalidas(gpd.GeoDataFrame(geometry=[gravata, None, quadrado]), "X") == esperado
+    )
+    assert geometrias_invalidas(gpd.GeoDataFrame(geometry=[quadrado, None]), "X") is None
+    assert geometrias_invalidas(gpd.GeoDataFrame(geometry=[]), "X") is None
+
+
+def test_geometria_vazia_conta_como_presente_e_valida_sem_aviso_tecnico():
+    gpd = pytest.importorskip("geopandas")
+    shapely_geometry = pytest.importorskip("shapely.geometry")
+    vazio = shapely_geometry.Polygon()
+    gravata = shapely_geometry.Polygon([(0, 0), (1, 1), (1, 0), (0, 1), (0, 0)])
+    with warnings.catch_warnings(record=True) as avisos:
+        warnings.simplefilter("always")
+        assert geometrias_invalidas(gpd.GeoDataFrame(geometry=[vazio]), "X") is None
+        avisar_geometrias_invalidas(gpd.GeoDataFrame(geometry=[vazio]), "X")
+    assert [str(aviso.message) for aviso in avisos] == []
+    with warnings.catch_warnings(record=True) as avisos:
+        warnings.simplefilter("always")
+        avisar_geometrias_invalidas(gpd.GeoDataFrame(geometry=[vazio, gravata, None]), "X")
+    assert [str(aviso.message) for aviso in avisos] == [
+        "X: 1 de 2 geometrias inválidas como publicadas pela fonte; use make_valid antes de operações espaciais."
+    ]

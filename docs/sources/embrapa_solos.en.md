@@ -138,3 +138,7 @@ the horizons with all three values; `saturacao_bases` = 100 x S / T and `ctc` = 
 - Profile coverage is not uniform (PronaSolos still in progress)
 - Soil map at 1:5,000,000 scale (national view, not cadastral)
 - CC BY-NC 3.0 BR: commercial redistribution requires authorization
+
+## Invalid geometry
+
+Geometry from the `_geo` outputs is returned as the source publishes it, without repair; an invalid geometry raises a warning and a count in `MetaInfo`. See [Published geometries](../guides/normalizacao.en.md#published-geometries).

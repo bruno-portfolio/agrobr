@@ -9,7 +9,7 @@ import pandas as pd
 
 from agrobr import _log
 from agrobr.models import MetaInfo
-from agrobr.utils.geo import check_geopandas, validate_bbox
+from agrobr.utils.geo import avisar_geometrias_invalidas, check_geopandas, validate_bbox
 from agrobr.utils.result import (
     DataFrameResult,
     GeoDataFrameResult,
@@ -161,5 +161,8 @@ async def embargos_geo(
     parse_ms = int((time.monotonic() - t1) * 1000)
 
     if return_meta:
-        return gdf, _meta(coleta, gdf, "httpx+csv+wkt", fetch_ms, parse_ms)
+        meta = _meta(coleta, gdf, "httpx+csv+wkt", fetch_ms, parse_ms)
+        avisar_geometrias_invalidas(gdf, "IBAMA embargos", meta, stacklevel=2)
+        return gdf, meta
+    avisar_geometrias_invalidas(gdf, "IBAMA embargos", stacklevel=2)
     return gdf

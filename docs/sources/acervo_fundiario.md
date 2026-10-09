@@ -104,9 +104,10 @@ aceitam `1`/`true`/`yes`.
 Todo campo do shapefile que vira coluna de saída é obrigatório: se o INCRA renomear ou tirar um deles, o parser levanta
 `ParseError` com o campo e o arquivo, em vez de devolver o DataFrame sem a coluna. Número fora do formato (por exemplo,
 vírgula decimal num campo de texto) vira nulo, com `UserWarning` e aviso em `validation_warnings`. `cod_municipio`,
-`capacidade`, `num_familias` e `fase` saem `Int64`, com ou sem nulo. Nas variantes `_geo`, geometria inválida é reparada
-com `shapely.make_valid` (um polígono que se cruza vira `MultiPolygon`): a contagem sai em
-`source_details["topology_repaired"]` e em `validation_warnings`, e o polígono entregue difere do publicado pelo INCRA.
+`capacidade`, `num_familias` e `fase` saem `Int64`, com ou sem nulo. Nas variantes `_geo`, a geometria sai como o INCRA
+publica, sem reparo: geometria inválida gera `UserWarning`, a frase em `validation_warnings` e a contagem em
+`source_details` (`geometrias_invalidas`, `geometrias`), como nas outras fontes; repare com `make_valid` antes de
+operações espaciais ([Geometrias publicadas](../guides/normalizacao.md#geometrias-publicadas)).
 
 ### SIGEF
 

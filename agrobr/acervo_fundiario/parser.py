@@ -209,29 +209,6 @@ def _select_output(df: pd.DataFrame, output_cols: list[str]) -> pd.DataFrame:
     return df
 
 
-def _make_geometries_valid(gdf: Any) -> Any:
-    invalid_mask = gdf.geometry.notna() & ~gdf.geometry.is_valid
-    n_invalid = int(invalid_mask.sum())
-    if n_invalid > 0:
-        from shapely.validation import make_valid
-
-        gdf = gdf.copy()
-        gdf.loc[invalid_mask, "geometry"] = gdf.loc[invalid_mask, "geometry"].apply(make_valid)
-        logger.warning(
-            "acervo_fundiario_geom_repaired",
-            invalid=n_invalid,
-            total=len(gdf),
-        )
-        aviso = (
-            f"acervo_fundiario: {n_invalid} geometria(s) inválida(s) reparada(s) com make_valid; "
-            "o polígono entregue difere do publicado pelo INCRA"
-        )
-        gdf.attrs.setdefault(ATRIBUTO_AVISOS, []).append(aviso)
-        warnings.warn(aviso, UserWarning, stacklevel=2)
-    gdf.attrs["topology_repaired"] = n_invalid
-    return gdf
-
-
 def _with_natureza(df: Any, natureza: str) -> Any:
     df = df.copy()
     df["natureza"] = pd.Series(natureza, index=df.index, dtype=pd.Series([""]).dtype)
@@ -260,7 +237,6 @@ def parse_sigef_geo(zip_path: Path, *, natureza: str, bbox: BBox | None = None) 
     gdf = _normalize_uf_column(gdf)
     gdf = _coerce_dates(gdf, SIGEF_DATE_COLS)
     gdf = _coerce_numeric(gdf, SIGEF_NUMERIC_COLS, zip_path)
-    gdf = _make_geometries_valid(gdf)
     gdf = _with_natureza(gdf, natureza)
     gdf = _select_output(gdf, SIGEF_COLUNAS_SAIDA_GEO)
     logger.info("acervo_fundiario_sigef_geo_parse_ok", records=len(gdf), natureza=natureza)
@@ -290,13 +266,8 @@ def join_sigef(partes: dict[str, Any]) -> Any:
                 "e privado do SIGEF; as linhas dos dois foram mantidas"
             )
     cheios = [frame for frame in frames if len(frame)] or frames[:1]
-    reparadas = [
-        frame.attrs["topology_repaired"] for frame in frames if "topology_repaired" in frame.attrs
-    ]
     df = cheios[0] if len(cheios) == 1 else pd.concat(cheios, ignore_index=True)
     df.attrs = {ATRIBUTO_AVISOS: avisos} if avisos else {}
-    if reparadas:
-        df.attrs["topology_repaired"] = sum(reparadas)
     return df
 
 
@@ -319,7 +290,6 @@ def parse_snci_geo(zip_path: Path, *, bbox: BBox | None = None) -> Any:
     gdf = _normalize_uf_column(gdf)
     gdf = _coerce_dates(gdf, SNCI_DATE_COLS)
     gdf = _coerce_numeric(gdf, SNCI_NUMERIC_COLS, zip_path)
-    gdf = _make_geometries_valid(gdf)
     gdf = _select_output(gdf, SNCI_COLUNAS_SAIDA_GEO)
     logger.info("acervo_fundiario_snci_geo_parse_ok", records=len(gdf))
     return gdf
@@ -354,7 +324,6 @@ def parse_assentamentos_geo(
     _log_dirty_uf(gdf, "assentamentos_geo")
     if uf is not None:
         gdf = gdf[gdf["uf"] == uf].reset_index(drop=True)
-    gdf = _make_geometries_valid(gdf)
     gdf = _select_output(gdf, ASSENTAMENTOS_COLUNAS_SAIDA_GEO)
     logger.info("acervo_fundiario_assentamentos_geo_parse_ok", records=len(gdf), uf=uf)
     return gdf

@@ -9,7 +9,12 @@ from agrobr import _log
 from agrobr.exceptions import InvalidParameterError
 from agrobr.models import MetaInfo
 from agrobr.normalize import regions
-from agrobr.utils.geo import check_geopandas, check_pyogrio, validate_bbox
+from agrobr.utils.geo import (
+    avisar_geometrias_invalidas,
+    check_geopandas,
+    check_pyogrio,
+    validate_bbox,
+)
 from agrobr.utils.result import (
     DataFrameResult,
     GeoDataFrameResult,
@@ -93,8 +98,6 @@ def _build_meta(
     meta.from_cache = aquisicao.from_cache
     meta.fetched_at = aquisicao.fetched_at
     meta.fetch_timestamp = aquisicao.fetched_at
-    if "topology_repaired" in df.attrs:
-        meta.source_details["topology_repaired"] = df.attrs["topology_repaired"]
     return meta
 
 
@@ -156,8 +159,6 @@ def _build_sigef_meta(
     meta.from_cache = all(aquisicao.from_cache for aquisicao in aquisicoes)
     meta.fetched_at = min(aquisicao.fetched_at for aquisicao in aquisicoes)
     meta.fetch_timestamp = meta.fetched_at
-    if "topology_repaired" in df.attrs:
-        meta.source_details["topology_repaired"] = df.attrs["topology_repaired"]
     return meta
 
 
@@ -260,7 +261,9 @@ async def sigef_geo(
     )
     if return_meta:
         meta = _build_sigef_meta(uf=uf, lidos=lidos, fetch_ms=fetch_ms, parse_ms=parse_ms, df=gdf)
+        avisar_geometrias_invalidas(gdf, "Acervo Fundiário SIGEF", meta, stacklevel=2)
         return gdf, meta
+    avisar_geometrias_invalidas(gdf, "Acervo Fundiário SIGEF", stacklevel=2)
     return gdf
 
 
@@ -389,7 +392,9 @@ async def snci_geo(
             aquisicao=aquisicao,
             schema_version="1.0" if escolhida is None else SNCI_NATUREZA_SCHEMA_VERSION,
         )
+        avisar_geometrias_invalidas(gdf, "Acervo Fundiário SNCI", meta, stacklevel=2)
         return gdf, meta
+    avisar_geometrias_invalidas(gdf, "Acervo Fundiário SNCI", stacklevel=2)
     return gdf
 
 
@@ -505,5 +510,7 @@ async def assentamentos_geo(
             df=gdf,
             aquisicao=aquisicao,
         )
+        avisar_geometrias_invalidas(gdf, "Acervo Fundiário assentamentos", meta, stacklevel=2)
         return gdf, meta
+    avisar_geometrias_invalidas(gdf, "Acervo Fundiário assentamentos", stacklevel=2)
     return gdf

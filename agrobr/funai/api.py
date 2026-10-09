@@ -115,6 +115,7 @@ async def _fetch(
     meta.validation_warnings.extend(acquired.frame.attrs.get(result.ATRIBUTO_AVISOS, []))
     if include_geometry:
         _avisar_area_divergente(frame, meta)
+        geo.avisar_geometrias_invalidas(frame, "FUNAI", meta)
     remote = acquired.coverage.remote
     if validated.fase is not None and not remote.truncated and frame.empty:
         aviso = (

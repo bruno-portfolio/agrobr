@@ -252,3 +252,7 @@ With `return_meta=True`, `raw_content_hash` and `raw_content_size` are now popul
 `source_details` exposes `hash_kind="resource_manifest_sha256"`, `manifest_encoding="canonical_json_utf8"`, `manifest_fields=["query", "resources"]`, `query` and `resources`. The logical query contains `fonte`, `recurso`, `where`, `bbox`, `max_registros` and `formato`; `resources` preserves acquisition order and contains `pagina` (starting at 1), `sha256` and `bytes`.
 
 A single page keeps the body hash and size; zero pages keep a null hash and size zero. Data, columns, types, geometries, CRS, requests and `source_url` in the tabular/geographic APIs remain unchanged. The `MetaInfo` hash manifest does not store bodies; use raw collection to preserve them on disk.
+
+## Invalid geometry
+
+Geometry from the `_geo` outputs is returned as the source publishes it, without repair; an invalid geometry raises a warning and a count in `MetaInfo`. See [Published geometries](../guides/normalizacao.en.md#published-geometries).

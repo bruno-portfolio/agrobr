@@ -185,3 +185,7 @@ seguida, os das duas fontes, com o prefixo de cada uma (`incra_geoserver: …`, 
 - Perímetros e PDF são adquiridos em momentos distintos, sem snapshot conjunto.
 - `codigo`, `processo` e `feature_id` não são chaves primárias; ocorrências repetidas são mantidas.
 - A contagem do WFS e o PDF mudam sem aviso; o agrobr registra hashes e datas de cada recurso no `MetaInfo`.
+
+## Geometria inválida
+
+A geometria das saídas `_geo` sai como a fonte publica, sem reparo; geometria inválida gera aviso e contagem no `MetaInfo`. Veja [Geometrias publicadas](../guides/normalizacao.md#geometrias-publicadas).

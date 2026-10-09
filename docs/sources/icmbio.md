@@ -83,3 +83,7 @@ Em `ucs_geo`, área e ano fora do formato numérico levantam `ParseError`, como 
 `bioma` valem sobre a camada baixada (no `ucs`, vão na consulta ao servidor): o `MetaInfo` registra a seleção em
 `source_details["query"]`, os filtros aplicados no resultado em `source_details["filtros_locais"]` e a hora da aquisição
 em `fetched_at`/`fetch_timestamp`.
+
+## Geometria inválida
+
+A geometria das saídas `_geo` sai como a fonte publica, sem reparo; geometria inválida gera aviso e contagem no `MetaInfo`. Veja [Geometrias publicadas](../guides/normalizacao.md#geometrias-publicadas).

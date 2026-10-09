@@ -145,3 +145,7 @@ de devolver dicionários vazios.
 - Requer token de autenticação (env `AGROBR_MAPBIOMAS_ALERTA_TOKEN` ou parâmetro `token=`), que expira
 - A consulta não filtra por UF nem por município; a API tem `territoryIds`, que o agrobr não expõe
 - Throttle após 5 páginas (3s de espera)
+
+## Geometria inválida
+
+A geometria das saídas `_geo` sai como a fonte publica, sem reparo; geometria inválida gera aviso e contagem no `MetaInfo`. Veja [Geometrias publicadas](../guides/normalizacao.md#geometrias-publicadas).

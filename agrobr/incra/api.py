@@ -74,6 +74,8 @@ async def _fetch(
     frame = _geoframe(acquired, geopandas) if include_geometry else acquired.frame
     meta = metadata.build_meta(acquired, frame)
     meta.validation_warnings.extend(acquired.frame.attrs.get(result.ATRIBUTO_AVISOS, []))
+    if include_geometry:
+        geo.avisar_geometrias_invalidas(frame, "INCRA quilombolas", meta)
     remote = acquired.coverage.remote
     if validated.fase is not None and not remote.truncated and frame.empty:
         aviso = (

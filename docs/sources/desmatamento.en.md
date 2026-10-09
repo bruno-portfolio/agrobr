@@ -68,6 +68,8 @@ The `deter_geo()` function returns DETER alerts with geometry polygons as a GeoD
 
 The geometry column is biome-specific in the GeoServer. The parser normalizes both to `geometry` in the output GeoDataFrame.
 
+**Invalid geometry.** Geometry is returned as the GeoServer publishes it, without repair. When there is an invalid non-null geometry (self-intersection, ring with too few points), `prodes_geo()` and `deter_geo()` warn (`UserWarning` and `meta.validation_warnings`): "PRODES: 3 de 6 geometrias inválidas como publicadas pela fonte; use make_valid antes de operações espaciais.", with the count in `meta.source_details` (`geometrias_invalidas`, `geometrias`). In a PRODES extract in Pará (bbox -55.5, -4.5, -55.0, -4.0; 2020–2025), 292 of 1,728 polygons were invalid. Without invalid geometries, nothing changes. For area or intersection, apply `make_valid` (shapely/geopandas) first.
+
 ## Biome Normalization
 
 The `bioma` parameter accepts variants with/without accents and is case insensitive:
