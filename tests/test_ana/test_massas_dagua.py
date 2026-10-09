@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import json
+import re
+import warnings
 from collections.abc import Callable
 from typing import Any
 from urllib.parse import parse_qsl
@@ -147,6 +149,44 @@ async def test_uf_filtra_pelo_nome_inteiro_na_lista_nmufe(
         "OR nmufe LIKE '%, DISTRITO FEDERAL' OR nmufe LIKE '%, DISTRITO FEDERAL, %')"
     )
     assert len(oficial.massas_ids("uf_df_3")) == 228 and len(frame) == 3
+
+
+@pytest.mark.parametrize("nome", ["massas_dagua", "massas_dagua_geo"])
+@pytest.mark.usefixtures("servidor")
+async def test_corte_por_max_registros_avisa_com_cobertura(nome: str):
+    if nome.endswith("_geo"):
+        pytest.importorskip("geopandas")
+    aviso = (
+        "ANA massas_dagua: retornadas 3 de 228 feições por limite local; "
+        "restrinja filtros ou use max_registros=None."
+    )
+    with pytest.warns(UserWarning, match=re.escape(aviso)):
+        frame, meta = await getattr(ana, nome)(uf="DF", max_registros=3, return_meta=True)
+    assert len(frame) == 3
+    assert meta.validation_warnings == [aviso]
+    assert meta.source_details == {
+        "coverage": {
+            "expected_rows": 228,
+            "returned_rows": 3,
+            "local_limit": 3,
+            "truncated": True,
+        }
+    }
+    with pytest.warns(UserWarning, match=re.escape(aviso)):
+        await getattr(ana, nome)(uf="DF", max_registros=3)
+
+
+@pytest.mark.parametrize("limite", [1, None])
+@pytest.mark.usefixtures("servidor")
+async def test_sem_corte_nao_avisa_nem_publica_cobertura(limite: int | None):
+    assert len(oficial.massas_ids("barragem_df")) == 1
+    with warnings.catch_warnings(record=True) as avisos:
+        warnings.simplefilter("always")
+        frame, meta = await ana.massas_dagua(bbox=BARRAGEM, max_registros=limite, return_meta=True)
+    assert len(frame) == 1
+    assert not [aviso for aviso in avisos if "limite local" in str(aviso.message)]
+    assert meta.validation_warnings == []
+    assert meta.source_details == {}
 
 
 async def test_recorte_sem_feicoes_sai_vazio_com_os_mesmos_tipos(

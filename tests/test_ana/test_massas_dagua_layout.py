@@ -16,7 +16,7 @@ BARRAGEM = Path(__file__).parents[1] / "golden_data/ana/massas_dagua_20261001/ba
 
 def publicar(monkeypatch: pytest.MonkeyPatch, corpo: dict[str, Any]) -> None:
     pagina = json.dumps(corpo).encode()
-    resposta = AsyncMock(return_value=([pagina], "https://fonte.invalid/query"))
+    resposta = AsyncMock(return_value=([pagina], "https://fonte.invalid/query", None))
     monkeypatch.setattr(api.client, "fetch_massas_dagua", resposta)
 
 

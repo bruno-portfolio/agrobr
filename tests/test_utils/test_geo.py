@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 from unittest.mock import AsyncMock, patch
 
 import httpx
@@ -11,6 +12,7 @@ from agrobr.exceptions import InvalidParameterError, ParseError, SourceUnavailab
 from agrobr.utils.geo import (
     fetch_arcgis_count,
     fetch_arcgis_layer,
+    fetch_arcgis_layer_with_total,
     fetch_wfs,
     parse_wfs_hits,
     validate_bbox,
@@ -452,6 +454,50 @@ class TestFetchArcgisLayerMaxFeatures:
                 max_registros=max_registros,
             )
         get.assert_not_awaited()
+
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize("oid_field", [None, "OBJECTID"])
+    async def test_total_e_a_contagem_que_guiou_a_coleta_cortada(self, monkeypatch, oid_field):
+        layer = {
+            "service_path": "x/FeatureServer/0",
+            "max_record_count": 2,
+            "fields": "OBJECTID",
+            "rename_map": {},
+            "colunas_saida": ["OBJECTID"],
+            "required_cols": {"OBJECTID"},
+        }
+        if oid_field is not None:
+            layer["oid_field"] = oid_field
+        cliente = helpers.make_mock_async_client()
+        cliente.get.side_effect = [
+            helpers.make_mock_response(json_data={"count": 5}),
+            *(
+                helpers.make_mock_response(
+                    content=json.dumps(
+                        {
+                            "features": [
+                                {"attributes": {"OBJECTID": oid, "NOME": f"feição {oid}"}}
+                                for oid in oids
+                            ]
+                        }
+                    ).encode()
+                )
+                for oids in ([1, 2], [3])
+            ),
+        ]
+        monkeypatch.setattr(httpx, "AsyncClient", lambda **_kwargs: cliente)
+        paginas, _, total = await fetch_arcgis_layer_with_total(
+            "http://example.com",
+            layer,
+            source="test",
+            timeout=httpx.Timeout(10),
+            max_registros=3,
+            f="json",
+        )
+        pedidos = [httpx.URL(chamada.args[0]).params for chamada in cliente.get.await_args_list]
+        assert (len(paginas), total) == (2, 5)
+        assert [pedido.get("returnCountOnly") for pedido in pedidos] == ["true", None, None]
+        assert [pedido["resultRecordCount"] for pedido in pedidos[1:]] == ["2", "1"]
 
 
 class TestValidateBbox:

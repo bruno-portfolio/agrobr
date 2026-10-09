@@ -25,7 +25,7 @@ async def _consultar(monkeypatch, caso, paginas, *, bbox=BBOX, max_registros=123
     funcao, metodo, _ = caso
     if funcao.endswith("_geo"):
         pytest.importorskip("geopandas")
-    mock = AsyncMock(return_value=(paginas, SOURCE_URL))
+    mock = AsyncMock(return_value=(paginas, SOURCE_URL, max_registros))
     monkeypatch.setattr(client, metodo, mock)
     resultado = await getattr(ana, funcao)(bbox=bbox, max_registros=max_registros, return_meta=True)
     mock.assert_awaited_once()
@@ -101,7 +101,7 @@ async def test_hash_muda_com_segunda_pagina_ordem_ou_consulta(monkeypatch, caso)
 
 async def test_hash_inclui_filtro_de_uf_sem_faixa_fid(monkeypatch):
     corpo = (GOLDEN / CASOS[2][2]).read_bytes()
-    mock = AsyncMock(return_value=([corpo, corpo], SOURCE_URL))
+    mock = AsyncMock(return_value=([corpo, corpo], SOURCE_URL, 3))
     monkeypatch.setattr(client, "fetch_massas_dagua", mock)
     _, meta = await ana.massas_dagua(uf="DF", max_registros=3, return_meta=True)
     assert meta.source_details["query"] == {

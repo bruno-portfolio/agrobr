@@ -501,6 +501,41 @@ async def fetch_arcgis_layer(
     throttle_delay: float = 2.0,
     return_geometry: bool | None = None,
 ) -> tuple[list[bytes], str]:
+    pages, first_url, _ = await fetch_arcgis_layer_with_total(
+        base_url,
+        layer_config,
+        source=source,
+        timeout=timeout,
+        where=where,
+        bbox=bbox,
+        max_registros=max_registros,
+        f=f,
+        throttle_after_page=throttle_after_page,
+        throttle_delay=throttle_delay,
+        return_geometry=return_geometry,
+    )
+    return pages, first_url
+
+
+async def fetch_arcgis_layer_with_total(
+    base_url: str,
+    layer_config: LayerConfig,
+    *,
+    source: str,
+    timeout: httpx.Timeout,
+    where: str = "1=1",
+    bbox: tuple[float, float, float, float] | None = None,
+    max_registros: int | None = None,
+    f: str = "geojson",
+    throttle_after_page: int = 5,
+    throttle_delay: float = 2.0,
+    return_geometry: bool | None = None,
+) -> tuple[list[bytes], str, int]:
+    """Como ``fetch_arcgis_layer``, devolvendo também o total da camada contado antes da coleta.
+
+    O total é o publicado para o filtro, sem o corte de ``max_registros``: com ele, quem chama sabe
+    se a coleta foi cortada sem contar a camada de novo.
+    """
     if max_registros is not None and (
         isinstance(max_registros, bool) or not isinstance(max_registros, int) or max_registros < 1
     ):
@@ -521,12 +556,10 @@ async def fetch_arcgis_layer(
     logger.info(f"{source}_layer_count", total=total)
 
     if total == 0:
-        return [], f"{service_url}/query"
+        return [], f"{service_url}/query", 0
 
-    if max_registros is not None and total > max_registros:
-        total = max_registros
-
-    n_pages = math.ceil(total / max_record_count)
+    alvo = total if max_registros is None else min(total, max_registros)
+    n_pages = math.ceil(alvo / max_record_count)
     pages: list[bytes] = []
     first_url = ""
     collected = 0
@@ -538,7 +571,7 @@ async def fetch_arcgis_layer(
     ) as http:
         oid_field = layer_config.get("oid_field")
         if oid_field is not None:
-            return await _fetch_keyset_pages(
+            pages, first_url = await _fetch_keyset_pages(
                 http,
                 service_url,
                 oid_field=oid_field,
@@ -546,7 +579,7 @@ async def fetch_arcgis_layer(
                 bbox=bbox,
                 fields=fields,
                 f=f,
-                total=total,
+                total=alvo,
                 page_size=max_record_count,
                 source=source,
                 timeout=timeout,
@@ -554,6 +587,7 @@ async def fetch_arcgis_layer(
                 throttle_after_page=throttle_after_page,
                 throttle_delay=throttle_delay,
             )
+            return pages, first_url, total
         for i in range(n_pages):
             offset = i * max_record_count
             url = build_arcgis_query_url(
@@ -563,7 +597,7 @@ async def fetch_arcgis_layer(
                 out_fields=fields,
                 out_sr=4326,
                 f=f,
-                result_record_count=min(max_record_count, total - offset),
+                result_record_count=min(max_record_count, alvo - offset),
                 result_offset=offset,
                 return_geometry=return_geometry,
             )
@@ -576,8 +610,8 @@ async def fetch_arcgis_layer(
             if i >= throttle_after_page:
                 await asyncio.sleep(throttle_delay)
 
-    _require_complete(collected, total, source=source, url=first_url)
-    return pages, first_url
+    _require_complete(collected, alvo, source=source, url=first_url)
+    return pages, first_url, total
 
 
 def _campos_pedidos(layer_config: LayerConfig) -> set[str]:

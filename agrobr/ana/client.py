@@ -14,7 +14,7 @@ from agrobr.normalize import regions
 from agrobr.utils.geo import (
     build_arcgis_query_url,
     fetch_arcgis_count,
-    fetch_arcgis_layer,
+    fetch_arcgis_layer_with_total,
     fetch_wfs,
 )
 
@@ -45,8 +45,9 @@ async def fetch_layer(
     bbox: tuple[float, float, float, float] | None = None,
     max_registros: int | None = None,
     f: str = "geojson",
-) -> tuple[list[bytes], str]:
-    return await fetch_arcgis_layer(
+) -> tuple[list[bytes], str, int]:
+    """Devolve as páginas, a URL da primeira e o total da camada contado antes da coleta."""
+    return await fetch_arcgis_layer_with_total(
         ANA_BASE,
         LAYERS[layer_key],
         source="ana",
@@ -112,11 +113,11 @@ async def fetch_massas_dagua(
     bbox: tuple[float, float, float, float] | None = None,
     max_registros: int | None = None,
     f: str = "geojson",
-) -> tuple[list[bytes], str]:
+) -> tuple[list[bytes], str, int]:
     """Pagina por faixa de ``FID``: o servidor SPR recusa ``resultRecordCount`` e ``orderByFields``.
 
     Lê a lista oficial de ``FID`` (``returnIdsOnly``) e pede cada faixa de até 1.000 no ``where``;
-    a página tem de trazer exatamente os ``FID`` da faixa.
+    a página tem de trazer exatamente os ``FID`` da faixa. Devolve também o total da camada.
     """
     if max_registros is not None and (
         isinstance(max_registros, bool) or not isinstance(max_registros, int) or max_registros < 1
@@ -129,7 +130,7 @@ async def fetch_massas_dagua(
         service_url, where=where, bbox=bbox, source="ana", timeout=TIMEOUT
     )
     if total == 0:
-        return [], f"{service_url}/query"
+        return [], f"{service_url}/query", 0
 
     async with httpx.AsyncClient(
         timeout=TIMEOUT, headers=UserAgentRotator.get_bot_headers(), follow_redirects=True
@@ -169,4 +170,4 @@ async def fetch_massas_dagua(
             urls.append(url)
             if len(pages) > _PAUSA_APOS_PAGINA:
                 await asyncio.sleep(_PAUSA_SEGUNDOS)
-    return pages, urls[0]
+    return pages, urls[0], total

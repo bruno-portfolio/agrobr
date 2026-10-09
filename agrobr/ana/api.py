@@ -3,6 +3,7 @@ from __future__ import annotations
 import hashlib
 import json
 import time
+import warnings
 from typing import TYPE_CHECKING, Any, Literal, cast, overload
 
 import pandas as pd
@@ -108,6 +109,31 @@ def _compor_hash_paginas(
     }
 
 
+def _avisar_corte(
+    meta: MetaInfo | None,
+    layer_key: str,
+    *,
+    total: int,
+    devolvidas: int,
+    max_registros: int | None,
+) -> None:
+    if max_registros is None or total <= max_registros:
+        return
+    aviso = (
+        f"ANA {layer_key}: retornadas {devolvidas} de {total} feições por limite local; "
+        "restrinja filtros ou use max_registros=None."
+    )
+    warnings.warn(aviso, UserWarning, stacklevel=4)
+    if meta is not None:
+        meta.validation_warnings.append(aviso)
+        meta.source_details["coverage"] = {
+            "expected_rows": total,
+            "returned_rows": devolvidas,
+            "local_limit": max_registros,
+            "truncated": True,
+        }
+
+
 async def _fetch_and_parse_tabular(
     layer_key: str,
     *,
@@ -121,7 +147,7 @@ async def _fetch_and_parse_tabular(
     logger.info(f"ana_{layer_key}", uf=uf, bbox=bbox)
 
     t0 = time.monotonic()
-    pages, source_url = await client.fetch_layer(
+    pages, source_url, total = await client.fetch_layer(
         layer_key,
         where=where,
         bbox=bbox,
@@ -156,6 +182,7 @@ async def _fetch_and_parse_tabular(
         max_registros=max_registros,
         f="json",
     )
+    _avisar_corte(meta, layer_key, total=total, devolvidas=len(df), max_registros=max_registros)
     return finalize_result(
         df,
         meta,
@@ -180,7 +207,7 @@ async def _fetch_and_parse_geo(
     logger.info(f"ana_{layer_key}_geo", uf=uf, bbox=bbox)
 
     t0 = time.monotonic()
-    pages, source_url = await client.fetch_layer(
+    pages, source_url, total = await client.fetch_layer(
         layer_key,
         where=where,
         bbox=bbox,
@@ -216,7 +243,11 @@ async def _fetch_and_parse_geo(
             max_registros=max_registros,
             f="geojson",
         )
+        _avisar_corte(
+            meta, layer_key, total=total, devolvidas=len(gdf), max_registros=max_registros
+        )
         return gdf, meta
+    _avisar_corte(None, layer_key, total=total, devolvidas=len(gdf), max_registros=max_registros)
     return gdf
 
 
@@ -721,7 +752,7 @@ async def _fetch_massas(
     logger.info("ana_massas_dagua", uf=uf, bbox=bbox, geo=geo)
 
     t0 = time.monotonic()
-    pages, source_url = await client.fetch_massas_dagua(
+    pages, source_url, total = await client.fetch_massas_dagua(
         where=where, bbox=bbox, max_registros=max_registros, f=formato
     )
     fetch_ms = int((time.monotonic() - t0) * 1000)
@@ -752,6 +783,9 @@ async def _fetch_massas(
         bbox=bbox,
         max_registros=max_registros,
         f=formato,
+    )
+    _avisar_corte(
+        meta, "massas_dagua", total=total, devolvidas=len(df), max_registros=max_registros
     )
     return df, meta
 
