@@ -3,6 +3,7 @@ from __future__ import annotations
 import math
 import os
 import warnings
+from datetime import date
 from enum import StrEnum
 from pathlib import Path
 from typing import Any
@@ -463,6 +464,8 @@ CEPEA_SERIE_CANONICA: dict[str, str] = {
     produto: next(nome for nome, outra in CEPEA_SERIES.items() if outra == serie)
     for produto, serie in CEPEA_SERIES.items()
 }
+
+CEPEA_VALOR_MANTIDO: dict[str, tuple[str, date]] = {"soja": ("Paranaguá/PR", date(2015, 5, 4))}
 
 CEPEA_TABELAS_POR_PRACA = {
     "trigo": {"Paraná": r"TRIGO.*PARANÁ", "Rio Grande do Sul": r"TRIGO.*RIO GRANDE DO SUL"},

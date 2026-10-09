@@ -20,6 +20,7 @@ from agrobr.cache import duckdb_store
 from agrobr.cepea import api, client, serie
 from agrobr.cepea.parsers.detector import get_parser_with_fallback
 from agrobr.exceptions import ParseError, SourceUnavailableError
+from agrobr.models import Indicador
 from tests.helpers import levanta_exatamente, sem_excecao
 
 GOLDEN = Path(__file__).parents[1] / "golden_data" / "cepea" / "serie_historica_20260926"
@@ -603,3 +604,108 @@ async def test_periodo_que_a_serie_nao_cobre_avisa_ja_no_primeiro_download(monke
 
     assert frame.empty
     assert avisos_de(emitidos, "cepea: sem dado de 'soja' entre 2026-10-01 e 2026-10-31")
+
+
+MANTIDO = '["valor_mantido"]'
+
+
+def mantidos_na_planilha() -> set[str]:
+    tabela = planilha("soja_92.xls")
+    ordem = tabela.assign(dia=pd.to_datetime(tabela[0], format="%d/%m/%Y")).sort_values("dia")
+    ordem = ordem[pd.to_numeric(ordem[1], errors="coerce") > 0]
+    valores = pd.to_numeric(ordem[1])
+    repete = valores.eq(valores.shift()) & (ordem["dia"] < "2015-05-04")
+    return set(ordem.loc[repete, "dia"].dt.strftime("%Y-%m-%d"))
+
+
+def marcadas(frame: pd.DataFrame) -> set[str]:
+    return set(frame.loc[frame["anomalies"] == MANTIDO, "data"].dt.strftime("%Y-%m-%d"))
+
+
+@pytest.mark.usefixtures("cache", "baixar", "sem_pagina")
+async def test_valor_mantido_do_segundo_pregao_do_trecho_em_diante():
+    periodo = {"inicio": "2014-09-24", "fim": "2014-10-03"}
+
+    with sem_excecao():
+        da_serie = await api.indicador("soja", **periodo)
+        do_cache = await api.indicador("soja", **periodo)
+        offline = await api.indicador("soja", **periodo, offline=True)
+        meio_do_trecho = await api.indicador("soja", inicio="2014-10-01", fim="2014-10-03")
+
+    esperado = {
+        "2014-09-24",
+        "2014-09-25",
+        "2014-09-26",
+        "2014-09-30",
+        "2014-10-01",
+        "2014-10-02",
+        "2014-10-03",
+    }
+    assert esperado == mantidos_na_planilha() & set(da_serie["data"].dt.strftime("%Y-%m-%d"))
+    for frame in (da_serie, do_cache, offline):
+        assert marcadas(frame) == esperado
+        assert frame.loc[frame["data"] == "2014-09-29", "anomalies"].isna().all()
+        assert frame["valor"].tolist() == diario("soja_92.xls", **periodo)[1].astype(float).tolist()
+    assert marcadas(meio_do_trecho) == {"2014-10-01", "2014-10-02", "2014-10-03"}
+
+
+@pytest.mark.usefixtures("cache", "baixar", "sem_pagina")
+async def test_valor_mantido_na_serie_inteira_e_nada_desde_04_05_2015():
+    with sem_excecao():
+        ate_o_corte = await api.indicador("soja", inicio="2006-01-01", fim="2015-05-03")
+        depois = await api.indicador("soja", inicio="2015-05-04", fim="2015-08-31")
+
+    assert marcadas(ate_o_corte) == mantidos_na_planilha()
+    assert len(marcadas(ate_o_corte)) == 551
+    repetido = depois.set_index("data")["valor"]
+    assert repetido["2015-05-12"] == repetido["2015-05-11"]
+    assert depois["anomalies"].isna().all()
+
+
+async def test_valor_mantido_so_na_soja_paranagua(cache):
+    repetidos = [
+        Indicador(
+            fonte=constants.Fonte.CEPEA,
+            produto="soja_parana",
+            praca="Paraná",
+            data=date(2014, 10, dia),
+            valor=Decimal("55.00"),
+            unidade="BRL/sc60kg",
+        )
+        for dia in (1, 2, 3)
+    ]
+    cache.indicadores_upsert(api._indicadores_to_dicts(repetidos))
+
+    with sem_excecao():
+        frame = await api.indicador(
+            "soja_parana", inicio="2014-10-01", fim="2014-10-03", offline=True
+        )
+
+    assert len(frame) == 3
+    assert frame["anomalies"].isna().all()
+
+
+@pytest.mark.usefixtures("cache", "baixar", "sem_pagina")
+async def test_valor_mantido_chega_ao_preco_diario_e_ao_deterministico():
+    periodo = {"inicio": "2014-09-29", "fim": "2014-10-03"}
+
+    with sem_excecao():
+        frame = await datasets.preco_diario("soja", **periodo)
+        async with datasets.deterministic("2014-12-31"):
+            congelado = await datasets.preco_diario("soja", **periodo)
+
+    esperado = {"2014-09-30", "2014-10-01", "2014-10-02", "2014-10-03"}
+    assert marcadas(frame) == marcadas(congelado) == esperado
+
+
+@pytest.mark.usefixtures("baixar", "sem_pagina")
+async def test_valor_mantido_sem_cache_usa_a_serie_baixada(cache, monkeypatch):
+    monkeypatch.setattr(cache, "_get_conn", lambda: None)
+    periodo = {"inicio": "2014-10-01", "fim": "2014-10-03"}
+
+    with sem_excecao():
+        da_fonte = await api.indicador("soja", **periodo)
+        do_dataset = await datasets.preco_diario("soja", **periodo)
+
+    for frame in (da_fonte, do_dataset):
+        assert marcadas(frame) == {"2014-10-01", "2014-10-02", "2014-10-03"}

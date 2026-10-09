@@ -53,7 +53,7 @@ DataFrame with columns:
 - `unidade`: Unit (e.g. 'BRL/sc60kg')
 - `fonte`: Data source ('cepea' or 'noticias_agricolas')
 - `metodologia`: Indicator methodology
-- `anomalies`: JSON text containing the anomaly/marker list (e.g. `["out_of_range: valor"]`); `None` when empty. Use `json.loads()` to recover the list. The `Indicador` model returned by `ultimo()` retains `list[str]`.
+- `anomalies`: JSON text containing the anomaly/marker list (e.g. `["out_of_range: valor"]`); `None` when empty. Use `json.loads()` to recover the list. The `Indicador` model returned by `ultimo()` retains `list[str]`. Two provenance markers come out without `validate_sanity`: `media_semanal` (Notícias Agrícolas ethanol, which publishes the weekly average) and `valor_mantido` (Paranaguá soybean before 2015-05-04, a trading day that repeats the previous one's value; see [the source](../sources/cepea.md#price-validation))
 - `valor_usd`: USD price published by CEPEA in the same row; `NaN` when the source does not publish it (Notícias Agrícolas fallback, history cached before migration 10)
 - `peso_medio_kg`: Average animal weight from the page's auxiliary table (calf, MS); `NaN` for other products
 

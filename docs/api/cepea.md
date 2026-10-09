@@ -52,7 +52,7 @@ DataFrame com colunas:
 - `unidade`: Unidade (ex: 'BRL/sc60kg')
 - `fonte`: Fonte dos dados ('cepea' ou 'noticias_agricolas')
 - `metodologia`: Metodologia do indicador
-- `anomalies`: Texto JSON com a lista de anomalias/marcadores (ex: `["out_of_range: valor"]`); `None` quando vazio. Use `json.loads()` para recuperar a lista. O modelo `Indicador` retornado por `ultimo()` mantém `list[str]`.
+- `anomalies`: Texto JSON com a lista de anomalias/marcadores (ex: `["out_of_range: valor"]`); `None` quando vazio. Use `json.loads()` para recuperar a lista. O modelo `Indicador` retornado por `ultimo()` mantém `list[str]`. Dois marcadores de proveniência saem sem `validate_sanity`: `media_semanal` (etanol do Notícias Agrícolas, que publica a média da semana) e `valor_mantido` (soja Paranaguá antes de 04/05/2015, pregão que repete o valor do anterior; veja [a fonte](../sources/cepea.md#validacao-de-precos))
 - `valor_usd`: Preço em US$ publicado na mesma linha pelo CEPEA; `NaN` quando a fonte não divulga (fallback Notícias Agrícolas, histórico em cache anterior à migração 10)
 - `peso_medio_kg`: Peso médio do animal na tabela auxiliar da página (bezerro MS); `NaN` para os demais produtos
 

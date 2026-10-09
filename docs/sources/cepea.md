@@ -178,6 +178,19 @@ de variação diária. Consulte as [faixas e seus limites de interpretação](..
 A coluna `anomalies` do DataFrame contém a lista serializada como texto JSON,
 ou `None` quando vazia, conforme o contrato de `preco_diario`.
 
+Na soja em Paranaguá (`soja`), até 03/05/2015, o CEPEA mantinha o valor em reais do dia anterior quando não havia
+negócio efetivo elegível no dia (o valor "arbitrado", segundo as notas do CEPEA da época); a partir de 04/05/2015,
+com até 2 negócios no dia, as ofertas passaram a entrar no cálculo. Por isso a série repete o valor por semanas: 28
+sequências de 5 pregões ou mais entre 28/12/2009 e 24/04/2015, a maior com 82 pregões em R$ 61,17 (29/09/2014 a
+26/01/2015). O valor em dólar da mesma linha varia porque é o real convertido pelo câmbio do dia. O agrobr entrega o
+valor como publicado e marca com `valor_mantido`, em `anomalies`, cada pregão anterior a 04/05/2015 que repete o
+valor do pregão anterior da série; o 1º dia do trecho fica sem marca. Na série inteira são 551 linhas. A regra observa
+a igualdade publicada: uma repetição real anterior ao corte também recebe a marca, pois a série não identifica
+individualmente os dias sem negócio.
+A marca não depende de `validate_sanity` e vale na coleta, no cache, no `offline` e no `datasets.preco_diario`: para retorno
+diário ou volatilidade, descarte ou trate essas linhas. A soja do Paraná (`soja_parana`) e os demais produtos não
+recebem a marca.
+
 ## Histórico legado no cache
 
 A migração preserva automaticamente os originais afetados em

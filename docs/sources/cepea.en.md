@@ -178,6 +178,19 @@ thresholds. See the [ranges and their interpretation limits](../advanced/resilie
 The DataFrame's `anomalies` column contains the list serialized as JSON text,
 or `None` when empty, as required by the `preco_diario` contract.
 
+For Paranaguá soybean (`soja`), until 2015-05-03, CEPEA kept the previous day's value in reais when there was no
+eligible effective trade on the day (the "arbitrated" value, according to CEPEA's notes at the time); from
+2015-05-04, with up to 2 trades on the day, offers started to enter the calculation. That is why the series repeats
+the value for weeks: 28 runs of 5 or more trading days between 2009-12-28 and 2015-04-24, the longest being 82
+trading days at R$ 61.17 (2014-09-29 to 2015-01-26). The dollar value on the same row moves because it is the real
+value converted at the day's exchange rate. agrobr returns the value as published and flags with `valor_mantido`, in
+`anomalies`, each trading day before 2015-05-04 that repeats the value of the previous trading day in the series; the
+first day of each run is not flagged. That is 551 rows across the whole series. The rule observes the published
+equality: a genuine repetition before the cutoff is also flagged, because the series does not identify individual days
+without trades.
+The flag does not depend on `validate_sanity` and applies to fresh collection, cache, `offline` and `datasets.preco_diario`: for daily returns or
+volatility, drop or handle those rows. Paraná soybean (`soja_parana`) and the other products are not flagged.
+
 ## Legacy cache history
 
 Migration automatically preserves affected originals in

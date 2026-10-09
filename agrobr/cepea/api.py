@@ -554,6 +554,7 @@ async def indicador(
         )
 
     recursos: list[dict[str, Any]] = []
+    serie_baixada: list[Indicador] = []
     pagina_baixada = False
     erro_da_serie: SourceUnavailableError | ParseError | None = None
     if not offline and _precisa_da_serie(store, produto, inicio, fim, force_refresh):
@@ -567,6 +568,7 @@ async def indicador(
                 "que a página e o cache tinham no período.",
             )
         else:
+            serie_baixada = novos
             indicadores = _merge_indicadores(
                 indicadores, [ind for ind in novos if inicio <= ind.data <= fim]
             )
@@ -700,6 +702,8 @@ async def indicador(
                 f"({'; '.join(regras)}); veja a coluna anomalies",
             )
 
+    indicadores = _marcar_valor_mantido(store, produto, indicadores, serie_baixada)
+
     if erro_da_serie is not None and not indicadores:
         if isinstance(erro_da_serie, ParseError):
             raise erro_da_serie
@@ -750,6 +754,55 @@ async def indicador(
 
 
 _META_COLUMNS = ("valor_usd", "peso_medio_kg")
+
+
+def _marcar_valor_mantido(
+    store: Any, produto: str, indicadores: list[Indicador], serie_baixada: list[Indicador]
+) -> list[Indicador]:
+    """Marca ``valor_mantido`` no pregão que repete o valor do pregão anterior da mesma série, até a data de
+    ``constants.CEPEA_VALOR_MANTIDO``: sem negócio elegível, o CEPEA mantinha o valor do dia anterior.
+
+    O pregão anterior vem da série inteira, e não só da janela pedida: da série baixada nesta consulta, antes do
+    recorte, e do cache como complemento. Assim o 1º dia da janela também é marcado quando repete o dia anterior a
+    ela, com ou sem o cache.
+    """
+    regra = constants.CEPEA_VALOR_MANTIDO.get(produto)
+    if regra is None:
+        return indicadores
+    praca, corte = regra
+    slug = regions.slugificar_praca(praca)
+
+    def na_regra(ind: Indicador) -> bool:
+        return (
+            ind.data < corte
+            and ind.praca is not None
+            and regions.slugificar_praca(ind.praca) == slug
+        )
+
+    alvo = [ind for ind in indicadores if na_regra(ind)]
+    if not alvo:
+        return indicadores
+    guardadas = _dicts_to_indicadores(
+        store.indicadores_query(produto=produto, fim=datetime.combine(corte, datetime.min.time()))
+    )
+    serie_da_praca = {
+        ind.data: ind.valor
+        for ind in _select_indicadores([*guardadas, *serie_baixada])
+        if na_regra(ind)
+    }
+    serie_da_praca.update({ind.data: ind.valor for ind in alvo})
+    datas = sorted(serie_da_praca)
+    mantidas = {
+        dia
+        for anterior, dia in zip(datas, datas[1:])
+        if serie_da_praca[dia] == serie_da_praca[anterior]
+    }
+    return [
+        ind.model_copy(update={"anomalies": [*ind.anomalies, "valor_mantido"]})
+        if na_regra(ind) and ind.data in mantidas
+        else ind
+        for ind in indicadores
+    ]
 
 
 def _cached_meta(d: dict[str, Any]) -> dict[str, Any]:
