@@ -70,6 +70,7 @@ async def test_api_publica_pdf_transporte_real(case, target, transport):
     assert meta.selected_source == "anda"
     assert meta.attempted_sources == ["anda"]
     assert meta.records_count == len(frame)
+    assert meta.schema_version == contracts.get_contract("fertilizante").version == "2.0"
     assert seen == [client.ESTATISTICAS_URL, case["url"]]
     corpo = (GOLDEN / case["file"]).read_bytes()
     recibo = next(item for item in MANIFEST["files"] if item["file"] == case["file"])
@@ -90,13 +91,15 @@ async def test_api_publica_pdf_transporte_real(case, target, transport):
 async def test_agregacao_mensal_confere_o_pdf_oficial(case, transport):
     transport(case, (GOLDEN / case["file"]).read_bytes())
     with sem_excecao():
-        frame = await anda.entregas(case["year"], agregacao="mensal")
+        frame, meta = await anda.entregas(case["year"], agregacao="mensal", return_meta=True)
     esperado = (
         pd.DataFrame(case["observations"])
         .groupby(["ano", "mes", "produto_fertilizante"], as_index=False)["volume_ton"]
         .sum()
     )
     pd.testing.assert_frame_equal(frame, esperado, check_dtype=False, check_exact=True)
+    assert "uf" not in frame.columns
+    assert meta.schema_version != contracts.get_contract("fertilizante").version
 
 
 @pytest.mark.parametrize("mutation", ["year", "section"])

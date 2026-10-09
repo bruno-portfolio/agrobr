@@ -5,7 +5,7 @@ from typing import Literal, overload
 
 import pandas as pd
 
-from agrobr import _log, constants
+from agrobr import _log, constants, contracts
 from agrobr.cache.keys import build_cache_key
 from agrobr.exceptions import InvalidParameterError, ParseError
 from agrobr.ibge import client
@@ -385,6 +385,7 @@ async def censo_agro(
         attempted_sources=["ibge_censo_agro"],
         selected_source="ibge_censo_agro",
         parser_version=constants.IBGE_CENSO_PARSER_VERSION,
+        schema_version=contracts.get_contract("censo_agropecuario").version,
     )
     logger.info(
         "ibge_censo_agro_request",
@@ -596,6 +597,7 @@ async def censo_agro_historico(
         attempted_sources=["ibge_censo_agro_historico"],
         selected_source="ibge_censo_agro_historico",
         parser_version=constants.IBGE_CENSO_HISTORICO_PARSER_VERSION,
+        schema_version=contracts.get_contract("censo_agropecuario_historico").version,
     )
     logger.info(
         "ibge_censo_agro_historico_request",

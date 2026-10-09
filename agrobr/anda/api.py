@@ -7,7 +7,7 @@ from typing import Literal, overload
 
 import pandas as pd
 
-from agrobr import _log
+from agrobr import _log, contracts
 from agrobr.exceptions import InvalidParameterError
 from agrobr.models import MetaInfo
 from agrobr.utils import time as time_utils
@@ -142,4 +142,6 @@ async def entregas(
             **parcial,
         },
     )
+    if agregacao == "detalhado":
+        meta.schema_version = contracts.get_contract("fertilizante").version
     return finalize_result(df, meta, as_polars=as_polars, return_meta=return_meta)

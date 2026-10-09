@@ -7,6 +7,7 @@ from unittest.mock import AsyncMock
 import httpx
 import pytest
 
+from agrobr import contracts
 from agrobr.b3 import api, client
 from agrobr.exceptions import InvalidParameterError, SourceUnavailableError
 from tests.helpers import conferir_corpo, sem_excecao
@@ -33,6 +34,7 @@ async def test_csv_das_posicoes_traz_o_recurso_sem_o_token_e_o_ticket(monkeypatc
         _, meta = await api.posicoes_abertas(data="2025-12-19", return_meta=True)
 
     conferir_corpo(meta, corpo)
+    assert meta.schema_version == contracts.get_contract("posicoes_abertas").version == "1.1"
     assert meta.source_url == f"{client.BASE_URL_ARQUIVOS}?token=[REDACTED]"
     assert meta.source_details == {"ticket_url": client.ticket_url("2025-12-19")}
     assert "date=2025-12-19" in meta.source_details["ticket_url"]

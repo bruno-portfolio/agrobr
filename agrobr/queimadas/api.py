@@ -10,7 +10,7 @@ from typing import TYPE_CHECKING, Literal, overload
 
 import pandas as pd
 
-from agrobr import _log
+from agrobr import _log, contracts
 from agrobr.exceptions import InvalidParameterError
 from agrobr.models import MetaInfo
 from agrobr.utils.geo import check_geopandas
@@ -241,6 +241,7 @@ async def focos(
         parse_ms,
         df,
         parser.PARSER_VERSION,
+        schema_version=contracts.get_contract("queimadas").version,
         raw_content_hash=hashlib.sha256(corpo).hexdigest(),
         raw_content_size=len(corpo),
         source_details={**parcial, **detalhes},

@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING, Literal, overload
 
 import pandas as pd
 
-from agrobr import _log
+from agrobr import _log, contracts
 from agrobr.exceptions import InvalidParameterError, ParseError, SourceUnavailableError
 from agrobr.ibge import ftp_client, legacy_parser
 from agrobr.ibge._helpers import normalizar_opcao, tipar_resultado
@@ -191,8 +191,8 @@ async def censo_agro_legado(
         selected_source="ibge_censo_agro_legado",
     )
     meta.dataset = "censo_agropecuario_legado"
-    meta.contract_version = "2.0"
-    meta.schema_version = "2.0"
+    meta.contract_version = contracts.get_contract("censo_agropecuario_legado").version
+    meta.schema_version = meta.contract_version
     meta.data_sources = sorted(df["fonte"].dropna().unique().tolist())
     return finalize_result(df, meta, as_polars=as_polars, return_meta=return_meta)
 

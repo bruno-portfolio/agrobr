@@ -50,9 +50,13 @@ async def test_cache_preserva_dolar_e_peso_no_dataset_e_offline(store, monkeypat
     frame, meta = await datasets.preco_diario(
         "bezerro", inicio=inicio, fim=fim, force_refresh=True, return_meta=True
     )
-    offline = await api.indicador("bezerro", inicio=inicio, fim=fim, offline=True)
+    offline, meta_offline = await api.indicador(
+        "bezerro", inicio=inicio, fim=fim, offline=True, return_meta=True
+    )
 
     assert meta.contract_version == "1.1"
+    assert meta_offline.schema_version == contracts.get_contract("preco_diario").version == "1.1"
+    assert meta.cache_key == meta_offline.cache_key and meta.cache_key.endswith("|sv1.1")
     assert contracts.get_contract("preco_diario").validate(frame) == (True, [])
     latest = frame.loc[frame["data"] == "2026-09-04"].iloc[0]
     assert (latest["valor"], latest["valor_usd"], latest["peso_medio_kg"]) == (

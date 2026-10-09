@@ -347,6 +347,7 @@ async def imoveis_geo(
             parse_ms,
             gdf,
             parser.PARSER_VERSION,
+            schema_version=contracts.get_contract("sicar_imoveis").version,
             attempted_sources=["sicar_wfs_geo"],
             selected_source="sicar_wfs_geo",
             **_corpo(pages, source_url),

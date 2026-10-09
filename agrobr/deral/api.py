@@ -6,7 +6,7 @@ from typing import Literal, overload
 
 import pandas as pd
 
-from agrobr import _log
+from agrobr import _log, contracts
 from agrobr.models import MetaInfo
 from agrobr.utils.result import DataFrameResult, build_source_meta, finalize_result
 
@@ -71,6 +71,7 @@ async def condicao_lavouras(
         parse_ms,
         df,
         parser.PARSER_VERSION,
+        schema_version=contracts.get_contract("condicao_lavouras").version,
         raw_content_hash=hashlib.sha256(data).hexdigest(),
         raw_content_size=len(data),
     )

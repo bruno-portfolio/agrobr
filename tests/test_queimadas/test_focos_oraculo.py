@@ -11,7 +11,7 @@ import httpx
 import pandas as pd
 import pytest
 
-from agrobr import queimadas
+from agrobr import contracts, queimadas
 from agrobr.exceptions import InvalidParameterError
 from agrobr.queimadas import api, client
 from agrobr.utils import time as time_utils
@@ -96,6 +96,7 @@ async def test_rota_zip_entrega_o_mes_publicado_no_csv(
     assert meta.source_url == rota
     conferir_corpo(meta_csv, RECORTE_ABRIL_2025)
     conferir_corpo(meta, corpos[rota])
+    assert meta.schema_version == contracts.get_contract("queimadas").version == "1.1"
     assert len(frame) == CASO["period"]["rows"]
     assert str(frame["data"].dtype) == "datetime64[ns]"
     pd.testing.assert_frame_equal(frame, esperado)

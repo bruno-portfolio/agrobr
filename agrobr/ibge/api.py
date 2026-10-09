@@ -6,7 +6,7 @@ from typing import Literal, overload
 
 import pandas as pd
 
-from agrobr import _log, constants
+from agrobr import _log, constants, contracts
 from agrobr.cache.keys import build_cache_key
 from agrobr.exceptions import InvalidParameterError, ParseError
 from agrobr.ibge import client, lspa_parser, pam_parser
@@ -182,7 +182,7 @@ async def pam(
         fetched_at=utcnow(),
         attempted_sources=["ibge_pam"],
         selected_source="ibge_pam",
-        schema_version="2.1",
+        schema_version=contracts.get_contract("producao_anual").version,
     )
     logger.info(
         "ibge_pam_request",
@@ -473,6 +473,7 @@ async def ppm(
         fetched_at=utcnow(),
         attempted_sources=["ibge_ppm"],
         selected_source="ibge_ppm",
+        schema_version=contracts.get_contract("pecuaria_municipal").version,
     )
     logger.info(
         "ibge_ppm_request",

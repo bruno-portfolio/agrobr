@@ -5,7 +5,7 @@ from typing import Literal, overload
 
 import pandas as pd
 
-from agrobr import _log, constants
+from agrobr import _log, constants, contracts
 from agrobr.cache.keys import build_cache_key
 from agrobr.exceptions import ParseError
 from agrobr.ibge import client
@@ -112,6 +112,7 @@ async def silvicultura(
         fetched_at=utcnow(),
         attempted_sources=["ibge_silvicultura"],
         selected_source="ibge_silvicultura",
+        schema_version=contracts.get_contract("silvicultura").version,
     )
     logger.info(
         "ibge_silvicultura_request",
@@ -297,6 +298,7 @@ async def extracao_vegetal(
         fetched_at=utcnow(),
         attempted_sources=["ibge_extracao_vegetal"],
         selected_source="ibge_extracao_vegetal",
+        schema_version=contracts.get_contract("extrativismo_vegetal").version,
     )
     logger.info(
         "ibge_extracao_vegetal_request",

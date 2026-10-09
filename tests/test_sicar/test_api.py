@@ -206,6 +206,7 @@ async def test_geo_publica_propriedades_e_geometria_do_corpo(monkeypatch: pytest
     assert fetch.await_args.args == ("DF", None)
     assert fetch.await_args.kwargs == {"max_features": None, "validation_warnings": []}
     assert (meta.selected_source, meta.attempted_sources) == ("sicar_wfs_geo", ["sicar_wfs_geo"])
+    assert meta.schema_version == contracts.get_contract("sicar_imoveis").version == "2.1"
     assert meta.records_count == len(features)
     helpers.conferir_corpo(meta, body)
     invertido = json.loads(body)

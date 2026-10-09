@@ -8,7 +8,7 @@ from urllib.parse import unquote
 import pandas as pd
 import pytest
 
-from agrobr import datasets, ibge
+from agrobr import contracts, datasets, ibge
 from agrobr.ibge._helpers import SIDRA_BASE, registrar_canal
 from agrobr.models import MetaInfo
 from tests.helpers import assert_replay_served, conferir_corpo, install_replay_http, sem_excecao
@@ -66,7 +66,7 @@ async def test_pam_municipal_traz_o_codigo_ibge_publicado(monkeypatch, tmp_path,
     assert "localidade_cod" in frame.columns
     assert str(frame["localidade_cod"].dtype) == "Int64"
     assert dict(zip(frame["localidade"], frame["localidade_cod"], strict=True)) == _esperado(uf)
-    assert meta.schema_version == "2.1"
+    assert meta.schema_version == contracts.get_contract("producao_anual").version == "2.2"
     conferir_corpo(meta, (tmp_path / f"{uf}.json").read_bytes())
     assert unquote(meta.source_url) == SIDRA.format(uf=CODIGO_UF[uf], variaveis=CINCO)
     assert meta.source_details["pagina"] == SIDRA_BASE

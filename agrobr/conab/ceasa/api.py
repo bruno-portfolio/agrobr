@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING, Literal, overload
 
 import pandas as pd
 
-from agrobr import _log
+from agrobr import _log, contracts
 from agrobr.exceptions import InvalidParameterError
 from agrobr.models import MetaInfo
 from agrobr.normalize import regions
@@ -133,6 +133,7 @@ async def precos(
         parse_ms,
         df,
         parser.PARSER_VERSION,
+        schema_version=contracts.get_contract("preco_atacado").version,
         attempted_sources=["conab_prohort"],
         selected_source="conab_prohort",
     )

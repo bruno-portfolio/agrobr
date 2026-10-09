@@ -522,6 +522,7 @@ async def indicador(
         source_url="",
         source_method="unknown",
         fetched_at=utcnow(),
+        schema_version=source_contracts.CEPEA_INDICADOR_V1.version,
     )
     store = get_store()
     indicadores: list[Indicador] = []

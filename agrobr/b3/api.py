@@ -414,6 +414,7 @@ async def posicoes_abertas(
         parse_ms,
         df,
         parser.PARSER_VERSION_OI,
+        schema_version=contracts.get_contract("posicoes_abertas").version,
         raw_content_hash=hashlib.sha256(csv_bytes).hexdigest() if csv_bytes else None,
         raw_content_size=len(csv_bytes),
         source_details={"ticket_url": client.ticket_url(data_str)},
@@ -534,6 +535,7 @@ async def posicoes_abertas_historico(
         0,
         df,
         parser.PARSER_VERSION_OI,
+        schema_version=contracts.get_contract("posicoes_abertas").version,
     )
     _registrar_corpos(meta, recebidos)
     returned_dates = set(pd.to_datetime(df["data"]).dt.date)

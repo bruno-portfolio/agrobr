@@ -9,7 +9,7 @@ import httpx
 import pandas as pd
 import pytest
 
-from agrobr import datasets, deral, exceptions
+from agrobr import contracts, datasets, deral, exceptions
 from agrobr.deral import parser
 from tests.helpers import conferir_corpo
 
@@ -77,6 +77,7 @@ async def _fetch(target: str, body: bytes, **kwargs: Any) -> pd.DataFrame:
     assert meta.records_count == len(frame)
     assert meta.selected_source == "deral"
     assert meta.attempted_sources == ["deral"]
+    assert meta.schema_version == contracts.get_contract("condicao_lavouras").version == "2.0"
     if target == "source":
         assert meta.source_method == "httpx+xlrd"
     return frame

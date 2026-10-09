@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from agrobr import conab
+from agrobr import conab, contracts
 from agrobr.conab.ceasa import models
 from tests import helpers
 
@@ -43,4 +43,5 @@ async def test_ceasa_nome_parcial_preserva_preco_publicado(monkeypatch):
         for row in frame.itertuples(index=False)
     ] == [("2026-09-21", "ABACATE", "KG", "AMA/BA - JUAZEIRO", "BA", 3.65)]
     assert meta.records_count == 1
+    assert meta.schema_version == contracts.get_contract("preco_atacado").version == "2.0"
     helpers.assert_replay_served(seen)

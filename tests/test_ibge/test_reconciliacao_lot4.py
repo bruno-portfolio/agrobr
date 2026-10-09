@@ -86,6 +86,10 @@ async def test_legado_corpos_celulas_e_saidas_publicas(body):
                         assert meta.attempted_sources == ["ibge_censo_agro_legado"]
                         assert meta.parser_version == 2
                         assert meta.schema_version == meta.contract_version == "2.1"
+                        _, meta_fonte = await ibge.censo_agro_legado(
+                            oracle["theme"], uf=oracle["uf"], nivel=level, return_meta=True
+                        )
+                        assert meta_fonte.schema_version == meta_fonte.contract_version == "2.1"
                         assert meta.records_count == len(frame)
                         assert "cod_municipio" in frame
                         municipal = frame["localidade_cod"].ge(1_000_000).fillna(False).astype(bool)
