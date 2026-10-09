@@ -7309,5 +7309,15 @@
     "test_file": "tests/test_zarc/test_reconciliacao_originais.py",
     "default": "explicit skip",
     "enabled_without_body": "failure identifying missing original, never silently substitute a derived body"
+  },
+  "masking": {
+    "decisao": "decisão do mantenedor, 09/10/2026",
+    "regra": "No catálogo CKAN guardado, maintainer (nome do servidor responsável) trocado por \"MAPA\" e maintainer_email por \"\"; o agrobr não lê esses campos. Os demais bytes como publicados.",
+    "arquivo": "catalog.json",
+    "sha256": "6e7b84decfe2ac924d5968fe5ec1459b5476ce53f05cc349a0af2d8d1bddab91",
+    "bytes": 12754,
+    "original_sha256": "bde729a92aec108813c508015281badeec9c664bd855791de27372e5592138cc",
+    "original_bytes": 12806,
+    "originais": "(fora do repositório)"
   }
 }

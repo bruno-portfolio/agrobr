@@ -211,9 +211,17 @@
       "content-type": "application/json;charset=utf-8"
     },
     "body_file": "catalog.json",
-    "sha256": "0226ce0a585ef443b8f88fcc16be76460137527371abf4dd7d5fc2cc91a82ea6",
-    "size_bytes": 12806,
+    "sha256": "3341a3734a714eef458609975c295d1a623bf469fb6e14e4b748001608ef1849",
+    "size_bytes": 12754,
+    "original_sha256": "0226ce0a585ef443b8f88fcc16be76460137527371abf4dd7d5fc2cc91a82ea6",
+    "original_size_bytes": 12806,
     "fetched_at": "2026-09-07T14:04:38.010450+00:00"
   },
-  "raw_oracles_sha256": "d75b2f389ee3cb7461c7f69b6d0972cecf0927d6277ce607ae2cf1a774a2f07e"
+  "raw_oracles_sha256": "d75b2f389ee3cb7461c7f69b6d0972cecf0927d6277ce607ae2cf1a774a2f07e",
+  "masking": {
+    "decisao": "decisão do mantenedor, 09/10/2026",
+    "regra": "No catálogo CKAN guardado, maintainer (nome do servidor responsável) trocado por \"MAPA\" e maintainer_email por \"\"; o agrobr não lê esses campos. Os demais bytes como publicados.",
+    "arquivo": "catalog.json",
+    "originais": "(fora do repositório); SHA-256 e bytes originais em catalog.original_sha256 e original_size_bytes"
+  }
 }
