@@ -133,7 +133,7 @@ class TestApolices:
         mock_fetch.side_effect = lambda _: binary_stream(_make_csv_bytes())
         _, meta = await api.apolices(return_meta=True)
         assert meta.source_method == "httpx"
-        assert meta.schema_version == "2.0"
+        assert meta.schema_version == "2.1"
         assert meta.attempted_sources == ["mapa_psr"]
         assert meta.selected_source == "mapa_psr"
         assert meta.fetch_duration_ms >= 0

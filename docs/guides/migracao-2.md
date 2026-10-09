@@ -1118,7 +1118,7 @@ devolve o mapa novo. `celulose` (`4703`) e `tabaco` (`2401`) não mudam; a doc p
 
 ## 41. PSR: `seguradora` na chave das apólices e registro publicado em dobro
 
-`mapa_psr.apolices` e `datasets.seguro_rural(tipo="apolices")` passam a usar o contrato `mapa_psr_apolices` 2.0, com
+`mapa_psr.apolices` e `datasets.seguro_rural(tipo="apolices")` passam a usar o contrato `mapa_psr_apolices` 2.1, com
 `seguradora` na chave primária (não nula). Na 1.1.0, o dataset levantava `ContractViolationError` em 2007, 2008, 2009, 2011 e
 2012, porque o MAPA publica o mesmo número de apólice em duas seguradoras; agora esses anos saem inteiros. Quem junta apólices
 pela chave antiga precisa incluir a `seguradora`.
@@ -1126,6 +1126,8 @@ pela chave antiga precisa incluir a `seguradora`.
 O registro publicado duas vezes e igual em todas as colunas (1 caso, em 2009) sai uma vez só, com aviso e a contagem em
 `source_details["duplicatas_colapsadas"]`. A fonte passa a levantar `ContractViolationError`, como o dataset, se a chave repetir
 com valores diferentes.
+
+Colunas novas no fim: `inicio_vigencia`, `fim_vigencia` e `data_apolice` (`datetime64[ns]`). A vigência de 2006 a 2015 sai nula, com aviso: nesses anos o MAPA publica início igual ao fim, ou seja, não publica a vigência. Quem seleciona colunas por posição ou compara o conjunto de colunas inteiro precisa contar com as três.
 
 ## 42. PSR: geocódigo publicado como "-" sai nulo
 

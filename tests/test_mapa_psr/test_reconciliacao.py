@@ -95,7 +95,7 @@ def install_publication(
 
 
 def assert_publication(frame: pd.DataFrame, case: dict[str, Any]) -> None:
-    assert set(frame.columns) == {*case["columns"], "cod_municipio"}
+    assert set(frame.columns) == {*case["columns"], "cod_municipio", *models.COLUNAS_DATA}
     assert frame["cod_municipio"].astype(object).where(
         frame["cod_municipio"].notna(), None
     ).tolist() == [None if pd.isna(codigo) else int(codigo) for codigo in frame["cd_ibge"]]

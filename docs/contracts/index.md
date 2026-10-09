@@ -91,7 +91,7 @@ Os dois [datasets de cultivares](../api/cultivares.md) reutilizam os novos contr
 | [futuros_agricolas](./futuros_agricolas.md) | Futuros agrícolas B3 (ajustes, histórico, posições) | B3 |
 | [posicionamento_fundos](./posicionamento_fundos.md) | Posicionamento de fundos por categoria de trader (COT) | CFTC |
 | [movimentacao_portuaria](./movimentacao_portuaria.md) | Movimentação portuária de cargas ⚠️ (fonte fora do ar) | ANTAQ |
-| [seguro_rural](./seguro_rural.md) | Seguro rural — apólices (`mapa_psr_apolices` v2.0) e sinistros (`mapa_psr_sinistros` v1.1) | MAPA PSR |
+| [seguro_rural](./seguro_rural.md) | Seguro rural — apólices (`mapa_psr_apolices` v2.1) e sinistros (`mapa_psr_sinistros` v1.2) | MAPA PSR |
 | [serie_historica_safra](./serie_historica_safra.md) | Série histórica de safras (45 produtos) | CONAB |
 | [series_economicas](./series_economicas.md) | Séries por código ou alias SGS, intervalo e últimas observações | BCB SGS |
 | [uso_do_solo](./uso_do_solo.md) | Cobertura e uso da terra (MapBiomas) | MapBiomas |

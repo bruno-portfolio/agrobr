@@ -1,6 +1,6 @@
 {
   "name": "mapa_psr.sinistros",
-  "schema_version": "1.1",
+  "schema_version": "1.2",
   "effective_from": "0.12.0",
   "breaking_policy": "major",
   "primary_key": [
@@ -48,7 +48,10 @@
     "produtividade_segurada": "float",
     "nivel_cobertura": "float",
     "seguradora": "str",
-    "cod_municipio": "int"
+    "cod_municipio": "int",
+    "inicio_vigencia": "date",
+    "fim_vigencia": "date",
+    "data_apolice": "date"
   },
   "nullable": {
     "nr_apolice": false,
@@ -68,7 +71,10 @@
     "produtividade_segurada": true,
     "nivel_cobertura": true,
     "seguradora": true,
-    "cod_municipio": true
+    "cod_municipio": true,
+    "inicio_vigencia": true,
+    "fim_vigencia": true,
+    "data_apolice": true
   },
   "columns": [
     {
@@ -266,6 +272,39 @@
       "stable": false,
       "deprecated": false,
       "description": "Código IBGE do município (7 dígitos), a chave comum dos datasets municipais; nulo onde a linha não é de município.",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "inicio_vigencia",
+      "type": "date",
+      "nullable": true,
+      "unit": null,
+      "stable": false,
+      "deprecated": false,
+      "description": "Início da vigência da apólice (DT_INICIO_VIGENCIA); nulo quando o MAPA publica início igual ao fim (vigência não publicada; em todas as apólices de 2006 a 2015).",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "fim_vigencia",
+      "type": "date",
+      "nullable": true,
+      "unit": null,
+      "stable": false,
+      "deprecated": false,
+      "description": "Fim da vigência da apólice (DT_FIM_VIGENCIA); nulo junto com inicio_vigencia quando início e fim publicados são iguais; data ilegível ou com ano fora de 1900–2099 anula só esta coluna.",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "data_apolice",
+      "type": "date",
+      "nullable": true,
+      "unit": null,
+      "stable": false,
+      "deprecated": false,
+      "description": "Data de emissão da apólice (DT_APOLICE); o ano é o de ano_apolice.",
       "min_value": null,
       "max_value": null
     }

@@ -1168,7 +1168,7 @@ register_contract("anp_diesel_vendas", ANP_DIESEL_VENDAS_V1)
 
 MAPA_PSR_SINISTROS_V1 = Contract(
     name="mapa_psr.sinistros",
-    version="1.1",
+    version="1.2",
     effective_from="0.12.0",
     primary_key=["nr_apolice", "ano_apolice", "uf", "cultura", "cd_ibge", "evento"],
     columns=[
@@ -1231,6 +1231,27 @@ MAPA_PSR_SINISTROS_V1 = Contract(
             stable=False,
             description="Código IBGE do município (7 dígitos), a chave comum dos datasets municipais; nulo onde a linha não é de município.",
         ),
+        Column(
+            name="inicio_vigencia",
+            type=ColumnType.DATE,
+            nullable=True,
+            stable=False,
+            description="Início da vigência da apólice (DT_INICIO_VIGENCIA); nulo quando o MAPA publica início igual ao fim (vigência não publicada; em todas as apólices de 2006 a 2015).",
+        ),
+        Column(
+            name="fim_vigencia",
+            type=ColumnType.DATE,
+            nullable=True,
+            stable=False,
+            description="Fim da vigência da apólice (DT_FIM_VIGENCIA); nulo junto com inicio_vigencia quando início e fim publicados são iguais; data ilegível ou com ano fora de 1900–2099 anula só esta coluna.",
+        ),
+        Column(
+            name="data_apolice",
+            type=ColumnType.DATE,
+            nullable=True,
+            stable=False,
+            description="Data de emissão da apólice (DT_APOLICE); o ano é o de ano_apolice.",
+        ),
     ],
     guarantees=[
         "Column names never change (additions only)",
@@ -1245,7 +1266,7 @@ MAPA_PSR_SINISTROS_V1 = Contract(
 
 MAPA_PSR_APOLICES_V2 = Contract(
     name="mapa_psr.apolices",
-    version="2.0",
+    version="2.1",
     effective_from="2.0.0",
     primary_key=["nr_apolice", "ano_apolice", "uf", "cultura", "cd_ibge", "seguradora"],
     columns=[
@@ -1308,6 +1329,27 @@ MAPA_PSR_APOLICES_V2 = Contract(
             nullable=True,
             stable=False,
             description="Código IBGE do município (7 dígitos), a chave comum dos datasets municipais; nulo onde a linha não é de município.",
+        ),
+        Column(
+            name="inicio_vigencia",
+            type=ColumnType.DATE,
+            nullable=True,
+            stable=False,
+            description="Início da vigência da apólice (DT_INICIO_VIGENCIA); nulo quando o MAPA publica início igual ao fim (vigência não publicada; em todas as apólices de 2006 a 2015).",
+        ),
+        Column(
+            name="fim_vigencia",
+            type=ColumnType.DATE,
+            nullable=True,
+            stable=False,
+            description="Fim da vigência da apólice (DT_FIM_VIGENCIA); nulo junto com inicio_vigencia quando início e fim publicados são iguais; data ilegível ou com ano fora de 1900–2099 anula só esta coluna.",
+        ),
+        Column(
+            name="data_apolice",
+            type=ColumnType.DATE,
+            nullable=True,
+            stable=False,
+            description="Data de emissão da apólice (DT_APOLICE); o ano é o de ano_apolice.",
         ),
     ],
     guarantees=[

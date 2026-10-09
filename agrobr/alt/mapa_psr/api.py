@@ -4,12 +4,14 @@ import asyncio
 import hashlib
 import time
 import warnings
+from collections import Counter
 from contextlib import closing
+from datetime import date
 from typing import Any, Literal, overload
 
 import pandas as pd
 
-from agrobr import _log, contracts
+from agrobr import _log, constants, contracts
 from agrobr.exceptions import (
     ContractViolationError,
     ParseError,
@@ -201,6 +203,7 @@ async def _fetch(
     parse_ms = 0
     dfs: list[pd.DataFrame] = []
     corpos: list[dict[str, Any]] = []
+    contagem_datas: Counter[str] = Counter()
     contrato = "mapa_psr_sinistros" if sinistros else "mapa_psr_apolices"
     colunas = COLUNAS_SINISTROS if sinistros else COLUNAS_APOLICES
     empty = contracts.get_contract(contrato).empty_frame()[colunas]
@@ -216,6 +219,7 @@ async def _fetch(
             corpos.append({"url": url, "sha256": digest.hexdigest(), "bytes": stream.tell()})
             stream.seek(0)
             t1 = time.monotonic()
+            detalhes: dict[str, Any] = {}
             with closing(
                 parser.iter_apolices(
                     stream,
@@ -227,15 +231,22 @@ async def _fetch(
                     sinistros=sinistros,
                     ano_inicio=effective_inicio,
                     ano_fim=effective_fim,
+                    detalhes=detalhes,
                 )
             ) as frames:
                 for df in frames:
                     period_frames.append(df)
                     await asyncio.sleep(0)
+            ultima = detalhes.get("ultima_apolice")
+            corpos[-1]["ultima_apolice"] = None if ultima is None else ultima.isoformat()
+            if aviso := _aviso_de_cobertura(ultima, effective_inicio, effective_fim):
+                avisos.append(aviso)
+            contagem_datas.update(detalhes["datas"])
             period_frame = pd.concat(period_frames, ignore_index=True)
             dfs.append(period_frame.sort_values("ano_apolice").reset_index(drop=True))
             parse_ms += int((time.monotonic() - t1) * 1000)
 
+    avisos.extend(parser.avisos_de_datas(contagem_datas))
     t1 = time.monotonic()
     df_out = pd.concat(dfs, ignore_index=True) if dfs else empty
     df_out = df_out.sort_values("ano_apolice").reset_index(drop=True)
@@ -307,6 +318,23 @@ def _colapsar_reenvios(df: pd.DataFrame, contrato: str) -> tuple[pd.DataFrame, d
             got=df.loc[conflitos, chave].drop_duplicates().to_dict("records"),
         )
     return df, resumo
+
+
+def _aviso_de_cobertura(ultima: date | None, inicio: int | None, fim: int | None) -> str | None:
+    """Aviso quando a última apólice do arquivo cai antes de outubro do próprio ano pedido.
+
+    O MAPA publica o ano corrente pela metade (o arquivo 2025 de 03/09/2025 vai até 21/08/2025, sem as
+    apólices de verão). Nos anos fechados de 2006 a 2024, a última apólice nunca caiu antes de
+    24/10, e o ano no meio de um arquivo é fechado porque o arquivo segue depois dele.
+    """
+    if ultima is None or ultima >= date(ultima.year, constants.MAPA_PSR_MES_ANO_COMPLETO, 1):
+        return None
+    if (inicio is not None and ultima.year < inicio) or (fim is not None and ultima.year > fim):
+        return None
+    return (
+        f"PSR: o arquivo publicado pelo MAPA tem apólices até {ultima:%d/%m/%Y}; "
+        f"{ultima.year} pode estar incompleto"
+    )
 
 
 def _resolve_range(

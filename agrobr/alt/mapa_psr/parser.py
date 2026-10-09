@@ -5,8 +5,11 @@ import csv
 import io
 import json
 import re
+import warnings
+from collections import Counter
 from collections.abc import Generator, Iterator
 from contextlib import closing
+from datetime import date
 from typing import IO, Any
 from urllib.parse import urlsplit
 
@@ -15,7 +18,7 @@ import pydantic
 
 from agrobr import _log
 from agrobr.exceptions import ParseError
-from agrobr.normalize import regions
+from agrobr.normalize import dates, regions
 from agrobr.normalize.municipalities import MunicipioInfo
 from agrobr.normalize.numeric import parse_numeric_br
 from agrobr.normalize.regions import remover_acentos
@@ -24,10 +27,11 @@ from . import models
 
 logger = _log.get_logger(__name__)
 
-PARSER_VERSION = 4
+PARSER_VERSION = 5
 
 
 _CSV_DO_CATALOGO = re.compile(r"dados_abertos_psr_(\d{4})(?:a(\d{4}))?csv\.csv", re.I)
+_DATA_BR = re.compile(r"(\d{2})/(\d{2})/(\d{4})")
 
 
 def parse_catalogo(corpo: bytes) -> dict[str, str]:
@@ -86,12 +90,16 @@ def _detect_file_encoding(stream: IO[bytes]) -> str:
     raise UnicodeError("Nenhum encoding válido para o CSV")
 
 
-def _iter_apolices_csv(stream: IO[bytes], chunk_size: int) -> Generator[pd.DataFrame, None, None]:
+def _iter_apolices_csv(
+    stream: IO[bytes], chunk_size: int, detalhes: dict[str, Any] | None
+) -> Generator[pd.DataFrame, None, None]:
     try:
         encoding = _detect_file_encoding(stream)
         sep = _detect_separator(stream.readline().decode(encoding))
         stream.seek(0)
-        _validate_csv_records(stream, encoding, sep)
+        ultima_apolice = _validate_csv_records(stream, encoding, sep)
+        if detalhes is not None:
+            detalhes["ultima_apolice"] = ultima_apolice
         found_rows = False
         with pd.read_csv(
             stream,
@@ -136,12 +144,26 @@ def _csv_header(reader: Iterator[list[str]]) -> list[str]:
     return normalized
 
 
-def _validate_csv_records(stream: IO[bytes], encoding: str, sep: str) -> None:
+def _data_mais_recente(atual: date | None, texto: str) -> date | None:
+    achado = _DATA_BR.fullmatch(texto.strip())
+    if achado is None:
+        return atual
+    try:
+        dia = date(int(achado[3]), int(achado[2]), int(achado[1]))
+    except ValueError:
+        return atual
+    return dia if atual is None or dia > atual else atual
+
+
+def _validate_csv_records(stream: IO[bytes], encoding: str, sep: str) -> date | None:
+    """Valida largura e ano de cada registro e devolve a maior ``DT_APOLICE`` do arquivo."""
     text = io.TextIOWrapper(stream, encoding=encoding, newline="")
     try:
         reader = csv.reader(text, delimiter=sep, strict=True)
         header = _csv_header(reader)
         year_index = header.index("ANO_APOLICE")
+        date_index = header.index("DT_APOLICE") if "DT_APOLICE" in header else None
+        ultima: date | None = None
         valid_years: set[str] = set()
         for position, row in enumerate(reader, 1):
             if not row:
@@ -164,6 +186,9 @@ def _validate_csv_records(stream: IO[bytes], encoding: str, sep: str) -> None:
                         reason=f"{location}: ANO_APOLICE inválido",
                     ) from error
                 valid_years.add(year)
+            if date_index is not None:
+                ultima = _data_mais_recente(ultima, row[date_index])
+        return ultima
     finally:
         text.detach()
         stream.seek(0)
@@ -236,6 +261,47 @@ def _convert_apolices_numbers(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
+def _convert_apolices_dates(df: pd.DataFrame, contagem: Counter[str]) -> pd.DataFrame:
+    """Converte as datas ``dd/mm/aaaa`` e anula a vigência publicada com início igual ao fim.
+
+    Até 2015 o MAPA publica início e fim de vigência iguais (22 ou 23/07/2016, posteriores às
+    apólices): a vigência não foi publicada. ``contagem`` acumula, por coluna, os valores ilegíveis
+    ou com ano fora da faixa e, em ``vigencia_nao_publicada``, as linhas com a vigência anulada.
+    """
+    datas: dict[str, pd.Series] = {}
+    for coluna in models.COLUNAS_DATA:
+        if coluna not in df.columns:
+            datas[coluna] = pd.Series(pd.NaT, index=df.index, dtype="datetime64[ns]")
+            continue
+        convertidas = dates.converter_datas(
+            df[coluna].str.strip(), fonte="mapa_psr", formato="%d/%m/%Y"
+        )
+        datas[coluna] = convertidas.datas
+        contagem[coluna] += convertidas.descartadas
+    if {"inicio_vigencia", "fim_vigencia"} <= set(df.columns):
+        inicio = df["inicio_vigencia"].str.strip()
+        sem_vigencia = inicio.ne("") & inicio.eq(df["fim_vigencia"].str.strip())
+        contagem["vigencia_nao_publicada"] += int(sem_vigencia.sum())
+        for coluna in ("inicio_vigencia", "fim_vigencia"):
+            datas[coluna] = datas[coluna].mask(sem_vigencia)
+    return df.assign(**datas)
+
+
+def avisos_de_datas(contagem: Counter[str]) -> list[str]:
+    avisos = [
+        f"mapa_psr: {contagem[coluna]} valor(es) de {coluna} viraram NaT (data ilegível ou com "
+        f"ano fora de {dates.DATA_ANO_MINIMO}–{dates.DATA_ANO_MAXIMO})."
+        for coluna in models.COLUNAS_DATA
+        if contagem[coluna]
+    ]
+    if contagem["vigencia_nao_publicada"]:
+        avisos.append(
+            "PSR: vigência não publicada (início igual ao fim) "
+            f"em {contagem['vigencia_nao_publicada']} registro(s); saem nulas. Use data_apolice"
+        )
+    return avisos
+
+
 def _chave_municipio(nome: str) -> str:
     return " ".join(remover_acentos(nome).upper().split())
 
@@ -293,10 +359,22 @@ def iter_apolices(
     ano_inicio: int | None = None,
     ano_fim: int | None = None,
     chunk_size: int = 10000,
+    detalhes: dict[str, Any] | None = None,
 ) -> Generator[pd.DataFrame, None, None]:
+    """Lê o CSV do PSR em blocos já filtrados e normalizados.
+
+    Args:
+        detalhes: recebe ``ultima_apolice``, a maior ``DT_APOLICE`` do arquivo inteiro, antes dos
+            filtros (``None`` sem a coluna ou sem data legível), assim que o primeiro bloco sai, e
+            ``datas``, a contagem de ``_convert_apolices_dates`` nas linhas que saem, atualizada a
+            cada bloco (``avisos_de_datas`` a transforma em avisos).
+    """
     from agrobr.alt.mapa_psr.models import COLUNAS_APOLICES, COLUNAS_SINISTROS
 
-    with closing(_iter_apolices_csv(stream, chunk_size)) as chunks:
+    contagem: Counter[str] = Counter()
+    if detalhes is not None:
+        detalhes["datas"] = contagem
+    with closing(_iter_apolices_csv(stream, chunk_size, detalhes)) as chunks:
         for df in chunks:
             df = _normalize_apolices_columns(df)
             df["ano_apolice"] = pd.to_numeric(df["ano_apolice"], errors="raise")
@@ -312,12 +390,15 @@ def iter_apolices(
                 df = _filter_sinistros(df, evento)
             elif "valor_indenizacao" not in df.columns:
                 df["valor_indenizacao"] = pd.Series(float("nan"), index=df.index)
+            df = _convert_apolices_dates(df, contagem)
             columns = COLUNAS_SINISTROS if sinistros else COLUNAS_APOLICES
             yield df[[c for c in columns if c in df.columns]]
 
 
-def _collect_frames(frames: Iterator[pd.DataFrame]) -> pd.DataFrame:
+def _collect_frames(frames: Iterator[pd.DataFrame], detalhes: dict[str, Any]) -> pd.DataFrame:
     result = pd.concat(list(frames), ignore_index=True)
+    for aviso in avisos_de_datas(detalhes["datas"]):
+        warnings.warn(aviso, UserWarning, stacklevel=3)
     return result.sort_values("ano_apolice").reset_index(drop=True)
 
 
@@ -328,8 +409,17 @@ def parse_apolices(
     ano: int | None = None,
     municipio: MunicipioInfo | None = None,
 ) -> pd.DataFrame:
+    detalhes: dict[str, Any] = {}
     return _collect_frames(
-        iter_apolices(io.BytesIO(content), cultura=cultura, uf=uf, ano=ano, municipio=municipio)
+        iter_apolices(
+            io.BytesIO(content),
+            cultura=cultura,
+            uf=uf,
+            ano=ano,
+            municipio=municipio,
+            detalhes=detalhes,
+        ),
+        detalhes,
     )
 
 
@@ -341,6 +431,7 @@ def parse_sinistros(
     municipio: MunicipioInfo | None = None,
     evento: str | None = None,
 ) -> pd.DataFrame:
+    detalhes: dict[str, Any] = {}
     return _collect_frames(
         iter_apolices(
             io.BytesIO(content),
@@ -350,7 +441,9 @@ def parse_sinistros(
             municipio=municipio,
             sinistros=True,
             evento=evento,
-        )
+            detalhes=detalhes,
+        ),
+        detalhes,
     )
 
 

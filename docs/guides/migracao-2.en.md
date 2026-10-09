@@ -1116,7 +1116,7 @@ returns the new map. `celulose` (`4703`) and `tabaco` (`2401`) do not change; th
 
 ## 41. PSR: `seguradora` in the policy key and records published twice
 
-`mapa_psr.apolices` and `datasets.seguro_rural(tipo="apolices")` now use the `mapa_psr_apolices` 2.0 contract, with
+`mapa_psr.apolices` and `datasets.seguro_rural(tipo="apolices")` now use the `mapa_psr_apolices` 2.1 contract, with
 `seguradora` in the primary key (non-null). In 1.1.0 the dataset raised `ContractViolationError` for 2007, 2008, 2009, 2011 and
 2012, because MAPA publishes the same policy number under two insurers; these years are now delivered in full. Anyone joining
 policies on the old key must add `seguradora`.
@@ -1124,6 +1124,8 @@ policies on the old key must add `seguradora`.
 A record published twice and identical in every column (1 case, in 2009) is returned once, with a warning and the count in
 `source_details["duplicatas_colapsadas"]`. Like the dataset, the source now raises `ContractViolationError` when the key repeats
 with different values.
+
+New columns at the end: `inicio_vigencia`, `fim_vigencia` and `data_apolice` (`datetime64[ns]`). Coverage dates from 2006 to 2015 are null, with a warning: in those years MAPA publishes start equal to end, so coverage is not published. Code that selects columns by position or compares the full column set must account for the three.
 
 ## 42. PSR: geocode published as "-" is now null
 

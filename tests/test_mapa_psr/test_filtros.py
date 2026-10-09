@@ -8,7 +8,7 @@ from pathlib import Path
 import pytest
 
 from agrobr import datasets
-from agrobr.alt.mapa_psr import api
+from agrobr.alt.mapa_psr import api, models
 from agrobr.exceptions import InvalidParameterError
 from tests.helpers import binary_stream, levanta_exatamente, sem_excecao
 
@@ -148,7 +148,7 @@ async def test_seguro_rural_repassa_os_filtros_a_fonte(monkeypatch, argumentos, 
     with sem_excecao():
         frame, meta = await datasets.seguro_rural(**argumentos, return_meta=True)
     assert len(frame) == linhas
-    assert meta.contract_version == ("1.1" if argumentos.get("tipo") == "sinistros" else "2.0")
+    assert meta.contract_version == ("1.2" if argumentos.get("tipo") == "sinistros" else "2.1")
 
 
 @pytest.mark.parametrize("tipo", ["apolices", "sinistros"])
@@ -168,6 +168,7 @@ async def test_vazio_tem_os_dtypes_do_cheio_real(monkeypatch, tipo):
     assert filtrado.dtypes.to_dict() == cheio.dtypes.to_dict()
     assert sem_periodo.dtypes.to_dict() == cheio.dtypes.to_dict()
     assert str(cheio.dtypes["ano_apolice"]) == "Int64"
+    assert {str(cheio.dtypes[coluna]) for coluna in models.COLUNAS_DATA} == {"datetime64[ns]"}
 
 
 @pytest.mark.parametrize(

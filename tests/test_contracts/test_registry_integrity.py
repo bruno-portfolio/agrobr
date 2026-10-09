@@ -101,7 +101,7 @@ def test_historicos_preservam_schema_publicado_na_1_1_0(symbol, key):
 )
 def test_contratos_ativos_psr_e_atacado_usam_major_2(symbol, key, primary_key, column, nullable):
     active = contracts.get_contract(key)
-    assert active.version == "2.0"
+    assert active.version == {"preco_atacado": "2.0", "mapa_psr_apolices": "2.1"}[key]
     assert active.effective_from == "2.0.0"
     assert active == getattr(datasets, symbol)
     assert symbol in datasets.__all__

@@ -68,6 +68,9 @@ COLUNAS_CSV: dict[str, str] = {
     "NivelDeCobertura": "nivel_cobertura",
     "PE_TAXA": "taxa",
     "NM_RAZAO_SOCIAL": "seguradora",
+    "DT_INICIO_VIGENCIA": "inicio_vigencia",
+    "DT_FIM_VIGENCIA": "fim_vigencia",
+    "DT_APOLICE": "data_apolice",
 }
 
 COLUNAS_FLOAT = frozenset(
@@ -83,6 +86,8 @@ COLUNAS_FLOAT = frozenset(
         "taxa",
     }
 )
+
+COLUNAS_DATA = ("inicio_vigencia", "fim_vigencia", "data_apolice")
 
 COLUNAS_SINISTROS = [
     "nr_apolice",
@@ -103,6 +108,7 @@ COLUNAS_SINISTROS = [
     "nivel_cobertura",
     "seguradora",
     "cod_municipio",
+    *COLUNAS_DATA,
 ]
 
 COLUNAS_APOLICES = [
@@ -125,6 +131,7 @@ COLUNAS_APOLICES = [
     "taxa",
     "seguradora",
     "cod_municipio",
+    *COLUNAS_DATA,
 ]
 
 ANO_INICIO_PSR = 2006

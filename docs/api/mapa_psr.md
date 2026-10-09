@@ -42,7 +42,8 @@ async def sinistros(
 DataFrame com colunas: `nr_apolice`, `ano_apolice`, `uf`, `municipio`, `cd_ibge`,
 `cultura`, `classificacao`, `evento`, `area_total`, `valor_indenizacao`, `valor_premio`,
 `valor_subvencao`, `valor_limite_garantia`, `produtividade_estimada`,
-`produtividade_segurada`, `nivel_cobertura`, `seguradora`, `cod_municipio`
+`produtividade_segurada`, `nivel_cobertura`, `seguradora`, `cod_municipio`,
+`inicio_vigencia`, `fim_vigencia`, `data_apolice`
 
 **Exemplo:**
 
@@ -98,7 +99,8 @@ async def apolices(
 DataFrame com colunas: `nr_apolice`, `ano_apolice`, `uf`, `municipio`, `cd_ibge`,
 `cultura`, `classificacao`, `area_total`, `valor_premio`, `valor_subvencao`,
 `valor_limite_garantia`, `valor_indenizacao`, `evento`, `produtividade_estimada`,
-`produtividade_segurada`, `nivel_cobertura`, `taxa`, `seguradora`, `cod_municipio`
+`produtividade_segurada`, `nivel_cobertura`, `taxa`, `seguradora`, `cod_municipio`,
+`inicio_vigencia`, `fim_vigencia`, `data_apolice`
 
 **Exemplo:**
 
@@ -137,7 +139,7 @@ df = alt.mapa_psr.apolices(ano=2023)
 
 ## Integridade e período das apólices
 
-O CSV inteiro é validado antes da aplicação dos filtros. Cabeçalho duplicado, registro com campos a mais ou a menos e ano de apólice inválido geram `ParseError` com a posição do registro; a leitura não descarta essas linhas silenciosamente. Campos entre aspas podem conter separadores e quebras de linha. O parser é versão 4; o contrato de apólices está em 2.0 e o de sinistros em 1.1. `ano_apolice` sai em `Int64`, com linhas e vazio.
+O CSV inteiro é validado antes da aplicação dos filtros. Cabeçalho duplicado, registro com campos a mais ou a menos e ano de apólice inválido geram `ParseError` com a posição do registro; a leitura não descarta essas linhas silenciosamente. Campos entre aspas podem conter separadores e quebras de linha. O parser é versão 5; o contrato de apólices está em 2.1 e o de sinistros em 1.2. `ano_apolice` sai em `Int64`, com linhas e vazio.
 
 `ano_apolice` é o ano de contratação da apólice, conforme o dicionário SISSER; não identifica a data do evento ou do pagamento. `sinistros` seleciona indenização positiva com evento não vazio. Zero publicado continua zero em `apolices`; valores ausentes continuam nulos. Não se arredondam valores monetários a centavos. Números de apólice e códigos geográficos conservam seus zeros iniciais. Só o registro publicado em dobro e idêntico em todas as colunas sai uma vez (ver [MAPA PSR](../sources/mapa_psr.md)); nenhuma outra linha é deduplicada.
 

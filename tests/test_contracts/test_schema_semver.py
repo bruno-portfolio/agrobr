@@ -175,7 +175,7 @@ def test_a_sem01_current_major_accepts_schema_published_in_v1_1_0(name):
     published = json.loads((FIXTURES / filename).read_text(encoding="utf-8"))
     current = json.loads((ROOT / "agrobr" / "schemas" / filename).read_text(encoding="utf-8"))
     assert published["schema_version"] == "1.0"
-    assert current["schema_version"] == "2.0"
+    assert current["schema_version"] == {"preco_atacado": "2.0", "mapa_psr_apolices": "2.1"}[name]
     assert schema_semver.breaking_changes({filename: published}, {filename: current}) == []
 
 

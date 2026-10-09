@@ -91,7 +91,7 @@ The two [cultivar datasets](../api/cultivares.en.md) reuse the new `rnc_registra
 | [futuros_agricolas](./futuros_agricolas.md) | B3 agricultural futures (settlements, history, positions) | B3 |
 | [posicionamento_fundos](./posicionamento_fundos.md) | Fund positioning by trader category (COT) | CFTC |
 | [movimentacao_portuaria](./movimentacao_portuaria.md) | Port cargo movement ⚠️ (source offline) | ANTAQ |
-| [seguro_rural](./seguro_rural.md) | Rural insurance — policies (`mapa_psr_apolices` v2.0) and claims (`mapa_psr_sinistros` v1.1) | MAPA PSR |
+| [seguro_rural](./seguro_rural.md) | Rural insurance — policies (`mapa_psr_apolices` v2.1) and claims (`mapa_psr_sinistros` v1.2) | MAPA PSR |
 | [serie_historica_safra](./serie_historica_safra.md) | Crop historical series (45 products) | CONAB |
 | [series_economicas](./series_economicas.en.md) | Series by SGS code or alias, date range and latest observations | BCB SGS |
 | [uso_do_solo](./uso_do_solo.md) | Land cover and use (MapBiomas) | MapBiomas |

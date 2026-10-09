@@ -88,6 +88,9 @@ depois da descarga.
 | `nivel_cobertura` | float | Sim | Nível de cobertura em fração (0,65 = 65%): produtividade segurada ÷ estimada, como o MAPA publica |
 | `seguradora` | str | Sim | Razao social da seguradora |
 | `cod_municipio` | int | Sim | Código IBGE do município (`Int64`) tirado de `cd_ibge`; nulo quando `cd_ibge` é nulo |
+| `inicio_vigencia` | datetime | Sim | Início da vigência (`DT_INICIO_VIGENCIA`); nulo onde o início é igual ao fim (vigência não publicada; todo o período 2006–2015) |
+| `fim_vigencia` | datetime | Sim | Fim da vigência (`DT_FIM_VIGENCIA`); nulo junto com `inicio_vigencia` quando início e fim publicados são iguais; data ilegível ou com ano fora de 1900–2099 anula só esta coluna |
+| `data_apolice` | datetime | Sim | Data da apólice (`DT_APOLICE`); o ano é o `ano_apolice` |
 
 ## Parametros — `apolices`
 
@@ -114,7 +117,7 @@ Mesmas colunas de `sinistros`, mais:
 
 1. Resolve os períodos pelos filtros de ano: 2006-2015, 2016-2024 e 2025 saem do dicionário fixo; o ano depois de 2025 (e, sem `ano_fim`, até o ano corrente) é procurado no catálogo do pacote no CKAN do MAPA. Ano sem arquivo no catálogo sai com aviso (`UserWarning` e `meta.validation_warnings`), e, sem nenhum arquivo, `meta.source_url` aponta o catálogo consultado. Com o catálogo fora do ar, os anos fixos seguem com aviso; sem nenhum ano fixo no pedido, a falha sobe como `SourceUnavailableError`
 2. Baixa um período por vez para arquivo temporário, recebendo o CSV por partes
-3. Confere o encoding no arquivo inteiro (UTF-8 com suporte a BOM → Windows-1252 → ISO-8859-1), o separador (`;` ou `,`), as aspas, a unicidade dos cabeçalhos, a largura dos registros e os anos das apólices
+3. Confere o encoding no arquivo inteiro (UTF-8 com suporte a BOM → Windows-1252 → ISO-8859-1), o separador (`;` ou `,`), as aspas, a unicidade dos cabeçalhos, a largura dos registros e os anos das apólices, e anota a maior `DT_APOLICE` do arquivo (em `source_details["corpos"][i]["ultima_apolice"]`), antes de qualquer filtro
 4. Lê blocos de 10 mil linhas e remove colunas PII (NM_SEGURADO, NR_DOCUMENTO_SEGURADO) e geolocalização
 5. Normaliza cabeçalhos/textos e aplica filtros de ano, UF, cultura, município e código IBGE em cada bloco
 6. Converte os números selecionados (float64 para monetários, int para ano)
@@ -143,7 +146,7 @@ só o nome inteiro e a UF.
 df, meta = await mapa_psr.sinistros(return_meta=True)
 print(meta.source)           # "mapa_psr"
 print(meta.source_method)    # "httpx"
-print(meta.parser_version)   # 4
+print(meta.parser_version)   # 5
 print(meta.records_count)    # varia por filtro
 ```
 
@@ -177,12 +180,16 @@ não é garantida; use uma ordenação explícita por suas colunas de interesse.
 
 ## Integridade e período das apólices
 
-O CSV inteiro é validado antes da aplicação dos filtros. Cabeçalho duplicado, registro com campos a mais ou a menos e ano de apólice inválido geram `ParseError` com a posição do registro; a leitura não descarta essas linhas silenciosamente. Campos entre aspas podem conter separadores e quebras de linha. O parser é versão 4; o contrato de apólices está em 2.0 e o de sinistros em 1.1.
+O CSV inteiro é validado antes da aplicação dos filtros. Cabeçalho duplicado, registro com campos a mais ou a menos e ano de apólice inválido geram `ParseError` com a posição do registro; a leitura não descarta essas linhas silenciosamente. Campos entre aspas podem conter separadores e quebras de linha. O parser é versão 5; o contrato de apólices está em 2.1 e o de sinistros em 1.2.
 
-**Chave e registro publicado em dobro (contrato `mapa_psr_apolices` 2.0).** A chave das apólices é `nr_apolice`, `ano_apolice`, `uf`, `cultura`, `cd_ibge` e `seguradora`: o número da apólice só é único dentro da seguradora (em 2007, 2008, 2009, 2011 e 2012 o MAPA publica o mesmo número em duas seguradoras, com área e prêmio diferentes). Um registro publicado duas vezes e igual em todas as colunas que o agrobr entrega (em 2009, a apólice 1977000249501 da Mapfre, com a proposta reenviada) sai uma vez só, com aviso (`warn_once`) e a contagem em `source_details["duplicatas_colapsadas"]`. Repetição da chave com qualquer valor diferente levanta `ContractViolationError` (no dataset, `SourceUnavailableError`).
+**Chave e registro publicado em dobro (contrato `mapa_psr_apolices` desde a 2.0).** A chave das apólices é `nr_apolice`, `ano_apolice`, `uf`, `cultura`, `cd_ibge` e `seguradora`: o número da apólice só é único dentro da seguradora (em 2007, 2008, 2009, 2011 e 2012 o MAPA publica o mesmo número em duas seguradoras, com área e prêmio diferentes). Um registro publicado duas vezes e igual em todas as colunas que o agrobr entrega (em 2009, a apólice 1977000249501 da Mapfre, com a proposta reenviada) sai uma vez só, com aviso (`warn_once`) e a contagem em `source_details["duplicatas_colapsadas"]`. Repetição da chave com qualquer valor diferente levanta `ContractViolationError` (no dataset, `SourceUnavailableError`).
 
 `ano_apolice` é o ano de contratação da apólice, conforme o dicionário SISSER; não identifica a data do evento ou do pagamento. `sinistros` seleciona indenização positiva com evento não vazio. Zero publicado continua zero em `apolices`; valores ausentes continuam nulos. Não se arredondam valores monetários a centavos. Números de apólice e códigos geográficos conservam seus zeros iniciais. Fora o registro publicado em dobro e idêntico, descrito acima, nenhuma linha é deduplicada.
 
 Na captura de 18/09/2026, o catálogo disponibilizava três CSVs, até 2025. O arquivo 2025 tinha indenizações ausentes, o que não demonstra ausência de sinistros. O EOF comprova a leitura completa do arquivo publicado, sem garantir cobertura completa do programa ou atualização dos pagamentos.
+
+**Ano publicado pela metade.** O MAPA publica o ano corrente antes de ele terminar e não atualiza o arquivo depois: em 08/10/2026, o CSV 2025 continuava o de 03/09/2025, com 46.137 apólices de 02/01/2025 a 21/08/2025 e nenhuma de soja, milho 1ª safra, arroz ou algodão. A falta não se explica pelo corte em agosto: no arquivo 2016–2024, 43.157 apólices de soja de 2024 têm `DT_APOLICE` de janeiro a agosto. `apolices(produto="soja", ano=2025)` sai vazio porque o arquivo publicado não traz a soja, o que não demonstra ausência de seguro. Quando a última `DT_APOLICE` do arquivo cai antes de 1º de outubro do próprio ano e esse ano está no pedido, `apolices`, `sinistros` e `datasets.seguro_rural` avisam (`UserWarning` e `meta.validation_warnings`): "PSR: o arquivo publicado pelo MAPA tem apólices até 21/08/2025; 2025 pode estar incompleto". O corte vem dos arquivos fechados: de 2006 a 2024, o ano que mais cedo terminou foi 2022, em 24/10. Um arquivo cortado entre outubro e dezembro passa sem aviso, e o ano no meio de um arquivo não é avaliado, porque o arquivo segue depois dele.
+
+**Datas da apólice (contratos `mapa_psr_apolices` 2.1 e `mapa_psr_sinistros` 1.2).** `inicio_vigencia`, `fim_vigencia` e `data_apolice` vêm de `DT_INICIO_VIGENCIA`, `DT_FIM_VIGENCIA` e `DT_APOLICE`, publicadas em `dd/mm/aaaa` nos três arquivos, e saem em `datetime64[ns]`. O ano de `data_apolice` é o `ano_apolice` em todas as 1.712.385 linhas de 2006 a 2025 (conferido em 08/10/2026). A vigência existe a partir de 2016: no arquivo 2006–2015, início e fim são iguais em todas as 617.683 linhas (22/07/2016 ou 23/07/2016, posteriores às apólices), ou seja, a vigência não foi publicada. Onde o início é igual ao fim, as duas colunas de vigência saem nulas, com o aviso "PSR: vigência não publicada (início igual ao fim) em N registro(s); saem nulas. Use data_apolice" (`UserWarning` e `meta.validation_warnings`, uma vez por consulta; N conta os registros publicados que passaram nos filtros, antes de colapsar o registro em dobro). Data ilegível ou com ano fora de 1900–2099 sai `NaT`, com um aviso por coluna na consulta. Arquivo sem a coluna dá a coluna inteira nula. `DT_PROPOSTA` não é publicada: a apólice reenviada de 2009 difere só nela, e o registro em dobro sai uma vez só.
 
 Campos textuais preservam literais como `NULL`, `NA`, `None` e `N/A`, sujeitos apenas às normalizações de espaços e caixa já documentadas; eles não são convertidos em ausência pelo leitor CSV. Campo textual vazio continua vazio, exceto `cd_ibge`, que sai nulo. Campos numéricos mantêm a conversão vigente: valores ausentes ou não interpretáveis ficam nulos, sem transformar tokens textuais em zero.

@@ -62,7 +62,7 @@ SEGURO_RURAL_INFO = DatasetInfo(
         ),
     ],
     products=[],
-    contract_version="2.0",
+    contract_version="2.1",
     update_frequency="yearly",
     typical_latency="ano+3 meses",
     source_url="https://dados.agricultura.gov.br",
