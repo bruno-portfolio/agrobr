@@ -58,6 +58,11 @@ registros do indicador `708192508838936580` (R$/sc, Mato Grosso e 22 municípios
   `source_details["chaves_repetidas"]`. Um erro derrubaria a cadeia inteira por um indicador.
 - Os 2 avisos vão para `meta.validation_warnings` em toda chamada; o `UserWarning` sai só na 1ª chamada de cada cadeia no processo.
 
+**Zero publicado.** O IMEA publica `0,0` em alguns registros sem dizer se é zero ou falta de dado: na resposta integral
+do milho de 08/10/2026, 93 dos 5.970 registros vêm com `valor` 0,0 (11 em preço, R$/sc, e 82 em custo, R$/ha), 83 deles
+com `variacao` −100 e 10 com `variacao` nula. A fonte não documenta que zero significa "sem dado", e o agrobr entrega
+como publicado, sem anular; se zero não faz sentido no seu indicador (um preço, por exemplo), filtre `valor == 0`.
+
 **Catálogo com nomes conflitantes.** Se o catálogo repetir um `Id` com nomes diferentes, a consulta levanta `ParseError`: não há como escolher o nome correto do indicador. Repetições com o mesmo nome continuam aceitas.
 
 ### Unidade e indicador
@@ -111,6 +116,10 @@ print(meta.source_details["chaves_repetidas"])  # {"linhas": 0, "indicadores": [
 - API: `https://api1.imea.com.br/api/v2/mobile/cadeias/{id}/cotacoes` e, para o nome dos indicadores,
   `.../cadeias/{id}/indicadores` (duas requisições por consulta)
 - Formato: JSON (REST API); chave publicada ausente levanta `ParseError`
+- Resposta JSON em objeto no lugar da lista de registros, em qualquer das 2 requisições, levanta
+  `SourceUnavailableError`, e não `ParseError` como na regra geral do
+  [guia de migração, §80](../guides/migracao-2.md#80-corpo-fora-do-formato-parseerror-nao-sourceunavailableerror):
+  um envelope de erro da API (como `{"erro": "manutencao"}`) e uma mudança de formato caem no mesmo erro
 - Atualização: diária
 - Cobertura: Mato Grosso
 - Autenticação: nenhuma (API pública)

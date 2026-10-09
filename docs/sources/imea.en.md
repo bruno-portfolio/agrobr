@@ -58,6 +58,12 @@ thousands of rows of the same chain repeat the other four columns (e.g. soybeans
   `source_details["chaves_repetidas"]`. An error would drop the whole chain because of one indicator.
 - Both warnings go to `meta.validation_warnings` on every call; the `UserWarning` is emitted only on the first call for each chain in the process.
 
+**Published zero.** IMEA publishes `0.0` in some records without saying whether it is a zero or missing data: in the
+full corn response of October 8, 2026, 93 of 5,970 records have `valor` 0.0 (11 prices, R$/sc, and 82 costs, R$/ha), 83
+of them with `variacao` −100 and 10 with a null `variacao`. The source does not document that zero means "no data", and
+agrobr returns it as published, without nulling it; if zero makes no sense for your indicator (a price, for example),
+filter `valor == 0`.
+
 **Conflicting catalog names.** If the catalog repeats an `Id` with different names, the request raises `ParseError`: the correct indicator name cannot be determined. Repetitions with the same name remain accepted.
 
 ### Unit and indicator
@@ -112,6 +118,10 @@ print(meta.source_details["chaves_repetidas"])  # {"linhas": 0, "indicadores": [
 - API: `https://api1.imea.com.br/api/v2/mobile/cadeias/{id}/cotacoes` and, for indicator names,
   `.../cadeias/{id}/indicadores` (two requests per query)
 - Format: JSON (REST API); a missing published key raises `ParseError`
+- A JSON object instead of the list of records, in either of the 2 requests, raises `SourceUnavailableError`,
+  not `ParseError` as in the general rule of the
+  [migration guide, §80](../guides/migracao-2.en.md#80-body-in-another-format-parseerror-not-sourceunavailableerror):
+  an API error envelope (such as `{"erro": "manutencao"}`) and a format change end up in the same error
 - Update: daily
 - Coverage: Mato Grosso
 - Authentication: none (public API)
