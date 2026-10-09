@@ -169,10 +169,13 @@ gdf = await agrobr.desmatamento.deter_geo(
     fim="2024-06-30",
 )
 
-# Geospatial join with CAR/SICAR
+# Geospatial join with the CAR rural properties (SICAR, also in EPSG:4326).
+# SICAR provides the property boundary (type IRU, AST or PCT), not the legal reserve.
 import geopandas as gpd
-car = gpd.read_file("imoveis_car.geojson")
-alertas_em_reserva = gpd.sjoin(gdf, car[car["tipo"] == "RESERVA_LEGAL"])
+imoveis = await agrobr.alt.sicar.imoveis_geo(
+    "PA", municipio="Altamira", tipo="IRU", max_registros=None
+)
+alertas_em_imoveis = gpd.sjoin(gdf, imoveis[["cod_imovel", "geometry"]], predicate="intersects")
 ```
 
 ### Parameters

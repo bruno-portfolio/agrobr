@@ -379,6 +379,10 @@ asyncio.run(main())
 Todas as APIs suportam retorno em Polars para melhor performance:
 
 ```python
+import asyncio
+
+import polars as pl
+
 from agrobr import cepea
 
 async def main():

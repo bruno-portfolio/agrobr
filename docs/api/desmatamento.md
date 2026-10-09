@@ -169,10 +169,13 @@ gdf = await agrobr.desmatamento.deter_geo(
     fim="2024-06-30",
 )
 
-# Cruzamento geoespacial com CAR/SICAR
+# Cruzamento geoespacial com os imóveis rurais do CAR (SICAR, também em EPSG:4326).
+# O SICAR traz o perímetro do imóvel (tipo IRU, AST ou PCT), não a reserva legal.
 import geopandas as gpd
-car = gpd.read_file("imoveis_car.geojson")
-alertas_em_reserva = gpd.sjoin(gdf, car[car["tipo"] == "RESERVA_LEGAL"])
+imoveis = await agrobr.alt.sicar.imoveis_geo(
+    "PA", municipio="Altamira", tipo="IRU", max_registros=None
+)
+alertas_em_imoveis = gpd.sjoin(gdf, imoveis[["cod_imovel", "geometry"]], predicate="intersects")
 ```
 
 ### Parametros
