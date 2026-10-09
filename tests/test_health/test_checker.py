@@ -5,6 +5,8 @@ from __future__ import annotations
 import asyncio
 import json
 from datetime import datetime
+from itertools import count
+from types import SimpleNamespace
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import httpx
@@ -100,7 +102,7 @@ class TestCheckHttp:
         assert result.status == status
         assert result.category == categoria
         if corpo["error"]:
-            assert result.message == "Response error: Invalid reporterCode"
+            assert result.message == "Resposta com error: Invalid reporterCode"
 
     @pytest.mark.asyncio
     async def test_best_effort_http_error_returns_warning(self):
@@ -406,3 +408,48 @@ async def test_deep_classifica_indisponibilidade_e_layout(error, category):
     assert result.status == CheckStatus.FAILED
     assert result.category == category
     assert result.message == str(error)
+
+
+def _cliente(resposta):
+    cliente = AsyncMock()
+    cliente.get.return_value = resposta
+    fabrica = MagicMock()
+    fabrica.return_value.__aenter__ = AsyncMock(return_value=cliente)
+    fabrica.return_value.__aexit__ = AsyncMock(return_value=None)
+    return fabrica
+
+
+async def test_marcador_de_erro_no_corpo_sai_em_portugues():
+    config = SourceHealthConfig(
+        source=Fonte.SFB, url="https://example.com", body_error_markers=('"error"',)
+    )
+    resposta = MagicMock(status_code=200, text='{"error": "fora"}')
+
+    with patch("httpx.AsyncClient", _cliente(resposta)):
+        result = await _check_http(config)
+
+    assert result.message == 'Resposta contém \'"error"\': {"error": "fora"}'
+
+
+async def test_latencia_alta_sai_em_portugues(monkeypatch):
+    relogio = count(0, 6)
+    monkeypatch.setattr(
+        "agrobr.health.checker.time", SimpleNamespace(monotonic=lambda: next(relogio))
+    )
+    config = SourceHealthConfig(source=Fonte.CONAB, url="https://example.com")
+
+    with patch("httpx.AsyncClient", _cliente(MagicMock(status_code=200, text=""))):
+        result = await _check_http(config)
+
+    assert (result.status, result.message) == (CheckStatus.WARNING, "Latência alta: 6000ms")
+
+
+async def test_fonte_sem_sonda_sai_em_portugues(monkeypatch):
+    monkeypatch.delitem(HEALTH_REGISTRY, Fonte.CONAB)
+
+    result = await check_source(Fonte.CONAB)
+
+    assert (result.status, result.message) == (
+        CheckStatus.FAILED,
+        "Fonte sem sonda cadastrada: conab",
+    )

@@ -15,7 +15,8 @@ agrobr health --formato json
 - **Formato:** `--formato` (`-o`) é a única opção de formato. Nos comandos de dados e no `conab levantamentos`, aceita
   `table` (padrão), `csv` e `json`; no `health`, no `doctor` e no `snapshot list`, aceita `text` (padrão) e `json`.
 - **Saída:** os dados vão para a saída padrão, em UTF-8, também redirecionada no Windows. O aviso de progresso
-  (`Consultando ...`, `Listando levantamentos...`) e as mensagens de erro vão para a saída de erro. O `json` sai como
+  (`Consultando ...`, `Listando levantamentos...`), os avisos da biblioteca (`Aviso: ...`, como o da licença do CEPEA) e as
+  mensagens de erro vão para a saída de erro. O `json` sai como
   lista de registros, com as datas em ISO 8601; o `csv` sai sem índice. Sem dados, só a `table` imprime
   `Nenhum dado encontrado`: o `csv` sai só com o cabeçalho, e o `json`, com a lista vazia (`[]`).
 - **Código de saída:**

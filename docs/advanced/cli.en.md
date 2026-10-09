@@ -15,7 +15,8 @@ agrobr health --formato json
 - **Format:** `--formato` (`-o`) is the only format option. In the data commands and in `conab levantamentos` it takes
   `table` (default), `csv` and `json`; in `health`, `doctor` and `snapshot list` it takes `text` (default) and `json`.
 - **Output:** data goes to standard output, in UTF-8, also when redirected on Windows. The progress notice
-  (`Consultando ...`, `Listando levantamentos...`) and error messages go to standard error. `json` comes out as a list
+  (`Consultando ...`, `Listando levantamentos...`), library warnings (`Aviso: ...`, such as the CEPEA license notice) and
+  error messages go to standard error. `json` comes out as a list
   of records, with ISO 8601 dates; `csv` comes out without an index. With no data, only `table` prints
   `Nenhum dado encontrado`: `csv` comes out with just the header, and `json` with the empty list (`[]`).
 - **Exit code:**

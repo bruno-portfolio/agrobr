@@ -482,33 +482,33 @@ agrobr doctor
 ### Exemplo de saída
 
 ```
-agrobr diagnostics v2.0.0
+Diagnóstico do agrobr v2.0.0
 ==================================================
 
-Sources Connectivity
+Conexão com as fontes
   [OK] CEPEA                                 142ms
   [OK] CONAB                                  89ms
   [OK] IBGE                                   67ms
 
-Cache Status
+Cache
   Status:        ok
-  Error:         -
-  Location:      ~/.agrobr/cache/agrobr.duckdb
-  Size:          2.40 MB
-  Total records: 1,152
+  Erro:          -
+  Local:         ~/.agrobr/cache/agrobr.duckdb
+  Tamanho:       2.40 MB
+  Registros:     1,152
 
-  By source:
-    CEPEA: 847 records (2025-01-21 to 2026-02-04)
-    NOTICIAS_AGRICOLAS: 305 records (2024-01-01 to 2026-02-04)
+  Por fonte:
+    CEPEA: 847 registros (de 2025-01-21 a 2026-02-04)
+    NOTICIAS_AGRICOLAS: 305 registros (de 2024-01-01 a 2026-02-04)
 
-Cache Expiry
+Validade do cache
   CEPEA: Expira às 18h BRT (atualização CEPEA)
 
-Configuration
-  Browser fallback:   disabled
-  Alternative source: enabled
+Configuração
+  Navegador como alternativa: desligado
+  Fonte alternativa:          ligada
 
-[OK] All systems operational
+[OK] Tudo funcionando
 ```
 
 ### Output JSON

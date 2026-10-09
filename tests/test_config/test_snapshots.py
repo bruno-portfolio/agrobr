@@ -287,7 +287,7 @@ class TestCreateSnapshot:
 
         with (
             patch("agrobr.snapshots.get_snapshots_dir", return_value=tmp_path),
-            pytest.raises(ValueError, match="already exists"),
+            pytest.raises(ValueError, match="já existe"),
         ):
             await create_snapshot(name="existing")
 

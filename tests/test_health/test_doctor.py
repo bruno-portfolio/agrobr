@@ -41,9 +41,9 @@ class TestDiagnosticsResult:
 @pytest.mark.parametrize(
     ("overall", "final"),
     [
-        ("healthy", "[OK] All systems operational"),
-        ("degraded", "[WARN] System degraded - check diagnostic warnings"),
-        ("error", "[FAIL] System error - check cache and source diagnostics"),
+        ("healthy", "[OK] Tudo funcionando"),
+        ("degraded", "[WARN] Sistema degradado: veja os avisos acima"),
+        ("error", "[FAIL] Erro no sistema: veja o cache e as fontes"),
     ],
 )
 def test_to_rich_status_lines(overall, final):
@@ -146,7 +146,40 @@ async def test_verbose_mostra_a_url_a_categoria_e_a_ultima_coleta_de_cada_fonte(
     assert not any("https://fonte" in linha for linha in linhas_normais)
     assert f"      https://fonte/{fontes[0]}  [slow]" in linhas
     assert f"      https://fonte/{fontes[1]}" in linhas
-    assert linhas[linhas.index("Last Collections") :][1:3] == [
+    assert linhas[linhas.index("Últimas coletas") :][1:3] == [
         "  CEPEA: 2026-09-30T18:05:00",
         "  CONAB: -",
     ]
+
+
+def test_to_rich_em_portugues():
+    result = DiagnosticsResult(
+        version="2.0.0",
+        timestamp=datetime(2024, 1, 1, 12, 0, 0),
+        sources=[SourceStatus("A", "https://a", "ok", 10)],
+        cache=CacheStats(
+            "/tmp", 0, 3, {"cepea": {"count": 3, "oldest": "2024-01-01", "newest": "2024-01-03"}}
+        ),
+        last_collections={},
+        cache_expiry={"cepea": {"type": "ttl", "ttl": "4h"}},
+        config={"browser_fallback": False, "alternative_source": True},
+        overall_status="healthy",
+    )
+
+    linhas = result.to_rich().split("\n")
+
+    assert linhas[1] == "Diagnóstico do agrobr v2.0.0"
+    for linha in (
+        "Conexão com as fontes",
+        "Cache",
+        "  Erro:          -",
+        "  Local:         /tmp",
+        "  Registros:     3",
+        "  Por fonte:",
+        "    CEPEA: 3 registros (de 2024-01-01 a 2024-01-03)",
+        "Validade do cache",
+        "Configuração",
+        "  Navegador como alternativa: desligado",
+        "  Fonte alternativa:          ligada",
+    ):
+        assert linha in linhas

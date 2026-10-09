@@ -155,7 +155,7 @@ async def _check_http(config: SourceHealthConfig) -> CheckResult:
                         source=config.source,
                         status=_source_down_status(config),
                         latency_ms=latency,
-                        message=f"Response contains {marker!r}: {excerpt}",
+                        message=f"Resposta contém {marker!r}: {excerpt}",
                         details=details,
                         timestamp=utcnow(),
                         category="source_down",
@@ -172,7 +172,7 @@ async def _check_http(config: SourceHealthConfig) -> CheckResult:
                     source=config.source,
                     status=_source_down_status(config),
                     latency_ms=latency,
-                    message=f"Response {config.json_error_field}: {details['json_error']}",
+                    message=f"Resposta com {config.json_error_field}: {details['json_error']}",
                     details=details,
                     timestamp=utcnow(),
                     category="source_down",
@@ -183,7 +183,7 @@ async def _check_http(config: SourceHealthConfig) -> CheckResult:
                 source=config.source,
                 status=CheckStatus.WARNING,
                 latency_ms=latency,
-                message=f"High latency: {latency:.0f}ms",
+                message=f"Latência alta: {latency:.0f}ms",
                 details=details,
                 timestamp=utcnow(),
                 category="slow",
@@ -193,7 +193,7 @@ async def _check_http(config: SourceHealthConfig) -> CheckResult:
             source=config.source,
             status=CheckStatus.OK,
             latency_ms=latency,
-            message=f"{config.source.value.upper()} reachable",
+            message=f"{config.source.value.upper()} respondeu",
             details=details,
             timestamp=utcnow(),
         )
@@ -243,7 +243,7 @@ async def check_cepea_deep() -> CheckResult:
                 source=Fonte.CEPEA,
                 status=CheckStatus.WARNING,
                 latency_ms=latency,
-                message=f"High latency: {latency:.0f}ms",
+                message=f"Latência alta: {latency:.0f}ms",
                 details=details,
                 timestamp=utcnow(),
                 category="slow",
@@ -267,13 +267,13 @@ async def check_cepea_deep() -> CheckResult:
                     source=Fonte.CEPEA,
                     status=CheckStatus.FAILED,
                     latency_ms=latency,
-                    message=f"Layout changed significantly: {similarity:.1%} similarity",
+                    message=f"Layout mudou muito: {similarity:.1%} de semelhança",
                     details=details,
                     timestamp=utcnow(),
                     category="layout_change",
                 )
             elif similarity < 0.85:
-                details["warning"] = "Fingerprint drift detected"
+                details["warning"] = f"Layout mudou um pouco: {similarity:.1%} de semelhança"
 
         if da_na:
             results = na_parser.parse_indicador(html, "soja")
@@ -288,7 +288,7 @@ async def check_cepea_deep() -> CheckResult:
                 source=Fonte.CEPEA,
                 status=CheckStatus.FAILED,
                 latency_ms=latency,
-                message="Parser returned no results",
+                message="A leitura da página não trouxe nenhum registro",
                 details=details,
                 timestamp=utcnow(),
                 category="parse_error",
@@ -303,7 +303,9 @@ async def check_cepea_deep() -> CheckResult:
             source=Fonte.CEPEA,
             status=status,
             latency_ms=latency,
-            message="All checks passed" if status == CheckStatus.OK else details["warning"],
+            message="Todas as conferências passaram"
+            if status == CheckStatus.OK
+            else details["warning"],
             details=details,
             timestamp=utcnow(),
         )
@@ -344,7 +346,7 @@ async def check_source(source: Fonte, *, deep: bool = False) -> CheckResult:
             source=source,
             status=CheckStatus.FAILED,
             latency_ms=0,
-            message=f"Source not in registry: {source}",
+            message=f"Fonte sem sonda cadastrada: {source}",
             details={},
             timestamp=utcnow(),
         )
@@ -420,7 +422,7 @@ async def run_checks_with_state(
 
 
 def format_results(results: list[CheckResult]) -> str:
-    lines = ["Health Check Results", "=" * 40]
+    lines = ["Resultado do health check", "=" * 40]
 
     for result in results:
         status_emoji = {

@@ -90,7 +90,7 @@ class HealthReport:
         }
 
     def to_json(self, indent: int = 2) -> str:
-        return json.dumps(self.to_dict(), indent=indent, default=str)
+        return json.dumps(self.to_dict(), indent=indent, default=str, ensure_ascii=False)
 
     def save(self, path: str | Path, format: str = "json") -> None:
         _validar_formato(format)

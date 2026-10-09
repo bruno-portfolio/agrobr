@@ -6,8 +6,10 @@ import asyncio
 import io
 import json
 import os
+import re
 import subprocess
 import sys
+import warnings
 from datetime import UTC, date, datetime, timedelta
 from decimal import Decimal
 from unittest.mock import AsyncMock, MagicMock, patch
@@ -265,7 +267,7 @@ class TestIbgeCensoHistoricoCommands:
         ):
             result = runner.invoke(app, ["ibge", "temas-historico"])
         assert result.exit_code == 0
-        assert "Censo Agropecuario Historico" in result.output
+        assert "Censo Agropecuário Histórico" in result.output
         assert "estabelecimentos_area" in result.output
         assert "lavoura_temporaria" in result.output
 
@@ -274,8 +276,8 @@ class TestConfigCommands:
     def test_config_show(self):
         result = runner.invoke(app, ["config", "show"])
         assert result.exit_code == 0
-        assert "Cache Settings" in result.output
-        assert "HTTP Settings" in result.output
+        assert "=== Cache ===" in result.output
+        assert "=== HTTP ===" in result.output
 
 
 class TestSnapshotCommands:
@@ -520,7 +522,7 @@ def test_snapshot_list_mostra_tabela_legivel():
         result = runner.invoke(app, ["snapshot", "list"])
     assert result.exit_code == 0
     linhas = result.output.splitlines()
-    assert "Snapshots disponiveis:" in linhas
+    assert "Snapshots disponíveis:" in linhas
     assert "    Criado em: 2024-01-01 12:00" in linhas
     assert "    Tamanho: 2.00 MB" in linhas
     assert "    Fontes: cepea, conab" in linhas
@@ -533,7 +535,7 @@ def test_snapshot_delete_inexistente_avisa_e_nao_apaga():
     ):
         result = runner.invoke(app, ["snapshot", "delete", "nope", "--force"])
     assert result.exit_code == 1
-    assert "Snapshot 'nope' nao encontrado." in result.output
+    assert "Erro: snapshot 'nope' não encontrado." in result.stderr
     apagar.assert_not_called()
 
 
@@ -756,3 +758,108 @@ def test_snapshot_list_marca_utc_no_snapshot_novo():
         result = runner.invoke(app, ["snapshot", "list"])
     assert result.exit_code == 0
     assert "    Criado em: 2026-10-05 11:00 UTC" in result.output.splitlines()
+
+
+def _ajudas():
+    def caminhar(comando, caminho):
+        yield " ".join(caminho), comando
+        for nome, sub in getattr(comando, "commands", {}).items():
+            yield from caminhar(sub, (*caminho, nome))
+
+    return {
+        caminho: (comando, " ".join([comando.help or "", *(p.help or "" for p in comando.params)]))
+        for caminho, comando in caminhar(typer.main.get_command(app), ())
+    }
+
+
+def test_ajuda_em_portugues_com_acento_e_sem_jargao():
+    sem_acento = re.compile(
+        r"\b(saida|codigo|versao|conexao|Diagnostico|proxima|atualizacao|informacoes|[Bb]alanco|"
+        r"exportacao|agropecuarios?|[Pp]roducao|Agricola|Sistematico|referencia|Mes|censitario|"
+        r"historico|[Cc]onfiguracoes|deterministico|confirmacao|Nivel|disponiveis|especifica|Area|Serie|"
+        r"diaria)\b"
+    )
+    jargao = ("Deep checks", "fingerprint", "stderr", "cepea.ultimo", "default")
+    ajudas = _ajudas()
+
+    assert {c: sem_acento.findall(t) for c, (_, t) in ajudas.items() if sem_acento.search(t)} == {}
+    assert [(c, j) for c, (_, t) in ajudas.items() for j in jargao if j in t] == []
+    assert [
+        c for c, (comando, _) in ajudas.items() if any(p.name == "name" for p in comando.params)
+    ] == []
+
+
+def test_ajuda_da_pam_nao_promete_o_valor_da_producao():
+    _, ajuda = _ajudas()["ibge pam"]
+
+    assert "valor por ano" not in ajuda
+    assert "valor_producao sai vazio" in ajuda
+
+
+def test_ajuda_do_snapshot_nao_o_liga_ao_modo_deterministico():
+    ajudas = _ajudas()
+
+    for caminho in ("snapshot", "snapshot create"):
+        assert "determin" not in ajudas[caminho][1].lower()
+        assert "Parquet" in ajudas[caminho][1]
+
+
+def test_aviso_da_biblioteca_sai_sem_caminho_de_codigo():
+    async def indicador(*_args, **_kwargs):
+        warnings.warn("licença de teste", UserWarning, stacklevel=1)
+        return pd.DataFrame({"data": ["2026-09-01"], "valor": [1.0]})
+
+    with warnings.catch_warnings():
+        warnings.simplefilter("always")
+        antes = warnings.showwarning
+        with patch("agrobr.cepea.indicador", indicador):
+            result = runner.invoke(app, ["cepea", "indicador", "soja", "-o", "csv"])
+        depois = warnings.showwarning
+
+    assert result.exit_code == 0, result.output
+    assert "Aviso: licença de teste" in result.stderr.splitlines()
+    assert "UserWarning" not in result.stderr
+    assert ".py:" not in result.stderr
+    assert depois is antes
+
+
+def test_json_da_cli_sai_com_acento_e_barra_literais():
+    frame = pd.DataFrame({"praca": ["Paranaguá/PR"], "valor": [1.5]})
+    with patch(
+        "agrobr.cepea.indicador", new_callable=AsyncMock, side_effect=[frame, frame.iloc[:0]]
+    ):
+        cheio = runner.invoke(app, ["cepea", "indicador", "soja", "-o", "json"])
+        vazio = runner.invoke(app, ["cepea", "indicador", "soja", "-o", "json"])
+
+    assert cheio.exit_code == vazio.exit_code == 0
+    assert '"praca": "Paranaguá/PR"' in cheio.stdout
+    assert json.loads(cheio.stdout) == [{"praca": "Paranaguá/PR", "valor": 1.5}]
+    assert vazio.stdout.strip() == "[]"
+
+
+def test_json_do_health_e_do_snapshot_sai_com_acento_literal():
+    from agrobr.health.checker import CheckResult, CheckStatus
+
+    resultado = CheckResult(
+        source=constants.Fonte.IBGE,
+        status=CheckStatus.OK,
+        latency_ms=10,
+        message="Latência alta: 6000ms",
+        details={},
+        timestamp=datetime(2026, 10, 9, 12, 0),
+    )
+    snap = MagicMock(size_bytes=1024, sources=["cepea"], file_count=1)
+    snap.name = "colheita_março"
+    snap.created_at = datetime(2026, 10, 9, 12, 0, tzinfo=UTC)
+    with patch(
+        "agrobr.health.checker.run_all_checks", new_callable=AsyncMock, return_value=[resultado]
+    ):
+        health = runner.invoke(app, ["health", "-s", "ibge", "-o", "json"])
+    with patch("agrobr.snapshots.list_snapshots", return_value=[snap]):
+        snapshots = runner.invoke(app, ["snapshot", "list", "-o", "json"])
+
+    assert health.exit_code == snapshots.exit_code == 0
+    assert '"message": "Latência alta: 6000ms"' in health.stdout
+    assert json.loads(health.stdout)["checks"][0]["message"] == "Latência alta: 6000ms"
+    assert '"name": "colheita_março"' in snapshots.stdout
+    assert json.loads(snapshots.stdout)[0]["name"] == "colheita_março"

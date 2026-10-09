@@ -82,10 +82,10 @@ class DiagnosticsResult:
     def to_rich(self) -> str:
         lines = [
             "",
-            f"agrobr diagnostics v{self.version}",
+            f"Diagnóstico do agrobr v{self.version}",
             "=" * 50,
             "",
-            "Sources Connectivity",
+            "Conexão com as fontes",
         ]
 
         for s in self.sources:
@@ -110,14 +110,14 @@ class DiagnosticsResult:
         lines.extend(
             [
                 "",
-                "Cache Status",
+                "Cache",
                 f"  Status:        {self.cache.status}",
-                f"  Error:         {self.cache.error or '-'}",
-                f"  Location:      {self.cache.location}",
-                f"  Size:          {self.cache.size_bytes / 1024 / 1024:.2f} MB",
-                f"  Total records: {self.cache.total_records:,}",
+                f"  Erro:          {self.cache.error or '-'}",
+                f"  Local:         {self.cache.location}",
+                f"  Tamanho:       {self.cache.size_bytes / 1024 / 1024:.2f} MB",
+                f"  Registros:     {self.cache.total_records:,}",
                 "",
-                "  By source:",
+                "  Por fonte:",
             ]
         )
 
@@ -125,17 +125,17 @@ class DiagnosticsResult:
             count = stats.get("count", 0)
             oldest = stats.get("oldest", "-")
             newest = stats.get("newest", "-")
-            lines.append(f"    {fonte.upper()}: {count:,} records ({oldest} to {newest})")
+            lines.append(f"    {fonte.upper()}: {count:,} registros (de {oldest} a {newest})")
 
         if self.verbose:
-            lines.extend(["", "Last Collections"])
+            lines.extend(["", "Últimas coletas"])
             for fonte, coleta in self.last_collections.items():
                 lines.append(f"  {fonte.upper()}: {coleta.isoformat() if coleta else '-'}")
 
         lines.extend(
             [
                 "",
-                "Cache Expiry",
+                "Validade do cache",
             ]
         )
 
@@ -149,19 +149,19 @@ class DiagnosticsResult:
         lines.extend(
             [
                 "",
-                "Configuration",
-                f"  Browser fallback:   {'enabled' if self.config.get('browser_fallback') else 'disabled'}",
-                f"  Alternative source: {'enabled' if self.config.get('alternative_source') else 'disabled'}",
+                "Configuração",
+                f"  Navegador como alternativa: {'ligado' if self.config.get('browser_fallback') else 'desligado'}",
+                f"  Fonte alternativa:          {'ligada' if self.config.get('alternative_source') else 'desligada'}",
                 "",
             ]
         )
 
         if self.overall_status == "healthy":
-            lines.append("[OK] All systems operational")
+            lines.append("[OK] Tudo funcionando")
         elif self.overall_status == "degraded":
-            lines.append("[WARN] System degraded - check diagnostic warnings")
+            lines.append("[WARN] Sistema degradado: veja os avisos acima")
         else:
-            lines.append("[FAIL] System error - check cache and source diagnostics")
+            lines.append("[FAIL] Erro no sistema: veja o cache e as fontes")
 
         lines.append("")
         return "\n".join(lines)

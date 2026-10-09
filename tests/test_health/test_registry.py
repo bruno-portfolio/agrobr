@@ -97,3 +97,16 @@ async def test_sonda_do_comexstat_valida_a_cadeia_com_o_intermediario_fixado(mon
 def test_config_recusa_expected_status_que_nao_tinha_efeito():
     with pytest.raises(TypeError, match="expected_status"):
         SourceHealthConfig(Fonte.CEPEA, "https://exemplo", expected_status=204)
+
+
+async def test_sonda_que_responde_sai_em_portugues(monkeypatch):
+    original = httpx.AsyncClient
+
+    def fabrica(**kwargs):
+        return original(transport=httpx.MockTransport(lambda _: httpx.Response(200)), **kwargs)
+
+    monkeypatch.setattr(httpx, "AsyncClient", fabrica)
+    resultado = await checker._check_http(HEALTH_REGISTRY[Fonte.COMEXSTAT])
+
+    assert (resultado.status, resultado.message) == (checker.CheckStatus.OK, "COMEXSTAT respondeu")
+    assert checker.format_results([resultado]).splitlines()[0] == "Resultado do health check"

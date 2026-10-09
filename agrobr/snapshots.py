@@ -168,7 +168,7 @@ async def create_snapshot(
         raise ValueError(f"Invalid snapshot name: {name!r}")
 
     if snapshot_path.exists():
-        raise ValueError(f"Snapshot '{name}' already exists")
+        raise ValueError(f"Snapshot '{name}' já existe")
 
     snapshots_dir.mkdir(parents=True, exist_ok=True)
 
@@ -191,7 +191,7 @@ async def create_snapshot(
             with open(staging / "manifest.json", "w", encoding="utf-8") as stream:
                 json.dump(manifest.to_dict(), stream, indent=2, ensure_ascii=False)
             if snapshot_path.exists():
-                raise ValueError(f"Snapshot '{name}' already exists")
+                raise ValueError(f"Snapshot '{name}' já existe")
             atomic.replace_with_retry(staging, snapshot_path)
         except OSError as exc:
             raise SnapshotError(
