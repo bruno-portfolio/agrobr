@@ -52,8 +52,9 @@ DESCRICOES = {
     "safra": "Token de safra publicado, inclusive grafias anômalas; nunca derivado do ano da referência.",
     "tecnologia": "Qualificação alta/média/baixa quando explícita no sistema; nula se ausente.",
     "categoria": (
-        "Classificação auxiliar pela seção publicada (IV e V: custos_fixos; II, III e VI: outros) "
-        "e, no custeio, pelo rótulo normalizado; item e seção conservam os rótulos publicados."
+        "Classificação auxiliar pela seção publicada (IV e V: custos_fixos; II, III e VI: outros), "
+        "no custeio pelo rótulo normalizado e, nas linhas de total, pelo rótulo do total; item e seção "
+        "conservam os rótulos publicados."
     ),
     "item": "Descrição literal da linha, inclusive espaços, receitas e totais.",
     "unidade": "Cabeçalho literal da coluna de custo por hectare.",
@@ -70,7 +71,10 @@ DESCRICOES = {
     "sistema": "Descrição publicada do sistema de produção.",
     "linha": "Número físico da linha na aba, base 1.",
     "tipo_linha": "item, subtotal ou total publicado; somar indiscriminadamente duplica componentes.",
-    "secao": "Último cabeçalho romano de seção publicado, quando identificado.",
+    "secao": (
+        "Último cabeçalho romano de seção publicado, quando identificado; nulo nas linhas de total "
+        "(CUSTO ...), que somam várias seções."
+    ),
     "unidade_produto": "Cabeçalho literal da unidade de produção, por exemplo CUSTO /  60 kg, R$/1 kg ou (R$/t); sem equivalência presumida.",
     "valor_unidade_produto": "Custo pela unidade de produção publicada, não preço unitário de insumo.",
     "participacao_cv_pct": "Participação publicada na base custo variável; CV não é COE.",

@@ -184,9 +184,17 @@ def inventory(
     return contexts, rejected
 
 
-def select(
+LIMITE_DE_ROTULOS = 15
+
+
+def lista_curta(itens: list[str]) -> str:
+    resto = len(itens) - LIMITE_DE_ROTULOS
+    return ", ".join(itens[:LIMITE_DE_ROTULOS]) + (f" e mais {resto}" if resto > 0 else "")
+
+
+def candidatos(
     contexts: list[models.ContextoCusto], query: models.ConsultaCusto
-) -> models.ContextoCusto:
+) -> list[models.ContextoCusto]:
     candidates = []
     for candidate in contexts:
         if query.aba is not None and query.aba != candidate.aba:
@@ -200,6 +208,13 @@ def select(
         if query.safra is not None and query.safra != candidate.safra:
             continue
         candidates.append(candidate)
+    return candidates
+
+
+def select(
+    contexts: list[models.ContextoCusto], query: models.ConsultaCusto
+) -> models.ContextoCusto:
+    candidates = candidatos(contexts, query)
     if len(candidates) != 1:
         labels = [f"{c.aba}: {c.local}/{c.uf}, {c.referencia}" for c in candidates[:15]]
         raise InvalidParameterError(

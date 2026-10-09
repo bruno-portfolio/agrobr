@@ -326,7 +326,7 @@ def parse_selected(sheet: Aba, context: models.ContextoCusto) -> models.Resultad
             sistema=context.sistema,
             linha=row_index + 1,
             tipo_linha=kind,
-            secao=section,
+            secao=None if kind == "total" else section,
             unidade_produto=literals.get("valor_unidade_produto"),
             valor_unidade_produto=values.get("valor_unidade_produto"),
             participacao_cv_pct=values.get("participacao_cv_pct"),

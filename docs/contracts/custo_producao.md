@@ -26,7 +26,9 @@ irrigado/sequeiro e feijão de 1ª/2ª+3ª safras. Consulte
 Os filtros devem identificar um único contexto. A exigência vale para qualquer produto com
 mais de uma planilha ou contexto candidato, inclusive contextos ainda pendentes de identificação.
 A API recusa a seleção ambígua com `InvalidParameterError` e informa os candidatos; não escolhe
-a planilha mais recente nem combina contextos automaticamente.
+a planilha mais recente nem combina contextos automaticamente. Com contexto ainda não identificado no workbook e sem
+`aba`, a mensagem lista as abas não identificadas e as identificadas que casam com os filtros (local/UF, ano e safra de
+cada uma), até 15 de cada lista e "e mais N" no resto, para copiar o `aba=`.
 
 Para café, informe `cafe_arabica` ou `cafe_conilon`. O pedido genérico `cafe`
 informa essas alternativas. O catálogo da fonte também inclui outras culturas
@@ -83,7 +85,8 @@ do Sul-PR-2008 (feijão, G e H).
 `VI` dão `outros`. No custeio, o rótulo decide pelo mapa, com acento, hífen e plural normalizados. Assim,
 "Mão-de-obra temporária c/encargos", "Mão-de-obra" e "Mão de obra" dão `mao_de_obra`; "Defensivos", "Agrotóxicos",
 "Mudas de Café", "Sementes e mudas", "Semente de arroz" e "Royalties" dão `insumos`; "Tratores e Colheitadeiras" e
-"Máquinas Próprias" dão `operacoes`. As linhas de total (`tipo_linha = "total"`) não herdam a seção. Rótulo de custeio
+"Máquinas Próprias" dão `operacoes`. As linhas de total (`tipo_linha = "total"`) somam várias seções: saem com `secao` nula e
+`categoria` pelo rótulo do total. Rótulo de custeio
 fora do mapa fica `outros` em todos os anos.
 
 A irrigação muda de categoria na troca de layout. Na planilha antiga, ela vem dentro da linha única "Operação com
@@ -120,7 +123,7 @@ Cruz das Almas-BA 2008 e 2010–2013 na mandioca (cabeçalho `R$t` não reconhec
 | `uf` | str | Não | — | UF publicada no contexto; se ausente em LOCAL:, usa o nome da aba com origem registrada. |
 | `safra` | str | Sim | — | Token de safra publicado, inclusive grafias anômalas; nunca derivado do ano da referência. |
 | `tecnologia` | str | Sim | — | Qualificação alta/média/baixa quando explícita no sistema; nula se ausente. |
-| `categoria` | str | Não | — | Classificação auxiliar pela seção publicada (IV e V: custos_fixos; II, III e VI: outros) e, no custeio, pelo rótulo normalizado; item e seção conservam os rótulos publicados. |
+| `categoria` | str | Não | — | Classificação auxiliar pela seção publicada (IV e V: custos_fixos; II, III e VI: outros), no custeio pelo rótulo normalizado e, nas linhas de total, pelo rótulo do total; item e seção conservam os rótulos publicados. |
 | `item` | str | Não | — | Descrição literal da linha, inclusive espaços, receitas e totais. |
 | `unidade` | str | Não | — | Cabeçalho literal da coluna de custo por hectare. |
 | `quantidade_ha` | float | Sim | — | Coeficiente físico por hectare, nulo quando não publicado; nunca derivado de custo. |
@@ -136,7 +139,7 @@ Cruz das Almas-BA 2008 e 2010–2013 na mandioca (cabeçalho `R$t` não reconhec
 | `sistema` | str | Não | — | Descrição publicada do sistema de produção. |
 | `linha` | int | Não | — | Número físico da linha na aba, base 1. |
 | `tipo_linha` | str | Não | — | item, subtotal ou total publicado; somar indiscriminadamente duplica componentes. |
-| `secao` | str | Sim | — | Último cabeçalho romano de seção publicado, quando identificado. |
+| `secao` | str | Sim | — | Último cabeçalho romano de seção publicado, quando identificado; nulo nas linhas de total (CUSTO ...), que somam várias seções. |
 | `unidade_produto` | str | Sim | — | Cabeçalho literal da unidade de produção, por exemplo CUSTO /  60 kg, R$/1 kg ou (R$/t); sem equivalência presumida. |
 | `valor_unidade_produto` | float | Sim | — | Custo pela unidade de produção publicada, não preço unitário de insumo. |
 | `participacao_cv_pct` | float | Sim | % CV | Participação publicada na base custo variável; CV não é COE. |

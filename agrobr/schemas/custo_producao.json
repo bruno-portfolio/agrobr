@@ -137,7 +137,7 @@
       "unit": null,
       "stable": true,
       "deprecated": false,
-      "description": "Classificação auxiliar pela seção publicada (IV e V: custos_fixos; II, III e VI: outros) e, no custeio, pelo rótulo normalizado; item e seção conservam os rótulos publicados.",
+      "description": "Classificação auxiliar pela seção publicada (IV e V: custos_fixos; II, III e VI: outros), no custeio pelo rótulo normalizado e, nas linhas de total, pelo rótulo do total; item e seção conservam os rótulos publicados.",
       "min_value": null,
       "max_value": null
     },
@@ -313,7 +313,7 @@
       "unit": null,
       "stable": true,
       "deprecated": false,
-      "description": "Último cabeçalho romano de seção publicado, quando identificado.",
+      "description": "Último cabeçalho romano de seção publicado, quando identificado; nulo nas linhas de total (CUSTO ...), que somam várias seções.",
       "min_value": null,
       "max_value": null
     },

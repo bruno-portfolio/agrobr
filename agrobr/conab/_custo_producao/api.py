@@ -27,7 +27,7 @@ from agrobr.utils.warnings import warn_once
 
 from . import models
 from ._acquisition import Acquisition
-from ._context import context, inventory, key, select
+from ._context import candidatos, context, inventory, key, lista_curta, select
 from ._parse import frame, parse_selected, totals
 from ._workbook import Workbook
 
@@ -204,6 +204,22 @@ def _sem_planilha(cultura: str | None, acquired: Acquisition) -> InvalidParamete
     )
 
 
+def _sem_unicidade(
+    unresolved: list[dict[str, Any]], identificadas: list[models.ContextoCusto]
+) -> InvalidParameterError:
+    abas = [str(r["aba"]) for r in unresolved]
+    rotulos = [
+        f"{c.aba} ({c.local}/{c.uf}, ano {c.ano_referencia}"
+        + (f", safra {c.safra})" if c.safra else ")")
+        for c in identificadas
+    ]
+    return InvalidParameterError(
+        f"Catálogo contém {len(abas)} aba(s) com contexto não identificado, e a consulta não escolhe sem "
+        f"provar unicidade: {lista_curta(abas)}. Abas identificadas que casam com o filtro ({len(rotulos)}): "
+        f"{lista_curta(rotulos) or 'nenhuma'}. Selecione a aba exata com aba= (catalogo_custos lista todas)."
+    )
+
+
 async def _load(
     query: models.ConsultaCusto, acquired: Acquisition, *, use_cache: bool = True
 ) -> tuple[models.ResultadoCusto, dict[str, Any], int, int]:
@@ -227,9 +243,7 @@ async def _load(
         else:
             contexts, unresolved = inventory(book, resource)
         if unresolved and query.aba is None:
-            raise InvalidParameterError(
-                "Catálogo contém contextos não identificados; selecione aba exata de catalogo_custos para comprovar unicidade"
-            )
+            raise _sem_unicidade(unresolved, candidatos(contexts, query))
         if query.aba is not None and any(r["aba"] == query.aba for r in unresolved):
             raise ParseError(
                 source="conab_custo",

@@ -26,7 +26,10 @@ irrigated/upland rice, and first/second+third crop beans. Call
 The filters must identify a single context. This requirement applies to any product with
 multiple candidate workbooks or contexts, including contexts awaiting identification.
 The API rejects ambiguous selections with `InvalidParameterError` and lists the candidates;
-it does not select the latest workbook or combine contexts automatically.
+it does not select the latest workbook or combine contexts automatically. With a context not yet identified in the
+workbook and no `aba`, the message lists the unidentified sheets and the identified ones that match the filters
+(location/state, year and season of each), up to 15 per list and "e mais N" ("and N more") for the rest, so `aba=` can
+be copied.
 
 For coffee, pass `cafe_arabica` or `cafe_conilon`. The generic `cafe` request
 lists these alternatives. The source catalog also includes other agricultural
@@ -84,8 +87,8 @@ S. Mateus do Sul-PR-2008 (beans, G and H).
 `II`, `III` and `VI` give `outros`. In the operating costs (`I`), the label decides through the map, with accents, hyphens
 and plurals normalized. So "Mão-de-obra temporária c/encargos", "Mão-de-obra" and "Mão de obra" give `mao_de_obra`;
 "Defensivos", "Agrotóxicos", "Mudas de Café", "Sementes e mudas", "Semente de arroz" and "Royalties" give `insumos`;
-"Tratores e Colheitadeiras" and "Máquinas Próprias" give `operacoes`. Total rows (`tipo_linha = "total"`) do not inherit
-the section. An operating-cost label outside the map stays `outros` in every year.
+"Tratores e Colheitadeiras" and "Máquinas Próprias" give `operacoes`. Total rows (`tipo_linha = "total"`) add up
+several sections: they come out with a null `secao` and `categoria` from the total's label. An operating-cost label outside the map stays `outros` in every year.
 
 Irrigation changes category when the layout changes. In the old spreadsheet, it is inside the single line "Operação com
 máquinas próprias" (sugarcane, S. M. dos Campos-AL-2017), which gives `operacoes`; in the new layout, it is the subitem
