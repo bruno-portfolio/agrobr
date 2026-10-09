@@ -69,7 +69,7 @@ a single column. For the other 16 catalogued archived revisions, the reading is 
 | `data_precos` | datetime | Yes | Price date from an Excel date cell; null for textual references. |
 | `produtividade` | float | Yes | Published productivity without unit conversion. |
 | `unidade_produtividade` | str | Yes | Literal productivity unit, unrestricted text. |
-| `secao` | str | Yes | Published section heading, including family property management. |
+| `secao` | str | Yes | Published section heading, including family property management; the first total after the heading closes the section and keeps it; the following totals (CUSTO ...), which add up several sections, are null. |
 | `item` | str | No | Literal row label, including original whitespace and signs. |
 | `tipo_linha` | str | No | item, total or secao; summing all row types double counts components. |
 | `linha` | int | No | Physical worksheet row, starting at 1. |
@@ -82,7 +82,7 @@ a single column. For the other 16 catalogued archived revisions, the reading is 
 | `planilha` | str | No | Exact resource identifier in the catalogue. |
 | `aba` | str | No | Literal source worksheet name. |
 
-Pandas uses the installed version's default text dtype (`object` in pandas 2, `str` in 3), nullable `Int64`, `float64` and `datetime64[ns]`, in the order above. Excel percentages are converted to percentage points only when the cell format is a percentage. Zeros, negative values and nulls are retained. Sections and totals are not recomputed.
+Pandas uses the installed version's default text dtype (`object` in pandas 2, `str` in 3), nullable `Int64`, `float64` and `datetime64[ns]`, in the order above. Excel percentages are converted to percentage points only when the cell format is a percentage. Zeros, negative values and nulls are retained. Sections and totals are not recomputed. The first total after a section heading closes that section and keeps `secao` (for example, `TOTAL DAS DESPESAS FINANCEIRAS (C)` under `III - DESPESAS FINANCEIRAS`); the following totals, up to the next heading, add up several sections (`CUSTO VARIÁVEL (A+B+C=D)`, `CUSTO TOTAL (H+I=J)` and the like) and have a null `secao`.
 
 ## Observed units
 

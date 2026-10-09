@@ -208,7 +208,7 @@
       "unit": null,
       "stable": true,
       "deprecated": false,
-      "description": "Cabeçalho publicado da seção, romano ou gestão da propriedade familiar.",
+      "description": "Cabeçalho publicado da seção, romano ou gestão da propriedade familiar; o primeiro total após o cabeçalho fecha a seção e a mantém; os totais seguintes (CUSTO ...), que somam várias seções, saem nulos.",
       "min_value": null,
       "max_value": null
     },

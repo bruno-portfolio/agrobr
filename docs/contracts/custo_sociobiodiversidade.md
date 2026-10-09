@@ -69,7 +69,7 @@ açaí, os layouts antigos e novos têm duas colunas monetárias; nenhum publica
 | `data_precos` | datetime | Sim | Data publicada em célula datada de preços; nula quando só há referência textual. |
 | `produtividade` | float | Sim | Produtividade publicada, sem conversão entre bases. |
 | `unidade_produtividade` | str | Sim | Unidade literal publicada da produtividade, sem enum ou conversão. |
-| `secao` | str | Sim | Cabeçalho publicado da seção, romano ou gestão da propriedade familiar. |
+| `secao` | str | Sim | Cabeçalho publicado da seção, romano ou gestão da propriedade familiar; o primeiro total após o cabeçalho fecha a seção e a mantém; os totais seguintes (CUSTO ...), que somam várias seções, saem nulos. |
 | `item` | str | Não | Rótulo publicado da linha, preservando espaços e sinais. |
 | `tipo_linha` | str | Não | item, total ou secao; somar linhas indiscriminadamente duplica componentes. |
 | `linha` | int | Não | Número físico da linha na aba, base 1. |
@@ -82,7 +82,7 @@ açaí, os layouts antigos e novos têm duas colunas monetárias; nenhum publica
 | `planilha` | str | Não | Identificador exato do recurso selecionado no catálogo. |
 | `aba` | str | Não | Nome literal da aba de origem. |
 
-Pandas usa o dtype de texto padrão da versão instalada (`object` no pandas 2, `str` no 3), `Int64` nulável, `float64` e `datetime64[ns]`, na ordem acima. Percentuais Excel viram pontos percentuais somente quando a célula tem formato percentual. Zeros, negativos e nulos são preservados. Seções e totais não são recalculados.
+Pandas usa o dtype de texto padrão da versão instalada (`object` no pandas 2, `str` no 3), `Int64` nulável, `float64` e `datetime64[ns]`, na ordem acima. Percentuais Excel viram pontos percentuais somente quando a célula tem formato percentual. Zeros, negativos e nulos são preservados. Seções e totais não são recalculados. O primeiro total depois de um cabeçalho de seção fecha essa seção e conserva `secao` (por exemplo, `TOTAL DAS DESPESAS FINANCEIRAS (C)` em `III - DESPESAS FINANCEIRAS`); os totais seguintes, até o próximo cabeçalho, somam várias seções (`CUSTO VARIÁVEL (A+B+C=D)`, `CUSTO TOTAL (H+I=J)` e semelhantes) e saem com `secao` nula.
 
 ## Bases observadas
 

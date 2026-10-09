@@ -163,6 +163,7 @@ def parse_selected(
     source_cells = []
     notes = []
     section = None
+    section_closed = False
     for row_number in range(start, len(sheet.linhas)):
         row = sheet.linhas[row_number]
         label = row[mapping["item"][0]]
@@ -176,12 +177,12 @@ def parse_selected(
             notes.append({"linha": row_number + 1, "texto": label})
             continue
         if kind == "secao":
-            section = label
+            section, section_closed = label, False
         try:
             observations.append(
                 models.ObservacaoSociobio(
                     **base,
-                    secao=section,
+                    secao=None if kind == "total" and section_closed else section,
                     item=label,
                     tipo_linha=kind,
                     linha=row_number + 1,
@@ -195,6 +196,7 @@ def parse_selected(
             )
         except ValidationError as error:
             raise fail(sheet.nome, f"Linha {row_number + 1}: {error}") from error
+        section_closed = section_closed or kind == "total"
         source_cells.append({"linha": row_number + 1, "celulas": cells})
     if not observations:
         raise fail(sheet.nome, "Aba sem observações reconhecidas")

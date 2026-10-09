@@ -233,6 +233,41 @@ async def test_catalogo_contextos_mantem_recusas_nominais(monkeypatch):
     assert tipos.astype(str).tolist() == ["Int64", "Int64", "float64", "datetime64[ns]"]
 
 
+@pytest.mark.parametrize(
+    ("arquivo", "aba", "total_de_secao", "custo_agregado"),
+    [
+        ("acai.xlsx", "Codajás-AM-2008", 27, 28),
+        ("acai_2025.xlsx", "Boca do Acre-AM-2024", 42, 43),
+    ],
+)
+def test_total_de_secao_mantem_secao_e_custo_agregado_sai_nulo(
+    arquivo, aba, total_de_secao, custo_agregado
+):
+    book = WorkbookSociobio((helpers.SOCIOBIO_GOLDEN / arquivo).read_bytes())
+    try:
+        sheet = book.read(aba)
+    finally:
+        book.close()
+    resource = models.RecursoCusto(
+        cultura="acai",
+        planilha="literal",
+        titulo="literal",
+        pagina_url="https://www.gov.br/conab/literal",
+    )
+    context = _sociobio_context.context(sheet, resource, 0)
+    totais = {
+        row.linha: row
+        for row in _sociobio_parse.parse_selected(sheet, context).observacoes
+        if row.tipo_linha == "total"
+    }
+
+    assert totais[total_de_secao].secao == "III - DESPESAS FINANCEIRAS"
+    assert totais[custo_agregado].secao is None
+    assert {linha for linha, row in totais.items() if row.secao is None} == {
+        linha for linha, row in totais.items() if "+" in row.item
+    }
+
+
 @pytest.mark.parametrize("nome", ["custo_producao", "custo_sociobiodiversidade"])
 def test_coluna_duplicada_vira_violacao_de_contrato(nome):
     contrato = contracts.get_contract(nome)

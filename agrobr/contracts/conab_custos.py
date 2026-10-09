@@ -219,7 +219,11 @@ SOCIOBIO_DESCRIPTIONS = {
     "data_precos": "Data publicada em célula datada de preços; nula quando só há referência textual.",
     "produtividade": "Produtividade publicada, sem conversão entre bases.",
     "unidade_produtividade": "Unidade literal publicada da produtividade, sem enum ou conversão.",
-    "secao": "Cabeçalho publicado da seção, romano ou gestão da propriedade familiar.",
+    "secao": (
+        "Cabeçalho publicado da seção, romano ou gestão da propriedade familiar; o primeiro total "
+        "após o cabeçalho fecha a seção e a mantém; os totais seguintes (CUSTO ...), que somam "
+        "várias seções, saem nulos."
+    ),
     "item": "Rótulo publicado da linha, preservando espaços e sinais.",
     "tipo_linha": "item, total ou secao; somar linhas indiscriminadamente duplica componentes.",
     "linha": "Número físico da linha na aba, base 1.",
