@@ -216,7 +216,12 @@ DESMATAMENTO_DETER_V2 = DesmatamentoContract(
             type=contracts.ColumnType.INTEGER,
             nullable=True,
             stable=False,
-            description="Código IBGE do município (7 dígitos), a chave comum dos datasets municipais; nulo onde a linha não é de município.",
+            description=(
+                "Código IBGE do município (7 dígitos), a chave comum dos datasets municipais, derivado de "
+                "municipio_id; sem ele (DETER Cerrado, cuja camada não traz o código), pelo nome inteiro "
+                "de municipio na UF (normalize.resolver_municipio). Nulo onde a linha não é de município "
+                "ou o nome não está no cadastro, com aviso."
+            ),
         ),
     ],
     guarantees=[

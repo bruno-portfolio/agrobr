@@ -10,6 +10,7 @@ import pytest
 
 from agrobr import datasets
 from agrobr import desmatamento as desmatamento_source
+from agrobr.normalize import municipalities, regions
 from tests.helpers import (
     assert_replay_samples,
     assert_replay_served,
@@ -58,9 +59,17 @@ async def test_desmatamento_agregado(case_id: str, monkeypatch: pytest.MonkeyPat
     assert_replay_structure(frame.drop(columns="cod_municipio", errors="ignore"), case)
     assert_replay_samples(frame, case)
     if "cod_municipio" in frame:
-        assert frame["cod_municipio"].astype(object).where(
-            frame["cod_municipio"].notna(), None
-        ).tolist() == [None if pd.isna(codigo) else int(codigo) for codigo in frame["municipio_id"]]
+        colunas = ["municipio_id", "municipio", "uf", "cod_municipio"]
+        for municipio_id, municipio, uf, codigo in frame[colunas].itertuples(index=False):
+            if not pd.isna(municipio_id):
+                assert codigo == int(municipio_id)
+                continue
+            info = municipalities.ibge_para_municipio(int(codigo))
+            assert info is not None
+            assert (regions.remover_acentos(info["nome"]).upper(), info["uf"]) == (
+                regions.remover_acentos(municipio).upper(),
+                uf,
+            )
     assert meta.selected_source == f"terrabrasilis_{case['selection']['tipo']}"
     coverage = meta.source_details["coverage"]
     assert coverage["status"] == "reconciled"

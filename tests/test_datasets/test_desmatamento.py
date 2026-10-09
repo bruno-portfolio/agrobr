@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import copy
+import warnings
 from unittest.mock import AsyncMock
 
 import pandas as pd
@@ -11,6 +13,7 @@ from agrobr.datasets.desmatamento import (
     DesmatamentoDataset,
 )
 from agrobr.exceptions import ContractViolationError, InvalidParameterError
+from agrobr.normalize import municipalities, regions
 from tests.helpers import (
     collect_failures,
     desmatamento_features,
@@ -168,3 +171,89 @@ async def test_selecao_acima_do_limite_recusada_antes_da_descarga(monkeypatch):
         assert not frame.empty
         hits.append(sum(request.url.params.get("resultType") == "hits" for request, _ in calls))
     assert hits[0] == hits[1] + 1
+
+
+def _avisos_de_codigo(avisos: list[warnings.WarningMessage]) -> list[str]:
+    return [str(aviso.message) for aviso in avisos if "cod_municipio" in str(aviso.message)]
+
+
+async def _deter_cerrado(monkeypatch, features):
+    install_desmatamento_wfs(monkeypatch, features)
+    with warnings.catch_warnings(record=True) as avisos, sem_excecao():
+        warnings.simplefilter("always")
+        frame, meta = await DesmatamentoDataset().fetch("Cerrado", tipo="deter", return_meta=True)
+    return frame, meta, _avisos_de_codigo(avisos)
+
+
+async def test_deter_cerrado_resolve_cod_municipio_pelo_nome(monkeypatch):
+    features = desmatamento_features("deter_cerrado")
+    frame, meta, avisos = await _deter_cerrado(monkeypatch, features)
+    assert frame["municipio_id"].isna().all() and frame["cod_municipio"].notna().all()
+    for municipio, uf, codigo in frame[["municipio", "uf", "cod_municipio"]].itertuples(
+        index=False
+    ):
+        info = municipalities.ibge_para_municipio(int(codigo))
+        assert info is not None
+        assert (regions.remover_acentos(info["nome"]).upper(), info["uf"]) == (
+            regions.remover_acentos(municipio).upper(),
+            uf,
+        )
+    assert meta.source_details["aggregation"]["cod_municipio_pelo_nome"] == {
+        "pares_pelo_nome": 4,
+        "pares_sem_codigo": [],
+        "linhas_sem_codigo": 0,
+    }
+    assert avisos == [] and not [a for a in meta.validation_warnings if "cod_municipio" in a]
+
+
+async def test_deter_sem_codigo_pelo_nome_avisa_uma_vez_com_a_contagem(monkeypatch):
+    features = copy.deepcopy(desmatamento_features("deter_cerrado"))
+    nomes = [
+        "MUNICIPIO INEXISTENTE",
+        "SANTO ANTÔNIO DO LEVERGER",
+        "FORTALEZA DO TABOCÃO",
+        "MUNICIPIO INEXISTENTE",
+    ]
+    for feature, nome in zip(features, nomes, strict=False):
+        feature["properties"]["municipality"] = nome
+    frame, meta, avisos = await _deter_cerrado(monkeypatch, features)
+    codigos = dict(zip(zip(frame["municipio"], frame["uf"]), frame["cod_municipio"], strict=True))
+    assert codigos[("SANTO ANTÔNIO DO LEVERGER", "MT")] == 5107800
+    assert codigos[("FORTALEZA DO TABOCÃO", "TO")] == 1708254
+    assert pd.isna(codigos[("MUNICIPIO INEXISTENTE", "MT")])
+    assert pd.isna(codigos[("MUNICIPIO INEXISTENTE", "TO")])
+    aviso = (
+        "desmatamento: cod_municipio nulo em 2 linha(s) do DETER sem municipio_id, porque o nome "
+        "não está no cadastro de municípios na UF: MUNICIPIO INEXISTENTE/MT, "
+        "MUNICIPIO INEXISTENTE/TO"
+    )
+    assert avisos == [aviso]
+    assert [a for a in meta.validation_warnings if "cod_municipio" in a] == [aviso]
+
+
+def test_deter_com_municipio_id_nao_usa_o_nome_e_resolve_cada_par_uma_vez(monkeypatch):
+    chamadas = []
+    resolver = municipalities.resolver_municipio
+
+    def contar(*argumentos):
+        chamadas.append(argumentos)
+        return resolver(*argumentos)
+
+    monkeypatch.setattr(municipalities, "resolver_municipio", contar)
+    source = pd.concat(
+        [
+            desmatamento_frame("deter", municipio="Nome Errado"),
+            desmatamento_frame("deter", municipio_id=None),
+            desmatamento_frame("deter", municipio_id=None, data=pd.Timestamp("2024-06-16")),
+        ],
+        ignore_index=True,
+    )
+    frame, details = _desmatamento_aggregation.aggregate(source, "deter")
+    assert len(frame) == 3 and frame["cod_municipio"].tolist() == [1500602] * 3
+    assert chamadas == [("Altamira", "PA")]
+    assert details["cod_municipio_pelo_nome"] == {
+        "pares_pelo_nome": 1,
+        "pares_sem_codigo": [],
+        "linhas_sem_codigo": 0,
+    }
+    assert _desmatamento_aggregation.aviso_cod_municipio(details) is None

@@ -6,8 +6,8 @@ from typing import Any, Literal
 import pandas as pd
 
 from agrobr.contracts import desmatamento as contracts
-from agrobr.exceptions import ContractViolationError
-from agrobr.normalize import regions
+from agrobr.exceptions import ContractViolationError, InvalidParameterError
+from agrobr.normalize import municipalities, regions
 
 
 def _fail(tipo: str, reason: str) -> ContractViolationError:
@@ -58,6 +58,43 @@ def _complete_sum(values: pd.Series) -> float:
     return float("nan") if values.isna().any() else math.fsum(values)
 
 
+def _codigo_pelo_nome(municipio: str, uf: str) -> int | None:
+    try:
+        return municipalities.resolver_municipio(municipio, uf)["codigo_ibge"]
+    except InvalidParameterError:
+        return None
+
+
+def _cod_municipio_deter(output: pd.DataFrame) -> tuple[pd.Series, dict[str, Any]]:
+    """Código IBGE de ``municipio_id``; sem ele (DETER Cerrado), pelo nome inteiro na UF.
+
+    Resolve cada par (``municipio``, ``uf``) distinto uma vez; par fora do cadastro fica nulo.
+    """
+    pelo_nome = output["municipio_id"].isna() & output["municipio"].notna()
+    pares = list(zip(output["municipio"], output["uf"], strict=True))
+    distintos = dict.fromkeys(par for par, alvo in zip(pares, pelo_nome, strict=True) if alvo)
+    codigos = {par: _codigo_pelo_nome(*par) for par in distintos}
+    resolvidos = pd.Series([codigos.get(par) for par in pares], index=output.index, dtype="Int64")
+    cod_municipio = regions.cod_municipio(output["municipio_id"]).where(~pelo_nome, resolvidos)
+    sem_codigo = sorted(par for par, codigo in codigos.items() if codigo is None)
+    return cod_municipio, {
+        "pares_pelo_nome": len(codigos),
+        "pares_sem_codigo": [f"{municipio}/{uf}" for municipio, uf in sem_codigo],
+        "linhas_sem_codigo": int((pelo_nome & cod_municipio.isna()).sum()),
+    }
+
+
+def aviso_cod_municipio(details: dict[str, Any]) -> str | None:
+    pelo_nome = details.get("cod_municipio_pelo_nome")
+    if not pelo_nome or not pelo_nome["linhas_sem_codigo"]:
+        return None
+    return (
+        f"desmatamento: cod_municipio nulo em {pelo_nome['linhas_sem_codigo']} linha(s) do DETER "
+        "sem municipio_id, porque o nome não está no cadastro de municípios na UF: "
+        f"{', '.join(pelo_nome['pares_sem_codigo'])}"
+    )
+
+
 def aggregate(
     frame: pd.DataFrame, tipo: Literal["prodes", "deter"]
 ) -> tuple[pd.DataFrame, dict[str, Any]]:
@@ -92,7 +129,7 @@ def aggregate(
         heterogeneous[name] = int((groups[name].nunique(dropna=False) > 1).sum())
     output = output.reset_index()
     if tipo == "deter":
-        output["cod_municipio"] = regions.cod_municipio(output["municipio_id"])
+        output["cod_municipio"], details["cod_municipio_pelo_nome"] = _cod_municipio_deter(output)
     output = output[contract.list_columns()]
     for column in contract.columns:
         if column.type.value == "str":

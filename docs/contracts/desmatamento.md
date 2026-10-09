@@ -32,7 +32,7 @@ Desmatamento consolidado (PRODES) e alertas em tempo real (DETER) por bioma.
 | `uf` | STRING | Não | — | UF válida |
 | `municipio` | STRING | Sim | — | — |
 | `municipio_id` | STRING | Sim | — | — |
-| `cod_municipio` | INTEGER | Sim | — | código IBGE de 7 dígitos, do `municipio_id` |
+| `cod_municipio` | INTEGER | Sim | — | código IBGE de 7 dígitos, do `municipio_id`; sem ele (DETER Cerrado, cuja camada não traz o código), pelo nome inteiro de `municipio` na UF, com `normalize.resolver_municipio`; nulo onde a linha não é de município ou o nome não está no cadastro, com aviso |
 | `area_km2` | FLOAT | Sim | km² | ≥ 0 |
 | `satelite` | STRING | Sim | — | — |
 | `sensor` | STRING | Sim | — | — |

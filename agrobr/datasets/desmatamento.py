@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import warnings
 from datetime import UTC, date, datetime
 from typing import Any, Literal, overload
 
@@ -183,6 +184,9 @@ class DesmatamentoDataset(base.BaseDataset):
         )
         meta.source_details["aggregation"] = aggregation
         meta.source_details["dataset_query"] = validated.model_dump(mode="json")
+        if aviso := _desmatamento_aggregation.aviso_cod_municipio(aggregation):
+            meta.validation_warnings.append(aviso)
+            warnings.warn(aviso, UserWarning, stacklevel=3)
         meta.timestamp = datetime.now(UTC)
         return result.finalize_result(frame, meta, as_polars=as_polars, return_meta=return_meta)
 

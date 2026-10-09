@@ -128,7 +128,7 @@ gdf = await agrobr.desmatamento.deter_geo(
 - The Source API (`agrobr.desmatamento.*`) returns individual polygons (fine granularity); the `datasets.desmatamento` dataset delivers aggregates according to the contract: annual by uf/class/biome for PRODES and daily by uf/municipality/class/biome for DETER
 - After the BiomasBR migration (03/2026), the PRODES layers for Amazonia, Pantanal, Caatinga and Mata Atlantica are temporarily broken in the INPE GeoServer (ServiceException for any client); Cerrado and Pampa operational
 - DETER is an alert system, not a consolidation one — there may be overlap
-- In DETER Cerrado, `municipio_id` is always null because the source layer does not provide this identifier.
+- In DETER Cerrado, `municipio_id` is always null because the source layer does not provide this identifier. The `datasets.desmatamento(tipo="deter")` dataset fills `cod_municipio` from the full `municipio` name within the state (`normalize.resolver_municipio`, once per municipality/state pair); a pair outside the registry leaves `cod_municipio` null, with one warning per query (`UserWarning` and `meta.validation_warnings`) that counts the rows and lists the pairs, and the count in `source_details["aggregation"]["cod_municipio_pelo_nome"]`. `municipio_id` and the key do not change. The source (`desmatamento.deter`) does not publish `cod_municipio`.
 - `prodes_geo()` and `deter_geo()` return geometry (~10x more volume than tabular) — use filters to reduce data
 
 ## Cache and Updating

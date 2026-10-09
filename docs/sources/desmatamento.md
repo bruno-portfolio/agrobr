@@ -128,7 +128,7 @@ gdf = await agrobr.desmatamento.deter_geo(
 - Source API (`agrobr.desmatamento.*`) retorna poligonos individuais (granularidade fina); o dataset `datasets.desmatamento` entrega agregados conforme o contrato: anual por uf/classe/bioma no PRODES e diário por uf/município/classe/bioma no DETER
 - Pos-migracao BiomasBR (03/2026), os layers PRODES de Amazonia, Pantanal, Caatinga e Mata Atlantica estao temporariamente quebrados no GeoServer do INPE (ServiceException para qualquer cliente); Cerrado e Pampa operacionais
 - DETER e sistema de alerta, nao de consolidacao — pode haver sobreposicao
-- No DETER Cerrado, `municipio_id` é sempre nulo porque a camada da fonte não fornece esse identificador.
+- No DETER Cerrado, `municipio_id` é sempre nulo porque a camada da fonte não fornece esse identificador. O dataset `datasets.desmatamento(tipo="deter")` preenche `cod_municipio` pelo nome inteiro de `municipio` na UF (`normalize.resolver_municipio`, uma vez por par município/UF); par fora do cadastro deixa `cod_municipio` nulo, com um aviso por consulta (`UserWarning` e `meta.validation_warnings`) que conta as linhas e lista os pares, e a contagem em `source_details["aggregation"]["cod_municipio_pelo_nome"]`. `municipio_id` e a chave não mudam. A fonte (`desmatamento.deter`) não publica `cod_municipio`.
 - `prodes_geo()` e `deter_geo()` retornam geometria (~10x mais volume que tabular) — usar filtros para reduzir dados
 
 ## Cache e Atualizacao

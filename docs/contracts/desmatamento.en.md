@@ -32,7 +32,7 @@ Consolidated deforestation (PRODES) and real-time alerts (DETER) by biome.
 | `uf` | STRING | No | — | valid state |
 | `municipio` | STRING | Yes | — | — |
 | `municipio_id` | STRING | Yes | — | — |
-| `cod_municipio` | INTEGER | Yes | — | 7-digit IBGE code, from `municipio_id` |
+| `cod_municipio` | INTEGER | Yes | — | 7-digit IBGE code, from `municipio_id`; without it (DETER Cerrado, whose layer does not carry the code), from the full `municipio` name within the state, with `normalize.resolver_municipio`; null where the row is not a municipality or the name is not in the registry, with a warning |
 | `area_km2` | FLOAT | Yes | km² | ≥ 0 |
 | `satelite` | STRING | Yes | — | — |
 | `sensor` | STRING | Yes | — | — |
