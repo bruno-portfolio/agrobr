@@ -84,7 +84,7 @@ def _records_to_df(records: list[dict[str, Any]], safra: str) -> pd.DataFrame:
             parser_version=PARSER_VERSION,
             reason=f"Nenhum registro extraído da tabela de cultivares (safra {safra})",
         )
-    df = pd.DataFrame(records, columns=models.COLUNAS_SAIDA)
+    df = pd.DataFrame(records, columns=models.COLUNAS_SAIDA).astype({"ciclo_dias": "Int64"})
     logger.info("rio_verde_parse_ok", safra=safra, records=len(df))
     return df
 
