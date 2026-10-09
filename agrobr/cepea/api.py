@@ -29,6 +29,7 @@ from agrobr.exceptions import (
 from agrobr.models import Indicador, MetaInfo
 from agrobr.normalize import regions
 from agrobr.noticias_agricolas import parser as na_parser
+from agrobr.utils import validation
 from agrobr.utils.result import DataFrame, DataFrameResult, finalize_result
 from agrobr.utils.time import hoje, utcnow
 from agrobr.utils.warnings import warn_once
@@ -56,25 +57,9 @@ def _normalize_dates(
     inicio: str | date | None,
     fim: str | date | None,
 ) -> tuple[date, date]:
-    try:
-        if any(isinstance(value, datetime) and pd.isna(value) for value in (inicio, fim)):
-            raise TypeError
-        if isinstance(inicio, str):
-            inicio = datetime.strptime(inicio, "%Y-%m-%d").date()
-        elif isinstance(inicio, datetime):
-            inicio = inicio.date()
-        elif inicio is not None and not isinstance(inicio, date):
-            raise TypeError
-        if isinstance(fim, str):
-            fim = datetime.strptime(fim, "%Y-%m-%d").date()
-        elif isinstance(fim, datetime):
-            fim = fim.date()
-        elif fim is not None and not isinstance(fim, date):
-            raise TypeError
-    except (TypeError, ValueError) as exc:
-        raise InvalidParameterError(
-            "Datas inválidas. Use objetos date ou strings no formato YYYY-MM-DD."
-        ) from exc
+    if any(isinstance(value, datetime) and pd.isna(value) for value in (inicio, fim)):
+        raise InvalidParameterError("Datas inválidas: inicio e fim não aceitam NaT")
+    inicio, fim = validation.parse_data(inicio, "inicio"), validation.parse_data(fim, "fim")
     if fim is None:
         fim = _today()
     if inicio is None:
@@ -503,9 +488,9 @@ async def indicador(
         produto: Código do produto (ex: "soja", "milho", "boi_gordo").
         praca: Praça de cotação. Aceita slug de ``pracas()`` ou rótulo da fonte.
             ``None`` retorna todas.
-        inicio: Data inicial (ISO string ``AAAA-MM-DD`` ou ``date``). Default: 365 dias antes de
-            ``fim``.
-        fim: Data final. Default: hoje.
+        inicio: Data inicial (``date``, ``datetime`` ou texto ``AAAA-MM-DD`` ou ``DD/MM/AAAA``).
+            A hora é descartada. Default: 365 dias antes de ``fim``.
+        fim: Data final, nos mesmos formatos de ``inicio``. Default: hoje.
         as_polars: Retorna ``polars.DataFrame`` em vez de pandas.
         validate_sanity: Confere unidade, faixa e variação temporal quando houver regra.
         force_refresh: Ignora cache e força fetch na fonte.

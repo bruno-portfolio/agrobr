@@ -35,8 +35,8 @@ async def indicador(
 |-----------|------|-------------|
 | `produto` | `str` | CEPEA product (22 available). See `produtos()` for the full list |
 | `praca` | `str \| None` | Quotation location. Accepts a slug from `pracas()` or the source display label; `None` returns all |
-| `inicio` | `str \| date \| None` | Start date (YYYY-MM-DD). Default: 365 days before `fim` |
-| `fim` | `str \| date \| None` | End date. Default: today |
+| `inicio` | `str \| date \| None` | Start date: `date`, `datetime` (the time is dropped), or `YYYY-MM-DD` or `DD/MM/YYYY` text. Default: 365 days before `fim` |
+| `fim` | `str \| date \| None` | End date, in the same formats as `inicio`. Default: today |
 | `as_polars` | `bool` | Return as polars.DataFrame |
 | `validate_sanity` | `bool` | Check unit, price range and temporal change when a rule exists. Default: `False` |
 | `force_refresh` | `bool` | Bypass cache and fetch fresh data |

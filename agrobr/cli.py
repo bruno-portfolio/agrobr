@@ -120,8 +120,12 @@ app.add_typer(cepea_app, name="cepea")
 )  # type: ignore[misc, untyped-decorator]
 def cepea_indicador(
     produto: str = typer.Argument(..., help="Produto (soja, milho, cafe, boi, etc)"),
-    inicio: str | None = typer.Option(None, "--inicio", "-i", help="Data inicio (YYYY-MM-DD)"),
-    fim: str | None = typer.Option(None, "--fim", "-f", help="Data fim (YYYY-MM-DD)"),
+    inicio: str | None = typer.Option(
+        None, "--inicio", "-i", help="Data de início (AAAA-MM-DD ou DD/MM/AAAA)"
+    ),
+    fim: str | None = typer.Option(
+        None, "--fim", "-f", help="Data de fim (AAAA-MM-DD ou DD/MM/AAAA)"
+    ),
     praca: str | None = typer.Option(None, "--praca", help="Praça do indicador"),
     ultimo: bool = typer.Option(
         False, "--ultimo", "-u", help="Último indicador, como cepea.ultimo (sem --inicio/--fim)"

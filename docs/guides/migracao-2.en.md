@@ -1805,12 +1805,14 @@ raise `TypeError`, naming the rejected argument also in `desmatamento.*`, `datas
 | `datasets.oferta_demanda_global` | `country`, `market_year`, `attributes`, `pivot` | `pais`, `ano_comercial`, `atributos`, `pivotar` |
 | `datasets.comercio_internacional` | `reporter`, `partner`, `freq` | `declarante`, `parceiro`, `frequencia` |
 
-`inicio` and `fim` accept `date`, `datetime` (the time is dropped) and `YYYY-MM-DD` text. `DD/MM/YYYY` text
-(`"01/02/2024"` is 1 February) works in BCB, B3, CFTC, Desmatamento, MapBiomas Alerta, the ANTT flow and their datasets;
-in `cepea.indicador`, `datasets.preco_diario`, `alt.anp_diesel.*`, `datasets.precos_diesel`, `inmet.estacao`,
-`inmet.historico_periodo`, station-mode `datasets.clima` and `nasa_power.clima_ponto`, it raises `InvalidParameterError`.
-Before, each source accepted its own format. The `ano_inicio`/`ano_fim` filter of the historical series rejects
-wrong types and inverted ranges before the network.
+In BCB, B3, CEPEA (`cepea.indicador`, `datasets.preco_diario` and the CLI), CFTC, Desmatamento, MapBiomas Alerta, the
+ANTT flow and their datasets, `inicio` and `fim` accept `date`, `datetime` (the time is dropped), and `YYYY-MM-DD` or
+`DD/MM/YYYY` text (`"01/02/2024"` is 1 February). `alt.anp_diesel.*` and `datasets.precos_diesel` accept `date` and
+`datetime`, but text must use `YYYY-MM-DD`. `inmet.estacao`, `inmet.historico_periodo`, station-mode `datasets.clima`
+and `nasa_power.clima_ponto` accept `date` or `YYYY-MM-DD` text and reject `datetime`. In these ANP, INMET and NASA
+POWER sources, `DD/MM/YYYY` text raises `InvalidParameterError`. In CEPEA, month and day in text have two digits: `"2024-1-5"`, which 1.1.0 accepted, now raises
+`InvalidParameterError`; use `"2024-01-05"` or `"05/01/2024"`. Before, each source accepted its own format.
+The `ano_inicio`/`ano_fim` filter of the historical series rejects wrong types and inverted ranges before the network.
 
 Names that are a source's technical term, or that have no 2.0 counterpart, stay: in the Comtrade source, `reporter`,
 `partner`, `freq` and `require_complete`; in the USDA source, `country`, `market_year`, `attributes` and `pivot`, and the

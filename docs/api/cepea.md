@@ -34,8 +34,8 @@ async def indicador(
 |-----------|------|-----------|
 | `produto` | `str` | Produto CEPEA (22 disponíveis). Veja `produtos()` para lista completa |
 | `praca` | `str \| None` | Praça de cotação. Aceita o slug de `pracas()` ou o rótulo exibido pela fonte; `None` retorna todas |
-| `inicio` | `str \| date \| None` | Data inicial (YYYY-MM-DD). Default: 365 dias antes de `fim` |
-| `fim` | `str \| date \| None` | Data final. Default: hoje |
+| `inicio` | `str \| date \| None` | Data inicial: `date`, `datetime` (a hora é descartada) ou texto `AAAA-MM-DD` ou `DD/MM/AAAA`. Default: 365 dias antes de `fim` |
+| `fim` | `str \| date \| None` | Data final, nos mesmos formatos de `inicio`. Default: hoje |
 | `as_polars` | `bool` | Retornar como polars.DataFrame |
 | `validate_sanity` | `bool` | Conferir unidade, faixa de preço e variação temporal quando houver regra. Default: `False` |
 | `force_refresh` | `bool` | Ignorar cache e buscar dados frescos |

@@ -1791,12 +1791,15 @@ Os nomes antigos levantam `TypeError`, com o nome recusado também em `desmatame
 | `datasets.oferta_demanda_global` | `country`, `market_year`, `attributes`, `pivot` | `pais`, `ano_comercial`, `atributos`, `pivotar` |
 | `datasets.comercio_internacional` | `reporter`, `partner`, `freq` | `declarante`, `parceiro`, `frequencia` |
 
-`inicio` e `fim` aceitam `date`, `datetime` (a hora é descartada) e texto `AAAA-MM-DD`. O texto `DD/MM/AAAA`
-(`"01/02/2024"` é 1º de fevereiro) vale no BCB, na B3, no CFTC, no Desmatamento, no MapBiomas Alerta, no fluxo da ANTT e
-nos datasets deles; em `cepea.indicador`, `datasets.preco_diario`, `alt.anp_diesel.*`, `datasets.precos_diesel`,
-`inmet.estacao`, `inmet.historico_periodo`, `datasets.clima` no modo estação e `nasa_power.clima_ponto`, ele levanta
-`InvalidParameterError`. Antes, cada fonte aceitava um formato. O filtro `ano_inicio`/`ano_fim` da série histórica recusa tipo
-inválido e intervalo invertido antes da rede.
+No BCB, na B3, no CEPEA (`cepea.indicador`, `datasets.preco_diario` e a CLI), no CFTC, no Desmatamento, no MapBiomas
+Alerta, no fluxo da ANTT e nos datasets deles, `inicio` e `fim` aceitam `date`, `datetime` (a hora é descartada) e texto
+`AAAA-MM-DD` ou `DD/MM/AAAA` (`"01/02/2024"` é 1º de fevereiro). `alt.anp_diesel.*` e `datasets.precos_diesel` aceitam
+`date` e `datetime`, mas, para texto, exigem `AAAA-MM-DD`. `inmet.estacao`, `inmet.historico_periodo`, `datasets.clima`
+no modo estação e `nasa_power.clima_ponto` aceitam `date` ou texto `AAAA-MM-DD` e recusam `datetime`. Nessas fontes ANP,
+INMET e NASA POWER, texto `DD/MM/AAAA` levanta `InvalidParameterError`. No CEPEA, o mês e o dia do texto têm dois dígitos:
+`"2024-1-5"`, que a 1.1.0 aceitava, passa a levantar `InvalidParameterError`; use `"2024-01-05"` ou `"05/01/2024"`.
+Antes, cada fonte aceitava um formato. O filtro `ano_inicio`/`ano_fim` da série histórica recusa tipo inválido e intervalo
+invertido antes da rede.
 
 Ficam os nomes que são termo técnico da fonte ou que não têm par na 2.0: na fonte Comtrade, `reporter`, `partner`, `freq` e
 `require_complete`; na fonte USDA, `country`, `market_year`, `attributes` e `pivot`, e as colunas em inglês; `parameters`

@@ -30,7 +30,7 @@ agrobr health --formato json
 
 | Comando | Equivale a | Opções |
 |---|---|---|
-| `agrobr cepea indicador <produto>` | `cepea.indicador` | `--inicio`/`-i` e `--fim`/`-f` (`AAAA-MM-DD`), `--praca`, `--ultimo`/`-u`, `--formato` |
+| `agrobr cepea indicador <produto>` | `cepea.indicador` | `--inicio`/`-i` e `--fim`/`-f` (`AAAA-MM-DD` ou `DD/MM/AAAA`), `--praca`, `--ultimo`/`-u`, `--formato` |
 | `agrobr conab safras <produto>` | `conab.safras` | `--safra`/`-s` (`2025/26`), `--uf`/`-u`, `--levantamento` (≥ 1), `--formato` |
 | `agrobr conab balanco [produto]` | `conab.balanco` | `--safra`/`-s`, `--levantamento` (≥ 1), `--formato` |
 | `agrobr ibge pam <produto>` | `ibge.pam` | `--ano`/`-a` (`2023` ou `2020,2021,2022`), `--uf`/`-u`, `--nivel`/`-n` (`brasil`, `uf` ou `municipio`; padrão `uf`), `--formato` |

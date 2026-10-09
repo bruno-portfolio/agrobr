@@ -11,6 +11,7 @@ from agrobr.datasets.deterministic import get_snapshot, is_deterministic
 from agrobr.exceptions import SourceUnavailableError
 from agrobr.models import MetaInfo
 from agrobr.utils.result import DataFrame, DataFrameResult
+from agrobr.utils.validation import parse_data
 
 logger = _log.get_logger(__name__)
 
@@ -21,13 +22,18 @@ def _sem_cache(produto: str) -> bool:
     return get_store().indicadores_ultima_coleta(produto) is None
 
 
+def _passa_do_snapshot(fim: str | date | None, snapshot: str) -> bool:
+    if fim is None:
+        return True
+    return not pd.isna(fim) and parse_data(fim, "fim") > date.fromisoformat(snapshot)
+
+
 async def _fetch_cepea(produto: str, **kwargs: Any) -> tuple[pd.DataFrame, MetaInfo | None]:
     from agrobr import cepea
 
     if is_deterministic():
         snapshot = get_snapshot()
-        fim = kwargs.get("fim")
-        if snapshot is not None and (fim is None or str(fim) > snapshot):
+        if snapshot is not None and _passa_do_snapshot(kwargs.get("fim"), snapshot):
             kwargs["fim"] = snapshot
         raw = await cepea.indicador(produto, offline=True, return_meta=True, **kwargs)
         if raw[0].empty and _sem_cache(produto):
@@ -81,7 +87,7 @@ class PrecoDiarioDataset(BaseDataset):
         logger.info("dataset_fetch", dataset="preco_diario", produto=produto)
 
         snapshot = get_snapshot()
-        if snapshot and (fim is None or str(fim) > snapshot):
+        if snapshot and _passa_do_snapshot(fim, snapshot):
             fim = snapshot
 
         df, source_name, source_meta, attempted = await self._try_sources(
