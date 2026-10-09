@@ -137,6 +137,48 @@ def test_inteiros_do_assentamento_saem_int64_com_e_sem_nulo(tmp_path):
     assert frame["capacidade"].tolist() == [10, pd.NA]
 
 
+def test_area_sai_float64_mesmo_sem_decimal(tmp_path):
+    frame = parser.parse_assentamentos(_assentamentos(tmp_path, area_hecta=["12", "1"]))
+
+    assert str(frame["area_ha"].dtype) == "float64"
+    assert frame["area_ha"].tolist() == [12.0, 1.0]
+
+
+GOLDEN = Path(__file__).parents[1] / "golden_data" / "acervo_fundiario"
+FORA_DO_BRASIL = (10.0, 10.0, 10.1, 10.1)
+LEITURAS = {
+    "sigef": lambda bbox: parser.parse_sigef(
+        GOLDEN / "sigef_publico_df_20261001/response.zip", natureza="publico", bbox=bbox
+    ),
+    "sigef_geo": lambda bbox: parser.parse_sigef_geo(
+        GOLDEN / "sigef_publico_df_20261001/response.zip", natureza="publico", bbox=bbox
+    ),
+    "snci": lambda bbox: parser.parse_snci(GOLDEN / "snci_rr_20260922/response.zip", bbox=bbox),
+    "snci_geo": lambda bbox: parser.parse_snci_geo(
+        GOLDEN / "snci_rr_20260922/response.zip", bbox=bbox
+    ),
+    "assentamentos": lambda bbox: parser.parse_assentamentos(
+        GOLDEN / "assentamentos_20260922/response.zip", bbox=bbox
+    ),
+    "assentamentos_geo": lambda bbox: parser.parse_assentamentos_geo(
+        GOLDEN / "assentamentos_20260922/response.zip", bbox=bbox
+    ),
+}
+
+
+@pytest.mark.parametrize("leitura", list(LEITURAS))
+def test_vazio_sai_com_os_dtypes_do_cheio(leitura):
+    pytest.importorskip("geopandas")
+    texto = pd.Series([""]).dtype
+
+    cheio = LEITURAS[leitura](None)
+    vazio = LEITURAS[leitura](FORA_DO_BRASIL)
+
+    assert len(cheio) and vazio.empty
+    assert list(vazio.dtypes.items()) == list(cheio.dtypes.items())
+    assert [c for c in cheio.columns if cheio[c].dtype == object and cheio[c].dtype != texto] == []
+
+
 def test_inteiro_fracionario_levanta_parse_error_com_o_arquivo(tmp_path):
     zip_path = _assentamentos(tmp_path, capacidade=[1.5, 2.0])
 

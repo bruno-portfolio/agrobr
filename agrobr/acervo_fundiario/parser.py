@@ -179,6 +179,8 @@ def _coerce_numeric(
                         parser_version=PARSER_VERSION,
                         reason=f"{col} com valor não inteiro ({zip_path.name})",
                     ) from exc
+            else:
+                valores = valores.astype("float64")
             df[col] = valores
     return df
 
@@ -199,7 +201,12 @@ def _log_dirty_uf(df: pd.DataFrame, label: str) -> None:
 
 def _select_output(df: pd.DataFrame, output_cols: list[str]) -> pd.DataFrame:
     cols = [c for c in output_cols if c in df.columns]
-    return df[cols].reset_index(drop=True)
+    df = df[cols].reset_index(drop=True)
+    texto = pd.Series([""]).dtype
+    for col in cols:
+        if df[col].dtype == object:
+            df[col] = df[col].astype(texto)
+    return df
 
 
 def _make_geometries_valid(gdf: Any) -> Any:
