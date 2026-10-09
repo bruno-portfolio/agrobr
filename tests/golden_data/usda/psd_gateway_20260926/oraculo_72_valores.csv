@@ -1,0 +1,73 @@
+commodity_query,commodityCode,commodityName,country_query,countryCode,countryName,marketYear,calendarYear,month,attributeId,attributeName,unitId,unitDescription_literal,value,source_file,source_json_index
+soja,2222000,"Oilseed, Soybean",BR,BR,Brazil,2024,2026,04,28,Production,8,(1000 MT)           ,172500.0,OFF_USDA_soja_BR_2024.json,2
+soja,2222000,"Oilseed, Soybean",BR,BR,Brazil,2024,2026,04,88,Exports,8,(1000 MT)           ,103142.0,OFF_USDA_soja_BR_2024.json,5
+soja,2222000,"Oilseed, Soybean",BR,BR,Brazil,2024,2026,04,176,Ending Stocks,8,(1000 MT)           ,37688.0,OFF_USDA_soja_BR_2024.json,10
+soja,2222000,"Oilseed, Soybean",BR,BR,Brazil,2025,2026,08,28,Production,8,(1000 MT)           ,180500.0,OFF_USDA_soja_BR_2025.json,2
+soja,2222000,"Oilseed, Soybean",BR,BR,Brazil,2025,2026,08,88,Exports,8,(1000 MT)           ,115000.0,OFF_USDA_soja_BR_2025.json,5
+soja,2222000,"Oilseed, Soybean",BR,BR,Brazil,2025,2026,08,176,Ending Stocks,8,(1000 MT)           ,37688.0,OFF_USDA_soja_BR_2025.json,10
+soja,2222000,"Oilseed, Soybean",US,US,United States,2024,2026,07,28,Production,8,(1000 MT)           ,119047.0,OFF_USDA_soja_US_2024.json,2
+soja,2222000,"Oilseed, Soybean",US,US,United States,2024,2026,07,88,Exports,8,(1000 MT)           ,51495.0,OFF_USDA_soja_US_2024.json,5
+soja,2222000,"Oilseed, Soybean",US,US,United States,2024,2026,07,176,Ending Stocks,8,(1000 MT)           ,8840.0,OFF_USDA_soja_US_2024.json,10
+soja,2222000,"Oilseed, Soybean",US,US,United States,2025,2026,09,28,Production,8,(1000 MT)           ,115989.0,OFF_USDA_soja_US_2025.json,2
+soja,2222000,"Oilseed, Soybean",US,US,United States,2025,2026,09,88,Exports,8,(1000 MT)           ,41368.0,OFF_USDA_soja_US_2025.json,5
+soja,2222000,"Oilseed, Soybean",US,US,United States,2025,2026,09,176,Ending Stocks,8,(1000 MT)           ,8845.0,OFF_USDA_soja_US_2025.json,10
+soja,2222000,"Oilseed, Soybean",world,00,,2024,2026,09,28,Production,8,(1000 MT)           ,428112.0,OFF_USDA_soja_world_2024.json,2
+soja,2222000,"Oilseed, Soybean",world,00,,2024,2026,09,88,Exports,8,(1000 MT)           ,184330.0,OFF_USDA_soja_world_2024.json,5
+soja,2222000,"Oilseed, Soybean",world,00,,2024,2026,09,176,Ending Stocks,8,(1000 MT)           ,125945.0,OFF_USDA_soja_world_2024.json,10
+soja,2222000,"Oilseed, Soybean",world,00,,2025,2026,09,28,Production,8,(1000 MT)           ,429408.0,OFF_USDA_soja_world_2025.json,2
+soja,2222000,"Oilseed, Soybean",world,00,,2025,2026,09,88,Exports,8,(1000 MT)           ,187225.0,OFF_USDA_soja_world_2025.json,5
+soja,2222000,"Oilseed, Soybean",world,00,,2025,2026,09,176,Ending Stocks,8,(1000 MT)           ,125267.0,OFF_USDA_soja_world_2025.json,10
+milho,0440000,Corn,BR,BR,Brazil,2024,2026,09,28,Production,8,(1000 MT)           ,136000.0,OFF_USDA_milho_BR_2024.json,2
+milho,0440000,Corn,BR,BR,Brazil,2024,2026,09,88,Exports,8,(1000 MT)           ,42011.0,OFF_USDA_milho_BR_2024.json,7
+milho,0440000,Corn,BR,BR,Brazil,2024,2026,09,176,Ending Stocks,8,(1000 MT)           ,10604.0,OFF_USDA_milho_BR_2024.json,12
+milho,0440000,Corn,BR,BR,Brazil,2025,2026,09,28,Production,8,(1000 MT)           ,141000.0,OFF_USDA_milho_BR_2025.json,2
+milho,0440000,Corn,BR,BR,Brazil,2025,2026,09,88,Exports,8,(1000 MT)           ,40000.0,OFF_USDA_milho_BR_2025.json,7
+milho,0440000,Corn,BR,BR,Brazil,2025,2026,09,176,Ending Stocks,8,(1000 MT)           ,14804.0,OFF_USDA_milho_BR_2025.json,12
+milho,0440000,Corn,US,US,United States,2024,2026,07,28,Production,8,(1000 MT)           ,378268.0,OFF_USDA_milho_US_2024.json,2
+milho,0440000,Corn,US,US,United States,2024,2026,07,88,Exports,8,(1000 MT)           ,72966.0,OFF_USDA_milho_US_2024.json,7
+milho,0440000,Corn,US,US,United States,2024,2026,07,176,Ending Stocks,8,(1000 MT)           ,39404.0,OFF_USDA_milho_US_2024.json,12
+milho,0440000,Corn,US,US,United States,2025,2026,09,28,Production,8,(1000 MT)           ,432342.0,OFF_USDA_milho_US_2025.json,2
+milho,0440000,Corn,US,US,United States,2025,2026,09,88,Exports,8,(1000 MT)           ,86999.0,OFF_USDA_milho_US_2025.json,7
+milho,0440000,Corn,US,US,United States,2025,2026,09,176,Ending Stocks,8,(1000 MT)           ,48817.0,OFF_USDA_milho_US_2025.json,12
+milho,0440000,Corn,world,00,,2024,2026,09,28,Production,8,(1000 MT)           ,1235033.0,OFF_USDA_milho_world_2024.json,2
+milho,0440000,Corn,world,00,,2024,2026,09,88,Exports,8,(1000 MT)           ,187583.0,OFF_USDA_milho_world_2024.json,7
+milho,0440000,Corn,world,00,,2024,2026,09,176,Ending Stocks,8,(1000 MT)           ,295701.0,OFF_USDA_milho_world_2024.json,12
+milho,0440000,Corn,world,00,,2025,2026,09,28,Production,8,(1000 MT)           ,1330812.0,OFF_USDA_milho_world_2025.json,2
+milho,0440000,Corn,world,00,,2025,2026,09,88,Exports,8,(1000 MT)           ,218206.0,OFF_USDA_milho_world_2025.json,7
+milho,0440000,Corn,world,00,,2025,2026,09,176,Ending Stocks,8,(1000 MT)           ,301381.0,OFF_USDA_milho_world_2025.json,12
+trigo,0410000,Wheat,BR,BR,Brazil,2024,2026,09,28,Production,8,(1000 MT)           ,7889.0,OFF_USDA_trigo_BR_2024.json,2
+trigo,0410000,Wheat,BR,BR,Brazil,2024,2026,09,88,Exports,8,(1000 MT)           ,1894.0,OFF_USDA_trigo_BR_2024.json,7
+trigo,0410000,Wheat,BR,BR,Brazil,2024,2026,09,176,Ending Stocks,8,(1000 MT)           ,2698.0,OFF_USDA_trigo_BR_2024.json,12
+trigo,0410000,Wheat,BR,BR,Brazil,2025,2026,09,28,Production,8,(1000 MT)           ,7873.0,OFF_USDA_trigo_BR_2025.json,2
+trigo,0410000,Wheat,BR,BR,Brazil,2025,2026,09,88,Exports,8,(1000 MT)           ,1840.0,OFF_USDA_trigo_BR_2025.json,7
+trigo,0410000,Wheat,BR,BR,Brazil,2025,2026,09,176,Ending Stocks,8,(1000 MT)           ,2721.0,OFF_USDA_trigo_BR_2025.json,12
+trigo,0410000,Wheat,US,US,United States,2024,2026,07,28,Production,8,(1000 MT)           ,53851.0,OFF_USDA_trigo_US_2024.json,2
+trigo,0410000,Wheat,US,US,United States,2024,2026,07,88,Exports,8,(1000 MT)           ,22557.0,OFF_USDA_trigo_US_2024.json,7
+trigo,0410000,Wheat,US,US,United States,2024,2026,07,176,Ending Stocks,8,(1000 MT)           ,23262.0,OFF_USDA_trigo_US_2024.json,12
+trigo,0410000,Wheat,US,US,United States,2025,2026,08,28,Production,8,(1000 MT)           ,54010.0,OFF_USDA_trigo_US_2025.json,2
+trigo,0410000,Wheat,US,US,United States,2025,2026,08,88,Exports,8,(1000 MT)           ,24706.0,OFF_USDA_trigo_US_2025.json,7
+trigo,0410000,Wheat,US,US,United States,2025,2026,08,176,Ending Stocks,8,(1000 MT)           ,25041.0,OFF_USDA_trigo_US_2025.json,12
+trigo,0410000,Wheat,world,00,,2024,2026,09,28,Production,8,(1000 MT)           ,799099.0,OFF_USDA_trigo_world_2024.json,2
+trigo,0410000,Wheat,world,00,,2024,2026,09,88,Exports,8,(1000 MT)           ,210903.0,OFF_USDA_trigo_world_2024.json,7
+trigo,0410000,Wheat,world,00,,2024,2026,09,176,Ending Stocks,8,(1000 MT)           ,260590.0,OFF_USDA_trigo_world_2024.json,12
+trigo,0410000,Wheat,world,00,,2025,2026,09,28,Production,8,(1000 MT)           ,843989.0,OFF_USDA_trigo_world_2025.json,2
+trigo,0410000,Wheat,world,00,,2025,2026,09,88,Exports,8,(1000 MT)           ,227635.0,OFF_USDA_trigo_world_2025.json,7
+trigo,0410000,Wheat,world,00,,2025,2026,09,176,Ending Stocks,8,(1000 MT)           ,280604.0,OFF_USDA_trigo_world_2025.json,12
+algodao,2631000,Cotton,BR,BR,Brazil,2024,2026,09,28,Production,27,1000 480 lb. Bales  ,17000.0,OFF_USDA_algodao_BR_2024.json,2
+algodao,2631000,Cotton,BR,BR,Brazil,2024,2026,09,88,Exports,27,1000 480 lb. Bales  ,13021.0,OFF_USDA_algodao_BR_2024.json,5
+algodao,2631000,Cotton,BR,BR,Brazil,2024,2026,09,176,Ending Stocks,27,1000 480 lb. Bales  ,3697.0,OFF_USDA_algodao_BR_2024.json,8
+algodao,2631000,Cotton,BR,BR,Brazil,2025,2026,09,28,Production,27,1000 480 lb. Bales  ,18750.0,OFF_USDA_algodao_BR_2025.json,2
+algodao,2631000,Cotton,BR,BR,Brazil,2025,2026,09,88,Exports,27,1000 480 lb. Bales  ,15497.0,OFF_USDA_algodao_BR_2025.json,5
+algodao,2631000,Cotton,BR,BR,Brazil,2025,2026,09,176,Ending Stocks,27,1000 480 lb. Bales  ,3604.0,OFF_USDA_algodao_BR_2025.json,8
+algodao,2631000,Cotton,US,US,United States,2024,2026,09,28,Production,27,1000 480 lb. Bales  ,14410.0,OFF_USDA_algodao_US_2024.json,2
+algodao,2631000,Cotton,US,US,United States,2024,2026,09,88,Exports,27,1000 480 lb. Bales  ,11900.0,OFF_USDA_algodao_US_2024.json,5
+algodao,2631000,Cotton,US,US,United States,2024,2026,09,176,Ending Stocks,27,1000 480 lb. Bales  ,4000.0,OFF_USDA_algodao_US_2024.json,8
+algodao,2631000,Cotton,US,US,United States,2025,2026,09,28,Production,27,1000 480 lb. Bales  ,13897.0,OFF_USDA_algodao_US_2025.json,2
+algodao,2631000,Cotton,US,US,United States,2025,2026,09,88,Exports,27,1000 480 lb. Bales  ,12300.0,OFF_USDA_algodao_US_2025.json,5
+algodao,2631000,Cotton,US,US,United States,2025,2026,09,176,Ending Stocks,27,1000 480 lb. Bales  ,4150.0,OFF_USDA_algodao_US_2025.json,8
+algodao,2631000,Cotton,world,00,,2024,2026,09,28,Production,27,1000 480 lb. Bales  ,119534.0,OFF_USDA_algodao_world_2024.json,2
+algodao,2631000,Cotton,world,00,,2024,2026,09,88,Exports,27,1000 480 lb. Bales  ,42396.0,OFF_USDA_algodao_world_2024.json,5
+algodao,2631000,Cotton,world,00,,2024,2026,09,176,Ending Stocks,27,1000 480 lb. Bales  ,74831.0,OFF_USDA_algodao_world_2024.json,8
+algodao,2631000,Cotton,world,00,,2025,2026,09,28,Production,27,1000 480 lb. Bales  ,121945.0,OFF_USDA_algodao_world_2025.json,2
+algodao,2631000,Cotton,world,00,,2025,2026,09,88,Exports,27,1000 480 lb. Bales  ,45583.0,OFF_USDA_algodao_world_2025.json,5
+algodao,2631000,Cotton,world,00,,2025,2026,09,176,Ending Stocks,27,1000 480 lb. Bales  ,75305.0,OFF_USDA_algodao_world_2025.json,8

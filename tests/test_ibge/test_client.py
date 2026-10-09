@@ -4,8 +4,6 @@ from agrobr.ibge import client
 
 
 class TestParseSidraResponse:
-    """Testes do parser de resposta SIDRA."""
-
     def test_parse_handles_invalid_values(self):
         """Testa que valores invalidos viram NaN."""
         import pandas as pd

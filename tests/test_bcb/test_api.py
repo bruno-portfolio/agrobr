@@ -17,7 +17,7 @@ from tests.helpers import collect_failures, levanta_exatamente, sem_excecao
 
 ORACULO = Path(__file__).parents[1] / "golden_data/bcb/oraculo_20260923"
 ORACULO_MANIFEST = json.loads((ORACULO / "manifest.json").read_text(encoding="utf-8"))
-R9_SICOR = (
+SICOR_CUSTEIO_SOJA_MT = (
     Path(__file__).parents[1]
     / "golden_data/reconciliacao_mercados_credito_20260918/sicor/sicor_custeio_soja_2024_2025_MT.json"
 )
@@ -48,7 +48,7 @@ def soma(registros: list[dict], campo: str = "VlCusteio") -> float:
 
 
 async def test_consulta_publica_agrega_o_corpo_oficial_com_meta(monkeypatch: pytest.MonkeyPatch):
-    registros = json.loads(R9_SICOR.read_bytes())["value"]
+    registros = json.loads(SICOR_CUSTEIO_SOJA_MT.read_bytes())["value"]
     fetch = AsyncMock(side_effect=[(registros, "odata"), (registros, "bigquery")])
     monkeypatch.setattr(api.client, "fetch_credito_rural_with_fallback", fetch)
 
@@ -106,7 +106,7 @@ async def test_consulta_publica_agrega_o_corpo_oficial_com_meta(monkeypatch: pyt
 
 
 async def test_filtros_locais_de_uf_programa_e_seguro(monkeypatch: pytest.MonkeyPatch):
-    registros = json.loads(R9_SICOR.read_bytes())["value"]
+    registros = json.loads(SICOR_CUSTEIO_SOJA_MT.read_bytes())["value"]
     pronamp_mt = [r for r in registros if r["cdPrograma"] == "0050"]
     pronamp_go = [dict(r, nomeUF="GO") for r in pronamp_mt[:3]]
     monkeypatch.setattr(
@@ -144,7 +144,7 @@ async def test_filtros_locais_de_uf_programa_e_seguro(monkeypatch: pytest.Monkey
 async def test_filtro_sem_a_dimensao_no_corpo_levanta(
     monkeypatch: pytest.MonkeyPatch, campo: str, filtro: str, valor: str
 ):
-    registros = json.loads(R9_SICOR.read_bytes())["value"]
+    registros = json.loads(SICOR_CUSTEIO_SOJA_MT.read_bytes())["value"]
     sem_dimensao = [{k: v for k, v in r.items() if k != campo} for r in registros]
     monkeypatch.setattr(
         api.client,
@@ -162,7 +162,7 @@ async def test_filtro_sem_a_dimensao_no_corpo_levanta(
 async def test_grupo_com_registro_sem_valor_sai_nulo_com_aviso(
     monkeypatch: pytest.MonkeyPatch, agregacao: str
 ):
-    registros = json.loads(R9_SICOR.read_bytes())["value"]
+    registros = json.loads(SICOR_CUSTEIO_SOJA_MT.read_bytes())["value"]
     sem_valor = [dict(r) for r in registros]
     sem_valor[0]["VlCusteio"] = None
     programa = sem_valor[0]["cdPrograma"]
@@ -224,7 +224,7 @@ async def test_recusas_antes_da_fonte(monkeypatch: pytest.MonkeyPatch):
 @pytest.mark.asyncio
 async def test_as_polars():
     pl = pytest.importorskip("polars")
-    registros = json.loads(R9_SICOR.read_bytes())["value"]
+    registros = json.loads(SICOR_CUSTEIO_SOJA_MT.read_bytes())["value"]
     with pytest.MonkeyPatch.context() as monkeypatch:
         monkeypatch.setattr(
             api.client,
@@ -250,7 +250,7 @@ async def test_credito_rural_live_filtra_uf_e_safra():
 async def test_codigo_sicor_nulo_vira_nome_nulo(
     nulo: float | None, monkeypatch: pytest.MonkeyPatch
 ):
-    registros = json.loads(R9_SICOR.read_bytes())["value"]
+    registros = json.loads(SICOR_CUSTEIO_SOJA_MT.read_bytes())["value"]
     alvo = next(registro for registro in registros if registro["cdPrograma"] == "0999")
     alvo.update(cdPrograma=nulo, cdModalidade=nulo)
     restantes = [r for r in registros if r["cdPrograma"] == "0999"]
@@ -303,7 +303,7 @@ def programas_oficiais() -> dict[str, str]:
 
 async def test_programa_e_seguro_publicados_pela_tabela_oficial(monkeypatch: pytest.MonkeyPatch):
     investimento = corpo_oraculo("sicor_investimento_bovinos_mt_000.json")
-    custeio = json.loads(R9_SICOR.read_bytes())["value"]
+    custeio = json.loads(SICOR_CUSTEIO_SOJA_MT.read_bytes())["value"]
     monkeypatch.setattr(
         api.client,
         "fetch_credito_rural_with_fallback",
@@ -342,7 +342,7 @@ async def test_programa_e_seguro_publicados_pela_tabela_oficial(monkeypatch: pyt
 
 
 async def test_finalidade_publicada_igual_nas_duas_fontes(monkeypatch: pytest.MonkeyPatch):
-    odata = json.loads(R9_SICOR.read_bytes())["value"]
+    odata = json.loads(SICOR_CUSTEIO_SOJA_MT.read_bytes())["value"]
     bigquery = [
         {
             "ano_emissao": 2024,

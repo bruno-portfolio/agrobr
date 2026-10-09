@@ -1,6 +1,6 @@
 {
  "fonte": "anec",
- "oraculo": "Rodada 32 de conferência, ANEC_all_editions.csv e ANEC_interval_oracle.json: extração PDFium independente, rótulos literais e todas as janelas de 7 dias do calendário; sem o parser do agrobr.",
+ "oraculo": "Conferência de 26/09/2026, ANEC_all_editions.csv e ANEC_interval_oracle.json: extração PDFium independente, rótulos literais e todas as janelas de 7 dias do calendário; sem o parser do agrobr.",
  "regra": "O início da last_week precisa ficar a até 7 dias de date(ano, 1, 1) + (semana - 1) semanas; fora disso, datas nulas com aviso.",
  "boletins": {
   "2025-50": {
@@ -14,7 +14,7 @@
     "status": 200,
     "sha256": "c6a3d6436c41e821ddf8bd90f926168e89b67e56a610088700d65eb185fb9f7c"
    },
-   "origem_do_corpo": "conferência, R32 (recibo .request.json)",
+   "origem_do_corpo": "conferência de 26/09/2026 (recibo .request.json)",
    "rotulos_impressos": [
     "07th to 13th Jan",
     "14th to 20th Jan"
@@ -47,7 +47,7 @@
     "status": 200,
     "sha256": "82e62baf25dfa49c843e66d9b8a1db217982a1d5e678030116377e3234d508dd"
    },
-   "origem_do_corpo": "conferência, R32 (recibo .request.json)",
+   "origem_do_corpo": "conferência de 26/09/2026 (recibo .request.json)",
    "rotulos_impressos": [
     "21st to 27th Dec",
     "28th to 03rd Jan"
@@ -86,7 +86,7 @@
     "status": 200,
     "sha256": "52a9c7878150cc64d614805712059403022d108092040f5fece4c13ce9a9522a"
    },
-   "origem_do_corpo": "conferência, R32 (recibo .request.json)",
+   "origem_do_corpo": "conferência de 26/09/2026 (recibo .request.json)",
    "rotulos_impressos": [
     "28th to 03rd Jan",
     "04th to 10th Jan"
@@ -125,7 +125,7 @@
     "status": 200,
     "sha256": "254924f1a57ae31bc8b45e925198e8df19b5b5a5d8cfb469403f74ffd559eb89"
    },
-   "origem_do_corpo": "conferência, R32 (recibo .request.json)",
+   "origem_do_corpo": "conferência de 26/09/2026 (recibo .request.json)",
    "rotulos_impressos": [
     "04th to 10th Jan",
     "11th to 17th Jan"
@@ -166,7 +166,7 @@
      "Week 35/2026"
     ]
    },
-   "origem_do_corpo": "conferência, R21",
+   "origem_do_corpo": "conferência anterior",
    "rotulos_impressos": [
     "30th to 05th Aug",
     "06th to 12th Aug"

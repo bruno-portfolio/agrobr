@@ -31,7 +31,7 @@ jobs:
       - name: Install agrobr
         run: pip install -e .
       - name: Update Conab explorer
-        run: python -m scripts.update_conab_explorer_data --input assets/explorer/conab.json --output assets/explorer/conab.json --cache-dir reports/explorer-monthly
+        run: python -m scripts.update_conab_explorer_data --input assets/explorer/conab.json --output assets/explorer/conab.json --cache-dir ${{ runner.temp }}/explorer-monthly
       - name: Commit updated data
         id: commit
         run: |

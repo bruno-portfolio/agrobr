@@ -1,5 +1,5 @@
 {
-  "manifest_schema": "agrobr.reconciliation.r11.family",
+  "manifest_schema": "agrobr.reconciliation.family",
   "format_version": 1,
   "schema_document": "README.md",
   "files": [
@@ -1202,7 +1202,7 @@
     {
       "id": "csv_all",
       "resource": "csv",
-      "r2_id": "empregadores_lista_suja:lista_suja:csv",
+      "rota_id": "empregadores_lista_suja:lista_suja:csv",
       "query": {
         "formato": "auto"
       },
@@ -1835,7 +1835,7 @@
     {
       "id": "csv_sp",
       "resource": "csv",
-      "r2_id": "empregadores_lista_suja:lista_suja:csv",
+      "rota_id": "empregadores_lista_suja:lista_suja:csv",
       "query": {
         "formato": "csv",
         "uf": "SP"
@@ -1949,7 +1949,7 @@
     {
       "id": "csv_compound",
       "resource": "csv",
-      "r2_id": "empregadores_lista_suja:lista_suja:csv",
+      "rota_id": "empregadores_lista_suja:lista_suja:csv",
       "query": {
         "formato": "csv",
         "id_registro": "41"
@@ -2005,7 +2005,7 @@
     {
       "id": "csv_judicial",
       "resource": "csv",
-      "r2_id": "empregadores_lista_suja:lista_suja:csv",
+      "rota_id": "empregadores_lista_suja:lista_suja:csv",
       "query": {
         "formato": "csv",
         "id_registro": "140"
@@ -2061,7 +2061,7 @@
     {
       "id": "csv_last",
       "resource": "csv",
-      "r2_id": "empregadores_lista_suja:lista_suja:csv",
+      "rota_id": "empregadores_lista_suja:lista_suja:csv",
       "query": {
         "formato": "csv",
         "id_registro": "579"
@@ -2117,7 +2117,7 @@
     {
       "id": "csv_missing_id",
       "resource": "csv",
-      "r2_id": "empregadores_lista_suja:lista_suja:csv",
+      "rota_id": "empregadores_lista_suja:lista_suja:csv",
       "query": {
         "formato": "csv",
         "id_registro": "00140"
@@ -2171,7 +2171,7 @@
     {
       "id": "pdf_all",
       "resource": "pdf",
-      "r2_id": "empregadores_lista_suja:lista_suja:pdf",
+      "rota_id": "empregadores_lista_suja:lista_suja:pdf",
       "query": {
         "formato": "pdf"
       },
@@ -2790,7 +2790,7 @@
     {
       "id": "pdf_wrapped",
       "resource": "pdf",
-      "r2_id": "empregadores_lista_suja:lista_suja:pdf",
+      "rota_id": "empregadores_lista_suja:lista_suja:pdf",
       "query": {
         "formato": "pdf",
         "id_registro": "181"

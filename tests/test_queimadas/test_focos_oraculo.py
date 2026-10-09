@@ -22,14 +22,22 @@ from tests.helpers import (
     sem_excecao,
 )
 
-R12 = Path(__file__).parents[1] / "golden_data/reconciliacao_uso_solo_ambiente_20260918"
+USO_SOLO_AMBIENTE = (
+    Path(__file__).parents[1] / "golden_data/reconciliacao_uso_solo_ambiente_20260918"
+)
 CASO = next(
     case
-    for case in json.loads((R12 / "manifest.json").read_text(encoding="utf-8"))["cases"]
+    for case in json.loads((USO_SOLO_AMBIENTE / "manifest.json").read_text(encoding="utf-8"))[
+        "cases"
+    ]
     if case["id"] == "queimadas_mensal_202504"
 )
-RECORTE_ABRIL_2025 = (R12 / "queimadas/focos_mensal_br_202504_recorte.csv").read_bytes()
-RECORTE_SETEMBRO_2026 = (R12 / "queimadas/focos_diario_br_20260910_recorte.csv").read_bytes()
+RECORTE_ABRIL_2025 = (
+    USO_SOLO_AMBIENTE / "queimadas/focos_mensal_br_202504_recorte.csv"
+).read_bytes()
+RECORTE_SETEMBRO_2026 = (
+    USO_SOLO_AMBIENTE / "queimadas/focos_diario_br_20260910_recorte.csv"
+).read_bytes()
 MEMBRO_UNICO_DO_ZIP_MENSAL = "focos_mensal_br_202504.csv"
 MEMBRO_UNICO_DO_ZIP_ANUAL_2025 = "tmp/focos_br_todos-sats_2025.csv"
 CSV_MENSAL = f"{client.BASE_URL}/mensal/Brasil/focos_mensal_br_202504.csv"

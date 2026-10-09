@@ -13,12 +13,12 @@ from agrobr.bcb import parser
 from tests.helpers import sem_excecao
 
 ORACULO = Path(__file__).parents[1] / "golden_data/bcb/oraculo_20260923"
-R9_SICOR = (
+SICOR_CUSTEIO_SOJA_MT = (
     Path(__file__).parents[1]
     / "golden_data/reconciliacao_mercados_credito_20260918/sicor/sicor_custeio_soja_2024_2025_MT.json"
 )
 CORPOS = {
-    "custeio": (R9_SICOR, "VlCusteio", "QtdCusteio"),
+    "custeio": (SICOR_CUSTEIO_SOJA_MT, "VlCusteio", "QtdCusteio"),
     "investimento": (ORACULO / "sicor_investimento_bovinos_mt_000.json", "VlInvest", "QtdInvest"),
     "comercializacao": (
         ORACULO / "sicor_comercializacao_soja_mt_001.json",
@@ -101,7 +101,7 @@ def test_parse_publica_cada_registro_do_corpo_oficial(finalidade: str):
 
 
 def test_agregacoes_somam_o_corpo_oficial_preservando_nulos():
-    registros = json.loads(R9_SICOR.read_bytes())["value"]
+    registros = json.loads(SICOR_CUSTEIO_SOJA_MT.read_bytes())["value"]
     frame = parser.parse_credito_rural(registros)
 
     por_uf = parser.agregar_por_uf(frame)

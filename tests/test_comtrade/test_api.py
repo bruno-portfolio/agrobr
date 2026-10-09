@@ -140,7 +140,7 @@ async def test_mirror_rejects_hidden_flow_kwarg_before_http_and_warning(replay_h
     warning.assert_not_called()
 
 
-R29 = Path(__file__).parents[1] / "golden_data/comtrade/r29_20260926"
+SELECAO_FRANGO = Path(__file__).parents[1] / "golden_data/comtrade/selecao_frango_20260926"
 AVISO_ESTIMADO = (
     "Comtrade: peso líquido estimado pela ONU (isNetWgtEstimated) em HS 020714/2024; "
     "peso_liquido_kg e volume_ton trazem o valor estimado, não o declarado."
@@ -148,8 +148,10 @@ AVISO_ESTIMADO = (
 
 
 async def test_marcas_de_estimativa_da_onu_saem_com_aviso(replay_http, captures):
-    recibo = json.loads((R29 / "manifest.json").read_bytes())["arquivos"]["frango_2024.json"]
-    corpo = (R29 / "frango_2024.json").read_bytes()
+    recibo = json.loads((SELECAO_FRANGO / "manifest.json").read_bytes())["arquivos"][
+        "frango_2024.json"
+    ]
+    corpo = (SELECAO_FRANGO / "frango_2024.json").read_bytes()
     digest = hashlib.sha256(corpo).hexdigest()
     assert (digest, len(corpo)) == (recibo["sha256"], recibo["bytes"])
     publicado = json.loads(corpo)["data"]

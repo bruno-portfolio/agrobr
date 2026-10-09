@@ -67,7 +67,7 @@
   {
    "id": "fonte_2024_completo",
    "dataset": "antaq.movimentacao",
-   "r2_id": "movimentacao_portuaria:antaq:zip_relacional",
+   "rota_id": "movimentacao_portuaria:antaq:zip_relacional",
    "source": "antaq",
    "selection": {
     "ano": 2024
@@ -1009,7 +1009,7 @@
   {
    "id": "dataset_2024_agregado",
    "dataset": "movimentacao_portuaria",
-   "r2_id": "movimentacao_portuaria:antaq:zip_relacional",
+   "rota_id": "movimentacao_portuaria:antaq:zip_relacional",
    "source": "antaq",
    "selection": {
     "ano": 2024
@@ -1209,7 +1209,7 @@
   {
    "id": "filtro_mercadoria_bauxita",
    "dataset": "antaq.movimentacao",
-   "r2_id": "movimentacao_portuaria:antaq:zip_relacional",
+   "rota_id": "movimentacao_portuaria:antaq:zip_relacional",
    "source": "antaq",
    "selection": {
     "ano": 2024,
@@ -1256,7 +1256,7 @@
   {
    "id": "filtro_mercadoria_vazio",
    "dataset": "antaq.movimentacao",
-   "r2_id": "movimentacao_portuaria:antaq:zip_relacional",
+   "rota_id": "movimentacao_portuaria:antaq:zip_relacional",
    "source": "antaq",
    "selection": {
     "ano": 2024,
@@ -1303,7 +1303,7 @@
   {
    "id": "filtro_porto_trombetas",
    "dataset": "antaq.movimentacao",
-   "r2_id": "movimentacao_portuaria:antaq:zip_relacional",
+   "rota_id": "movimentacao_portuaria:antaq:zip_relacional",
    "source": "antaq",
    "selection": {
     "ano": 2024,
@@ -1350,7 +1350,7 @@
   {
    "id": "filtro_porto_vazio",
    "dataset": "antaq.movimentacao",
-   "r2_id": "movimentacao_portuaria:antaq:zip_relacional",
+   "rota_id": "movimentacao_portuaria:antaq:zip_relacional",
    "source": "antaq",
    "selection": {
     "ano": 2024,
@@ -1397,7 +1397,7 @@
   {
    "id": "filtro_uf_am",
    "dataset": "antaq.movimentacao",
-   "r2_id": "movimentacao_portuaria:antaq:zip_relacional",
+   "rota_id": "movimentacao_portuaria:antaq:zip_relacional",
    "source": "antaq",
    "selection": {
     "ano": 2024,
@@ -1444,7 +1444,7 @@
   {
    "id": "filtro_uf_vazio",
    "dataset": "antaq.movimentacao",
-   "r2_id": "movimentacao_portuaria:antaq:zip_relacional",
+   "rota_id": "movimentacao_portuaria:antaq:zip_relacional",
    "source": "antaq",
    "selection": {
     "ano": 2024,
@@ -1491,7 +1491,7 @@
   {
    "id": "filtro_sentido_desembarque",
    "dataset": "antaq.movimentacao",
-   "r2_id": "movimentacao_portuaria:antaq:zip_relacional",
+   "rota_id": "movimentacao_portuaria:antaq:zip_relacional",
    "source": "antaq",
    "selection": {
     "ano": 2024,
@@ -1538,7 +1538,7 @@
   {
    "id": "filtro_sentido_vazio",
    "dataset": "antaq.movimentacao",
-   "r2_id": "movimentacao_portuaria:antaq:zip_relacional",
+   "rota_id": "movimentacao_portuaria:antaq:zip_relacional",
    "source": "antaq",
    "selection": {
     "ano": 2024,
@@ -1585,7 +1585,7 @@
   {
    "id": "filtro_tipo_navegacao_interior",
    "dataset": "antaq.movimentacao",
-   "r2_id": "movimentacao_portuaria:antaq:zip_relacional",
+   "rota_id": "movimentacao_portuaria:antaq:zip_relacional",
    "source": "antaq",
    "selection": {
     "ano": 2024,
@@ -1632,7 +1632,7 @@
   {
    "id": "filtro_tipo_navegacao_vazio",
    "dataset": "antaq.movimentacao",
-   "r2_id": "movimentacao_portuaria:antaq:zip_relacional",
+   "rota_id": "movimentacao_portuaria:antaq:zip_relacional",
    "source": "antaq",
    "selection": {
     "ano": 2024,
@@ -1679,7 +1679,7 @@
   {
    "id": "filtro_natureza_carga_geral",
    "dataset": "antaq.movimentacao",
-   "r2_id": "movimentacao_portuaria:antaq:zip_relacional",
+   "rota_id": "movimentacao_portuaria:antaq:zip_relacional",
    "source": "antaq",
    "selection": {
     "ano": 2024,
@@ -1726,7 +1726,7 @@
   {
    "id": "filtro_natureza_carga_vazio",
    "dataset": "antaq.movimentacao",
-   "r2_id": "movimentacao_portuaria:antaq:zip_relacional",
+   "rota_id": "movimentacao_portuaria:antaq:zip_relacional",
    "source": "antaq",
    "selection": {
     "ano": 2024,

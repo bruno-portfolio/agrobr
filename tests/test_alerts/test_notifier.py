@@ -64,7 +64,7 @@ class TestSendAlert:
             slack_webhook="https://hooks.slack.com/test",
             discord_webhook="https://discord.com/api/webhooks/test",
             sendgrid_api_key="SG.key",
-            email_to=["admin@test.com"],
+            email_to=["admin@example.com"],
         )
 
         with (
@@ -116,7 +116,6 @@ class TestSendDiscord:
             ].get("json")
             assert "embeds" in payload
             assert payload["embeds"][0]["color"] == 0xDC3545
-            # Source + Level fields
             source_fields = [
                 f for f in payload["embeds"][0]["fields"] if f["name"] in ("Source", "Level")
             ]
@@ -220,9 +219,7 @@ class TestSendDiscord:
                 1
             ].get("json")
             embed = payload["embeds"][0]
-            # Recovery uses green color
             assert embed["color"] == 0x36A64F
-            # Has Last Success field
             last_field = next(f for f in embed["fields"] if f["name"] == "Last Success")
             assert "2024-06-15" in last_field["value"]
 
@@ -259,7 +256,7 @@ class TestSendEmail:
     async def test_email_payload(self):
         mock_settings = make_alert_settings(
             sendgrid_api_key="SG.test_key",
-            email_to=["admin@test.com", "ops@test.com"],
+            email_to=["admin@example.com", "ops@example.com"],
         )
         mock_response = make_mock_response()
         mock_client = make_mock_async_client()

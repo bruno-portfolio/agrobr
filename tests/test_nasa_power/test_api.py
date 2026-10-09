@@ -11,7 +11,6 @@ from tests.helpers import levanta_exatamente
 
 
 def _mock_nasa_response(dates=None):
-    """Gera resposta mock completa da API NASA POWER."""
     if dates is None:
         dates = ["20240115"]
 

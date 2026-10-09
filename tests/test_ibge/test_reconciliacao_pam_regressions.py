@@ -21,7 +21,7 @@ CASE = MANIFEST["cases"][0]
 
 
 async def test_pam_celulas_duplicadas_nao_escolhem_primeira_medida(monkeypatch):
-    helpers.install_reconciliacao_r5_http(monkeypatch, CASE, MANIFEST)
+    helpers.install_reconciliacao_censos_http(monkeypatch, CASE, MANIFEST)
     original = httpx.AsyncClient.send
 
     async def send(client, request, **kwargs):

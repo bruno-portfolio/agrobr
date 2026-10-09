@@ -1,5 +1,5 @@
 {
-  "fonte": "rodada 21 de conferência (24/09/2026); iguais byte a byte à captura da rodada 2 de conferência (25/09)",
+  "fonte": "conferência de 24/09/2026; iguais byte a byte à captura da conferência de 25/09/2026",
   "uso": "brasil_total e safras de safra antiga lidos da série histórica",
   "oraculo": "xlrd, células A1 cruas da linha BRASIL e das UFs; sem o parser do agrobr",
   "arquivos": [

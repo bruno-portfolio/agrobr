@@ -130,7 +130,7 @@
    "captured_at": "2026-09-25T15:28:49.529346+00:00",
    "bytes": 2999,
    "sha256": "5ce8b58db053ecc203cc7057fe8d0cba7ccacbfd157cc0d09a0f37d2dac51da1",
-   "captura": "lote 4",
+   "captura": "conferência de 25/09/2026",
    "no_repositorio": false,
    "arquivado_em": "preview_soja_2025.json"
   },
@@ -142,7 +142,7 @@
    "captured_at": "2026-09-25T15:27:19.370729+00:00",
    "bytes": 5262,
    "sha256": "976ccb8fcb42eb055353898671a0964e16da261cbc579ed26b6f7f66bbb72586",
-   "captura": "lote 4",
+   "captura": "conferência de 25/09/2026",
    "no_repositorio": false,
    "arquivado_em": "preview_frango_2025.json"
   },
@@ -154,7 +154,7 @@
    "captured_at": "2026-09-25T15:28:52.625089+00:00",
    "bytes": 6231,
    "sha256": "c77df8d0504b9878d0adfc844a8f49446e93fe23af4698d2913a9c663c3f037e",
-   "captura": "lote 4",
+   "captura": "conferência de 25/09/2026",
    "no_repositorio": false,
    "arquivado_em": "preview_frango_1995.json"
   },
@@ -166,7 +166,7 @@
    "captured_at": "2026-09-25T15:27:21.886406+00:00",
    "bytes": 5943,
    "sha256": "cc19ab0af50575c03f9e0977bd0d38fd7b921fbc3e2d8056489ccb3f0b510736",
-   "captura": "lote 4",
+   "captura": "conferência de 25/09/2026",
    "no_repositorio": false,
    "arquivado_em": "preview_cafe_2025.json"
   },
@@ -178,7 +178,7 @@
    "captured_at": "2026-09-25T15:27:24.438692+00:00",
    "bytes": 2944,
    "sha256": "11aa2b4cb32355f4d8cc1773f082338387cc8fcb29afd303f5f35c9916fd6897",
-   "captura": "lote 4",
+   "captura": "conferência de 25/09/2026",
    "no_repositorio": false,
    "arquivado_em": "preview_algodao_2025.json"
   },
@@ -190,7 +190,7 @@
    "captured_at": "2026-09-25T15:27:26.945847+00:00",
    "bytes": 6015,
    "sha256": "198cd642b2b389accf62bcb941de2f7c1380c3f89cc8ec76e3dbdf4e8be6a145",
-   "captura": "lote 4",
+   "captura": "conferência de 25/09/2026",
    "no_repositorio": false,
    "arquivado_em": "preview_celulose_2025.json"
   },
@@ -202,7 +202,7 @@
    "captured_at": "2026-09-23T22:19:31.203598+00:00",
    "bytes": 3348,
    "sha256": "b69468713731105b896543f89de572a7b0fa1f0df83cb3847113a27cb60a1ee7",
-   "captura": "conferência, rodada 13",
+   "captura": "conferência de 25/09/2026",
    "no_repositorio": false,
    "arquivado_em": "preview_suco_laranja_2025.json"
   },
@@ -214,7 +214,7 @@
    "captured_at": "2026-09-23T22:23:23.999651+00:00",
    "bytes": 1186,
    "sha256": "124e8d2d662bbfe489c3003affeb7002bc7611af6de07f3c93aa63021f21ed2f",
-   "captura": "conferência, rodada 13",
+   "captura": "conferência de 25/09/2026",
    "no_repositorio": false,
    "arquivado_em": "preview_suco_2009_2025.json"
   }

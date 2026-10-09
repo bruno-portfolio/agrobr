@@ -1,6 +1,6 @@
 # SICOR — RegiaoUF de 2022 e 2023, entidades por produto e municípios de jan/2023
 
-Corpos oficiais do OData v2 do SICOR (Olinda), capturados na rodada 8 de conferência
+Corpos oficiais do OData v2 do SICOR (Olinda), capturados na conferência
 (25/09/2026). Cada arquivo é o gzip da resposta HTTP 200 como recebida, sem `$select`, exceto a `SemFiltros`, que veio com
 os 17 campos da URL (o corpo inteiro passa de 14 MB por mês); `manifest.json` traz a URL, as linhas, os bytes e o SHA-256 do
 corpo descomprimido, e o SHA-256 do arquivo.
@@ -12,7 +12,7 @@ corpo descomprimido, e o SHA-256 do arquivo.
 - `CusteioInvestimentoComercialIndustrialSemFiltros_2023_01`: os municípios de jan/2023, sem produto.
 - `metadata.xml`: o `$metadata` do serviço (sem gzip), com as propriedades de cada entidade.
 
-Oráculo (soma com `json` e `Decimal`, sem o parser do agrobr), igual à tabela da Rodada 8:
+Oráculo (soma com `json` e `Decimal`, sem o parser do agrobr), igual à tabela da conferência:
 
 | Ano | Finalidade | Contratos | Valor (R$) |
 |---|---|---:|---:|

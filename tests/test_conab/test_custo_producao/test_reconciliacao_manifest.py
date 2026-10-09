@@ -39,7 +39,7 @@ RECUSAS = {
     ids=lambda case: case["id"],
 )
 async def test_custos_manifesto_na_api_e_dataset_publicos(monkeypatch, case):
-    calls = helpers.install_reconciliacao_r4_http(monkeypatch)
+    calls = helpers.install_reconciliacao_custos_http(monkeypatch)
     selection = dict(case["selection"])
     product = selection.pop("produto")
     source = (
@@ -55,8 +55,8 @@ async def test_custos_manifesto_na_api_e_dataset_publicos(monkeypatch, case):
     )
     helpers.assert_reconciliation_case(source_frame, case)
     helpers.assert_reconciliation_case(frame, case)
-    helpers.assert_r4_cost_meta(frame, meta, case, MANIFEST)
-    helpers.assert_r4_cost_meta(source_frame, source_meta, case, MANIFEST, source=True)
+    helpers.assert_custo_meta(frame, meta, case, MANIFEST)
+    helpers.assert_custo_meta(source_frame, source_meta, case, MANIFEST, source=True)
     for field, expected in case["fixed_key"].items():
         assert frame[field].eq(expected).all()
     assert calls
@@ -75,7 +75,7 @@ async def test_custos_manifesto_na_api_e_dataset_publicos(monkeypatch, case):
     ids=lambda case: case["id"],
 )
 async def test_custos_recusas_reais_nao_retornam_quadro_parcial(monkeypatch, case):
-    helpers.install_reconciliacao_r4_http(monkeypatch)
+    helpers.install_reconciliacao_custos_http(monkeypatch)
     selection = dict(case["selection"])
     product = selection.pop("produto")
     with pytest.raises(ParseError, match=re.escape(RECUSAS[case["id"]])):

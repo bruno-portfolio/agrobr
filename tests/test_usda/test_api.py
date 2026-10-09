@@ -14,12 +14,12 @@ from tests.helpers import conferir_corpo, levanta_exatamente, sem_excecao
 
 from .conftest import GOLDEN, corpo, manifesto
 
-PAISES_R24 = {"BR": "BR", "US": "US", "world": "world"}
-ONDE_R23 = {"BR": "BR", "mundo": "world"}
+PAISES_ORACULO_72 = {"BR": "BR", "US": "US", "world": "world"}
+ONDE_ORACULO_48 = {"BR": "BR", "mundo": "world"}
 
 
-def _oraculo_r24() -> list[dict[str, str]]:
-    texto = corpo("oraculo_r24_72_valores.csv").decode("utf-8")
+def _oraculo_72_valores() -> list[dict[str, str]]:
+    texto = corpo("oraculo_72_valores.csv").decode("utf-8")
     return list(csv.DictReader(io.StringIO(texto)))
 
 
@@ -27,8 +27,8 @@ def _corte(linha: dict[str, str]) -> tuple[str, str, str]:
     return linha["commodity_query"], linha["country_query"], linha["marketYear"]
 
 
-async def test_oraculo_r24_pela_api_publica(gateway):
-    linhas = _oraculo_r24()
+async def test_oraculo_72_valores_pela_api_publica(gateway):
+    linhas = _oraculo_72_valores()
     assert len(linhas) == 72
     cortes = sorted({_corte(linha) for linha in linhas})
     assert len(cortes) == 24
@@ -37,7 +37,7 @@ async def test_oraculo_r24_pela_api_publica(gateway):
         entrada = gateway.servir(arquivo)
         with sem_excecao():
             df, meta = await usda.psd(
-                produto, country=PAISES_R24[pais], market_year=int(ano), return_meta=True
+                produto, country=PAISES_ORACULO_72[pais], market_year=int(ano), return_meta=True
             )
         assert meta.source_url == entrada["url"]
         conferir_corpo(meta, corpo(arquivo))
@@ -80,12 +80,12 @@ async def test_oraculo_r24_pela_api_publica(gateway):
             )
 
 
-async def test_oraculo_r23_pela_api_publica(gateway):
-    oraculo = json.loads(corpo("oraculo_r23_p2a_usda.json"))
+async def test_oraculo_48_valores_pela_api_publica(gateway):
+    oraculo = json.loads(corpo("oraculo_48_valores.json"))
     valores = oraculo["valores"]
     assert len(valores) == 48
     for produto, dados in oraculo["codigos_catalogo"].items():
-        for onde, pais in ONDE_R23.items():
+        for onde, pais in ONDE_ORACULO_48.items():
             gateway.servir(f"{produto}_{onde}_2024.json")
             with sem_excecao():
                 df = await usda.psd(produto, country=pais, market_year=2024)

@@ -28,7 +28,7 @@ from agrobr.exceptions import SourceUnavailableError
 from tests import helpers
 
 GOLDEN = Path(__file__).parents[1] / "golden_data"
-R3 = GOLDEN / "reconciliacao_conab_20260918"
+RECONCILIACAO_CONAB = GOLDEN / "reconciliacao_conab_20260918"
 SET_2025 = GOLDEN / "conab/levantamento_12_2024_25_20260922"
 SET_2025_URL = json.loads((SET_2025 / "PROVENANCE.json").read_text(encoding="utf-8"))["files"][0][
     "url"
@@ -61,7 +61,7 @@ PROXIMA_EDICAO_URL = (
 )
 EDICOES = {
     SET_2025_URL: SET_2025 / "site_previsao_de_safra-por_produto-set-2025.xlsx",
-    SET_2026_URL: R3 / "7cd4df7946e5c57f.xlsx",
+    SET_2026_URL: RECONCILIACAO_CONAB / "7cd4df7946e5c57f.xlsx",
 }
 SERIES = {
     **{
@@ -93,7 +93,9 @@ GENERICAS = {"area_plantada": "Área", "produtividade": "Produtividade", "produc
 
 
 def _servir(monkeypatch: pytest.MonkeyPatch, fora_do_ar: tuple[str, ...] = ()) -> dict[str, Any]:
-    catalogo = bs4.BeautifulSoup((R3 / "dc5524f326c16e26.html").read_bytes(), "lxml")
+    catalogo = bs4.BeautifulSoup(
+        (RECONCILIACAO_CONAB / "dc5524f326c16e26.html").read_bytes(), "lxml"
+    )
     for link in catalogo.select("a.proximo, a[rel~=next]"):
         link.decompose()
     series = {
@@ -327,7 +329,10 @@ async def test_brasil_total_de_safra_antiga_falha_inteiro_sem_uma_serie(
 @pytest.mark.parametrize("arquivo", ["676a715368f4fb34.xlsx", "7cd4df7946e5c57f.xlsx"])
 def test_subtotal_e_brasil_sao_a_soma_das_linhas_de_produto(arquivo: str):
     aba = pd.read_excel(
-        R3 / arquivo, sheet_name="Brasil - Total por Produto", header=None, engine="calamine"
+        RECONCILIACAO_CONAB / arquivo,
+        sheet_name="Brasil - Total por Produto",
+        header=None,
+        engine="calamine",
     )
     secoes = {rotulo: secao for rotulo, _, _, secao in constants.CONAB_BRASIL_TOTAL_SERIES}
     rotulos = aba[0].astype(str).str.strip()
@@ -357,7 +362,7 @@ def test_subtotal_e_brasil_sao_a_soma_das_linhas_de_produto(arquivo: str):
 
 async def test_safra_antiga_nao_repete_o_boletim_congelado(monkeypatch: pytest.MonkeyPatch):
     _servir(monkeypatch)
-    monkeypatch.setitem(EDICOES, SET_2022_URL, R3 / "676a715368f4fb34.xlsx")
+    monkeypatch.setitem(EDICOES, SET_2022_URL, RECONCILIACAO_CONAB / "676a715368f4fb34.xlsx")
     edicoes = [
         {
             "url": SET_2026_URL,
@@ -389,7 +394,9 @@ async def test_safra_antiga_nao_repete_o_boletim_congelado(monkeypatch: pytest.M
 
 def test_mapa_das_linhas_bate_com_a_aba_brasil_na_safra_anterior():
     aba = pd.read_excel(
-        R3 / "7cd4df7946e5c57f.xlsx", sheet_name="Brasil - Total por Produto", header=None
+        RECONCILIACAO_CONAB / "7cd4df7946e5c57f.xlsx",
+        sheet_name="Brasil - Total por Produto",
+        header=None,
     )
     publicado = {}
     titulo = secao = None
@@ -431,7 +438,7 @@ async def test_safra_fora_do_alcance_da_serie_sai_vazia(monkeypatch: pytest.Monk
 
 async def test_brasil_total_com_serie_defasada_fica_no_boletim(monkeypatch: pytest.MonkeyPatch):
     _servir(monkeypatch)
-    monkeypatch.setitem(EDICOES, SET_2022_URL, R3 / "676a715368f4fb34.xlsx")
+    monkeypatch.setitem(EDICOES, SET_2022_URL, RECONCILIACAO_CONAB / "676a715368f4fb34.xlsx")
     edicoes = [
         {
             "url": SET_2026_URL,
@@ -456,7 +463,7 @@ async def test_brasil_total_com_serie_defasada_fica_no_boletim(monkeypatch: pyte
         frame = await api.brasil_total(safra="2020/21")
 
     aba = pd.read_excel(
-        R3 / "676a715368f4fb34.xlsx",
+        RECONCILIACAO_CONAB / "676a715368f4fb34.xlsx",
         sheet_name="Brasil - Total por Produto",
         header=None,
         engine="calamine",
@@ -528,7 +535,7 @@ async def test_balanco_sem_produto_em_edicao_sem_aba_da_soja_le_so_a_aba_longa(
     monkeypatch: pytest.MonkeyPatch,
 ):
     _servir(monkeypatch)
-    monkeypatch.setitem(EDICOES, SET_2021_URL, R3 / "1569ad0cf189f4d5.xls")
+    monkeypatch.setitem(EDICOES, SET_2021_URL, RECONCILIACAO_CONAB / "1569ad0cf189f4d5.xls")
     edicao = {
         "url": SET_2021_URL,
         "levantamento": 12,
@@ -541,7 +548,7 @@ async def test_balanco_sem_produto_em_edicao_sem_aba_da_soja_le_so_a_aba_longa(
     with helpers.sem_excecao():
         frame = await api.balanco(safra="2020/21", levantamento=12)
 
-    livro = xlrd.open_workbook(str(R3 / "1569ad0cf189f4d5.xls"))
+    livro = xlrd.open_workbook(str(RECONCILIACAO_CONAB / "1569ad0cf189f4d5.xls"))
     assert "Suprimento - Soja" not in livro.sheet_names()
     rotulos = [str(valor).strip() for valor in livro.sheet_by_name("Suprimento").col_values(0)]
     fim = next(indice for indice, rotulo in enumerate(rotulos) if rotulo.startswith("Nota"))
@@ -592,7 +599,7 @@ async def test_soma_das_ufs_do_boletim_diferente_do_brasil_avisa_sem_mudar_o_dad
     monkeypatch: pytest.MonkeyPatch,
 ):
     _servir(monkeypatch)
-    monkeypatch.setitem(EDICOES, SET_2022_URL, R3 / "676a715368f4fb34.xlsx")
+    monkeypatch.setitem(EDICOES, SET_2022_URL, RECONCILIACAO_CONAB / "676a715368f4fb34.xlsx")
     edicao = {
         "url": SET_2022_URL,
         "levantamento": 12,
@@ -700,7 +707,7 @@ async def test_soma_das_ufs_da_serie_diferente_do_brasil_avisa_sem_mudar_o_dado(
 
 
 def _inverno(arquivo: str, aba: str, rotulo: str) -> dict[str, dict[str, float | None]]:
-    planilha = xlrd.open_workbook(str(R3 / arquivo)).sheet_by_name(aba)
+    planilha = xlrd.open_workbook(str(RECONCILIACAO_CONAB / arquivo)).sheet_by_name(aba)
     colunas = [i for i, valor in enumerate(planilha.row_values(5)) if valor == rotulo]
     assert len(colunas) == 3
     publicado = {}
@@ -719,8 +726,8 @@ async def test_cereais_de_inverno_saem_da_aba_com_ano_que_publica_a_safra(
     monkeypatch: pytest.MonkeyPatch,
 ):
     _servir(monkeypatch)
-    monkeypatch.setitem(EDICOES, SET_2021_URL, R3 / "1569ad0cf189f4d5.xls")
-    monkeypatch.setitem(EDICOES, AGO_2020_URL, R3 / "c3c31afbe3e52d92.xls")
+    monkeypatch.setitem(EDICOES, SET_2021_URL, RECONCILIACAO_CONAB / "1569ad0cf189f4d5.xls")
+    monkeypatch.setitem(EDICOES, AGO_2020_URL, RECONCILIACAO_CONAB / "c3c31afbe3e52d92.xls")
     edicoes = [
         {
             "url": SET_2021_URL,
@@ -740,7 +747,7 @@ async def test_cereais_de_inverno_saem_da_aba_com_ano_que_publica_a_safra(
         },
     ]
     monkeypatch.setattr(client, "list_levantamentos", AsyncMock(return_value=edicoes))
-    assert xlrd.open_workbook(str(R3 / "1569ad0cf189f4d5.xls")).sheet_by_name(
+    assert xlrd.open_workbook(str(RECONCILIACAO_CONAB / "1569ad0cf189f4d5.xls")).sheet_by_name(
         "Trigo 2020"
     ).row_values(5)[1:3] == [23, 23]
 
@@ -773,7 +780,7 @@ def test_edicao_sem_o_inverno_da_safra_nao_traz_estimativa():
         ("c3c31afbe3e52d92.xls", "2020/21"),
         ("1569ad0cf189f4d5.xls", "2021/22"),
     ):
-        bruto = (R3 / arquivo).read_bytes()
+        bruto = (RECONCILIACAO_CONAB / arquivo).read_bytes()
         for cultura in INVERNO:
             with helpers.sem_excecao():
                 registros = parser.parse_safra_produto(BytesIO(bruto), cultura.lower(), safra)

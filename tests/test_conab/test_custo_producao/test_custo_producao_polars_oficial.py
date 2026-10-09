@@ -13,7 +13,7 @@ async def test_custo_producao_polars_preserva_valor_e_unidade_oficiais(
 ) -> None:
     pl = pytest.importorskip("polars")
     _acquisition.clear()
-    calls = helpers.install_reconciliacao_r4_http(monkeypatch)
+    calls = helpers.install_reconciliacao_custos_http(monkeypatch)
     try:
         frame, meta = await conab.custo_producao(
             "soja",

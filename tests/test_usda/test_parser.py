@@ -12,7 +12,7 @@ from .conftest import manifesto, registros
 CORTES = sorted(
     arquivo
     for arquivo, entrada in manifesto().items()
-    if entrada["origem"].startswith(("Rodada 24", "Rodada 23"))
+    if entrada["origem"].startswith("Conferência de 26/09/2026")
     and not arquivo.startswith(("cat_", "oraculo_"))
 )
 

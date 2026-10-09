@@ -10,10 +10,10 @@ from agrobr import datasets
 from agrobr.alt.mapa_psr import api
 from tests.test_mapa_psr import test_reconciliacao as review
 
-ORIGINAIS = Path(os.environ.get("AGROBR_R11_PSR_ORIGINALS", ""))
+ORIGINAIS = Path(os.environ.get("AGROBR_RECONCILIACAO_PSR_ORIGINALS", ""))
 pytestmark = pytest.mark.skipif(
-    not os.environ.get("AGROBR_R11_PSR_ORIGINALS"),
-    reason="Defina AGROBR_R11_PSR_ORIGINALS com o diretório dos CSVs originais",
+    not os.environ.get("AGROBR_RECONCILIACAO_PSR_ORIGINALS"),
+    reason="Defina AGROBR_RECONCILIACAO_PSR_ORIGINALS com o diretório dos CSVs originais",
 )
 CASES = [
     case

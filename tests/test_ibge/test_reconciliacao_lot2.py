@@ -20,7 +20,7 @@ CASES = {case["api"]: case for case in MANIFEST["cases"]}
 
 @pytest.mark.parametrize("case", MANIFEST["cases"], ids=lambda item: item["id"])
 async def test_trimestrais_replay_local_com_proveniencia_limitada(monkeypatch, case):
-    calls = helpers.install_reconciliacao_r5_quarter_http(monkeypatch, case, MANIFEST)
+    calls = helpers.install_reconciliacao_censos_quarter_http(monkeypatch, case, MANIFEST)
     source, source_meta = await getattr(ibge, case["api"])(
         **case["source_selection"], return_meta=True
     )
@@ -42,7 +42,7 @@ async def test_trimestrais_rejeitam_observacao_duplicada_antes_do_join(monkeypat
     with (GOLDEN / case["file"]).open(encoding="utf-8-sig", newline="") as stream:
         rows = list(csv.DictReader(stream))
     rows.append({**rows[0], "V": "1"})
-    helpers.install_reconciliacao_r5_quarter_http(monkeypatch, case, MANIFEST, rows)
+    helpers.install_reconciliacao_censos_quarter_http(monkeypatch, case, MANIFEST, rows)
     with pytest.raises(ParseError, match="duplicad"):
         await getattr(ibge, api)(**case["source_selection"])
 
@@ -67,14 +67,14 @@ async def test_abate_rejeita_layout_anomalo_nao_vazio(monkeypatch, anomalia, men
         rows = [
             {k: v for k, v in row.items() if k not in {"D1C", "D1N", "D3C", "D3N"}} for row in rows
         ]
-    helpers.install_reconciliacao_r5_quarter_http(monkeypatch, case, MANIFEST, rows)
+    helpers.install_reconciliacao_censos_quarter_http(monkeypatch, case, MANIFEST, rows)
     with pytest.raises(ParseError, match=mensagem):
         await ibge.abate(**case["source_selection"])
 
 
 async def test_abate_entrega_medidas_float64_como_o_contrato(monkeypatch):
     case = CASES["abate"]
-    helpers.install_reconciliacao_r5_quarter_http(monkeypatch, case, MANIFEST)
+    helpers.install_reconciliacao_censos_quarter_http(monkeypatch, case, MANIFEST)
     frame = await datasets.abate_trimestral(**case["selection"])
     flutuantes = [
         coluna.name

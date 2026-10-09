@@ -1,5 +1,5 @@
 {
-  "manifest_schema": "agrobr.reconciliation.r11.family",
+  "manifest_schema": "agrobr.reconciliation.family",
   "format_version": 1,
   "schema_document": "../FORMAT.md",
   "oracle": "Independent stdlib json/datetime; all eleven cells, published timestamps normalized to UTC, explicit per-code version choice and literal feature/page coordinates. No agrobr imports.",
@@ -1503,7 +1503,7 @@
   "cases": [
     {
       "id": "sicar_df",
-      "r2_id": "cadastro_rural:sicar:wfs_tabular",
+      "rota_id": "cadastro_rural:sicar:wfs_tabular",
       "query": {
         "uf": "DF",
         "cod_municipio": 5300108,
@@ -1569,7 +1569,7 @@
     },
     {
       "id": "sicar_mt",
-      "r2_id": "cadastro_rural:sicar:wfs_tabular",
+      "rota_id": "cadastro_rural:sicar:wfs_tabular",
       "query": {
         "uf": "MT",
         "cod_municipio": 5103403,
@@ -1635,7 +1635,7 @@
     },
     {
       "id": "sicar_sp",
-      "r2_id": "cadastro_rural:sicar:wfs_tabular",
+      "rota_id": "cadastro_rural:sicar:wfs_tabular",
       "query": {
         "uf": "SP",
         "cod_municipio": 3550308,
@@ -1701,7 +1701,7 @@
     },
     {
       "id": "sicar_df_full",
-      "r2_id": "cadastro_rural:sicar:wfs_tabular",
+      "rota_id": "cadastro_rural:sicar:wfs_tabular",
       "query": {
         "uf": "DF"
       },
@@ -1837,7 +1837,7 @@
     },
     {
       "id": "sicar_versions_go",
-      "r2_id": "cadastro_rural:sicar:wfs_tabular",
+      "rota_id": "cadastro_rural:sicar:wfs_tabular",
       "query": {
         "uf": "GO",
         "cod_municipio": 5205802,
@@ -1903,7 +1903,7 @@
     },
     {
       "id": "sicar_versions_rs",
-      "r2_id": "cadastro_rural:sicar:wfs_tabular",
+      "rota_id": "cadastro_rural:sicar:wfs_tabular",
       "query": {
         "uf": "RS",
         "cod_municipio": 4306734,

@@ -1,10 +1,10 @@
 # Formato próprio de famílias — versão 1
 
-Identificador: `agrobr.reconciliation.r11.family`, `format_version: 1`.
+Identificador: `agrobr.reconciliation.family`, `format_version: 1`.
 Este formato é distinto do [manifesto genérico v2](../MANIFEST.md). Os primeiros
 artefatos usavam o rótulo `2` indevidamente; a correção de identificação não
-recalcula os esperados. A alternativa de formato próprio foi autorizada na
-revisão ANP de 18/09/2026, 12:15 -03.
+recalcula os esperados. A alternativa de formato próprio vale para a
+ANP desde 18/09/2026.
 
 Cada família conserva `oracle`, `resources[]` e `cases[]`. O oráculo deve resultar
 de leitura independente do corpo original, sem importar o parser ou o contrato

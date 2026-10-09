@@ -15,11 +15,13 @@ from tests.helpers import install_replay_http, sem_excecao
 
 GOLDEN = Path(__file__).resolve().parents[1] / "golden_data"
 OFICIAL = GOLDEN / "conab_ceasa/prohort_grupos_20260923"
-R9 = GOLDEN / "reconciliacao_mercados_credito_20260918"
+MERCADOS_CREDITO = GOLDEN / "reconciliacao_mercados_credito_20260918"
 MANIFESTO = json.loads((OFICIAL / "manifest.json").read_text(encoding="utf-8"))
-CASO_R9 = next(
+CASO_CEASA_PRECOS = next(
     caso
-    for caso in json.loads((R9 / "manifest.json").read_text(encoding="utf-8"))["cases"]
+    for caso in json.loads((MERCADOS_CREDITO / "manifest.json").read_text(encoding="utf-8"))[
+        "cases"
+    ]
     if caso["id"] == "ceasa_precos_20260213"
 )
 
@@ -63,7 +65,7 @@ def test_categorias_seguem_o_painel_oficial_do_prohort():
 
 async def test_precos_oficiais_saem_com_a_categoria_do_prohort(monkeypatch: pytest.MonkeyPatch):
     oficial = _categoria_oficial()
-    install_replay_http(monkeypatch, CASO_R9, R9)
+    install_replay_http(monkeypatch, CASO_CEASA_PRECOS, MERCADOS_CREDITO)
     with sem_excecao():
         frame = await datasets.preco_atacado()
     assert isinstance(frame, pd.DataFrame)

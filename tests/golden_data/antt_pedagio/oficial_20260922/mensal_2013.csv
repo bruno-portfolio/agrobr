@@ -1,0 +1,9 @@
+concessionaria;mes_ano;sentido;praca;tipo_cobranca;categoria;tipo_de_veiculo;volume_total
+"AUTOPISTA FLUMINENSE";"01/11/2013";"Crescente";"Casimiro de Abreu";"N/I";"Categoria 1";"Passeio";203093,00
+"AUTOPISTA FLUMINENSE";"01/11/2013";"Crescente";"Casimiro de Abreu";"N/I";"Categoria 2";"Comercial";21872,00
+"AUTOPISTA FLUMINENSE";"01/11/2013";"Crescente";"Casimiro de Abreu";"N/I";"Categoria 3";"Passeio";557,00
+"AUTOPISTA FLUMINENSE";"01/11/2013";"Crescente";"Casimiro de Abreu";"N/I";"Categoria 4";"Comercial";23013,00
+"AUTOPISTA FLUMINENSE";"01/11/2013";"Crescente";"São Gonçalo";"N/I";"Categoria 4";"Comercial";23021,99
+"AUTOPISTA FLUMINENSE";"01/11/2013";"Crescente";"São Gonçalo";"N/I";"Categoria 6";"Comercial";3912,99
+"AUTOPISTA FLUMINENSE";"01/11/2013";"Crescente";"São Gonçalo";"N/I";"Categoria 9";"Moto";22605,99
+"AUTOPISTA FLUMINENSE";"01/12/2013";"Crescente";"São Gonçalo";"N/I";"Categoria 3";"Passeio";1166,99

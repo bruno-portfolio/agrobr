@@ -1,0 +1,19 @@
+{
+  "fonte": "Embrapa Solos, WFS geoinfo.dados.embrapa.br/geoserver, camada geonode:perfis_pronasolos_2020",
+  "origem": "Conferência de 26/09/2026",
+  "uso": "texto publicado com dupla codificação (UTF-8 lido como Latin-1)",
+  "arquivos": {
+    "fid256.json": {
+      "sha256": "5d9c539636086c841066dfef4692de64b846777a470b325206c4cc5f18683364",
+      "bytes": 3310,
+      "capturado_em": "2026-09-26T19:31:48Z",
+      "conteudo": "perfil perfis_pronasolos_2020.256 (DF), as 83 propriedades e a geometria, EPSG:4326"
+    },
+    "sp5.json": {
+      "sha256": "22fe6d8e183b58df6e599f32ab262a59ebe1fbe8a797969595acac6ded3d85d5",
+      "bytes": 1118,
+      "capturado_em": "2026-09-26T19:32:22Z",
+      "conteudo": "5 perfis de SP (numberMatched 1088), só as propriedades fid, municipio, uf e uso_atual, sem geometria"
+    }
+  }
+}

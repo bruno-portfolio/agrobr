@@ -1,7 +1,7 @@
 # CONAB série histórica — zero publicado × safra não levantada (23/09/2026)
 
-Oráculo da rodada 14 de conferência. As três planilhas oficiais (amendoim 2ª safra, feijão
-3ª safra e mamona), copiadas byte a byte da rodada 14; URL, data e SHA-256 em `manifest.json`, com as células
+Oráculo da conferência de 23/09/2026. As três planilhas oficiais (amendoim 2ª safra, feijão
+3ª safra e mamona), copiadas byte a byte dessa conferência; URL, data e SHA-256 em `manifest.json`, com as células
 A1 lidas por xlrd (tipo numérico, valor 0.0):
 
 - amendoim 2ª BA 2011/12: área 3,8; produtividade 0,0; produção 0,0;

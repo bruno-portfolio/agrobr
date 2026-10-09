@@ -7,7 +7,7 @@ import pytest
 from agrobr import ibama
 from tests.helpers import sem_excecao
 from tests.test_ibama import oficial
-from tests.test_ibama.test_oficial_veracidade import instalar
+from tests.test_ibama.test_oficial import instalar
 
 
 async def test_poligono_invalido_publicado_vira_aviso_sem_reparo(monkeypatch):

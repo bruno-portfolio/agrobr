@@ -1,6 +1,6 @@
 {
  "fonte": "anec",
- "oraculo": "Texto do PDFium (pypdfium2), sem o pdfminer/pdfplumber do parser: tokens montados pela caixa de cada caractere, linha pelo fluxo de texto do PDFium e coluna pelo centro x do cabeçalho; '-' e célula vazia são nulos. Conferido célula a célula na imagem da página (rodada_38: ANEC_2026_w36_p2.png e ANEC_2025_w14_p1.png; W9/2025 na imagem renderizada). Script: oraculo_pdfium.py.",
+ "oraculo": "Texto do PDFium (pypdfium2), sem o pdfminer/pdfplumber do parser: tokens montados pela caixa de cada caractere, linha pelo fluxo de texto do PDFium e coluna pelo centro x do cabeçalho; '-' e célula vazia são nulos. Conferido célula a célula na imagem da página (conferência de 26/09/2026: ANEC_2026_w36_p2.png e ANEC_2025_w14_p1.png; W9/2025 na imagem renderizada). Script: oraculo_pdfium.py.",
  "regra": "O pdfplumber parte números do boletim em 2 palavras ('3' + '72.958'; '6' + '2.185') e funde o BELÉM da linha de cima com o RIO da de baixo ('BELÉMRIO'). O parser junta 2 palavras numéricas vizinhas quando a junção forma um número com separador de milhar válido, e lê as palavras com y_tolerance de 1 pt.",
  "boletins": {
   "2026-36": {
@@ -24,7 +24,7 @@
     "pdf_url": "https://www.anec.com.br/uploads/cmu47h0m500016vtxg76q4eeb.pdf",
     "media_updated_at": "2026-09-16T14:38:16.161Z"
    },
-   "fonte_do_artigo": "rodada_10/ANEC_articles.json (id, slug e datas) e rodada_17/cache/anec/2026/week_36/meta.json (cuid e SHA)",
+   "fonte_do_artigo": "ANEC_articles.json (id, slug e datas) e cache/anec/2026/week_36/meta.json (cuid e SHA)",
    "pagina_semanal": 2,
    "semanal": {
     "SANTOS": {
@@ -330,7 +330,7 @@
     "pdf_url": "https://www.anec.com.br/uploads/cm9d3wa7p0001jptx49861t00.pdf",
     "media_updated_at": "2025-04-11T18:14:16.507Z"
    },
-   "fonte_do_artigo": "rodada 32 de conferência",
+   "fonte_do_artigo": "conferência de 26/09/2026",
    "pagina_semanal": 1,
    "semanal": {
     "SANTOS": {
@@ -556,7 +556,7 @@
     "pdf_url": "https://www.anec.com.br/uploads/cm7xuc3zg0001b3tx466e0uj4.pdf",
     "media_updated_at": "2025-03-06T21:10:23.791Z"
    },
-   "fonte_do_artigo": "rodada 32 de conferência",
+   "fonte_do_artigo": "conferência de 26/09/2026",
    "pagina_semanal": 1,
    "semanal": {
     "SANTOS": {

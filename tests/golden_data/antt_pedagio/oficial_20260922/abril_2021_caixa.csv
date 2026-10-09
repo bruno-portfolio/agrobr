@@ -1,0 +1,125 @@
+concessionaria;mes_ano;sentido;praca;tipo_cobranca;categoria;tipo_de_veiculo;volume_total
+"Ecosul";"01/04/2021";"Crescente";"Praça Capão Seco";"N/I";"Categoria 1";"Passeio";77230,00
+"Ecosul";"01/04/2021";"Crescente";"Praça Capão Seco";"N/I";"Categoria 2";"Comercial";10131,00
+"Ecosul";"01/04/2021";"Crescente";"Praça Capão Seco";"N/I";"Categoria 3";"Passeio";941,00
+"Ecosul";"01/04/2021";"Crescente";"Praça Capão Seco";"N/I";"Categoria 4";"Comercial";6818,00
+"Ecosul";"01/04/2021";"Crescente";"Praça Capão Seco";"N/I";"Categoria 5";"Passeio";270,00
+"Ecosul";"01/04/2021";"Crescente";"Praça Capão Seco";"N/I";"Categoria 6";"Comercial";5553,00
+"Ecosul";"01/04/2021";"Crescente";"Praça Capão Seco";"N/I";"Categoria 7";"Comercial";6208,00
+"Ecosul";"01/04/2021";"Crescente";"Praça Capão Seco";"N/I";"Categoria 8";"Comercial";33844,00
+"Ecosul";"01/04/2021";"Crescente";"Praça Capão Seco";"N/I";"Categoria 9";"Moto";0,00
+"Ecosul";"01/04/2021";"Crescente";"Praça Capão Seco";"N/I";"Outros";"Comercial";41633,00
+"Ecosul";"01/04/2021";"Crescente";"Praça Cristal";"N/I";"Categoria 1";"Passeio";39671,00
+"Ecosul";"01/04/2021";"Crescente";"Praça Cristal";"N/I";"Categoria 2";"Comercial";7023,00
+"Ecosul";"01/04/2021";"Crescente";"Praça Cristal";"N/I";"Categoria 3";"Passeio";505,00
+"Ecosul";"01/04/2021";"Crescente";"Praça Cristal";"N/I";"Categoria 4";"Comercial";6505,00
+"Ecosul";"01/04/2021";"Crescente";"Praça Cristal";"N/I";"Categoria 5";"Passeio";106,00
+"Ecosul";"01/04/2021";"Crescente";"Praça Cristal";"N/I";"Categoria 6";"Comercial";4644,00
+"Ecosul";"01/04/2021";"Crescente";"Praça Cristal";"N/I";"Categoria 7";"Comercial";3663,00
+"Ecosul";"01/04/2021";"Crescente";"Praça Cristal";"N/I";"Categoria 8";"Comercial";11412,00
+"Ecosul";"01/04/2021";"Crescente";"Praça Cristal";"N/I";"Categoria 9";"Moto";0,00
+"Ecosul";"01/04/2021";"Crescente";"Praça Cristal";"N/I";"Outros";"Comercial";2786,00
+"Ecosul";"01/04/2021";"Crescente";"Praça Glória";"N/I";"Categoria 1";"Passeio";16892,00
+"Ecosul";"01/04/2021";"Crescente";"Praça Glória";"N/I";"Categoria 2";"Comercial";2695,00
+"Ecosul";"01/04/2021";"Crescente";"Praça Glória";"N/I";"Categoria 3";"Passeio";166,00
+"Ecosul";"01/04/2021";"Crescente";"Praça Glória";"N/I";"Categoria 4";"Comercial";1337,00
+"Ecosul";"01/04/2021";"Crescente";"Praça Glória";"N/I";"Categoria 5";"Passeio";62,00
+"Ecosul";"01/04/2021";"Crescente";"Praça Glória";"N/I";"Categoria 6";"Comercial";1027,00
+"Ecosul";"01/04/2021";"Crescente";"Praça Glória";"N/I";"Categoria 7";"Comercial";2003,00
+"Ecosul";"01/04/2021";"Crescente";"Praça Glória";"N/I";"Categoria 8";"Comercial";16074,00
+"Ecosul";"01/04/2021";"Crescente";"Praça Glória";"N/I";"Categoria 9";"Moto";0,00
+"Ecosul";"01/04/2021";"Crescente";"Praça Glória";"N/I";"Outros";"Comercial";30718,00
+"Ecosul";"01/04/2021";"Crescente";"Praça Pavão";"N/I";"Categoria 1";"Passeio";23857,00
+"Ecosul";"01/04/2021";"Crescente";"Praça Pavão";"N/I";"Categoria 2";"Comercial";3806,00
+"Ecosul";"01/04/2021";"Crescente";"Praça Pavão";"N/I";"Categoria 3";"Passeio";365,00
+"Ecosul";"01/04/2021";"Crescente";"Praça Pavão";"N/I";"Categoria 4";"Comercial";3126,00
+"Ecosul";"01/04/2021";"Crescente";"Praça Pavão";"N/I";"Categoria 5";"Passeio";57,00
+"Ecosul";"01/04/2021";"Crescente";"Praça Pavão";"N/I";"Categoria 6";"Comercial";6200,00
+"Ecosul";"01/04/2021";"Crescente";"Praça Pavão";"N/I";"Categoria 7";"Comercial";1258,00
+"Ecosul";"01/04/2021";"Crescente";"Praça Pavão";"N/I";"Categoria 8";"Comercial";1243,00
+"Ecosul";"01/04/2021";"Crescente";"Praça Pavão";"N/I";"Categoria 9";"Moto";0,00
+"Ecosul";"01/04/2021";"Crescente";"Praça Pavão";"N/I";"Outros";"Comercial";133,00
+"Ecosul";"01/04/2021";"Crescente";"Praça Retiro";"N/I";"Categoria 1";"Passeio";49962,00
+"Ecosul";"01/04/2021";"Crescente";"Praça Retiro";"N/I";"Categoria 2";"Comercial";7719,00
+"Ecosul";"01/04/2021";"Crescente";"Praça Retiro";"N/I";"Categoria 3";"Passeio";601,00
+"Ecosul";"01/04/2021";"Crescente";"Praça Retiro";"N/I";"Categoria 4";"Comercial";7346,00
+"Ecosul";"01/04/2021";"Crescente";"Praça Retiro";"N/I";"Categoria 5";"Passeio";135,00
+"Ecosul";"01/04/2021";"Crescente";"Praça Retiro";"N/I";"Categoria 6";"Comercial";4662,00
+"Ecosul";"01/04/2021";"Crescente";"Praça Retiro";"N/I";"Categoria 7";"Comercial";4209,00
+"Ecosul";"01/04/2021";"Crescente";"Praça Retiro";"N/I";"Categoria 8";"Comercial";13251,00
+"Ecosul";"01/04/2021";"Crescente";"Praça Retiro";"N/I";"Categoria 9";"Moto";0,00
+"Ecosul";"01/04/2021";"Crescente";"Praça Retiro";"N/I";"Outros";"Comercial";3428,00
+"Ecosul";"01/04/2021";"Decrescente";"Praça Capão Seco";"N/I";"Categoria 1";"Passeio";77213,00
+"Ecosul";"01/04/2021";"Decrescente";"Praça Capão Seco";"N/I";"Categoria 2";"Comercial";11372,00
+"Ecosul";"01/04/2021";"Decrescente";"Praça Capão Seco";"N/I";"Categoria 3";"Passeio";917,00
+"Ecosul";"01/04/2021";"Decrescente";"Praça Capão Seco";"N/I";"Categoria 4";"Comercial";15154,00
+"Ecosul";"01/04/2021";"Decrescente";"Praça Capão Seco";"N/I";"Categoria 5";"Passeio";251,00
+"Ecosul";"01/04/2021";"Decrescente";"Praça Capão Seco";"N/I";"Categoria 6";"Comercial";34985,00
+"Ecosul";"01/04/2021";"Decrescente";"Praça Capão Seco";"N/I";"Categoria 7";"Comercial";16634,00
+"Ecosul";"01/04/2021";"Decrescente";"Praça Capão Seco";"N/I";"Categoria 8";"Comercial";16988,00
+"Ecosul";"01/04/2021";"Decrescente";"Praça Capão Seco";"N/I";"Categoria 9";"Moto";0,00
+"Ecosul";"01/04/2021";"Decrescente";"Praça Capão Seco";"N/I";"Outros";"Comercial";8336,00
+"Ecosul";"01/04/2021";"Decrescente";"Praça Cristal";"N/I";"Categoria 1";"Passeio";39728,00
+"Ecosul";"01/04/2021";"Decrescente";"Praça Cristal";"N/I";"Categoria 2";"Comercial";8542,00
+"Ecosul";"01/04/2021";"Decrescente";"Praça Cristal";"N/I";"Categoria 3";"Passeio";500,00
+"Ecosul";"01/04/2021";"Decrescente";"Praça Cristal";"N/I";"Categoria 4";"Comercial";7525,00
+"Ecosul";"01/04/2021";"Decrescente";"Praça Cristal";"N/I";"Categoria 5";"Passeio";106,00
+"Ecosul";"01/04/2021";"Decrescente";"Praça Cristal";"N/I";"Categoria 6";"Comercial";8597,00
+"Ecosul";"01/04/2021";"Decrescente";"Praça Cristal";"N/I";"Categoria 7";"Comercial";3264,00
+"Ecosul";"01/04/2021";"Decrescente";"Praça Cristal";"N/I";"Categoria 8";"Comercial";5857,00
+"Ecosul";"01/04/2021";"Decrescente";"Praça Cristal";"N/I";"Categoria 9";"Moto";0,00
+"Ecosul";"01/04/2021";"Decrescente";"Praça Cristal";"N/I";"Outros";"Comercial";1724,00
+"Ecosul";"01/04/2021";"Decrescente";"Praça Glória";"N/I";"Categoria 1";"Passeio";15769,00
+"Ecosul";"01/04/2021";"Decrescente";"Praça Glória";"N/I";"Categoria 2";"Comercial";2901,00
+"Ecosul";"01/04/2021";"Decrescente";"Praça Glória";"N/I";"Categoria 3";"Passeio";145,00
+"Ecosul";"01/04/2021";"Decrescente";"Praça Glória";"N/I";"Categoria 4";"Comercial";6004,00
+"Ecosul";"01/04/2021";"Decrescente";"Praça Glória";"N/I";"Categoria 5";"Passeio";67,00
+"Ecosul";"01/04/2021";"Decrescente";"Praça Glória";"N/I";"Categoria 6";"Comercial";20167,00
+"Ecosul";"01/04/2021";"Decrescente";"Praça Glória";"N/I";"Categoria 7";"Comercial";9704,00
+"Ecosul";"01/04/2021";"Decrescente";"Praça Glória";"N/I";"Categoria 8";"Comercial";9024,00
+"Ecosul";"01/04/2021";"Decrescente";"Praça Glória";"N/I";"Categoria 9";"Moto";0,00
+"Ecosul";"01/04/2021";"Decrescente";"Praça Glória";"N/I";"Outros";"Comercial";5163,00
+"Ecosul";"01/04/2021";"Decrescente";"Praça Pavão";"N/I";"Categoria 1";"Passeio";23614,00
+"Ecosul";"01/04/2021";"Decrescente";"Praça Pavão";"N/I";"Categoria 2";"Comercial";4308,00
+"Ecosul";"01/04/2021";"Decrescente";"Praça Pavão";"N/I";"Categoria 3";"Passeio";355,00
+"Ecosul";"01/04/2021";"Decrescente";"Praça Pavão";"N/I";"Categoria 4";"Comercial";2328,00
+"Ecosul";"01/04/2021";"Decrescente";"Praça Pavão";"N/I";"Categoria 5";"Passeio";54,00
+"Ecosul";"01/04/2021";"Decrescente";"Praça Pavão";"N/I";"Categoria 6";"Comercial";1141,00
+"Ecosul";"01/04/2021";"Decrescente";"Praça Pavão";"N/I";"Categoria 7";"Comercial";1500,00
+"Ecosul";"01/04/2021";"Decrescente";"Praça Pavão";"N/I";"Categoria 8";"Comercial";5331,00
+"Ecosul";"01/04/2021";"Decrescente";"Praça Pavão";"N/I";"Categoria 9";"Moto";0,00
+"Ecosul";"01/04/2021";"Decrescente";"Praça Pavão";"N/I";"Outros";"Comercial";2145,00
+"Ecosul";"01/04/2021";"Decrescente";"Praça Retiro";"N/I";"Categoria 1";"Passeio";50207,00
+"Ecosul";"01/04/2021";"Decrescente";"Praça Retiro";"N/I";"Categoria 2";"Comercial";10163,00
+"Ecosul";"01/04/2021";"Decrescente";"Praça Retiro";"N/I";"Categoria 3";"Passeio";603,00
+"Ecosul";"01/04/2021";"Decrescente";"Praça Retiro";"N/I";"Categoria 4";"Comercial";8565,00
+"Ecosul";"01/04/2021";"Decrescente";"Praça Retiro";"N/I";"Categoria 5";"Passeio";128,00
+"Ecosul";"01/04/2021";"Decrescente";"Praça Retiro";"N/I";"Categoria 6";"Comercial";10530,00
+"Ecosul";"01/04/2021";"Decrescente";"Praça Retiro";"N/I";"Categoria 7";"Comercial";3309,00
+"Ecosul";"01/04/2021";"Decrescente";"Praça Retiro";"N/I";"Categoria 8";"Comercial";5551,00
+"Ecosul";"01/04/2021";"Decrescente";"Praça Retiro";"N/I";"Categoria 9";"Moto";0,00
+"Ecosul";"01/04/2021";"Decrescente";"Praça Retiro";"N/I";"Outros";"Comercial";1536,00
+"VIA BAHIA";"01/04/2021";"Crescente";"Praça 1";"N/I";"Categoria 1";"Passeio";388251,00
+"VIA BAHIA";"01/04/2021";"Crescente";"Praça 1";"N/I";"Categoria 10";"Passeio";1247,00
+"VIA BAHIA";"01/04/2021";"Crescente";"Praça 1";"N/I";"Categoria 11";"Passeio";369,00
+"VIA BAHIA";"01/04/2021";"Crescente";"Praça 1";"N/I";"Categoria 12";"Moto";14574,00
+"VIA BAHIA";"01/04/2021";"Crescente";"Praça 1";"N/I";"Categoria 2";"Comercial";39194,00
+"VIA BAHIA";"01/04/2021";"Crescente";"Praça 1";"N/I";"Categoria 3";"Comercial";18157,00
+"VIA BAHIA";"01/04/2021";"Crescente";"Praça 1";"N/I";"Categoria 4";"Comercial";10873,00
+"VIA BAHIA";"01/04/2021";"Crescente";"Praça 1";"N/I";"Categoria 5";"Comercial";7702,00
+"VIA BAHIA";"01/04/2021";"Crescente";"Praça 1";"N/I";"Categoria 6";"Comercial";9591,00
+"VIA BAHIA";"01/04/2021";"Crescente";"Praça 1";"N/I";"Categoria 7";"Comercial";2180,00
+"VIA BAHIA";"01/04/2021";"Crescente";"Praça 1";"N/I";"Categoria 8";"Comercial";275,00
+"VIA BAHIA";"01/04/2021";"Crescente";"Praça 1";"N/I";"Categoria 9";"Comercial";9855,00
+"VIA BAHIA";"01/04/2021";"Decrescente";"Praça 1";"N/I";"Categoria 1";"Passeio";388761,00
+"VIA BAHIA";"01/04/2021";"Decrescente";"Praça 1";"N/I";"Categoria 10";"Passeio";1270,00
+"VIA BAHIA";"01/04/2021";"Decrescente";"Praça 1";"N/I";"Categoria 11";"Passeio";367,00
+"VIA BAHIA";"01/04/2021";"Decrescente";"Praça 1";"N/I";"Categoria 12";"Moto";14814,00
+"VIA BAHIA";"01/04/2021";"Decrescente";"Praça 1";"N/I";"Categoria 2";"Comercial";40361,00
+"VIA BAHIA";"01/04/2021";"Decrescente";"Praça 1";"N/I";"Categoria 3";"Comercial";18163,00
+"VIA BAHIA";"01/04/2021";"Decrescente";"Praça 1";"N/I";"Categoria 4";"Comercial";12277,00
+"VIA BAHIA";"01/04/2021";"Decrescente";"Praça 1";"N/I";"Categoria 5";"Comercial";9419,00
+"VIA BAHIA";"01/04/2021";"Decrescente";"Praça 1";"N/I";"Categoria 6";"Comercial";11631,00
+"VIA BAHIA";"01/04/2021";"Decrescente";"Praça 1";"N/I";"Categoria 7";"Comercial";3159,00
+"VIA BAHIA";"01/04/2021";"Decrescente";"Praça 1";"N/I";"Categoria 8";"Comercial";167,00
+"VIA BAHIA";"01/04/2021";"Decrescente";"Praça 1";"N/I";"Categoria 9";"Comercial";1233,00

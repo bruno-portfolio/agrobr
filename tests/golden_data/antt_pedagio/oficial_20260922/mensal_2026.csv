@@ -1,0 +1,17 @@
+concessionaria;mes_ano;sentido;praca;tipo_cobranca;categoria_eixo;tipo_de_veiculo;volume_total
+"ECOVIAS MINAS GOIÁS";"05/2026";"Crescente";"DELTA";"Automática";"10";"Comercial";603,00
+"ECOVIAS MINAS GOIÁS";"05/2026";"Crescente";"DELTA";"Automática";"11";"Comercial";37,00
+"EPR PARANÁ";"05/2026";"Crescente";"Free Flow Marialva_";"Automática";"2";"Passeio";5,00
+"EPR PARANÁ";"05/2026";"Crescente";"Free Flow Marialva_";"Manual";"2";"Comercial";4,00
+"VIA SUL";"05/2026";"Crescente";"P1-Três Cachoeiras";"Automática";"10";"Comercial";49,00
+"VIA SUL";"05/2026";"Crescente";"P1-Três Cachoeiras";"Automática";"11";"Comercial";2,00
+"VIA SUL";"05/2026";"Crescente";"P2-Santo Antônio da Patrulha";"Automática";"10";"Comercial";17,00
+"VIA SUL";"05/2026";"Crescente";"P2-Santo Antônio da Patrulha";"Automática";"2";"Comercial";15216,00
+"VIA SUL";"05/2026";"Crescente";"P2-Santo Antônio da Patrulha";"Automática";"2";"Moto";2,00
+"VIA SUL";"05/2026";"Crescente";"P2-Santo Antônio da Patrulha";"Automática";"2";"Passeio";225203,00
+"VIA SUL";"05/2026";"Crescente";"P3-Gravatai";"Automática";"10";"Comercial";52,00
+"VIA SUL";"05/2026";"Crescente";"P3-Gravatai";"Automática";"2";"Comercial";14129,00
+"VIA SUL";"05/2026";"Crescente";"P3-Gravatai";"Automática";"2";"Passeio";225516,00
+"VIA SUL";"05/2026";"Crescente";"P3-Gravatai";"Automática";"3";"Comercial";16195,00
+"VIA SUL";"05/2026";"Crescente";"P4-Montenegro";"Automática";"10";"Comercial";37,00
+"VIA SUL";"05/2026";"Crescente";"P4-Montenegro";"Automática";"11";"Comercial";2,00

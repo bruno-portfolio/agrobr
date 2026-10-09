@@ -21,7 +21,7 @@ Geração: `build_psr_oracle.py`, fora do repositório.
 Replays adicionais dos corpos integrais ficam fora do repositório.
 N3 não concedido; versões e formatos da mesma origem não são independentes.
 
-Formato identificado: `agrobr.reconciliation.r11.family`, versão 1, documentado
+Formato identificado: `agrobr.reconciliation.family`, versão 1, documentado
 em `../FORMAT.md`; distinto do manifesto genérico v2. A mudança de rótulo não
 recalcula esperados nem modifica os corpos CSV/XLSX.
 
@@ -31,6 +31,6 @@ O leitor preserva tokens em campos textuais; conversão numérica mantém a pol�
 Replays do corpo integral e controles dos tokens ficam fora do repositório.
 
 Replays dos corpos integrais fazem parte da suíte em `tests/test_mapa_psr/test_reconciliacao_originais.py`.
-Aponte `AGROBR_R11_PSR_ORIGINALS` para o diretório com os corpos originais para executá-los; o modo padrão registra skips explícitos.
+Aponte `AGROBR_RECONCILIACAO_PSR_ORIGINALS` para o diretório com os corpos originais para executá-los; o modo padrão registra skips explícitos.
 Os arquivos têm os nomes de `resources[].original.file`; se o modo
 for ativado sem os arquivos, os testes falham indicando o corpo ausente.

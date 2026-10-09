@@ -21,15 +21,6 @@ SINTETICO = json.loads(
     ).read_text(encoding="utf-8")
 )
 
-# ---------------------------------------------------------------------------
-# Bloco 1: testes de constantes (mantidos)
-# ---------------------------------------------------------------------------
-
-
-# ---------------------------------------------------------------------------
-# Bloco 2: testes de validacao, parsing e integracao
-# ---------------------------------------------------------------------------
-
 
 class TestCensoHistoricoValidation:
     async def test_validacao_censo_agro_historico(self):
@@ -89,11 +80,6 @@ class TestCensoHistoricoParsing:
         assert call_kwargs.kwargs["territorial_level"] == "1"
         assert call_kwargs.kwargs["period"] == "1985"
         assert "183" in call_kwargs.kwargs["variable"]
-
-
-# ---------------------------------------------------------------------------
-# Bloco 3: testes de contrato e dataset
-# ---------------------------------------------------------------------------
 
 
 @pytest.mark.parametrize(

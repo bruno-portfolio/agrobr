@@ -3,8 +3,8 @@
  "file": "trigo_cepea.html",
  "sha256": "86b1f2a1c8e68e245bbe4ee4e554bf3e634fb4a931716141324f56e4f7b336cb",
  "bytes": 61266,
- "source": "trigo_cepea.html (conferência, Rodada 21, 25/09/2026)",
- "transformation": "texto decodificado pelo client do agrobr na captura da R21; o arquivo da R21 tem CRLF (write_text no Windows), e aqui volta a LF, que é o conteúdo cujo SHA a R21 registrou",
+ "source": "trigo_cepea.html (conferência de 25/09/2026)",
+ "transformation": "texto decodificado pelo client do agrobr na captura de conferência; o arquivo dessa captura tem CRLF (write_text no Windows), e aqui volta a LF, que é o conteúdo cujo SHA essa captura registrou",
  "oracle": "html.parser da biblioteca padrão, sem o agrobr; cada imagenet-table-titulo e a tabela seguinte",
  "rows": [
   {

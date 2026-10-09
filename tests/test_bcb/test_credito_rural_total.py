@@ -21,7 +21,7 @@ GOLDEN = Path(__file__).parents[1] / "golden_data" / "bcb" / "sicor_regiao_uf_20
 MANIFESTO = json.loads((GOLDEN / "manifest.json").read_text(encoding="utf-8"))
 RECURSOS = {recurso["file"]: recurso for recurso in MANIFESTO["resources"]}
 MESES_REGIAO_UF = sorted(nome for nome in RECURSOS if nome.startswith("RegiaoUF_"))
-TABELA_R8 = {
+TOTAIS_SICOR = {
     ("2022", "custeio"): (942825, Decimal("207709040433.19")),
     ("2022", "investimento"): (1023854, Decimal("100448934321.77")),
     ("2022", "comercializacao"): (22988, Decimal("32986781718.21")),
@@ -91,7 +91,7 @@ async def test_total_da_safra_por_uf_e_finalidade_confere_com_os_corpos(
 
     registros = [registro for nome in MESES_REGIAO_UF for registro in corpo(nome, decimal=True)]
     por_ano = oraculo(registros, lambda registro: (registro["AnoEmissao"],))
-    assert por_ano == TABELA_R8
+    assert por_ano == TOTAIS_SICOR
     esperado = oraculo([registro for registro in registros if na_safra_2022_23(registro)])
     assert obtido(frame, ["uf"]) == esperado
     assert len(esperado) == 104

@@ -11,8 +11,6 @@ from tests import helpers
 
 
 class TestFingerprint:
-    """Tests for fingerprint extraction and comparison."""
-
     @pytest.mark.parametrize(
         "scenario,parameters",
         [

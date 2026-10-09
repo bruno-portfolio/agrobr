@@ -8,7 +8,7 @@ import pytest
 from agrobr.ana import api
 from tests.helpers import sem_excecao
 from tests.test_ana import oficial
-from tests.test_ana.test_oficial_veracidade import DF, instalar, oficial_ou_404
+from tests.test_ana.test_oficial import DF, instalar, oficial_ou_404
 
 
 def _com_gravata(parse: Any, poligono: Any) -> Any:

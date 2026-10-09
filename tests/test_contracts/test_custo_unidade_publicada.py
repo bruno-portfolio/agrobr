@@ -14,7 +14,7 @@ GOLDEN = (
 
 
 async def test_contrato_rejeita_unidade_de_saca_no_custo_por_hectare(monkeypatch):
-    calls = helpers.install_reconciliacao_r4_http(monkeypatch)
+    calls = helpers.install_reconciliacao_custos_http(monkeypatch)
     manifest = json.loads((GOLDEN / "manifest.json").read_text(encoding="utf-8"))
     case = next(item for item in manifest["cases"] if item["id"] == "milho_8608f61a51d3")
     selection = dict(case["selection"])

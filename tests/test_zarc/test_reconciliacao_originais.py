@@ -11,10 +11,10 @@ from agrobr.zarc import api
 from tests import helpers
 from tests.test_zarc import test_reconciliacao as review
 
-ORIGINAIS = Path(os.environ.get("AGROBR_R11_ZARC_ORIGINALS", ""))
+ORIGINAIS = Path(os.environ.get("AGROBR_RECONCILIACAO_ZARC_ORIGINALS", ""))
 pytestmark = pytest.mark.skipif(
-    not os.environ.get("AGROBR_R11_ZARC_ORIGINALS"),
-    reason="Defina AGROBR_R11_ZARC_ORIGINALS com o diretório dos CSVs originais",
+    not os.environ.get("AGROBR_RECONCILIACAO_ZARC_ORIGINALS"),
+    reason="Defina AGROBR_RECONCILIACAO_ZARC_ORIGINALS com o diretório dos CSVs originais",
 )
 CASES = [case for case in review.MANIFEST["cases"] if case["id"].endswith("_last_city")]
 

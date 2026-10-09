@@ -1,5 +1,5 @@
 {
- "descricao": "Dois pregões seguidos da B3 (21 e 22/09/2026) para o oráculo de `b3.historico` e `b3.oi_historico`: recortes byte a byte (padrão do R9) do ZIP de ajustes (PRyymmdd, blocos <BizGrp> de futuros agro) e do CSV de posições em aberto (linhas AGRIBUSINESS), com a resposta do token. Os corpos inteiros ficaram fora do repositório; o recibo guarda URL, data, status, cabeçalhos, SHA e offsets.",
+ "descricao": "Dois pregões seguidos da B3 (21 e 22/09/2026) para o oráculo de `b3.historico` e `b3.oi_historico`: recortes byte a byte (padrão de reconciliacao_mercados_credito_20260918) do ZIP de ajustes (PRyymmdd, blocos <BizGrp> de futuros agro) e do CSV de posições em aberto (linhas AGRIBUSINESS), com a resposta do token. Os corpos inteiros ficaram fora do repositório; o recibo guarda URL, data, status, cabeçalhos, SHA e offsets.",
  "arquivos": [
   {
    "file": "b3_ajustes_PR260921_recorte.zip",

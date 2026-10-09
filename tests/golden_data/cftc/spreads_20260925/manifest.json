@@ -1,6 +1,6 @@
 {
- "descricao": "CFTC Disaggregated (Socrata): corpos inteiros da Rodada 25 de conferência, 3 semanas por consulta. Futuros (72hh-3qpy): soja 09/2026, soja 06/2006 e arroz 09/2026; combinado (kh3c-gbw2): soja 09/2026. Oráculo: swap__positions_spread_all e other_rept_positions_spread, e a identidade do open interest.",
- "origem": "rodada_25",
+ "descricao": "CFTC Disaggregated (Socrata): corpos inteiros da conferência de 25/09/2026, 3 semanas por consulta. Futuros (72hh-3qpy): soja 09/2026, soja 06/2006 e arroz 09/2026; combinado (kh3c-gbw2): soja 09/2026. Oráculo: swap__positions_spread_all e other_rept_positions_spread, e a identidade do open interest.",
+ "origem": "conferência de 25/09/2026",
  "corpos": {
   "soja_recent": {
    "arquivo": "soja_recent.json",

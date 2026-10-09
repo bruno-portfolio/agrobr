@@ -2,6 +2,7 @@
 
 from datetime import date
 
+import pandas as pd
 import pytest
 
 from agrobr.exceptions import ParseError
@@ -62,8 +63,8 @@ class TestParseDaily:
         data = _nasa_response(t2m=-999.0, precip=-999.0)
         df = parse_daily(data, lat=-12.6, lon=-56.1)
 
-        assert df.iloc[0]["temp_media"] != df.iloc[0]["temp_media"]  # NaN
-        assert df.iloc[0]["precip_mm"] != df.iloc[0]["precip_mm"]  # NaN
+        assert df["temp_media"].dtype == "float64" and pd.isna(df.iloc[0]["temp_media"])
+        assert df["precip_mm"].dtype == "float64" and pd.isna(df.iloc[0]["precip_mm"])
 
     def test_empty_raises(self):
         with pytest.raises(ParseError) as exc_info:

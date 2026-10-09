@@ -76,7 +76,6 @@ class TestParseMesesRows:
 
 class TestParseExportacaoExcel:
     def test_multiple_sheets(self):
-        """Testa Excel com múltiplas sheets de produtos."""
         excel_data = _make_excel_bytes(
             {
                 "Soja em Grão": [
@@ -98,7 +97,6 @@ class TestParseExportacaoExcel:
 
         df = parse_exportacao_excel(excel_data, ano=2024)
 
-        # Deve ter dados de ambas sheets
         assert len(df) == 6
         assert set(df["produto"].unique()) == {"grao", "farelo"}
 

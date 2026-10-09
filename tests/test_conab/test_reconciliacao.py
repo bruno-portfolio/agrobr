@@ -18,14 +18,14 @@ from agrobr.exceptions import SourceUnavailableError
 from agrobr.ibge import client as ibge_client
 from agrobr.ibge import lspa_parser
 from tests.helpers import (
-    RECONCILIACAO_R3_GOLDEN,
+    RECONCILIACAO_CONAB_GOLDEN,
     assert_balance_dtypes,
     assert_reconciliation_case,
-    install_reconciliacao_r3_http,
-    load_reconciliacao_r3_manifest,
+    install_reconciliacao_conab_http,
+    load_reconciliacao_conab_manifest,
 )
 
-MANIFEST = load_reconciliacao_r3_manifest()
+MANIFEST = load_reconciliacao_conab_manifest()
 CASES = MANIFEST["cases"]
 EXCEL_CASES = [case for case in CASES if not case["id"].startswith("lspa_")]
 SOURCE_CASES = [case for case in CASES if case["id"].startswith("safra_")]
@@ -75,7 +75,7 @@ def sem_periodos_ibge(monkeypatch: pytest.MonkeyPatch) -> None:
 
 @pytest.mark.parametrize("case", EXCEL_CASES, ids=lambda item: item["id"])
 def test_reconciliation_parser_matches_independent_cells(case: dict[str, Any]):
-    raw = (RECONCILIACAO_R3_GOLDEN / case["file"]).read_bytes()
+    raw = (RECONCILIACAO_CONAB_GOLDEN / case["file"]).read_bytes()
     expected = copy.deepcopy(case)
     product = case["selection"]["produto"]
     if case["dataset"] == "estimativa_safra":
@@ -110,7 +110,7 @@ async def test_reconciliation_conab_source_has_null_harvested_area_without_sourc
     case: dict[str, Any],
     monkeypatch: pytest.MonkeyPatch,
 ):
-    requests = install_reconciliacao_r3_http(monkeypatch, case)
+    requests = install_reconciliacao_conab_http(monkeypatch, case)
     selection = {name: value for name, value in case["selection"].items() if name != "fonte"}
     frame, meta = await conab.safras(**selection, return_meta=True)
     expected = {**case, "null_columns": ["area_colhida"] if not frame.empty else []}
@@ -136,7 +136,7 @@ async def test_reconciliation_public_dataset_matches_independent_oracle(
     case: dict[str, Any],
     monkeypatch: pytest.MonkeyPatch,
 ):
-    requests = install_reconciliacao_r3_http(monkeypatch, case)
+    requests = install_reconciliacao_conab_http(monkeypatch, case)
     fetch = getattr(datasets, case["dataset"])
     selecao = case["selection"]
     if case["dataset"] == "balanco":
@@ -191,7 +191,7 @@ def test_reconciliation_lspa_parser_preserves_json_period_unit_and_value(case: d
     rows = [
         row
         for file in case["files"]
-        for row in json.loads((RECONCILIACAO_R3_GOLDEN / file).read_text(encoding="utf-8"))
+        for row in json.loads((RECONCILIACAO_CONAB_GOLDEN / file).read_text(encoding="utf-8"))
         if row["D3C"] in case["components"]
     ]
     for component in case["components"]:
@@ -223,7 +223,7 @@ async def test_cereais_de_inverno_ano_civil_e_ano_de_encerramento_da_safra(
     for cell, value in cells.items():
         field, safra = COLUNAS_INVERNO[cell[0]]
         expected.setdefault(safra, {})[field] = value
-    raw = (RECONCILIACAO_R3_GOLDEN / "7cd4df7946e5c57f.xlsx").read_bytes()
+    raw = (RECONCILIACAO_CONAB_GOLDEN / "7cd4df7946e5c57f.xlsx").read_bytes()
     records = ConabParserV1().parse_safra_produto(BytesIO(raw), produto, levantamento=12)
     parsed = {
         record.safra: {
@@ -234,7 +234,7 @@ async def test_cereais_de_inverno_ano_civil_e_ano_de_encerramento_da_safra(
         if record.uf == uf
     }
     assert parsed == expected
-    install_reconciliacao_r3_http(
+    install_reconciliacao_conab_http(
         monkeypatch, next(case for case in CASES if case["id"] == "safra_2025_26_12_trigo")
     )
     for selection in ({"safra": "2025/26", "levantamento": 12}, {}):

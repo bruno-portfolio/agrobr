@@ -1,0 +1,14 @@
+{
+  "fonte": "UN Comtrade, endpoint público preview (C/A/HS)",
+  "origem": "Conferência de 26/09/2026",
+  "uso": "marcas de estimativa da ONU (isNetWgtEstimated, isGrossWgtEstimated e isQtyEstimated)",
+  "arquivos": {
+    "frango_2024.json": {
+      "url": "https://comtradeapi.un.org/public/v1/preview/C/A/HS?reporterCode=76&flowCode=X&cmdCode=020711%2C020712%2C020713%2C020714&period=2024&includeDesc=True&partner2Code=0&motCode=0&customsCode=C00&maxRecords=500&partnerCode=0",
+      "sha256": "3a786ca7fca6d10c81ced059a0ae4a52c332f7d3a6d435ab2bada73227483bcd",
+      "bytes": 4178,
+      "capturado_em": "2026-09-26T19:56:56Z",
+      "conteudo": "Brasil, exportação para o mundo, 2024, HS 020711 a 020714 (carne_frango); o 020714 traz isNetWgtEstimated e isQtyEstimated verdadeiros"
+    }
+  }
+}

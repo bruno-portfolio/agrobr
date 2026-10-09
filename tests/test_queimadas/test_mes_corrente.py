@@ -16,7 +16,7 @@ from tests.helpers import conferir_corpo, sem_excecao
 
 GOLDEN = Path(__file__).parents[1] / "golden_data" / "queimadas"
 SETEMBRO = GOLDEN / "mes_corrente_202609"
-AGOSTO = GOLDEN / "r48_202408"
+AGOSTO = GOLDEN / "mensal_202408"
 CSV_SETEMBRO = f"{client.BASE_URL}/mensal/Brasil/focos_mensal_br_202609.csv"
 CSV_AGOSTO = f"{client.BASE_URL}/mensal/Brasil/focos_mensal_br_202408.csv"
 ASYNC_CLIENT_REAL = httpx.AsyncClient

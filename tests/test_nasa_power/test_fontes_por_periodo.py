@@ -10,7 +10,7 @@ from agrobr import nasa_power
 from tests.helpers import assert_replay_served, install_replay_http, replay_signature, sem_excecao
 
 GOLDEN = Path(__file__).resolve().parents[1] / "golden_data/nasa_power"
-R45 = GOLDEN / "reconciliacao_fontes_parametros_20260926"
+FONTES_PARAMETROS = GOLDEN / "reconciliacao_fontes_parametros_20260926"
 COBERTURA = GOLDEN / "cobertura_mensal_20260925"
 
 
@@ -40,7 +40,7 @@ async def _consultar(monkeypatch, pasta: Path, corpo: str):
 
 
 async def test_janela_so_merra2_nao_avisa(monkeypatch):
-    frame, meta = await _consultar(monkeypatch, R45, "merra2_jan2025")
+    frame, meta = await _consultar(monkeypatch, FONTES_PARAMETROS, "merra2_jan2025")
     assert str(frame["data"].dtype) == "datetime64[ns]"
     assert meta.source_details["fontes"] == ["MERRA2"]
     assert meta.source_details["fontes_por_bloco"] == [
@@ -61,7 +61,7 @@ async def test_janela_so_merra2_nao_avisa(monkeypatch):
 async def test_trecho_do_geosit_sai_no_detalhe_e_no_aviso(
     monkeypatch, corpo, inicio, fim, origem, exato
 ):
-    _, meta = await _consultar(monkeypatch, R45, corpo)
+    _, meta = await _consultar(monkeypatch, FONTES_PARAMETROS, corpo)
     assert meta.source_details["periodos_baixa_latencia"] == [
         {"fonte": "GEOSIT", "inicio": inicio, "fim": fim, "origem": origem, "exato": exato}
     ]

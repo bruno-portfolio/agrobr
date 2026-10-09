@@ -14,7 +14,7 @@ from tests.helpers import levanta_exatamente
 
 GOLDEN = Path(__file__).resolve().parents[1] / "golden_data/conab_ceasa/precos_20260923"
 USUARIO = "usuario_c43_falso"
-SENHA = "senha_c43_falsa"
+SENHA = "senha_falsa"
 CORPOS = {
     models.QUERY_PRECOS: (GOLDEN / "precos_response.json").read_bytes(),
 }

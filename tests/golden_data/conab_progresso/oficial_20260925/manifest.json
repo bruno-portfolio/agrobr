@@ -1,0 +1,25 @@
+{
+ "fonte": "CONAB, Progresso de Safra (planilha semanal 'Plantio e colheita')",
+ "captura": "Conferência de 25/09/2026; corpos inteiros, sem transformação",
+ "uso": "oráculo do agregado 'N estados' e da nota de cobertura, das culturas × operações e do PR × DERAL",
+ "arquivos": [
+  {
+   "arquivo": "progresso_20260222.xlsx",
+   "url": "https://www.gov.br/conab/pt-br/atuacao/informacoes-agropecuarias/safras/progresso-de-safra/acompanhamento-das-lavouras-16-02-a-22-02-26/plantio-e-colheita-15-02-a-21-02",
+   "status": 200,
+   "fetched_at": "2026-09-25T20:37:18.207178+00:00",
+   "bytes": 76946,
+   "sha256": "d42d49715bb393c14f67855db7af2e79d08a3bd982201e7a0ce02f75e2ec8ff9",
+   "recibo": "recibo da conferência (fora do repositório)"
+  },
+  {
+   "arquivo": "progresso_20260920.xlsx",
+   "url": "https://www.gov.br/conab/pt-br/atuacao/informacoes-agropecuarias/safras/progresso-de-safra/acompanhamento-das-lavouras-14-09-a-20-09-26/plantio-e-colheita-12-09-a-18-09",
+   "status": 200,
+   "fetched_at": "2026-09-25T20:37:29.018513+00:00",
+   "bytes": 77631,
+   "sha256": "35dd6b33daa9d04e9797cb25109722fa338cd85d5fdca3600bf3246bed94376e",
+   "recibo": "recibo da conferência (fora do repositório)"
+  }
+ ]
+}

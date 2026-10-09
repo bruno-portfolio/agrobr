@@ -94,7 +94,6 @@ def _indicadores_single_section():
 def _indicadores_multi_section():
     """Tabela multi-secao simulando PDF real (entregas + producao + importacao)."""
     return [
-        # Secao 1: Entregas ao Mercado
         ["", "Fertilizantes Entregues ao Mercado (em toneladas de produto)", "", ""],
         ["", "", "2021", "2022"],
         ["", "Janeiro", "3.397.952", "3.200.000"],
@@ -110,7 +109,6 @@ def _indicadores_multi_section():
         ["", "Novembro", "4.800.000", "4.400.000"],
         ["", "Dezembro", "3.500.000", "3.100.000"],
         ["", "Janeiro a Dezembro", "45.897.952", "42.100.000"],
-        # Secao 2: Producao Nacional (titulo longo = sinal de nova secao)
         ["Producao Nacional de Fertilizantes Intermediarios (em toneladas)", "", "", ""],
         ["", "", "2021", "2022"],
         ["", "Janeiro", "700.000", "650.000"],

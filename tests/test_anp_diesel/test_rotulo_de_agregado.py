@@ -10,7 +10,7 @@ import pandas as pd
 from agrobr import datasets
 from agrobr.alt.anp_diesel import api, parser
 from tests.helpers import sem_excecao
-from tests.test_anp_diesel import test_reconciliacao as r11
+from tests.test_anp_diesel import test_reconciliacao as reconciliacao
 
 CONSULTA = {
     "nivel": "municipio",
@@ -25,7 +25,7 @@ AVISO = "anp_diesel: 1 linha(s) com rótulo de agregado na coluna de município 
 
 def _com_total(destino: Path) -> dict[str, Path]:
     """Cópia de uma linha de MT no meio da planilha, com o município "TOTAL" e preço 99,99."""
-    livro = openpyxl.load_workbook(r11.GOLDEN / "request_04.xlsx")
+    livro = openpyxl.load_workbook(reconciliacao.GOLDEN / "request_04.xlsx")
     folha = livro.worksheets[0]
     modelo = next(
         linha
@@ -47,7 +47,9 @@ def _com_total(destino: Path) -> dict[str, Path]:
 
 def test_parser_descarta_a_linha_total_com_aviso(tmp_path):
     filtros = {"produto": "DIESEL", "uf": "MT", "nivel": "municipio"}
-    original = parser.parse_precos((r11.GOLDEN / "request_04.xlsx").read_bytes(), **filtros)
+    original = parser.parse_precos(
+        (reconciliacao.GOLDEN / "request_04.xlsx").read_bytes(), **filtros
+    )
 
     with sem_excecao():
         frame = parser.parse_precos(_com_total(tmp_path)["request_04.xlsx"].read_bytes(), **filtros)
@@ -58,9 +60,9 @@ def test_parser_descarta_a_linha_total_com_aviso(tmp_path):
 
 
 async def test_linha_total_sai_do_resultado_com_aviso(monkeypatch, tmp_path):
-    r11.install_inputs(monkeypatch)
+    reconciliacao.install_inputs(monkeypatch)
     original, _ = await api.precos_diesel(**CONSULTA)
-    r11.install_inputs(monkeypatch, _com_total(tmp_path))
+    reconciliacao.install_inputs(monkeypatch, _com_total(tmp_path))
 
     with warnings.catch_warnings(record=True) as emitidos, sem_excecao():
         warnings.simplefilter("always")
@@ -73,7 +75,7 @@ async def test_linha_total_sai_do_resultado_com_aviso(monkeypatch, tmp_path):
 
 
 async def test_aviso_da_linha_total_chega_ao_dataset(monkeypatch, tmp_path):
-    r11.install_inputs(monkeypatch, _com_total(tmp_path))
+    reconciliacao.install_inputs(monkeypatch, _com_total(tmp_path))
 
     with warnings.catch_warnings(record=True), sem_excecao():
         warnings.simplefilter("always")

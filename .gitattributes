@@ -33,13 +33,15 @@ tests/golden_data/conab/serie_historica_20260917/** -text
 tests/golden_data/conab/serie_historica_zeros_20260923/** -text
 tests/golden_data/conab/serie_historica_20260924/** -text
 tests/golden_data/conab/sociobio_20260916/** -text
+tests/golden_data/conab/custos_arroz_subtotais_20260925/** -text
 tests/golden_data/conab_progresso/historico_20250927/** -text
+tests/golden_data/conab_progresso/oficial_20260925/** -text
 tests/golden_data/defensivos/selecao_20260906/** -text
 tests/golden_data/desmatamento/selecao_20260907/** -text
 tests/golden_data/desmatamento/geo_20260923/** -text
 tests/golden_data/embrapa_solos/official_20260907/** -text
 tests/golden_data/embrapa_solos/oficial_20260923/** -text
-tests/golden_data/embrapa_solos/r39_20260926/** -text
+tests/golden_data/embrapa_solos/perfis_texto_20260926/** -text
 tests/golden_data/funai/official_20260907/** -text
 tests/golden_data/funai/oficial_20260923/** -text
 tests/golden_data/ibama/oficial_20260923/** -text
@@ -85,6 +87,7 @@ tests/golden_data/sicar/geo_20260922/** -text
 tests/golden_data/sicar/selecao_20260906/** -text
 tests/golden_data/sicar/versoes_20260916/** -text
 tests/golden_data/incra/andamento_20260903/** -text
+tests/golden_data/antt_pedagio/oficial_20260922/** -text
 tests/golden_data/ana/oficial_20260923/** -text
 tests/golden_data/ana/massas_dagua_20261001/** -text
 tests/golden_data/ibge/malha_df_20261001/** -text
@@ -104,8 +107,8 @@ tests/golden_data/ibge/censo_2017_total_20260924/** -text
 tests/golden_data/abiove/edicao_202608/** -text
 tests/golden_data/comtrade/aliases_20260925/** -text
 tests/golden_data/comtrade/classificacao_br_20260926/** -text
-tests/golden_data/comtrade/r29_20260926/** -text
-tests/golden_data/queimadas/r48_202408/** -text
+tests/golden_data/comtrade/selecao_frango_20260926/** -text
+tests/golden_data/queimadas/mensal_202408/** -text
 tests/golden_data/queimadas/mes_corrente_202609/** -text
 tests/golden_data/queimadas/dia_corrente_20260926/** -text
 tests/golden_data/ibge/periodos_20260926/** -text

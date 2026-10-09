@@ -1,0 +1,17 @@
+{
+  "arquivos": [
+    {
+      "arquivo": "arroz_irrigado.xls",
+      "planilha": "arroz_irrigado_serie_historica_2002-2025.xls",
+      "cultura": "arroz",
+      "titulo": "Arroz_Irrigado_Serie_Historica_2002-2025.xls",
+      "pagina_url": "https://www.gov.br/conab/pt-br/atuacao/informacoes-agropecuarias/custos-de-producao/arquivos-custo-de-producao/agricolas/arroz/arroz_irrigado_serie_historica_2002-2025.xls/view",
+      "url": "https://www.gov.br/conab/pt-br/atuacao/informacoes-agropecuarias/custos-de-producao/arquivos-custo-de-producao/agricolas/arroz/arroz_irrigado_serie_historica_2002-2025.xls/@@download/file",
+      "sha256": "b7c13d76f8cd3485e54100705fb7a98461e1c5508d2739aabf1b14d7f9d4ab6e",
+      "bytes": 2450432,
+      "capturado_em": "2026-09-25T19:40:35-03:00",
+      "origem": "Conferência de 25/09/2026"
+    }
+  ],
+  "uso": "agregado 'Gestão da propriedade familiar' no custeio de Massaranduba-SC e Meleiro-SC 2007–2012, única forma publicada dele; cabeçalho romano com zeros (Querência do Norte-PR-2013); bloco depois do H (Dourados-MS-2015)."
+}

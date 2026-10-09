@@ -2,7 +2,7 @@
  "source": "funai",
  "format": "wfs2_geojson",
  "license": "termo da FUNAI para geoprocessamento e mapas: reprodução com citação da fonte",
- "content": "Recorte do AC: as 3 terras em que a área declarada (superficie_perimetro_ha) diverge do polígono em mais de 5 % na R56 (73878, 8601, 31301) e as 2 menores do AC como controle, com a geometria em EPSG:4326.",
+ "content": "Recorte do AC: as 3 terras em que a área declarada (superficie_perimetro_ha) diverge do polígono em mais de 5 % na conferência de 26/09/2026 (73878, 8601, 31301) e as 2 menores do AC como controle, com a geometria em EPSG:4326.",
  "codigos": [
   8601,
   22201,

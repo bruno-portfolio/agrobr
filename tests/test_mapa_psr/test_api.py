@@ -16,7 +16,6 @@ def _make_csv_bytes(
     rows: list[dict[str, str]] | None = None,
     sep: str = ";",
 ) -> bytes:
-    """Gera CSV sintetico para mocks."""
     if rows is None:
         rows = [
             {

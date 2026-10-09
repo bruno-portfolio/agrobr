@@ -24,7 +24,7 @@ CONAB_MANIFEST = json.loads((GOLDEN / "lot1_conab_manifest.json").read_text(enco
 @pytest.mark.parametrize("case", MANIFEST["cases"], ids=lambda case: case["id"])
 async def test_sidra_valores_preservados_na_api_e_dataset(monkeypatch, case):
     started = datetime.now(UTC)
-    calls = helpers.install_reconciliacao_r5_http(monkeypatch, case, MANIFEST)
+    calls = helpers.install_reconciliacao_censos_http(monkeypatch, case, MANIFEST)
     source, source_meta = await getattr(ibge, case["source_api"])(
         **case["selection"], return_meta=True
     )
@@ -55,8 +55,8 @@ async def test_sidra_valores_preservados_na_api_e_dataset(monkeypatch, case):
 async def test_fallback_conab_nao_inventa_cobertura_de_produto_ou_municipio(
     monkeypatch, product, level, reason
 ):
-    calls = helpers.install_reconciliacao_r5_conab_http(
-        monkeypatch, CONAB_MANIFEST["cases"][0]["r3_case_id"]
+    calls = helpers.install_reconciliacao_censos_conab_http(
+        monkeypatch, CONAB_MANIFEST["cases"][0]["conab_case_id"]
     )
     original_send = httpx.AsyncClient.send
 
@@ -77,8 +77,8 @@ async def test_fallback_conab_nao_inventa_cobertura_de_produto_ou_municipio(
 
 
 @pytest.mark.parametrize("nome", ["lot1_conab_manifest.json", "lot1_conab_legacy_manifest.json"])
-def test_manifesto_conab_fixa_o_sha_atual_do_manifesto_r3(nome):
-    fixado = json.loads((GOLDEN / nome).read_text(encoding="utf-8"))["r3_manifest_sha256"]
-    r3 = GOLDEN.parent / "reconciliacao_conab_20260918/manifest.json"
-    atual = hashlib.sha256(r3.read_bytes()).hexdigest()
+def test_manifesto_conab_fixa_o_sha_do_manifesto_de_origem(nome):
+    fixado = json.loads((GOLDEN / nome).read_text(encoding="utf-8"))["conab_manifest_sha256"]
+    manifesto_de_origem = GOLDEN.parent / "reconciliacao_conab_20260918/manifest.json"
+    atual = hashlib.sha256(manifesto_de_origem.read_bytes()).hexdigest()
     assert fixado == atual

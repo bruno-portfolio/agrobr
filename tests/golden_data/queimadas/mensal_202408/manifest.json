@@ -1,0 +1,607 @@
+{
+  "fonte": "INPE Programa Queimadas, CSV mensal de focos (Brasil)",
+  "origem": "FRP negativo e foco repetido na chave em agosto/2024",
+  "arquivo_inteiro": {
+    "url": "https://dataserver-coids.inpe.br/queimadas/queimadas/focos/csv/mensal/Brasil/focos_mensal_br_202408.csv",
+    "sha256": "a240957e39a7dd6e0d996529b1babf063dfe396845625cc37561a659bda74b0a",
+    "bytes": 358780960,
+    "linhas": 2263155,
+    "fim_de_linha": "lf",
+    "capturado_em": "2026-09-26T22:04:46Z",
+    "cabecalhos_http": {
+      "content-length": "358780960",
+      "last-modified": "Wed, 03 Jun 2026 18:07:50 GMT",
+      "etag": "\"15629020-6535d4e3dc980\"",
+      "content-type": "text/csv",
+      "date": "Sat, 26 Sep 2026 22:04:48 GMT"
+    },
+    "sha256_conferencia": "a240957e39a7dd6e0d996529b1babf063dfe396845625cc37561a659bda74b0a"
+  },
+  "recorte": {
+    "arquivo": "focos_mensal_br_202408_recorte.csv",
+    "sha256": "6c1a8985f245e42a9738fe7106d9637e09a514b4fce8d7a701944158dc054820",
+    "bytes": 13086,
+    "regra": "cabeçalho, as linhas-alvo (FRP negativo e as 2 da chave repetida) e 1 vizinha antes e depois de cada FRP negativo e da 2ª ocorrência da chave, na ordem do arquivo; bytes de cada linha como publicados",
+    "linhas": [
+      {
+        "linha": 198419,
+        "sha256": "976c739a75952f2d80f246368d8efdb2b91fddac25b7f4855e4375d1325c6c55",
+        "motivos": [
+          "vizinha"
+        ]
+      },
+      {
+        "linha": 198420,
+        "sha256": "abfb1ebc47c25e3ee93261faf3ea37fa680aecbe7e81b8b8b816d41c9c90ff50",
+        "motivos": [
+          "frp_negativo"
+        ]
+      },
+      {
+        "linha": 198421,
+        "sha256": "8a8f42f15a1a59259d26cb75dbf7b41eca1dd34379e1bc2721f500cca7745283",
+        "motivos": [
+          "vizinha"
+        ]
+      },
+      {
+        "linha": 199071,
+        "sha256": "5f88af4207d5b4717b5df2332337f4e14e6ff17c969603e425416c73f8b73fa9",
+        "motivos": [
+          "vizinha"
+        ]
+      },
+      {
+        "linha": 199072,
+        "sha256": "2a4f1166cb24e9d2e6a8871492f65c99a2a25e0fc613736cbd8783a4a76c808b",
+        "motivos": [
+          "frp_negativo"
+        ]
+      },
+      {
+        "linha": 199073,
+        "sha256": "a04b69b1621b97b61436977714097b942a1b9cff92d5749abd1ae631dbc2431f",
+        "motivos": [
+          "vizinha"
+        ]
+      },
+      {
+        "linha": 327546,
+        "sha256": "e58817d9c14428e5f550b9ac56793c4b3756c96ed2f0e0687d299b4e8f77a019",
+        "motivos": [
+          "vizinha"
+        ]
+      },
+      {
+        "linha": 327547,
+        "sha256": "c3cd4d98c59f2ccb8c752db6be019d5c9be3f18312b1ef53d546fe05bd79e6b2",
+        "motivos": [
+          "frp_negativo"
+        ]
+      },
+      {
+        "linha": 327548,
+        "sha256": "5e126127794b4efa61ce1057d0f5eb7c20422b6b498e4200b4a3e4982e1fac64",
+        "motivos": [
+          "vizinha"
+        ]
+      },
+      {
+        "linha": 398311,
+        "sha256": "d8b44d3927b281eaddb2ce4304c47a65fcd9b1fa0143a300bc0c14a711e5091b",
+        "motivos": [
+          "vizinha"
+        ]
+      },
+      {
+        "linha": 398312,
+        "sha256": "5f915e20bcc38ba6ac682d9aed221c3aba5d67635effb1cd7be0b13116ef2b3c",
+        "motivos": [
+          "frp_negativo"
+        ]
+      },
+      {
+        "linha": 398313,
+        "sha256": "34d6be4fd9730ff26977860858a9a7fe01be46db60a1fb4046cd2a17473ce855",
+        "motivos": [
+          "vizinha"
+        ]
+      },
+      {
+        "linha": 398401,
+        "sha256": "ee0e0dd7537476c0a7b2d3cd45e743fdaeb4940e990bb9f9290b9b2ad013fb10",
+        "motivos": [
+          "vizinha"
+        ]
+      },
+      {
+        "linha": 398402,
+        "sha256": "61a550b24afabb85d73012113088b69aff383b52ec92f3d19e332e3e6322a9e7",
+        "motivos": [
+          "frp_negativo"
+        ]
+      },
+      {
+        "linha": 398403,
+        "sha256": "7a578c1447e1b46f746e388ee565fcf0498c362206cf0008159245046d4aa8c1",
+        "motivos": [
+          "vizinha"
+        ]
+      },
+      {
+        "linha": 399497,
+        "sha256": "878d35adb19af0dc4611368fe3e2cbf3d47449c052bf3925bc7f95bdae5157e7",
+        "motivos": [
+          "vizinha"
+        ]
+      },
+      {
+        "linha": 399498,
+        "sha256": "f1cfbf2704cf03dbe8f2a58adc15c78cd6a9e243684241287f8f5b07c613a33f",
+        "motivos": [
+          "frp_negativo"
+        ]
+      },
+      {
+        "linha": 399499,
+        "sha256": "ab8f2f1a5c1674cb0c9cdb3e748dd6d0391f33891753f6fb83f289292291d1f3",
+        "motivos": [
+          "vizinha"
+        ]
+      },
+      {
+        "linha": 663116,
+        "sha256": "798c9f9ff9d6c2ed445d08353427ec0632904773ce56a1a73b70ea90e21905c8",
+        "motivos": [
+          "vizinha"
+        ]
+      },
+      {
+        "linha": 663117,
+        "sha256": "5055062cfdb02b97886501342dfb411c521288585d5d49af6c66a585676ed57b",
+        "motivos": [
+          "frp_negativo"
+        ]
+      },
+      {
+        "linha": 663118,
+        "sha256": "ee09156b4680aea34fad1dd7afc6ebd824c31d08a7ea749cad122eadeb940530",
+        "motivos": [
+          "vizinha"
+        ]
+      },
+      {
+        "linha": 720309,
+        "sha256": "85babceab8fc72bbda012201bf20257ed2801df9bcd836068877f745e08d45a8",
+        "motivos": [
+          "vizinha"
+        ]
+      },
+      {
+        "linha": 720310,
+        "sha256": "b0832c6119cb46d102a77eaeffe239809c388a502a695a5c7bce4c02c278f89a",
+        "motivos": [
+          "frp_negativo"
+        ]
+      },
+      {
+        "linha": 720311,
+        "sha256": "a579596165a3f1a97c551c3bd6e98b7fa091df51388a7eeb61cf388f99c69d66",
+        "motivos": [
+          "vizinha"
+        ]
+      },
+      {
+        "linha": 720312,
+        "sha256": "e153231f3f272fd089a0e5c971f1fcd421ff5e45df9d8fa8e31bf0587e394dc5",
+        "motivos": [
+          "frp_negativo"
+        ]
+      },
+      {
+        "linha": 720313,
+        "sha256": "b15207bcb4d3bbb405b6a0d97de34fa86da81f1624f2c83033ab1080405825a4",
+        "motivos": [
+          "vizinha"
+        ]
+      },
+      {
+        "linha": 854821,
+        "sha256": "c02090fbac43caaba1379cb995fa33c59bb783451d3bf18e98b8e4e689b63f72",
+        "motivos": [
+          "vizinha"
+        ]
+      },
+      {
+        "linha": 854822,
+        "sha256": "ee4e0394b33e619ec5f4053d6e79859d64def60fd73023c471877aebe148c092",
+        "motivos": [
+          "frp_negativo"
+        ]
+      },
+      {
+        "linha": 854823,
+        "sha256": "bcc63b1047831616c61249549e688df52d88e0684fd26945aadebe7bc80aaf20",
+        "motivos": [
+          "vizinha"
+        ]
+      },
+      {
+        "linha": 1140285,
+        "sha256": "d409cc61b02e3d7b78bbc3e288b7721530897964948ea3e5746e0e246f9fcf62",
+        "motivos": [
+          "vizinha"
+        ]
+      },
+      {
+        "linha": 1140286,
+        "sha256": "c8f21c11640760e6b233f07eb59ca882cb09c3435682f15efc245e0bcafbe891",
+        "motivos": [
+          "frp_negativo"
+        ]
+      },
+      {
+        "linha": 1140287,
+        "sha256": "b1e2b2117dcc33e3f96b02c57249e1ddf6a7dca17c4c6b38899e28a2116a7291",
+        "motivos": [
+          "vizinha"
+        ]
+      },
+      {
+        "linha": 1140312,
+        "sha256": "248641cb618473a54f2c50d91e875d2fad1b9dff0449bb667ddc4bb3a7567d75",
+        "motivos": [
+          "vizinha"
+        ]
+      },
+      {
+        "linha": 1140313,
+        "sha256": "4791f2dcf577ad47d907aa058a3942902aa533c1f743235b01b841d3750511fc",
+        "motivos": [
+          "frp_negativo"
+        ]
+      },
+      {
+        "linha": 1140314,
+        "sha256": "d5d933e552a171cdb8bb6a730bbe492f949c7cc7b72e9e4f9b8b2e6c8728e01c",
+        "motivos": [
+          "vizinha"
+        ]
+      },
+      {
+        "linha": 1142431,
+        "sha256": "b6e70632acf33fcfdd9b14bc7de5e652f7cabcb0fd4c41977168fb917497d055",
+        "motivos": [
+          "vizinha"
+        ]
+      },
+      {
+        "linha": 1142432,
+        "sha256": "aacd72822c86aae5ed28f7f9929934676bf83ed28040afce71715269b3e78f4a",
+        "motivos": [
+          "frp_negativo"
+        ]
+      },
+      {
+        "linha": 1142433,
+        "sha256": "7a0ece20e4b72c435d88f42bb3e5cc460115fad75bfe6e5b690901663c295528",
+        "motivos": [
+          "vizinha"
+        ]
+      },
+      {
+        "linha": 1142673,
+        "sha256": "a283af19f672cec8fe3adbe10760f7d8c7a3f7a7451af1ce2d97ec01ebb71b61",
+        "motivos": [
+          "vizinha"
+        ]
+      },
+      {
+        "linha": 1142674,
+        "sha256": "21fe421f7105b6e2a5417b9c9d1571d3d349bd66cb78f559b841ddb12a57b033",
+        "motivos": [
+          "frp_negativo",
+          "vizinha"
+        ]
+      },
+      {
+        "linha": 1142675,
+        "sha256": "f0c8930c8a597c21be76f5eebdb6b91436dfb192eb0bde36139555fe6be166c5",
+        "motivos": [
+          "frp_negativo",
+          "vizinha"
+        ]
+      },
+      {
+        "linha": 1142676,
+        "sha256": "28e6cedb8da2a77b031970d868f2f74f97a75aa40f4581fbb629d7eca302ce96",
+        "motivos": [
+          "vizinha"
+        ]
+      },
+      {
+        "linha": 1145356,
+        "sha256": "9425969f0e979649fedb6c6ccdc9daa4d97a80fcd8f9dd7a6a2e14829da6eb9e",
+        "motivos": [
+          "vizinha"
+        ]
+      },
+      {
+        "linha": 1145357,
+        "sha256": "c474f61d12cfcc19eb1a3c9e07b8953e1d08f34fadc36bdb4ce09310c261ef05",
+        "motivos": [
+          "frp_negativo"
+        ]
+      },
+      {
+        "linha": 1145358,
+        "sha256": "25e540cfdac03eaf352bba20cf27379284f96284336929df87b8d96d33733b99",
+        "motivos": [
+          "vizinha"
+        ]
+      },
+      {
+        "linha": 1145360,
+        "sha256": "73ce55e0dc63b33db61b1b15b2e00262e74d958f8663769cb554865eb67763a0",
+        "motivos": [
+          "vizinha"
+        ]
+      },
+      {
+        "linha": 1145361,
+        "sha256": "7b7c24c9bb6b0c56b8a480a2d9ae3c68b7969b845a977c2074b9da8136b2b5d7",
+        "motivos": [
+          "frp_negativo",
+          "vizinha"
+        ]
+      },
+      {
+        "linha": 1145362,
+        "sha256": "08ea5c763f55741bd14d69cb9c69e9419df6a28add5081822355f31296ab0f05",
+        "motivos": [
+          "frp_negativo",
+          "vizinha"
+        ]
+      },
+      {
+        "linha": 1145363,
+        "sha256": "bb21f88d9b66cd92abc014206ce8b5f75b177785baba7502d98a191e2685e8b0",
+        "motivos": [
+          "vizinha"
+        ]
+      },
+      {
+        "linha": 1145364,
+        "sha256": "5fac4f8a3ecc1e9fe7c266b854568a48f0bb012250fdd794c86845e23c85cbb4",
+        "motivos": [
+          "vizinha"
+        ]
+      },
+      {
+        "linha": 1145365,
+        "sha256": "c485ca491fa2342b378b5b36c0c0f122b8ec255718ea680a5eda7a76f3c277b2",
+        "motivos": [
+          "frp_negativo"
+        ]
+      },
+      {
+        "linha": 1145366,
+        "sha256": "cfb8ad1458cf065262b5e00caabacec4eff4cfe142a2147e9834a1e640020d99",
+        "motivos": [
+          "vizinha"
+        ]
+      },
+      {
+        "linha": 1211600,
+        "sha256": "3272b855c86fb1c0bd9bf642b678396643ea64732ea16a3839c2f32a26876d21",
+        "motivos": [
+          "vizinha"
+        ]
+      },
+      {
+        "linha": 1211601,
+        "sha256": "9a85958fecaf528eea137b7ab6937d25b510f2b8e6c90c137ea0b0d98a538d10",
+        "motivos": [
+          "frp_negativo"
+        ]
+      },
+      {
+        "linha": 1211602,
+        "sha256": "41c72992dbbe055e0b307bb19ce3e4febec540c74835286461bb36951efb0488",
+        "motivos": [
+          "vizinha"
+        ]
+      },
+      {
+        "linha": 1211909,
+        "sha256": "7fa33604961fc5f849d3069112938ddf5cbf8ed72de679439875c7f8dcc94f7d",
+        "motivos": [
+          "vizinha"
+        ]
+      },
+      {
+        "linha": 1211910,
+        "sha256": "9b5aa24e1be10679e32ba577cdff9084ec6beb44cf18f1c4a548c3f81d704d04",
+        "motivos": [
+          "frp_negativo"
+        ]
+      },
+      {
+        "linha": 1211911,
+        "sha256": "a8dba781efc023e7ffd3176f97599d6ec481b7bec0d5c3e6b8354680d513a96f",
+        "motivos": [
+          "vizinha"
+        ]
+      },
+      {
+        "linha": 1213811,
+        "sha256": "49e8f0e15d4f3d495baa67feac110e488f8da68eacd7d778f0b40f71e4cd3cb1",
+        "motivos": [
+          "vizinha"
+        ]
+      },
+      {
+        "linha": 1213812,
+        "sha256": "8d475ea8ecd888e67552e91a92bcdc1e51b68d488eb6b4c197ea482d0bb94191",
+        "motivos": [
+          "frp_negativo"
+        ]
+      },
+      {
+        "linha": 1213813,
+        "sha256": "3a4bb3acd0ef43b3b4b720bde58a57d76ae7b035b499ca820bc50a5d8b4e67c4",
+        "motivos": [
+          "vizinha"
+        ]
+      },
+      {
+        "linha": 1213864,
+        "sha256": "8009f8f179829757772f566440274b56308c9e9a065659541ac3dc72420a9846",
+        "motivos": [
+          "vizinha"
+        ]
+      },
+      {
+        "linha": 1213865,
+        "sha256": "4caad1986f33c2ccac310abd8110be8968919cfc8bb52f90c3c1a6aca31f1fba",
+        "motivos": [
+          "frp_negativo"
+        ]
+      },
+      {
+        "linha": 1213866,
+        "sha256": "68294cea630191ad4ade166d645941ab6ab1ff608fb4ba69c86cef1c942bacf9",
+        "motivos": [
+          "vizinha"
+        ]
+      },
+      {
+        "linha": 1213978,
+        "sha256": "1496cbc5017f4ef705680ce9aa0a0e59215d81b9d1873996f6954874c9f6d339",
+        "motivos": [
+          "vizinha"
+        ]
+      },
+      {
+        "linha": 1213979,
+        "sha256": "dfcf13ba3900cc1edcafbc093a4bb438562cba5d9a2348f255a8cee8aabd82a9",
+        "motivos": [
+          "frp_negativo"
+        ]
+      },
+      {
+        "linha": 1213980,
+        "sha256": "7a3390902616d60b68169473448fbb398c2b62aecd321a94b9b91b8816290de7",
+        "motivos": [
+          "vizinha"
+        ]
+      },
+      {
+        "linha": 1216436,
+        "sha256": "b67d5de46f45ad7914942fc33125a2fba0e044196330898f786406426d0e4a8e",
+        "motivos": [
+          "vizinha"
+        ]
+      },
+      {
+        "linha": 1216437,
+        "sha256": "46ae28a53dd05db078dc770e8e86072ed4abe00d14c537d2458c12b60747cddd",
+        "motivos": [
+          "frp_negativo"
+        ]
+      },
+      {
+        "linha": 1216438,
+        "sha256": "2160d466992d3035f076fdc6346fc205ed80c13dc73b658d734777bff28dc1bf",
+        "motivos": [
+          "vizinha"
+        ]
+      },
+      {
+        "linha": 1226261,
+        "sha256": "0985235e3a67e698ce95bd99ffd42c74175ee8f41be70ce5a2bc97064e057ddb",
+        "motivos": [
+          "vizinha"
+        ]
+      },
+      {
+        "linha": 1226262,
+        "sha256": "16d174c6669def1512f4fd262bfde66cbfb17b59c7f70e8869035336ba63aedb",
+        "motivos": [
+          "frp_negativo"
+        ]
+      },
+      {
+        "linha": 1226263,
+        "sha256": "684d1ba8fcfb9e11517b11fc8463d782f5014b7b09cc93fb8a7ab3d328d11498",
+        "motivos": [
+          "vizinha"
+        ]
+      },
+      {
+        "linha": 1331975,
+        "sha256": "e618795b36d5a18023f43d663953e83502fbc5a2ab3443617fbfd4d4dda9b0bf",
+        "motivos": [
+          "vizinha"
+        ]
+      },
+      {
+        "linha": 1331976,
+        "sha256": "709d62dbeb81adc029ab8f2e1c3c0f52a3581587ba1a01a27ec4c12e8a069d6c",
+        "motivos": [
+          "frp_negativo"
+        ]
+      },
+      {
+        "linha": 1331977,
+        "sha256": "378df141e050b526172b8e8d8c3cc951828d304d02f383c3661846efd6aecf7a",
+        "motivos": [
+          "vizinha"
+        ]
+      },
+      {
+        "linha": 1332000,
+        "sha256": "3fa8921a596c95e1545c5fd4266f22cf10cff82de3b64cca8b0b002725d93a57",
+        "motivos": [
+          "vizinha"
+        ]
+      },
+      {
+        "linha": 1332001,
+        "sha256": "b5cea17fabb91f20cfb22e79fe80e44a00cd316118ae5b237eba2c4680c8e99e",
+        "motivos": [
+          "frp_negativo"
+        ]
+      },
+      {
+        "linha": 1332002,
+        "sha256": "c711e8c9b80e30f617f24f7b33bf718959f850c4e0aef12c8e3adeda3bf2b0d7",
+        "motivos": [
+          "vizinha"
+        ]
+      },
+      {
+        "linha": 1994586,
+        "sha256": "06660e88f858645d84df8d570e281c9d2c249ce1d42f310755efe77321b8c477",
+        "motivos": [
+          "chave_repetida",
+          "vizinha"
+        ]
+      },
+      {
+        "linha": 1994587,
+        "sha256": "2c94bde07ca825655dfdd45f964d4e08f1fe57b3a0da62bd00c532e8cfad1381",
+        "motivos": [
+          "chave_repetida"
+        ]
+      },
+      {
+        "linha": 1994588,
+        "sha256": "bc6a2ef01ddb22663cd3009359ff5b0c6bafe9ac3f06b15b04d3a99275193ffb",
+        "motivos": [
+          "vizinha"
+        ]
+      }
+    ]
+  }
+}

@@ -16,7 +16,7 @@ from agrobr.alt.anp_diesel import _catalog, api, client, models, parser
 from agrobr.exceptions import InvalidParameterError, ParseError, SourceUnavailableError
 from scripts import reconciliar_anp_precos as reconciliacao
 from tests.helpers import levanta_exatamente, sem_excecao
-from tests.test_anp_diesel import test_reconciliacao as r11
+from tests.test_anp_diesel import test_reconciliacao
 from tests.test_anp_diesel.test_catalog import _html
 from tests.test_anp_diesel.test_parser import _make_precos_xlsx, _make_vendas_csv
 
@@ -227,12 +227,16 @@ def capturas(destino: Path, trocas: dict[str, Path], adulterado: str | None = No
         (
             recurso["original"],
             recurso["derived_file"],
-            trocas.get(recurso["derived_file"], r11.GOLDEN / recurso["derived_file"]),
+            trocas.get(
+                recurso["derived_file"], test_reconciliacao.GOLDEN / recurso["derived_file"]
+            ),
         )
-        for recurso in r11.MANIFEST["resources"]
+        for recurso in test_reconciliacao.MANIFEST["resources"]
     ]
-    catalogo = r11.MANIFEST["catalog"]
-    corpos.append((catalogo, catalogo["golden_file"], r11.GOLDEN / catalogo["golden_file"]))
+    catalogo = test_reconciliacao.MANIFEST["catalog"]
+    corpos.append(
+        (catalogo, catalogo["golden_file"], test_reconciliacao.GOLDEN / catalogo["golden_file"])
+    )
     for original, nome, origem in corpos:
         corpo = origem.read_bytes()
         (destino / nome).write_bytes(corpo)
@@ -260,8 +264,8 @@ def test_n1_anp_run_sobre_capturas_conhecidas(tmp_path):
 
 
 def test_n1_anp_run_acusa_planilha_divergente(tmp_path):
-    recurso = r11.MANIFEST["resources"][0]
-    mutada = r11.mutated_workbook(recurso, "unit", tmp_path / "mutada.xlsx")
+    recurso = test_reconciliacao.MANIFEST["resources"][0]
+    mutada = test_reconciliacao.mutated_workbook(recurso, "unit", tmp_path / "mutada.xlsx")
     destino = tmp_path / "capturas"
     destino.mkdir()
     with sem_excecao():
@@ -283,7 +287,7 @@ def test_n1_anp_run_recusa_captura_adulterada(adulterado, tmp_path):
 
 
 def planilha_derivada(recurso: dict, mutacao: str, destino: Path) -> bytes:
-    livro = openpyxl.load_workbook(r11.GOLDEN / recurso["derived_file"])
+    livro = openpyxl.load_workbook(test_reconciliacao.GOLDEN / recurso["derived_file"])
     folha = livro.worksheets[0]
     cabecalho = recurso["layout"]["header_row"]
     colunas = {celula.value: celula.column for celula in folha[cabecalho] if celula.value}
@@ -309,7 +313,7 @@ def planilha_derivada(recurso: dict, mutacao: str, destino: Path) -> bytes:
     ids=["cabecalho_deslocado", "sem_s10", "uf_nova"],
 )
 def test_n1_anp_estrutura_acusa_deriva(mutacao, indice, problema, tmp_path):
-    recurso = r11.MANIFEST["resources"][indice]
+    recurso = test_reconciliacao.MANIFEST["resources"][indice]
     resultado = reconciliacao.compare_workbook(
         planilha_derivada(recurso, mutacao, tmp_path / "derivada.xlsx"), recurso
     )

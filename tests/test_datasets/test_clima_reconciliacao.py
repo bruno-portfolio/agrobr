@@ -35,7 +35,7 @@ def _fresh_inmet_cache():
 _case_fixture__fresh_inmet_cache = inspect.unwrap(_fresh_inmet_cache)
 
 
-async def test_clima_reconciliacao_r10_casos_1():
+async def test_clima_reconciliacao_casos_1():
     with collect_failures() as check:
         for case_id in ["inmet_hist_df_2001_mensal", "inmet_hist_go_2001_mensal"]:
             case = f"test_clima_uf_mensal_from_official_zip[{(case_id,)!r}]"
@@ -97,7 +97,7 @@ async def test_clima_reconciliacao_r10_casos_1():
                     assert frame[measures].isna().all().all()
 
 
-async def test_clima_reconciliacao_r10_casos_2():
+async def test_clima_reconciliacao_casos_2():
     with collect_failures() as check:
         case = "test_clima_estacao_falls_back_without_token"
         with (

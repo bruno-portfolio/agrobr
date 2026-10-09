@@ -59,11 +59,6 @@ def _kb(b: int) -> float:
     return b / 1024
 
 
-# ============================================================================
-# Helpers — synthetic data generators
-# ============================================================================
-
-
 def _generate_cepea_html(num_rows: int) -> str:
     rows = []
     base = date(2024, 1, 1)
@@ -114,11 +109,6 @@ def _generate_indicadores(n: int) -> list[dict[str, Any]]:
         }
         for i in range(n)
     ]
-
-
-# ============================================================================
-# 1. MEMORY PROFILING
-# ============================================================================
 
 
 class TestMemoryProfiling:
@@ -236,11 +226,6 @@ class TestMemoryProfiling:
         del indicadores
 
 
-# ============================================================================
-# 2. VOLUME DE DADOS — parser scaling
-# ============================================================================
-
-
 class TestVolumeScaling:
     @pytest.mark.parametrize("num_rows", [10, 100, 1000])
     def test_cepea_parser_scaling(self, num_rows):
@@ -335,7 +320,6 @@ class TestVolumeScaling:
         print(
             f"\n  [VOL] Pydantic scaling: 100->{_fmt(times[100])}, 1000->{_fmt(times[1000])}, 5000->{_fmt(times[5000])}, ratio(5k/1k)={ratio:.1f}x"
         )
-        # 25x threshold: ratio teórico ~5x (linear), CI varia 10-20x por GC/JIT/carga
         assert ratio < 25, f"Pydantic validation super-linear: {ratio:.1f}x for 5x data"
 
     def test_can_parse_scaling(self):
@@ -356,11 +340,6 @@ class TestVolumeScaling:
         )
         ratio = times[5000] / times[100] if times[100] > 0 else float("inf")
         assert ratio < 100, f"can_parse scales badly: {ratio:.1f}x for 50x data"
-
-
-# ============================================================================
-# 3. CACHE DUCKDB SOB CARGA
-# ============================================================================
 
 
 class TestCacheStress:
@@ -395,11 +374,6 @@ class TestCacheStress:
         print(f"\n  [CACHE] query 50k indicadores: {_fmt(elapsed)}, returned={len(results)}")
         assert len(results) == 50_000
         assert elapsed < 5_000
-
-
-# ============================================================================
-# 4. RATE LIMITING E CONCORRÊNCIA HTTP
-# ============================================================================
 
 
 class TestRateLimitingConcurrency:
@@ -528,11 +502,6 @@ class TestRateLimitingConcurrency:
         RateLimiter.reset()
 
 
-# ============================================================================
-# 5. ASYNC PERFORMANCE
-# ============================================================================
-
-
 class TestAsyncPerformance:
     @pytest.mark.asyncio
     async def test_parser_does_not_block_event_loop(self):
@@ -623,11 +592,6 @@ class TestAsyncPerformance:
         print(
             f"\n  [ASYNC] Concurrent parsers: sequential={_fmt(sequential_ms)}, parallel={_fmt(parallel_ms)}, speedup={speedup:.2f}x"
         )
-
-
-# ============================================================================
-# 6. SYNC WRAPPER
-# ============================================================================
 
 
 class TestSyncWrapperStress:
@@ -737,11 +701,6 @@ class TestSyncWrapperStress:
         assert caught == 50
 
 
-# ============================================================================
-# Golden data volume multiplier tests
-# ============================================================================
-
-
 class TestGoldenDataScaling:
     @staticmethod
     def _load_fixture(source: str, produto: str) -> str:
@@ -784,7 +743,7 @@ class TestGoldenDataScaling:
         elapsed = (time.perf_counter() - start) * 1000
         assert original
         assert len(results) == len(original) * 10
-        print(f"\\n  [GOLDEN] CEPEA 10x: {_fmt(elapsed)}, parsed={len(results)}")
+        print(f"\n  [GOLDEN] CEPEA 10x: {_fmt(elapsed)}, parsed={len(results)}")
 
     def test_golden_na_10x(self):
         from agrobr.noticias_agricolas.parser import parse_indicador
@@ -796,4 +755,4 @@ class TestGoldenDataScaling:
         elapsed = (time.perf_counter() - start) * 1000
         assert original
         assert len(results) == len(original) * 10
-        print(f"\\n  [GOLDEN] NA 10x: {_fmt(elapsed)}, parsed={len(results)}")
+        print(f"\n  [GOLDEN] NA 10x: {_fmt(elapsed)}, parsed={len(results)}")

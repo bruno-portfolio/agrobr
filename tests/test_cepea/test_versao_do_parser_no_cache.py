@@ -19,10 +19,10 @@ from agrobr.exceptions import ParseError
 from agrobr.models import Indicador
 from tests.helpers import levanta_exatamente, sem_excecao
 
-R6 = Path(__file__).parents[1] / "golden_data" / "reconciliacao_precos_diarios_20260918"
+PRECOS_DIARIOS = Path(__file__).parents[1] / "golden_data" / "reconciliacao_precos_diarios_20260918"
 CASO = next(
     caso
-    for caso in json.loads((R6 / "manifest.json").read_text(encoding="utf-8"))["cases"]
+    for caso in json.loads((PRECOS_DIARIOS / "manifest.json").read_text(encoding="utf-8"))["cases"]
     if caso["id"] == "noticias_agricolas_soja"
 )
 JANELA = {"inicio": CASO["period"]["oldest"], "fim": CASO["period"]["newest"]}
@@ -45,7 +45,7 @@ def store(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Iterator[duckdb_st
 
 
 def cepea_fora_do_ar(monkeypatch: pytest.MonkeyPatch) -> list[str]:
-    corpo = (R6 / CASO["file"]).resolve().read_bytes()
+    corpo = (PRECOS_DIARIOS / CASO["file"]).resolve().read_bytes()
     hosts: list[str] = []
 
     def responder(request: httpx.Request) -> httpx.Response:

@@ -1,6 +1,6 @@
 # Agrofit — reconciliação
 
-Formato próprio `agrobr.reconciliation.r11.family` v1; ver `../FORMAT.md`.
+Formato próprio `agrobr.reconciliation.family` v1; ver `../FORMAT.md`.
 Dois CSVs completos e catálogo CKAN capturados em 18/09/2026. O gzip é somente
 armazenamento/transporte reconstruído: a descompactação dos CSVs produz os
 mesmos bytes e SHA dos originais. Limites mínimos reais do downloader mantidos.

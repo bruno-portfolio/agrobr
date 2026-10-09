@@ -20,7 +20,7 @@ from agrobr.conab._serie_historica import client as history_client
 from agrobr.exceptions import InvalidParameterError
 from tests import helpers
 
-R4_MANIFEST = json.loads(
+CUSTOS_MANIFEST = json.loads(
     (
         Path(helpers.__file__).parent
         / "golden_data/reconciliacao_custos_conab_20260918/manifest.json"
@@ -153,7 +153,7 @@ async def test_serie_historica_encaminha_conversao_solicitada(requested_conversi
 
 @pytest.mark.parametrize("endpoint", ["custo_producao", "catalogo_custos"])
 async def test_custos_encaminham_conversao_solicitada(requested_conversion: object, endpoint: str):
-    case = next(item for item in R4_MANIFEST["cases"] if item["id"] == "milho_8608f61a51d3")
+    case = next(item for item in CUSTOS_MANIFEST["cases"] if item["id"] == "milho_8608f61a51d3")
     selection = dict(case["selection"])
     product = selection.pop("produto")
     with helpers.collect_failures() as check:
@@ -163,7 +163,7 @@ async def test_custos_encaminham_conversao_solicitada(requested_conversion: obje
                 helpers.isolated_dataset_case((endpoint, return_meta)) as monkeypatch,
             ):
                 _acquisition.clear()
-                helpers.install_reconciliacao_r4_http(monkeypatch)
+                helpers.install_reconciliacao_custos_http(monkeypatch)
                 result = await getattr(cost_api, endpoint)(
                     product,
                     **(selection if endpoint == "custo_producao" else {}),
@@ -177,7 +177,7 @@ async def test_custos_encaminham_conversao_solicitada(requested_conversion: obje
 
 @pytest.mark.parametrize("endpoint", ["custo_sociobiodiversidade", "catalogo_sociobiodiversidade"])
 async def test_sociobio_encaminha_conversao_solicitada(requested_conversion: object, endpoint: str):
-    case = next(item for item in R4_MANIFEST["cases"] if item["id"] == "murumuru_48eead0b3c5d")
+    case = next(item for item in CUSTOS_MANIFEST["cases"] if item["id"] == "murumuru_48eead0b3c5d")
     with helpers.collect_failures() as check:
         for return_meta in (False, True):
             with (
@@ -185,7 +185,7 @@ async def test_sociobio_encaminha_conversao_solicitada(requested_conversion: obj
                 helpers.isolated_dataset_case((endpoint, return_meta)) as monkeypatch,
             ):
                 _acquisition.clear()
-                helpers.install_reconciliacao_r4_http(monkeypatch)
+                helpers.install_reconciliacao_custos_http(monkeypatch)
                 result = await getattr(_sociobio_api, endpoint)(
                     **(case["selection"] if endpoint == "custo_sociobiodiversidade" else {}),
                     as_polars=True,

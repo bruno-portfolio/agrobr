@@ -4097,7 +4097,7 @@
       "url": "https://dados.agricultura.gov.br/dataset/6d3d141c-885e-41a4-ab7f-dc8ff323b96f/resource/0bb6188d-8b6a-4ab6-9d77-2e88dc889313/download/dados-abertos-tabua-de-risco-safra-2016-2017.csv",
       "format": "CSV",
       "state": "selected",
-      "reason": "Explicit R2 variants"
+      "reason": "Explicit coverage-matrix variants"
     },
     {
       "id": "9d95eb8c-0ba4-45ea-8371-e5a9a4a7e05e",
@@ -4105,7 +4105,7 @@
       "url": "https://dados.agricultura.gov.br/dataset/6d3d141c-885e-41a4-ab7f-dc8ff323b96f/resource/9d95eb8c-0ba4-45ea-8371-e5a9a4a7e05e/download/dados-abertos-tabua-de-risco-safra-2017-2018.csv",
       "format": "CSV",
       "state": "not_captured",
-      "reason": "Intermediate annual edition outside three R2 representative variants; no N2 claimed"
+      "reason": "Intermediate annual edition outside three representative coverage-matrix variants; no N2 claimed"
     },
     {
       "id": "2539252c-8fd4-43ee-8fc0-703353df772e",
@@ -4113,7 +4113,7 @@
       "url": "https://dados.agricultura.gov.br/dataset/6d3d141c-885e-41a4-ab7f-dc8ff323b96f/resource/2539252c-8fd4-43ee-8fc0-703353df772e/download/dados-abertos-tabua-de-risco-safra-2018-2019.csv",
       "format": "CSV",
       "state": "not_captured",
-      "reason": "Intermediate annual edition outside three R2 representative variants; no N2 claimed"
+      "reason": "Intermediate annual edition outside three representative coverage-matrix variants; no N2 claimed"
     },
     {
       "id": "abdac1ab-eae1-4f92-b3ef-cbd92c7b1bc7",
@@ -4121,7 +4121,7 @@
       "url": "https://dados.agricultura.gov.br/dataset/6d3d141c-885e-41a4-ab7f-dc8ff323b96f/resource/abdac1ab-eae1-4f92-b3ef-cbd92c7b1bc7/download/dados-abertos-tabua-de-risco-safra-2019-2020.csv",
       "format": "CSV",
       "state": "not_captured",
-      "reason": "Intermediate annual edition outside three R2 representative variants; no N2 claimed"
+      "reason": "Intermediate annual edition outside three representative coverage-matrix variants; no N2 claimed"
     },
     {
       "id": "2d01ea06-d34f-4c62-ba5f-e355c6eff878",
@@ -4129,7 +4129,7 @@
       "url": "https://dados.agricultura.gov.br/dataset/6d3d141c-885e-41a4-ab7f-dc8ff323b96f/resource/2d01ea06-d34f-4c62-ba5f-e355c6eff878/download/dados-abertos-tabua-de-risco-safra-2020-2021.csv",
       "format": "CSV",
       "state": "not_captured",
-      "reason": "Intermediate annual edition outside three R2 representative variants; no N2 claimed"
+      "reason": "Intermediate annual edition outside three representative coverage-matrix variants; no N2 claimed"
     },
     {
       "id": "1c070b52-8aeb-4680-8173-b7eb6329f1d4",
@@ -4137,7 +4137,7 @@
       "url": "https://dados.agricultura.gov.br/dataset/6d3d141c-885e-41a4-ab7f-dc8ff323b96f/resource/1c070b52-8aeb-4680-8173-b7eb6329f1d4/download/dados-abertos-tabua-de-risco-safra-2021-2022.csv",
       "format": "CSV",
       "state": "not_captured",
-      "reason": "Intermediate annual edition outside three R2 representative variants; no N2 claimed"
+      "reason": "Intermediate annual edition outside three representative coverage-matrix variants; no N2 claimed"
     },
     {
       "id": "9201690c-ec14-4607-9f37-f6ee5b10168f",
@@ -4145,7 +4145,7 @@
       "url": "https://dados.agricultura.gov.br/dataset/6d3d141c-885e-41a4-ab7f-dc8ff323b96f/resource/9201690c-ec14-4607-9f37-f6ee5b10168f/download/dados-abertos-tabua-de-risco-safra-2022-2023.csv",
       "format": "CSV",
       "state": "not_captured",
-      "reason": "Intermediate annual edition outside three R2 representative variants; no N2 claimed"
+      "reason": "Intermediate annual edition outside three representative coverage-matrix variants; no N2 claimed"
     },
     {
       "id": "64664b7c-5002-409a-9856-3170781e92f8",
@@ -4153,7 +4153,7 @@
       "url": "https://dados.agricultura.gov.br/dataset/6d3d141c-885e-41a4-ab7f-dc8ff323b96f/resource/64664b7c-5002-409a-9856-3170781e92f8/download/dados-abertos-tabua-de-risco-safra-2023-2024.csv",
       "format": "CSV",
       "state": "not_captured",
-      "reason": "Intermediate annual edition outside three R2 representative variants; no N2 claimed"
+      "reason": "Intermediate annual edition outside three representative coverage-matrix variants; no N2 claimed"
     },
     {
       "id": "95588752-a068-415b-ab2f-55043eb7f9ac",
@@ -4161,7 +4161,7 @@
       "url": "https://dados.agricultura.gov.br/dataset/6d3d141c-885e-41a4-ab7f-dc8ff323b96f/resource/95588752-a068-415b-ab2f-55043eb7f9ac/download/dados-abertos-tabua-de-risco-safra-2024-2025.csv",
       "format": "CSV",
       "state": "not_captured",
-      "reason": "Intermediate annual edition outside three R2 representative variants; no N2 claimed"
+      "reason": "Intermediate annual edition outside three representative coverage-matrix variants; no N2 claimed"
     },
     {
       "id": "f9d597f9-0fee-47eb-9344-8642274ca9da",
@@ -4169,7 +4169,7 @@
       "url": "https://dados.agricultura.gov.br/dataset/6d3d141c-885e-41a4-ab7f-dc8ff323b96f/resource/f9d597f9-0fee-47eb-9344-8642274ca9da/download/dados-abertos-tabua-de-risco-safra-2025-2026.csv",
       "format": "CSV",
       "state": "not_captured",
-      "reason": "Intermediate annual edition outside three R2 representative variants; no N2 claimed"
+      "reason": "Intermediate annual edition outside three representative coverage-matrix variants; no N2 claimed"
     },
     {
       "id": "dae65d31-683f-4ac4-ab90-3abd0c1583ba",
@@ -4177,7 +4177,7 @@
       "url": "https://dados.agricultura.gov.br/dataset/6d3d141c-885e-41a4-ab7f-dc8ff323b96f/resource/dae65d31-683f-4ac4-ab90-3abd0c1583ba/download/dados-abertos-tabua-de-risco-safra-perene-olericola-sem-safra.csv",
       "format": "CSV",
       "state": "selected",
-      "reason": "Explicit R2 variants"
+      "reason": "Explicit coverage-matrix variants"
     },
     {
       "id": "139e5a60-1f43-4cc8-aeab-a35dbbf816c0",
@@ -4185,7 +4185,7 @@
       "url": "https://dados.agricultura.gov.br/dataset/6d3d141c-885e-41a4-ab7f-dc8ff323b96f/resource/139e5a60-1f43-4cc8-aeab-a35dbbf816c0/download/dados-abertos-tabua-de-risco-safra-2026-2027.csv",
       "format": "CSV",
       "state": "selected",
-      "reason": "Explicit R2 variants"
+      "reason": "Explicit coverage-matrix variants"
     }
   ],
   "dictionary": {
@@ -4274,7 +4274,7 @@
     {
       "id": "2016_2017_selection",
       "resource": "2016_2017",
-      "r2_id": "zoneamento_agricola:zarc:anual_legado",
+      "rota_id": "zoneamento_agricola:zarc:anual_legado",
       "query": {
         "safra": "2016/2017"
       },
@@ -4322,7 +4322,7 @@
     {
       "id": "2016_2017_first_city",
       "resource": "2016_2017",
-      "r2_id": "zoneamento_agricola:zarc:anual_legado",
+      "rota_id": "zoneamento_agricola:zarc:anual_legado",
       "query": {
         "safra": "2016/2017",
         "municipio": "2211308"
@@ -4343,7 +4343,7 @@
     {
       "id": "2016_2017_last_city",
       "resource": "2016_2017",
-      "r2_id": "zoneamento_agricola:zarc:anual_legado",
+      "rota_id": "zoneamento_agricola:zarc:anual_legado",
       "query": {
         "safra": "2016/2017",
         "municipio": "3171204"
@@ -4373,7 +4373,7 @@
     {
       "id": "2016_2017_last_city_soil_cycle",
       "resource": "2016_2017",
-      "r2_id": "zoneamento_agricola:zarc:anual_legado",
+      "rota_id": "zoneamento_agricola:zarc:anual_legado",
       "query": {
         "safra": "2016/2017",
         "municipio": "3171204",
@@ -4389,7 +4389,7 @@
     {
       "id": "2016_2017_culture_uf",
       "resource": "2016_2017",
-      "r2_id": "zoneamento_agricola:zarc:anual_legado",
+      "rota_id": "zoneamento_agricola:zarc:anual_legado",
       "query": {
         "safra": "2016/2017",
         "cultura": "milho_2",
@@ -4411,7 +4411,7 @@
     {
       "id": "2026_2027_selection",
       "resource": "2026_2027",
-      "r2_id": "zoneamento_agricola:zarc:anual_atual",
+      "rota_id": "zoneamento_agricola:zarc:anual_atual",
       "query": {
         "safra": "2026/2027"
       },
@@ -4784,7 +4784,7 @@
     {
       "id": "2026_2027_first_city",
       "resource": "2026_2027",
-      "r2_id": "zoneamento_agricola:zarc:anual_atual",
+      "rota_id": "zoneamento_agricola:zarc:anual_atual",
       "query": {
         "safra": "2026/2027",
         "municipio": "3550100"
@@ -4985,7 +4985,7 @@
     {
       "id": "2026_2027_last_city",
       "resource": "2026_2027",
-      "r2_id": "zoneamento_agricola:zarc:anual_atual",
+      "rota_id": "zoneamento_agricola:zarc:anual_atual",
       "query": {
         "safra": "2026/2027",
         "municipio": "2911006"
@@ -5149,7 +5149,7 @@
     {
       "id": "2026_2027_last_city_soil_cycle",
       "resource": "2026_2027",
-      "r2_id": "zoneamento_agricola:zarc:anual_atual",
+      "rota_id": "zoneamento_agricola:zarc:anual_atual",
       "query": {
         "safra": "2026/2027",
         "municipio": "2911006",
@@ -5167,7 +5167,7 @@
     {
       "id": "2026_2027_culture_uf",
       "resource": "2026_2027",
-      "r2_id": "zoneamento_agricola:zarc:anual_atual",
+      "rota_id": "zoneamento_agricola:zarc:anual_atual",
       "query": {
         "safra": "2026/2027",
         "cultura": "sorgo_2",
@@ -5189,7 +5189,7 @@
     {
       "id": "perene_selection",
       "resource": "perene",
-      "r2_id": "zoneamento_agricola:zarc:perene",
+      "rota_id": "zoneamento_agricola:zarc:perene",
       "query": {
         "safra": "perene"
       },
@@ -6198,7 +6198,7 @@
     {
       "id": "perene_first_city",
       "resource": "perene",
-      "r2_id": "zoneamento_agricola:zarc:perene",
+      "rota_id": "zoneamento_agricola:zarc:perene",
       "query": {
         "safra": "perene",
         "municipio": "4204756"
@@ -6636,7 +6636,7 @@
     {
       "id": "perene_last_city",
       "resource": "perene",
-      "r2_id": "zoneamento_agricola:zarc:perene",
+      "rota_id": "zoneamento_agricola:zarc:perene",
       "query": {
         "safra": "perene",
         "municipio": "4312450"
@@ -7145,7 +7145,7 @@
     {
       "id": "perene_last_city_soil_cycle",
       "resource": "perene",
-      "r2_id": "zoneamento_agricola:zarc:perene",
+      "rota_id": "zoneamento_agricola:zarc:perene",
       "query": {
         "safra": "perene",
         "municipio": "4312450",
@@ -7200,7 +7200,7 @@
     {
       "id": "perene_culture_uf",
       "resource": "perene",
-      "r2_id": "zoneamento_agricola:zarc:perene",
+      "rota_id": "zoneamento_agricola:zarc:perene",
       "query": {
         "safra": "perene",
         "cultura": "grao_de_bico",
@@ -7285,7 +7285,7 @@
     "generator": "rebuild_zarc_legacy.py"
   },
   "legacy_fix": "Two known legacy filter aliases added; normalized output remains unchanged; parser 2 and contract 2.0 retained",
-  "manifest_schema": "agrobr.reconciliation.r11.family",
+  "manifest_schema": "agrobr.reconciliation.family",
   "schema_document": "../FORMAT.md",
   "format_note": "Explicit custom family format v1; not the generic v2 from tests/golden_data/MANIFEST.md. Original receipts, row locators, independent expected outputs and nominal field decisions are preserved.",
   "update_frequency_decision": {
@@ -7304,7 +7304,7 @@
     "reason": "The public acquisition discovers resources through the active CKAN catalogue, so its explicit frequency is the operational metadata reference. The conflicting PDF declaration is retained, not silently discarded. Neither is evidence of actual per-resource revision cadence."
   },
   "full_original_gate": {
-    "environment_variable": "AGROBR_R11_ZARC_ORIGINALS",
+    "environment_variable": "AGROBR_RECONCILIACAO_ZARC_ORIGINALS",
     "enabled_value": "1",
     "test_file": "tests/test_zarc/test_reconciliacao_originais.py",
     "default": "explicit skip",

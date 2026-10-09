@@ -1,6 +1,6 @@
 {
  "fonte": "anec",
- "oraculo": "Rodada 32 de conferência: PDFs oficiais com recibo (.request.json) e texto PDFium independente (ANEC_2026_w01_a653_pdfium_text.txt, ANEC_2026_w02_a654_pdfium_text.txt), sem o parser do agrobr; Rodada 35: leitura manual de Santos. linha_total e total_products_impresso são os valores impressos no boletim.",
+ "oraculo": "Conferência de 26/09/2026: PDFs oficiais com recibo (.request.json) e texto PDFium independente (ANEC_2026_w01_a653_pdfium_text.txt, ANEC_2026_w02_a654_pdfium_text.txt), sem o parser do agrobr; Santos conferido por leitura manual. linha_total e total_products_impresso são os valores impressos no boletim.",
  "regra": "Até a W2/2026 o boletim publica 4 produtos (Soybean, Soybean meal, Maize e Wheat) em cada período; da W3/2026 em diante, 6 (com DDGS e Sorghum). Coluna sem nome de produto é recusada: o agrobr não adivinha o produto.",
  "boletins": {
   "2026-01": {
@@ -128,7 +128,7 @@
     "media_updated_at": "2026-04-20T16:36:52.070Z"
    },
    "esperado": "ParseError",
-   "observacao": "A primeira coluna da semana corrente tem dados e nenhum rótulo de produto; só Soybean meal, Maize, Wheat, DDGS e Sorghum estão nomeados nessa metade (R35, ANEC_W14_source_observation.json)."
+   "observacao": "A primeira coluna da semana corrente tem dados e nenhum rótulo de produto; só Soybean meal, Maize, Wheat, DDGS e Sorghum estão nomeados nessa metade (leitura manual, ANEC_W14_source_observation.json)."
   }
  }
 }

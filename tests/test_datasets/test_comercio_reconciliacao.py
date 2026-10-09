@@ -153,7 +153,7 @@ def _mock_transport(
     return seen
 
 
-async def test_comercio_reconciliacao_r8_casos_1():
+async def test_comercio_reconciliacao_casos():
     with collect_failures() as check:
         for case_id in [c for c in CASES if c.startswith("comexstat_exp_")]:
             case = f"test_exportacao_from_comexstat_bulk_slice[{(case_id,)!r}]"

@@ -1,6 +1,6 @@
 {
- "descricao": "SIDRA tabela 5457 (PAM), soja em grão 2024, nível município: DF (5300108) e as 15 cidades de RR. Corpos inteiros da Rodada 25 de conferência, pedidos com linha de cabeçalho (sem /h/n) e com v antes de p (D2 = variável, D3 = ano). O cliente pede /h/n e p antes de v: o teste tira a linha de cabeçalho e troca D2 com D3, sem mexer nos valores. Oráculo: o D1C de cada município.",
- "origem": "rodada_25",
+ "descricao": "SIDRA tabela 5457 (PAM), soja em grão 2024, nível município: DF (5300108) e as 15 cidades de RR. Corpos inteiros da conferência de 25/09/2026, pedidos com linha de cabeçalho (sem /h/n) e com v antes de p (D2 = variável, D3 = ano). O cliente pede /h/n e p antes de v: o teste tira a linha de cabeçalho e troca D2 com D3, sem mexer nos valores. Oráculo: o D1C de cada município.",
+ "origem": "conferência de 25/09/2026",
  "corpos": {
   "DF": {
    "arquivo": "DF.json",

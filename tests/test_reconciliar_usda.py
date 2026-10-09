@@ -48,7 +48,7 @@ def _servir(
     return pedidos
 
 
-def test_cortes_sao_os_34_da_r24_e_da_r23():
+def test_cortes_sao_os_34_conferidos():
     cortes = reconciliacao.cortes()
     assert len(cortes) == 34
     assert ("acucar", "world", 2024, "acucar_mundo_2024.json") in cortes

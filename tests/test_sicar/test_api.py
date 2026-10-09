@@ -28,7 +28,7 @@ from tests.helpers import collect_failures
 GOLDEN = Path(__file__).parents[1] / "golden_data"
 GEO = GOLDEN / "sicar/geo_20260922"
 GEO_MANIFEST = json.loads((GEO / "manifest.json").read_text(encoding="utf-8"))
-R11 = GOLDEN / "reconciliacao_registros_precos_zoneamento_seguro_20260918/sicar"
+SICAR_OFICIAL = GOLDEN / "reconciliacao_registros_precos_zoneamento_seguro_20260918/sicar"
 URL = "https://geoserver.car.gov.br/geoserver/sicar/wfs"
 INSTANTES = [
     ("2026-09-01T16:44:58.004Z", "2026-09-01T16:44:58.004Z"),
@@ -157,7 +157,7 @@ def test_cql_exato_por_filtro():
 
 
 async def test_imoveis_traz_o_hash_e_o_tamanho_do_corpo_wfs(monkeypatch: pytest.MonkeyPatch):
-    corpo = gzip.decompress((R11 / "sicar_df_001.json.gz").read_bytes())
+    corpo = gzip.decompress((SICAR_OFICIAL / "sicar_df_001.json.gz").read_bytes())
     monkeypatch.setattr(client, "fetch_imoveis", AsyncMock(return_value=([corpo], URL)))
 
     with helpers.sem_excecao():
@@ -168,7 +168,7 @@ async def test_imoveis_traz_o_hash_e_o_tamanho_do_corpo_wfs(monkeypatch: pytest.
 
 
 async def test_imoveis_ordena_a_saida_por_cod_imovel(monkeypatch: pytest.MonkeyPatch):
-    documento = json.loads(gzip.decompress((R11 / "sicar_df_001.json.gz").read_bytes()))
+    documento = json.loads(gzip.decompress((SICAR_OFICIAL / "sicar_df_001.json.gz").read_bytes()))
     codigos = sorted(feature["properties"]["cod_imovel"] for feature in documento["features"])
     documento["features"].reverse()
     fetch = AsyncMock(return_value=([json.dumps(documento).encode()], URL))
@@ -184,7 +184,7 @@ async def test_imoveis_ordena_a_saida_por_cod_imovel(monkeypatch: pytest.MonkeyP
 async def test_municipio_por_nome_ou_codigo_filtra_pelo_codigo(
     monkeypatch: pytest.MonkeyPatch, municipio: int | str
 ):
-    corpo = gzip.decompress((R11 / "sicar_df_001.json.gz").read_bytes())
+    corpo = gzip.decompress((SICAR_OFICIAL / "sicar_df_001.json.gz").read_bytes())
     fetch = AsyncMock(return_value=([corpo], URL))
     monkeypatch.setattr(client, "fetch_imoveis", fetch)
 
@@ -455,7 +455,7 @@ async def test_condicao_nula_na_fonte_continua_nula(monkeypatch: pytest.MonkeyPa
     )
     assert (campo.get("nillable"), campo.get("minOccurs")) == ("true", "0")
     geo = json.loads(geo_capture("df_geo_srs4326_count3.json"))
-    tabular = json.loads(gzip.decompress((R11 / "sicar_df_001.json.gz").read_bytes()))
+    tabular = json.loads(gzip.decompress((SICAR_OFICIAL / "sicar_df_001.json.gz").read_bytes()))
     for documento in (geo, tabular):
         documento["features"][0]["properties"]["condicao"] = None
         del documento["features"][1]["properties"]["condicao"]
@@ -533,7 +533,7 @@ def test_aviso_de_truncamento_so_quando_a_pagina_unica_atinge_o_limite(
 
 
 async def test_resumo_municipal_agrega_as_linhas_publicadas(monkeypatch: pytest.MonkeyPatch):
-    body = gzip.decompress((R11 / "sicar_df_001.json.gz").read_bytes())
+    body = gzip.decompress((SICAR_OFICIAL / "sicar_df_001.json.gz").read_bytes())
     features = json.loads(body)["features"]
     fetch = AsyncMock(side_effect=[([body], URL), ([], URL)])
     monkeypatch.setattr(client, "fetch_imoveis", fetch)
@@ -595,7 +595,7 @@ async def test_resumo_estadual_rotula_a_contagem_de_feicoes_publicadas(
 async def test_contagem_sai_uma_vez_e_o_aviso_de_volume_vem_do_client(
     monkeypatch: pytest.MonkeyPatch,
 ):
-    tabular = gzip.decompress((R11 / "sicar_df_001.json.gz").read_bytes())
+    tabular = gzip.decompress((SICAR_OFICIAL / "sicar_df_001.json.gz").read_bytes())
     geo = json.loads(geo_capture("df_geo_srs4326_count3.json"))
     geo.update(numberMatched=3, totalFeatures=3)
     corpos = {"imoveis": tabular, "imoveis_geo": json.dumps(geo).encode()}
@@ -628,7 +628,7 @@ def test_docstring_do_pacote_nao_afirma_licenca_cc_by():
 
 
 async def test_parse_roda_fora_do_loop(monkeypatch: pytest.MonkeyPatch):
-    tabular = gzip.decompress((R11 / "sicar_df_001.json.gz").read_bytes())
+    tabular = gzip.decompress((SICAR_OFICIAL / "sicar_df_001.json.gz").read_bytes())
     monkeypatch.setattr(client, "fetch_imoveis", AsyncMock(return_value=([tabular], URL)))
     monkeypatch.setattr(
         client,
@@ -659,7 +659,7 @@ async def test_vazio_sai_com_os_dtypes_do_cheio(monkeypatch: pytest.MonkeyPatch,
         cheio, vazio = geo_capture("df_geo_srs4326_count3.json"), geo_capture("df_vazio_geo.json")
     else:
         nome, funcao = "fetch_imoveis", api.imoveis
-        cheio = gzip.decompress((R11 / "sicar_df_001.json.gz").read_bytes())
+        cheio = gzip.decompress((SICAR_OFICIAL / "sicar_df_001.json.gz").read_bytes())
         vazio = json.dumps(
             {"type": "FeatureCollection", "features": [], "numberMatched": 0, "numberReturned": 0}
         ).encode()

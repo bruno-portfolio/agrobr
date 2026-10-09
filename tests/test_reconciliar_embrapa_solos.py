@@ -6,7 +6,7 @@ from pathlib import Path
 
 from scripts import reconciliar_embrapa_solos as reconciliation
 
-FID256 = Path(__file__).parent / "golden_data/embrapa_solos/r39_20260926/fid256.json"
+FID256 = Path(__file__).parent / "golden_data/embrapa_solos/perfis_texto_20260926/fid256.json"
 
 
 def test_esperado_repara_so_o_texto_com_dupla_codificacao():

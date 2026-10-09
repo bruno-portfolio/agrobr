@@ -1,5 +1,5 @@
 {
- "descricao": "Recorte do cadastro de instrumentos da B3 (InstrumentsConsolidatedFile de 22/09/2026): os 1911 instrumentos dos sete ativos agro, entre eles os 721 dos CSVs de posições em aberto de 21 e 22/09/2026 (golden b3/pregoes_20260921_20260922). Valores copiados como texto do registro agro da rodada 18 de conferência (leitor CSV independente, sete ativos, todos os campos); aqui ficam só os campos do vencimento. Oráculo: o mês do contrato é o primeiro mês com a letra M do XprtnCd (glossário, p. 2: formatos MYY e MYOA) a partir do XprtnDt.",
+ "descricao": "Recorte do cadastro de instrumentos da B3 (InstrumentsConsolidatedFile de 22/09/2026): os 1911 instrumentos dos sete ativos agro, entre eles os 721 dos CSVs de posições em aberto de 21 e 22/09/2026 (golden b3/pregoes_20260921_20260922). Valores copiados como texto do registro agro da conferência de 22/09/2026 (leitor CSV independente, sete ativos, todos os campos); aqui ficam só os campos do vencimento. Oráculo: o mês do contrato é o primeiro mês com a letra M do XprtnCd (glossário, p. 2: formatos MYY e MYOA) a partir do XprtnDt.",
  "arquivos": [
   {
    "file": "instrumentos_agro_20260922.json",

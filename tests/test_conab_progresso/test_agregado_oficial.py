@@ -19,7 +19,7 @@ from tests import helpers
 from tests.helpers import levanta_exatamente
 
 GOLDEN = Path(__file__).resolve().parents[1] / "golden_data"
-OFICIAL = GOLDEN / "conab_progresso" / "oficial_r26"
+OFICIAL = GOLDEN / "conab_progresso" / "oficial_20260925"
 MANIFESTO = json.loads((OFICIAL / "manifest.json").read_text(encoding="utf-8"))
 URLS = {item["arquivo"]: item["url"] for item in MANIFESTO["arquivos"]}
 PLANILHAS = [

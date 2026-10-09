@@ -55,7 +55,7 @@ from agrobr.rnc import acquisition as rnc_acquisition
 from agrobr.snapshots import SnapshotManifest
 from agrobr.utils import warnings as source_warnings
 
-RECONCILIACAO_R3_GOLDEN = Path(__file__).parent / "golden_data/reconciliacao_conab_20260918"
+RECONCILIACAO_CONAB_GOLDEN = Path(__file__).parent / "golden_data/reconciliacao_conab_20260918"
 
 RETRY_SLEEP = "agrobr.http.retry.asyncio.sleep"
 SERIE_HISTORICA_GOLDEN = Path(__file__).parent / "golden_data/conab/serie_historica_20260917"
@@ -191,9 +191,9 @@ def assert_balance_dtypes(frame: pd.DataFrame, *, dataset: bool) -> None:
         assert all(isinstance(value, str) for value in frame[name].dropna())
 
 
-def load_reconciliacao_r3_manifest() -> dict[str, Any]:
+def load_reconciliacao_conab_manifest() -> dict[str, Any]:
     manifest: dict[str, Any] = json.loads(
-        (RECONCILIACAO_R3_GOLDEN / "manifest.json").read_text(encoding="utf-8")
+        (RECONCILIACAO_CONAB_GOLDEN / "manifest.json").read_text(encoding="utf-8")
     )
     assert manifest["format_version"] == 2
     return manifest
@@ -235,15 +235,15 @@ def assert_reconciliation_case(frame: pd.DataFrame, case: dict[str, Any]) -> Non
         assert excluded["name"] not in frame.columns, excluded
 
 
-def install_reconciliacao_r3_http(monkeypatch: Any, case: dict[str, Any]) -> list[str]:
-    manifest = load_reconciliacao_r3_manifest()
+def install_reconciliacao_conab_http(monkeypatch: Any, case: dict[str, Any]) -> list[str]:
+    manifest = load_reconciliacao_conab_manifest()
     selected_files = set(case["http_files"])
     pages: dict[str, tuple[bytes, str]] = {}
     observations: list[dict[str, Any]] = []
     for item in manifest["files"]:
         if item["file"] not in selected_files:
             continue
-        content = (RECONCILIACAO_R3_GOLDEN / item["file"]).read_bytes()
+        content = (RECONCILIACAO_CONAB_GOLDEN / item["file"]).read_bytes()
         assert hashlib.sha256(content).hexdigest() == item["sha256"]
         for url in (item["url"], *item.get("url_aliases", [])):
             pages[url] = content, item["content_type"]
@@ -1313,7 +1313,7 @@ def sicar_feature_collection(
     ).encode()
 
 
-def install_reconciliacao_r4_http(monkeypatch: Any) -> list[str]:
+def install_reconciliacao_custos_http(monkeypatch: Any) -> list[str]:
     golden = Path(__file__).parent / "golden_data/reconciliacao_custos_conab_20260918"
     receipts = json.loads((golden / "receipts.json").read_text(encoding="utf-8"))
     pages = {}
@@ -1338,7 +1338,7 @@ def install_reconciliacao_r4_http(monkeypatch: Any) -> list[str]:
     return calls
 
 
-def load_r4_cost_sheet(
+def load_custo_sheet(
     file: str, product: str, name: str
 ) -> tuple[custos_workbook.Aba, custos_models.ContextoCusto]:
     golden = Path(__file__).parent / "golden_data/reconciliacao_custos_conab_20260918"
@@ -1362,7 +1362,7 @@ def load_r4_cost_sheet(
         workbook.close()
 
 
-def assert_r4_cost_meta(
+def assert_custo_meta(
     frame: pd.DataFrame,
     meta: MetaInfo,
     case: dict[str, Any],
@@ -1398,7 +1398,7 @@ def assert_r4_cost_meta(
             assert str(frame[field].dtype) == "float64", field
 
 
-def install_reconciliacao_r5_http(
+def install_reconciliacao_censos_http(
     monkeypatch: Any, case: dict[str, Any], manifest: dict[str, Any]
 ) -> list[str]:
     golden = Path(__file__).parent / "golden_data/reconciliacao_censos_producao_ibge_conab_20260918"
@@ -1446,12 +1446,12 @@ def install_reconciliacao_r5_http(
     return requests
 
 
-def install_reconciliacao_r5_conab_http(
-    monkeypatch: Any, r3_case_id: str, extra_file: dict[str, Any] | None = None
+def install_reconciliacao_censos_conab_http(
+    monkeypatch: Any, conab_case_id: str, extra_file: dict[str, Any] | None = None
 ) -> list[str]:
-    manifest = load_reconciliacao_r3_manifest()
-    case = next(item for item in manifest["cases"] if item["id"] == r3_case_id)
-    requests = install_reconciliacao_r3_http(monkeypatch, case)
+    manifest = load_reconciliacao_conab_manifest()
+    case = next(item for item in manifest["cases"] if item["id"] == conab_case_id)
+    requests = install_reconciliacao_conab_http(monkeypatch, case)
     original = httpx.AsyncClient.send
     extra_raw = b""
     if extra_file is not None:
@@ -1487,7 +1487,7 @@ def install_reconciliacao_r5_conab_http(
     return requests
 
 
-def install_reconciliacao_r5_quarter_http(
+def install_reconciliacao_censos_quarter_http(
     monkeypatch: Any,
     case: dict[str, Any],
     manifest: dict[str, Any],
@@ -1520,7 +1520,7 @@ def install_reconciliacao_r5_quarter_http(
     return requests
 
 
-def install_reconciliacao_r5_censo_http(
+def install_reconciliacao_censos_agro_http(
     monkeypatch: Any,
     responses: dict[str, list[dict[str, str]]],
     variables: dict[str, str],
@@ -1547,7 +1547,7 @@ def install_reconciliacao_r5_censo_http(
     return requests
 
 
-def install_reconciliacao_r5_legacy_http(
+def install_reconciliacao_censos_legacy_http(
     monkeypatch: Any, files: list[dict[str, Any]]
 ) -> list[str]:
     golden = Path(__file__).parent / "golden_data"
@@ -1571,7 +1571,7 @@ def install_reconciliacao_r5_legacy_http(
     return requests
 
 
-def assert_reconciliacao_r5_legacy_state(
+def assert_reconciliacao_censos_legacy_state(
     frame: pd.DataFrame, oracle: dict[str, Any], level: str
 ) -> None:
     metrics = oracle["metrics"]
@@ -1606,7 +1606,9 @@ def assert_reconciliacao_r5_legacy_state(
                 assert row.iloc[0]["valor"] == pytest.approx(cell["expected"], rel=1e-12, abs=1e-9)
 
 
-def assert_reconciliacao_r5_legacy_national(frame: pd.DataFrame, oracle: dict[str, Any]) -> None:
+def assert_reconciliacao_censos_legacy_national(
+    frame: pd.DataFrame, oracle: dict[str, Any]
+) -> None:
     variables = {metric["variable"] for metric in oracle["metrics"]}
     selected = frame.loc[frame["variavel"].isin(variables)]
     expected_keys = {

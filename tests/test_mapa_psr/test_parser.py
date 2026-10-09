@@ -14,7 +14,6 @@ def _make_csv(
     include_pii: bool = False,
     include_geo: bool = False,
 ) -> bytes:
-    """Gera CSV sintetico de apolices PSR."""
     if rows is None:
         rows = [
             {

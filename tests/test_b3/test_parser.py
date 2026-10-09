@@ -92,11 +92,6 @@ class TestParsePosicoesAbertasVazio:
             parse_posicoes_abertas(csv)
 
 
-# ============================================================================
-# Coverage: edge cases for parse_ajustes_zip inner errors
-# ============================================================================
-
-
 class TestParseAjustesZipEdgeCases:
     def test_no_inner_zip_raises(self):
         buf = io.BytesIO()

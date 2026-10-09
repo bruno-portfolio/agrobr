@@ -7,7 +7,7 @@
   "needs_real_data": false,
   "captured_at": "2026-02-13T10:59:27.259411+00:00",
   "api_url": "https://www.agricultura.pr.gov.br/system/files/publico/Safras/PC.xls",
-  "notes": "Original PC.xls bytes stored with a historical .xlsx filename; CFB signature confirms BIFF/XLS. R7 raw-cell reconciliation: 12 sheets and 165 condition records; second-season soybean is outside the public crop catalogue.",
+  "notes": "Original PC.xls bytes stored with a historical .xlsx filename; CFB signature confirms BIFF/XLS. Raw-cell reconciliation (reconciliacao_boletins_anec_anda_deral_20260918): 12 sheets and 165 condition records; second-season soybean is outside the public crop catalogue.",
   "response_file": "response.xlsx",
   "notes_original": "Real data from DERAL PC.xls — weekly crop conditions, 168 records, condicoes: ['boa', 'media', 'ruim']"
 }

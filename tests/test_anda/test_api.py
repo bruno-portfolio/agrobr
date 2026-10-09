@@ -120,5 +120,4 @@ class TestEntregas:
         ):
             df = await api.entregas(ano=2024, agregacao="mensal")
 
-        # 3 meses distintos
         assert len(df) == 3

@@ -28,7 +28,7 @@ async def test_censo_efetivo_replay_local_preserva_celulas_e_chaves(monkeypatch)
         hashlib.sha256((GOLDEN / CASE["file"]).read_bytes()).hexdigest()
         == MANIFEST["files"][0]["sha256"]
     )
-    calls = helpers.install_reconciliacao_r5_censo_http(
+    calls = helpers.install_reconciliacao_censos_agro_http(
         monkeypatch, {"6907": RAW_ROWS, "323": []}, {"6907": "10010,2209", "323": "105"}
     )
     source, source_meta = await ibge.censo_agro("efetivo_rebanho", ano=2017, return_meta=True)
@@ -44,7 +44,7 @@ async def test_censo_efetivo_replay_local_preserva_celulas_e_chaves(monkeypatch)
 
 
 async def test_censo_dataset_sem_meta_preserva_celulas(monkeypatch):
-    calls = helpers.install_reconciliacao_r5_censo_http(
+    calls = helpers.install_reconciliacao_censos_agro_http(
         monkeypatch, {"6907": RAW_ROWS, "323": []}, {"6907": "10010,2209", "323": "105"}
     )
     frame = await datasets.censo_agropecuario("efetivo_rebanho", ano=2017)
@@ -60,7 +60,7 @@ async def test_censo_colisao_entre_tabelas_complementares_e_rejeitada(monkeypatc
             "D2N": "Quantidade produzida",
         }
     )
-    helpers.install_reconciliacao_r5_censo_http(
+    helpers.install_reconciliacao_censos_agro_http(
         monkeypatch, responses, {"497": "214", "492": "151", "503": "216"}
     )
     with pytest.raises(ParseError, match="duplicad"):

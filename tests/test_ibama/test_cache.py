@@ -13,7 +13,7 @@ from agrobr.constants import CacheSettings
 from agrobr.ibama import _cache
 from tests import helpers
 from tests.test_ibama import oficial
-from tests.test_ibama.test_oficial_veracidade import instalar
+from tests.test_ibama.test_oficial import instalar
 
 
 def _manifesto() -> dict[str, object]:

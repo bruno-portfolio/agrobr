@@ -44,4 +44,4 @@ Unidades de balanço são comprovadas por célula, texto BIFF ou caixa de texto 
 
 Os testes de mutação alteram um valor e um período do manifesto e exigem falha.
 A tolerância numérica cobre somente representação binária/float64, não discrepâncias
-entre fontes. R1 e seus goldens permanecem preservados.
+entre fontes. Os goldens anteriores permanecem preservados.

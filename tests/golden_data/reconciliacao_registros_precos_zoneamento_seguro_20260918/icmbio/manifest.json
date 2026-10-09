@@ -1,5 +1,5 @@
 {
-  "format": "agrobr.reconciliation.r11.family",
+  "format": "agrobr.reconciliation.family",
   "format_version": 1,
   "oracle": "Independent stdlib csv, int and float conversion over all cells of the complete captured responses; no agrobr imports.",
   "files": [
@@ -526,7 +526,7 @@
   "cases": [
     {
       "id": "icmbio_national",
-      "r2_id": "unidades_conservacao_federais:icmbio:wfs_csv",
+      "rota_id": "unidades_conservacao_federais:icmbio:wfs_csv",
       "query": {},
       "requests": [
         {
@@ -569,7 +569,7 @@
     },
     {
       "id": "icmbio_cerrado",
-      "r2_id": "unidades_conservacao_federais:icmbio:wfs_csv",
+      "rota_id": "unidades_conservacao_federais:icmbio:wfs_csv",
       "query": {
         "bioma": "Cerrado"
       },
@@ -616,7 +616,7 @@
     },
     {
       "id": "icmbio_uf_sp",
-      "r2_id": "unidades_conservacao_federais:icmbio:wfs_csv",
+      "rota_id": "unidades_conservacao_federais:icmbio:wfs_csv",
       "query": {
         "uf": "SP"
       },
@@ -930,7 +930,7 @@
       "the_geom": {
         "destination": null,
         "decision": "ignored",
-        "reason": "Geometry is outside this R2 tabular variant"
+        "reason": "Geometry is outside this tabular coverage-matrix variant"
       }
     }
   },

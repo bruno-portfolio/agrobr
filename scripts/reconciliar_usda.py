@@ -59,7 +59,7 @@ def cortes() -> list[tuple[str, str, int, str]]:
     saida = []
     for entrada in manifesto["arquivos"]:
         partes = entrada["arquivo"].removesuffix(".json").rsplit("_", 2)
-        if entrada["origem"].startswith(("Rodada 24", "Rodada 23")) and partes[-2] in PAISES:
+        if entrada["origem"].startswith("Conferência de 26/09/2026") and partes[-2] in PAISES:
             saida.append((partes[0], PAISES[partes[-2]], int(partes[-1]), entrada["arquivo"]))
     return sorted(saida)
 

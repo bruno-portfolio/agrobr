@@ -3,7 +3,7 @@
   "lot": "pam_pevs_ppm",
   "oracle": "xlrd original BIFF cells, own row selection; no agrobr imports",
   "coordinate_system": "Excel A1",
-  "r3_manifest_sha256": "5b0ae2784965e0286553427471a2ed2f3ac2894c424852eca1a1658971851e5a",
+  "conab_manifest_sha256": "bf0713947e4ffa0ebae4f7a0280cb248c64195d34344640eb122b85c21b60669",
   "files": [
     {
       "file": "../reconciliacao_conab_20260918/dc5524f326c16e26.html",
@@ -2452,7 +2452,7 @@
   "cases": [
     {
       "id": "conab_soja_uf_all_2021_xls",
-      "r3_case_id": "safra_2025_26_12_soja",
+      "conab_case_id": "safra_2025_26_12_soja",
       "dataset": "producao_anual",
       "selection": {
         "produto": "soja",
@@ -3077,7 +3077,7 @@
     },
     {
       "id": "conab_soja_uf_MT_2021_xls",
-      "r3_case_id": "safra_2025_26_12_soja",
+      "conab_case_id": "safra_2025_26_12_soja",
       "dataset": "producao_anual",
       "selection": {
         "produto": "soja",
@@ -3229,7 +3229,7 @@
     },
     {
       "id": "conab_soja_brasil_all_2021_xls",
-      "r3_case_id": "safra_2025_26_12_soja",
+      "conab_case_id": "safra_2025_26_12_soja",
       "dataset": "producao_anual",
       "selection": {
         "produto": "soja",
@@ -4583,7 +4583,7 @@
     },
     {
       "id": "conab_trigo_uf_all_2021_xls",
-      "r3_case_id": "safra_2025_26_12_trigo",
+      "conab_case_id": "safra_2025_26_12_trigo",
       "dataset": "producao_anual",
       "selection": {
         "produto": "trigo",
@@ -5208,7 +5208,7 @@
     },
     {
       "id": "conab_trigo_uf_PR_2021_xls",
-      "r3_case_id": "safra_2025_26_12_trigo",
+      "conab_case_id": "safra_2025_26_12_trigo",
       "dataset": "producao_anual",
       "selection": {
         "produto": "trigo",
@@ -5360,7 +5360,7 @@
     },
     {
       "id": "conab_trigo_brasil_all_2021_xls",
-      "r3_case_id": "safra_2025_26_12_trigo",
+      "conab_case_id": "safra_2025_26_12_trigo",
       "dataset": "producao_anual",
       "selection": {
         "produto": "trigo",

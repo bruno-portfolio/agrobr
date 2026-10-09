@@ -14,7 +14,6 @@ from agrobr.exceptions import InvalidParameterError, ParseError
 
 
 def _make_precos_xlsx_bytes(**kwargs) -> bytes:
-    """Gera XLSX sintetico de precos."""
     rows = kwargs.get(
         "rows",
         [

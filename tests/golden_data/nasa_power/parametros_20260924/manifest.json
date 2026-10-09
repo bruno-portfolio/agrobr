@@ -1,5 +1,5 @@
 {
- "descricao": "NASA POWER diário de ponto (-12,6; -56,1), jan/2025, com os 5 parâmetros do catálogo do agrobr fora do R10 (GWETROOT, GWETTOP, PS, T2MDEW, WS10M); corpo inteiro, com o bloco 'parameters' (unidade e nome oficiais).",
+ "descricao": "NASA POWER diário de ponto (-12,6; -56,1), jan/2025, com os 5 parâmetros do catálogo do agrobr fora de reconciliacao_clima_20260918 (GWETROOT, GWETTOP, PS, T2MDEW, WS10M); corpo inteiro, com o bloco 'parameters' (unidade e nome oficiais).",
  "arquivos": [
   {
    "file": "mt_202501_extras.json",

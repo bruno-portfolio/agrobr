@@ -31,9 +31,9 @@ def _linhas(*textos: str) -> list[tuple[float, list[dict]]]:
     ]
 
 
-@pytest.mark.parametrize("semana", sorted(MANIFESTO["transcricao_r25"]["boletins"]))
+@pytest.mark.parametrize("semana", sorted(MANIFESTO["transcricao_manual"]["boletins"]))
 def test_datas_saem_dos_rotulos_transcritos_do_boletim(semana):
-    boletim = MANIFESTO["transcricao_r25"]["boletins"][semana]
+    boletim = MANIFESTO["transcricao_manual"]["boletins"][semana]
     report = parser.parse_anec_pdf((GOLDEN / boletim["pdf"]).read_bytes())
     semanal = report.weekly_shipments
     assert set(semanal["semana"]) == {int(semana)}

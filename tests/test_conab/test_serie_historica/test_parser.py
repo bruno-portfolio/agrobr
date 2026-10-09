@@ -31,7 +31,6 @@ def _make_xls(sheets: dict[str, list[list]]) -> BytesIO:
 
 
 def _sample_area_rows() -> list[list]:
-    """Cria dados de exemplo para aba de area plantada."""
     return [
         ["CONAB - Série Histórica - Soja - Área Plantada (mil ha)", None, None, None],
         [None, None, None, None],
@@ -49,7 +48,6 @@ def _sample_area_rows() -> list[list]:
 
 
 def _sample_producao_rows() -> list[list]:
-    """Cria dados de exemplo para aba de producao."""
     return [
         ["CONAB - Série Histórica - Soja - Produção (mil ton)", None, None, None],
         [None, None, None, None],
@@ -67,7 +65,6 @@ def _sample_producao_rows() -> list[list]:
 
 
 def _sample_produtividade_rows() -> list[list]:
-    """Cria dados de exemplo para aba de produtividade."""
     return [
         ["CONAB - Série Histórica - Soja - Produtividade (kg/ha)", None, None, None],
         [None, None, None, None],

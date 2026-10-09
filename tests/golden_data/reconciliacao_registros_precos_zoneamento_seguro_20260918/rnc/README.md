@@ -1,6 +1,6 @@
 # RNC/SNPC — reconciliação
 
-Formato próprio `agrobr.reconciliation.r11.family` v1; ver `../FORMAT.md`.
+Formato próprio `agrobr.reconciliation.family` v1; ver `../FORMAT.md`.
 Captura integral de 18/09/2026: 38.325 registros RNC e 5.424 SNPC; dez e onze
 campos CSV, respectivamente. A API SNPC expõe também o texto do término.
 

@@ -400,10 +400,10 @@ def compare_abiove_inventory(
 
 
 async def fetch_comexstat_dictionary(url: str) -> bytes:
-    """Aquisição de auditoria isolada: mesmo host, cabeçalhos, TLS e orçamento do cliente Comex
+    """Aquisição de conferência isolada: mesmo host, cabeçalhos, TLS e orçamento do cliente Comex
     Stat, sem acrescentar a tabela ao catálogo público `COMEXSTAT_DICTIONARY_URLS`."""
     if not url.startswith(f"https://{constants.COMEXSTAT_DOWNLOAD_HOST}/balanca/bd/tabelas/"):
-        raise ValueError("Comex Stat: dicionário de auditoria fora da pasta oficial de tabelas")
+        raise ValueError("Comex Stat: dicionário de conferência fora da pasta oficial de tabelas")
     headers = httpx.Headers(UserAgentRotator.get_headers(source="comexstat"))
     headers["Accept-Encoding"] = "identity"
     async with httpx.AsyncClient(
@@ -415,7 +415,7 @@ async def fetch_comexstat_dictionary(url: str) -> bytes:
         response = await http.get(url)
         response.raise_for_status()
         if len(response.content) > constants.COMEXSTAT_MAX_DICTIONARY_BYTES:
-            raise ValueError("Comex Stat: dicionário de auditoria excede o orçamento de bytes")
+            raise ValueError("Comex Stat: dicionário de conferência excede o orçamento de bytes")
         return response.content
 
 

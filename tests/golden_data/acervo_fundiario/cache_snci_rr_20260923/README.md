@@ -1,6 +1,6 @@
 # Acervo Fundiário — estado do cache após revalidação (23/09/2026)
 
-Oráculo da rodada 15 de conferência. `RR.json` é o sidecar real do cache do agrobr para
+Oráculo da conferência de 23/09/2026. `RR.json` é o sidecar real do cache do agrobr para
 SNCI/RR, gravado pela API pública: ETag, Last-Modified, tamanho, SHA-256 e `fetched_at` da coleta original.
 
 O ZIP daquele cache não foi copiado: guarda nomes de imóvel que são nome de pessoa. O teste usa o recorte

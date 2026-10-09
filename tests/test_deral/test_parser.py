@@ -49,9 +49,7 @@ async def test_dataset_aba_ilegivel_propaga_falha(unreadable_current_sheet, monk
 
 
 def _make_xls_bytes(sheets: dict[str, list[list]]) -> bytes:
-    """Cria arquivo Excel em memória a partir de dict de sheets."""
     wb = openpyxl.Workbook()
-    # Remover sheet padrão
     default_sheet = wb.active
     if default_sheet is not None:
         wb.remove(default_sheet)

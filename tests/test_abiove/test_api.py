@@ -75,7 +75,6 @@ class TestExportacao:
         ):
             df = await api.exportacao(ano=2024, agregacao="mensal")
 
-        # 2 meses
         assert len(df) == 2
         jan = df[df["mes"] == 1].iloc[0]
         assert jan["volume_ton"] == pytest.approx(5000000 + 2000000 + 200000)

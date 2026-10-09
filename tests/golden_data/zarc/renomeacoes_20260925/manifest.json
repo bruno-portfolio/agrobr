@@ -1,6 +1,6 @@
 {
  "fonte": "zarc",
- "oraculo": "stdlib csv sobre os corpos oficiais integrais da R25, com recibo: entre os rótulos de Nome_cultura que somem em 2024/2025 e os pares (Nome_cultura, Cod_Cultura) que surgem nela, pareia os grupos (Nome_cultura, Cod_Cultura, Nome_Outros_Manejos) cujos registros em (geocodigo, Cod_Solo, Cod_Ciclo, dec1..dec36) são idênticos nos dois sentidos; sem parser nem API do agrobr",
+ "oraculo": "stdlib csv sobre os corpos oficiais integrais da conferência de 25/09/2026, com recibo: entre os rótulos de Nome_cultura que somem em 2024/2025 e os pares (Nome_cultura, Cod_Cultura) que surgem nela, pareia os grupos (Nome_cultura, Cod_Cultura, Nome_Outros_Manejos) cujos registros em (geocodigo, Cod_Solo, Cod_Ciclo, dec1..dec36) são idênticos nos dois sentidos; sem parser nem API do agrobr",
  "corpos": {
   "2023/2024": {
    "url": "https://dados.agricultura.gov.br/dataset/6d3d141c-885e-41a4-ab7f-dc8ff323b96f/resource/64664b7c-5002-409a-9856-3170781e92f8/download/dados-abertos-tabua-de-risco-safra-2023-2024.csv",

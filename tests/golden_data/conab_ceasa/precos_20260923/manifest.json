@@ -1,5 +1,5 @@
 {
- "descricao": "Matriz oficial de preços diários do PROHORT (Pentaho CDA precoDia: MDXProdutoPreco, 48 produtos × 43 CEASAs, 1.974 células com preço) e o catálogo de CEASAs (MDXceasa), pelo caminho do cliente do agrobr. Byte a byte iguais às capturas de conferência na rodada 12 (23/09/2026).",
+ "descricao": "Matriz oficial de preços diários do PROHORT (Pentaho CDA precoDia: MDXProdutoPreco, 48 produtos × 43 CEASAs, 1.974 células com preço) e o catálogo de CEASAs (MDXceasa), pelo caminho do cliente do agrobr. Byte a byte iguais às capturas da conferência de 23/09/2026.",
  "arquivos": [
   {
    "file": "precos_response.json",

@@ -1,9 +1,9 @@
 # CEPEA — cache vencido × virada das 18h (23/09/2026)
 
-Oráculo da rodada 14 de conferência.
+Oráculo da conferência de 23/09/2026.
 
 - `cache_soja_20260922.json`: as 15 linhas de soja de um cache real (`ttl_seed_original.duckdb`, cópia do cache
-  da rodada 7), coletadas em 22/09/2026 22:56:05 UTC (19:56 BRT), com todas as colunas da tabela `indicadores`. A
+  de conferência), coletadas em 22/09/2026 22:56:05 UTC (19:56 BRT), com todas as colunas da tabela `indicadores`. A
   consulta e o SHA-256 do arquivo de origem estão em `manifest.json`.
 - `soja_20260923.html`: a página oficial do indicador capturada em 23/09/2026 23:05 UTC (20:05 BRT), depois da
   publicação de 23/09. Cópia byte a byte; URL, cabeçalhos e SHA-256 em `manifest.json`.

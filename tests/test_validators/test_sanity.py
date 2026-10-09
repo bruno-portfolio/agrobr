@@ -13,10 +13,7 @@ from agrobr.validators.sanity import (
 
 
 class TestSanityValidation:
-    """Tests for sanity validation of indicadores."""
-
     def test_acceptable_daily_change(self):
-        """Test that acceptable daily change passes validation."""
         indicador = Indicador(
             fonte=Fonte.CEPEA,
             produto="soja",
@@ -32,7 +29,6 @@ class TestSanityValidation:
         assert len(anomalies) == 0
 
     def test_unknown_product_no_rules(self):
-        """Test that unknown products return no anomalies."""
         indicador = Indicador(
             fonte=Fonte.CEPEA,
             produto="unknown_product",

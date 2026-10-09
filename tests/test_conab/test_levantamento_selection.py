@@ -19,7 +19,7 @@ from agrobr.models import Safra
 from tests import helpers
 
 _JANUARY_PATH = "4o-levantamento-safra-2025-26/site_previsao_de_safra-por_produto-jan-2026"
-R3 = Path(__file__).parents[1] / "golden_data/reconciliacao_conab_20260918"
+RECONCILIACAO_CONAB = Path(__file__).parents[1] / "golden_data/reconciliacao_conab_20260918"
 SET_2025 = Path(__file__).parents[1] / "golden_data/conab/levantamento_12_2024_25_20260922"
 SET_2025_URL = json.loads((SET_2025 / "PROVENANCE.json").read_text(encoding="utf-8"))["files"][0][
     "url"
@@ -31,7 +31,7 @@ SET_2026_URL = (
 )
 EDICOES = {
     SET_2025_URL: SET_2025 / SET_2025_URL.rsplit("/", 1)[1],
-    SET_2026_URL: R3 / "7cd4df7946e5c57f.xlsx",
+    SET_2026_URL: RECONCILIACAO_CONAB / "7cd4df7946e5c57f.xlsx",
 }
 
 
@@ -221,7 +221,9 @@ async def test_catalog_and_download_accept_official_legacy_xls():
 
 
 def _servir_edicoes_oficiais(monkeypatch):
-    catalogo = bs4.BeautifulSoup((R3 / "dc5524f326c16e26.html").read_bytes(), "lxml")
+    catalogo = bs4.BeautifulSoup(
+        (RECONCILIACAO_CONAB / "dc5524f326c16e26.html").read_bytes(), "lxml"
+    )
     for link in catalogo.select("a.proximo, a[rel~=next]"):
         link.decompose()
     planilhas = {url: caminho.read_bytes() for url, caminho in EDICOES.items()}

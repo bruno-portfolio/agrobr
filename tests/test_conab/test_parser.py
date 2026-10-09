@@ -30,7 +30,6 @@ def sample_xlsx():
 
 @pytest.fixture
 def parser():
-    """Fixture do parser."""
     return ConabParserV1()
 
 

@@ -19,7 +19,6 @@ def _make_precos_xlsx(
     rows: list[dict] | None = None,
     columns: list[str] | None = None,
 ) -> bytes:
-    """Gera XLSX sintetico de precos."""
     if columns is None:
         columns = [
             "ESTADO - SIGLA",

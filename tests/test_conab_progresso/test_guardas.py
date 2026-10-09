@@ -15,7 +15,9 @@ from agrobr.exceptions import InvalidParameterError, ParseError, SourceUnavailab
 from tests import helpers
 from tests.helpers import levanta_exatamente, sem_excecao
 
-OFICIAL = Path(__file__).resolve().parents[1] / "golden_data" / "conab_progresso" / "oficial_r26"
+OFICIAL = (
+    Path(__file__).resolve().parents[1] / "golden_data" / "conab_progresso" / "oficial_20260925"
+)
 
 
 def _linha(folha, rotulo: str) -> int:

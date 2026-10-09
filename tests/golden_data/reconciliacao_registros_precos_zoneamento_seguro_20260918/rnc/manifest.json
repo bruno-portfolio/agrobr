@@ -1,5 +1,5 @@
 {
-  "manifest_schema": "agrobr.reconciliation.r11.family",
+  "manifest_schema": "agrobr.reconciliation.family",
   "format_version": 1,
   "schema_document": "../FORMAT.md",
   "built_at": "2026-09-18T12:30:58.168483-03:00",
@@ -874,7 +874,7 @@
     {
       "id": "rnc_registradas_full",
       "kind": "registradas",
-      "r2_id": "cultivares_registradas:rnc:rnc",
+      "rota_id": "cultivares_registradas:rnc:rnc",
       "query": {},
       "selection": "all",
       "expected_rows": 38325
@@ -882,7 +882,7 @@
     {
       "id": "rnc_registradas_first",
       "kind": "registradas",
-      "r2_id": "cultivares_registradas:rnc:rnc",
+      "rota_id": "cultivares_registradas:rnc:rnc",
       "query": {
         "nr_registro": "42039"
       },
@@ -894,7 +894,7 @@
     {
       "id": "rnc_registradas_last",
       "kind": "registradas",
-      "r2_id": "cultivares_registradas:rnc:rnc",
+      "rota_id": "cultivares_registradas:rnc:rnc",
       "query": {
         "nr_registro": "17187"
       },
@@ -906,7 +906,7 @@
     {
       "id": "rnc_registradas_species_soja",
       "kind": "registradas",
-      "r2_id": "cultivares_registradas:rnc:rnc",
+      "rota_id": "cultivares_registradas:rnc:rnc",
       "query": {
         "especie": "Soja"
       },
@@ -3879,7 +3879,7 @@
     {
       "id": "rnc_registradas_blank_form",
       "kind": "registradas",
-      "r2_id": "cultivares_registradas:rnc:rnc",
+      "rota_id": "cultivares_registradas:rnc:rnc",
       "query": {
         "nr_registro": "3489"
       },
@@ -3891,7 +3891,7 @@
     {
       "id": "rnc_registradas_exact_form",
       "kind": "registradas",
-      "r2_id": "cultivares_registradas:rnc:rnc",
+      "rota_id": "cultivares_registradas:rnc:rnc",
       "query": {
         "nr_formulario": "201900091"
       },
@@ -3920,7 +3920,7 @@
     {
       "id": "rnc_protegidas_full",
       "kind": "protegidas",
-      "r2_id": "cultivares_protegidas:rnc:snpc",
+      "rota_id": "cultivares_protegidas:rnc:snpc",
       "query": {},
       "selection": "all",
       "expected_rows": 5424
@@ -3928,7 +3928,7 @@
     {
       "id": "rnc_protegidas_first",
       "kind": "protegidas",
-      "r2_id": "cultivares_protegidas:rnc:snpc",
+      "rota_id": "cultivares_protegidas:rnc:snpc",
       "query": {
         "nr_processo": "21806.000202/2014"
       },
@@ -3940,7 +3940,7 @@
     {
       "id": "rnc_protegidas_last",
       "kind": "protegidas",
-      "r2_id": "cultivares_protegidas:rnc:snpc",
+      "rota_id": "cultivares_protegidas:rnc:snpc",
       "query": {
         "nr_processo": "21806.000268/2020"
       },
@@ -3952,7 +3952,7 @@
     {
       "id": "rnc_protegidas_species_soja",
       "kind": "protegidas",
-      "r2_id": "cultivares_protegidas:rnc:snpc",
+      "rota_id": "cultivares_protegidas:rnc:snpc",
       "query": {
         "especie": "Soja"
       },
@@ -5875,7 +5875,7 @@
     {
       "id": "rnc_protegidas_conditional_end",
       "kind": "protegidas",
-      "r2_id": "cultivares_protegidas:rnc:snpc",
+      "rota_id": "cultivares_protegidas:rnc:snpc",
       "query": {
         "nr_certificado": "20190277"
       },
@@ -5888,7 +5888,7 @@
     {
       "id": "rnc_protegidas_blank_end",
       "kind": "protegidas",
-      "r2_id": "cultivares_protegidas:rnc:snpc",
+      "rota_id": "cultivares_protegidas:rnc:snpc",
       "query": {
         "nr_processo": "21806.000145/2017"
       },
@@ -5900,7 +5900,7 @@
     {
       "id": "rnc_protegidas_renounced",
       "kind": "protegidas",
-      "r2_id": "cultivares_protegidas:rnc:snpc",
+      "rota_id": "cultivares_protegidas:rnc:snpc",
       "query": {
         "situacao": "renúncia"
       },

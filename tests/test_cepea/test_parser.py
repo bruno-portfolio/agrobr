@@ -10,8 +10,6 @@ from agrobr.exceptions import ParseError
 
 
 class TestCepeaParserV1:
-    """Tests for CepeaParserV1."""
-
     def setup_method(self):
         self.parser = CepeaParserV1()
 

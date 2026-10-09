@@ -172,7 +172,7 @@ async def test_preco_atacado_from_official_pivot(case_id: str, monkeypatch: pyte
     assert meta.attempted_sources == ["conab_ceasa"]
 
 
-async def test_mercado_reconciliacao_r9_casos_1():
+async def test_mercado_reconciliacao_casos():
     with collect_failures() as check:
         for case_id in [case_id for case_id in CASES if case_id.startswith("b3_ajustes_")]:
             case = f"test_futuros_agricolas_ajustes_from_official_zip[{(case_id,)!r}]"

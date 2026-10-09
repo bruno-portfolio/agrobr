@@ -1,5 +1,5 @@
 {
- "descricao": "Edição corrente da planilha de exportações do complexo soja da ABIOVE em 23/09/2026 (exp_202608.xlsx, aba Rel_Exp2026, 'Dados disponíveis até' agosto/2026), com 2025 nas colunas C/F e 2026 nas D/G. Captura de conferência (rodada 13), byte a byte; a edição anterior exp_202512.xlsx é o golden abiove/exportacao_sample.",
+ "descricao": "Edição corrente da planilha de exportações do complexo soja da ABIOVE em 23/09/2026 (exp_202608.xlsx, aba Rel_Exp2026, 'Dados disponíveis até' agosto/2026), com 2025 nas colunas C/F e 2026 nas D/G. Captura de conferência de 23/09/2026, byte a byte; a edição anterior exp_202512.xlsx é o golden abiove/exportacao_sample.",
  "pagina_de_recursos": {
   "url": "https://abiove.org.br/estatisticas/",
   "status": 200,

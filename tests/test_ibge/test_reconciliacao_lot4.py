@@ -48,7 +48,7 @@ async def test_legado_corpos_celulas_e_saidas_publicas(body):
             case = (oracle["uf"], oracle["theme"])
             with check(case), helpers.isolated_dataset_case(case) as monkeypatch:
                 entry = FILES[case]
-                calls = helpers.install_reconciliacao_r5_legacy_http(monkeypatch, [entry])
+                calls = helpers.install_reconciliacao_censos_legacy_http(monkeypatch, [entry])
                 if oracle["expected_outcome"] != "data":
                     assert entry["sha256"] == FILES["PA", "pessoal_ocupado"]["sha256"]
                     assert entry["url"].endswith("/Para/Tab_7Mn.zip")
@@ -81,7 +81,7 @@ async def test_legado_corpos_celulas_e_saidas_publicas(body):
                         frame, meta = await datasets.censo_agropecuario_legado(
                             oracle["theme"], uf=oracle["uf"], nivel=level, return_meta=True
                         )
-                        helpers.assert_reconciliacao_r5_legacy_state(frame, oracle, level)
+                        helpers.assert_reconciliacao_censos_legacy_state(frame, oracle, level)
                         assert meta.selected_source == "ibge_censo_agro_legado"
                         assert meta.attempted_sources == ["ibge_censo_agro_legado"]
                         assert meta.parser_version == 2
@@ -109,12 +109,12 @@ async def test_legado_nacional_replay_todas_medidas_e_duas_tabelas_financeiras(m
         for entry in MANIFEST["files"]
         if entry["fixture"] in {item["fixture"] for item in oracles}
     ]
-    calls = helpers.install_reconciliacao_r5_legacy_http(monkeypatch, entries)
+    calls = helpers.install_reconciliacao_censos_legacy_http(monkeypatch, entries)
     frame, meta = await datasets.censo_agropecuario_legado(theme, nivel="brasil", return_meta=True)
     assert set(calls) == {item["url"] for item in entries}
     assert len(calls) == len(entries)
     for oracle in oracles:
-        helpers.assert_reconciliacao_r5_legacy_national(frame, oracle)
+        helpers.assert_reconciliacao_censos_legacy_national(frame, oracle)
     assert len(frame) == sum(len(item["categories"]) * len(item["metrics"]) for item in oracles)
     assert not frame.duplicated(["ano", "localidade", "tema", "categoria", "variavel"]).any()
     assert meta.records_count == len(frame)
@@ -123,15 +123,15 @@ async def test_legado_nacional_replay_todas_medidas_e_duas_tabelas_financeiras(m
 
 async def test_legado_dataset_sem_meta_confere_oraculo(monkeypatch):
     oracle = next(item for item in STATES if item["uf"] == "GO" and item["theme"] == "financeiro")
-    helpers.install_reconciliacao_r5_legacy_http(monkeypatch, [FILES["GO", "financeiro"]])
+    helpers.install_reconciliacao_censos_legacy_http(monkeypatch, [FILES["GO", "financeiro"]])
     frame = await datasets.censo_agropecuario_legado("financeiro", uf="GO")
-    helpers.assert_reconciliacao_r5_legacy_state(frame, oracle, "uf")
+    helpers.assert_reconciliacao_censos_legacy_state(frame, oracle, "uf")
 
 
 async def test_legado_sem_uf_deixa_o_para_fora_de_maquinas_com_aviso(monkeypatch):
     oracles = [item for item in STATES if item["theme"] == "maquinas"]
     entries = [FILES[item["uf"], "maquinas"] for item in oracles]
-    calls = helpers.install_reconciliacao_r5_legacy_http(monkeypatch, entries)
+    calls = helpers.install_reconciliacao_censos_legacy_http(monkeypatch, entries)
     aviso = f"censo_agro_legado: PA fica fora do tema maquinas; {PA_TEXTO}"
     with warnings.catch_warnings(record=True) as caught:
         warnings.simplefilter("always")
@@ -145,7 +145,7 @@ async def test_legado_sem_uf_deixa_o_para_fora_de_maquinas_com_aviso(monkeypatch
     for oracle in oracles:
         if oracle["uf"] != "PA":
             state = frame.loc[frame["uf"].eq(oracle["uf"])].reset_index(drop=True)
-            helpers.assert_reconciliacao_r5_legacy_state(state, oracle, "uf")
+            helpers.assert_reconciliacao_censos_legacy_state(state, oracle, "uf")
 
 
 async def test_legado_sem_uf_levanta_com_titulo_errado_fora_da_lacuna(monkeypatch):
@@ -155,6 +155,6 @@ async def test_legado_sem_uf_levanta_com_titulo_errado_fora_da_lacuna(monkeypatc
         for item in STATES
         if item["theme"] == "maquinas"
     ]
-    helpers.install_reconciliacao_r5_legacy_http(monkeypatch, entries)
+    helpers.install_reconciliacao_censos_legacy_http(monkeypatch, entries)
     with pytest.raises(ParseError, match="Cabeçalho não corresponde ao tema maquinas: Tabela 6"):
         await ibge.censo_agro_legado("maquinas")

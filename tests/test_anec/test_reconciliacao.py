@@ -15,7 +15,7 @@ from tests.helpers import collect_failures
 GOLDEN = Path(__file__).parents[1] / "golden_data/reconciliacao_boletins_anec_anda_deral_20260918"
 MANIFEST = json.loads((GOLDEN / "anec_manifest.json").read_text(encoding="utf-8"))
 SEMANAS = json.loads((GOLDEN.parent / "anec/semanas_20260925/manifest.json").read_bytes())
-SEMANA_30_DE_2026 = pd.Timestamp(SEMANAS["calendario_r11"]["inicio_da_semana_30_de_2026"])
+SEMANA_30_DE_2026 = pd.Timestamp(SEMANAS["calendario"]["inicio_da_semana_30_de_2026"])
 CASES = MANIFEST["cases"]
 TABLES = {
     "weekly_shipments": ("embarques", "embarques_anec"),

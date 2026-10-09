@@ -11,14 +11,14 @@ from agrobr.nasa_power import client, models
 from tests.helpers import assert_replay_served, install_replay_http, sem_excecao
 
 GOLDEN = Path(__file__).resolve().parents[1] / "golden_data"
-R10 = GOLDEN / "reconciliacao_clima_20260918/nasa_power/nasa_power_mt_2025.json"
+NASA_POWER_MT_2025 = GOLDEN / "reconciliacao_clima_20260918/nasa_power/nasa_power_mt_2025.json"
 EXTRAS = GOLDEN / "nasa_power/parametros_20260924/mt_202501_extras.json"
 CODIGOS = ["GWETROOT", "GWETTOP", "PS", "T2MDEW", "WS10M"]
 
 
 def test_unidades_do_catalogo_conferem_a_nasa_power():
     oficial = {
-        **json.loads(R10.read_text(encoding="utf-8"))["parameters"],
+        **json.loads(NASA_POWER_MT_2025.read_text(encoding="utf-8"))["parameters"],
         **json.loads(EXTRAS.read_text(encoding="utf-8"))["parameters"],
     }
     publicado = nasa_power.parametros()

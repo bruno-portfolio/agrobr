@@ -1,0 +1,278 @@
+concessionaria;praca_de_pedagio;ano_do_pnv_snv;rodovia;uf;km_m;municipal;tipo_de_pista;sentido;situacao;data_da_inativacao;latitude;longitude
+AUTOPISTA FLUMINENSE;Conselheiro Josino;2019;BR-101;RJ;40.5;Campos dos Goytacazes;Principal;Crescente/Decrescente;Ativo;;-21.552594;-41.331597
+AUTOPISTA FLUMINENSE;Serrinha;2019;BR-101;RJ;123.07;Campos dos Goytacazes;Principal;Crescente/Decrescente;Ativo;;-22.04975;-41.685157
+AUTOPISTA FLUMINENSE;Casimiro de Abreu;2019;BR-101;RJ;192.82;Casimiro de Abreu;Principal;Crescente/Decrescente;Ativo;;-22.476441;-42.088519
+AUTOPISTA FLUMINENSE;Rio Bonito;2019;BR-101;RJ;252.85;Rio Bonito;Principal;Crescente/Decrescente;Ativo;;-22.687469;-42.539855
+AUTOPISTA FLUMINENSE;São Gonçalo;2019;BR-101;RJ;299.69;São Gonçalo;Principal;Crescente;Ativo;;-22.774713;-42.9455
+AUTOPISTA LITORAL SUL;P1;2009;BR-376;PR;635.3;São José dos Pinhais;Principal;Crescente/Decrescente;Ativo;;-25.747708;-49.129655
+AUTOPISTA LITORAL SUL;P3;2009;BR-101;SC;79.3;Araquari;Principal;Crescente/Decrescente;Ativo;;-26.591635;-48.722079
+AUTOPISTA LITORAL SUL;P2;2009;BR-101;SC;1.35;Garuva;Principal;Crescente/Decrescente;Ativo;;-25.991898;-48.881469
+AUTOPISTA LITORAL SUL;P5;2009;BR-101;SC;242.8;Palhoça;Principal;Crescente/Decrescente;Ativo;;-27.885105;-48.647677
+AUTOPISTA LITORAL SUL;P4;2009;BR-101;SC;157.4;Porto Belo;Principal;Crescente/Decrescente;Ativo;;-27.185065;-48.612362
+AUTOPISTA PLANALTO SUL;SANTA CECÍLIA;2017;BR-116;SC;152.0;Santa Cecília;Principal;Crescente/Decrescente;Ativo;;-27.010584;-50.428716
+AUTOPISTA PLANALTO SUL;CORREIA PINTO;2017;BR-116;SC;233.16;Correia Pinto;Principal;Crescente/Decrescente;Ativo;;-27.010584;-50.374335
+AUTOPISTA PLANALTO SUL;RIO NEGRO;2017;BR-116;PR;204.1;Rio Negro;Principal;Crescente/Decrescente;Ativo;;-26.07058;-49.739911
+AUTOPISTA PLANALTO SUL;FAZENDA RIO GRANDE;2017;BR-116;PR;134.4;Fazenda Rio Grande;Principal;Crescente/Decrescente;Ativo;;-25.713458;-49.318037
+AUTOPISTA PLANALTO SUL;MONTE CASTELO;2017;BR-116;SC;81.6;Monte Castelo;Principal;Crescente/Decrescente;Ativo;;-26.570363;-50.221795
+AUTOPISTA REGIS BITTENCOURT;Campina Grande do Sul;2017;BR-116;PR;57.1;Campina Grande do Sul;Principal;Crescente/Decrescente;Ativo;;-25.289252;-48.933841
+AUTOPISTA REGIS BITTENCOURT;Miracatu;2017;BR-116;SP;370.4;Miracatu;Principal;Crescente/Decrescente;Ativo;;-24.157869;-47.32628
+AUTOPISTA REGIS BITTENCOURT;Juquiá;2017;BR-116;SP;426.6;Juquiá;Principal;Crescente/Decrescente;Ativo;;-24.389325;-47.722391
+AUTOPISTA REGIS BITTENCOURT;São Lourenço da Serra;2017;BR-116;SP;298.8;São Lourenço da Serra;Principal;Crescente/Decrescente;Ativo;;-23.787647;-46.913922
+AUTOPISTA REGIS BITTENCOURT;Barra do Turvo;2017;BR-116;SP;542.9;Barra do Turvo;Principal;Crescente/Decrescente;Ativo;;-24.964044;-48.412
+AUTOPISTA REGIS BITTENCOURT;Cajati;2017;BR-116;SP;485.7;Cajati;Principal;Crescente/Decrescente;Ativo;;-24.722483;-48.08258
+CONCEBRA;P2 GOIANÁPOLIS;2017;BR-60;GO;107.9;Goianápolis;Principal;Crescente/Decrescente;Ativo;;-16.438631;-49.019137
+CONCEBRA;P1 ALEXÂNIA;2017;BR-60;GO;43.1;Alexânia;Principal;Crescente/Decrescente;Ativo;;-16.115707;-48.58924
+CONCER;P1;2016;BR-40;RJ;102.0;Duque de Caxias;Principal;Crescente/Decrescente;Ativo;;-22.609965;-43.285552
+CONCER;P2;2016;BR-40;RJ;45.5;Areal;Principal;Crescente/Decrescente;Ativo;;-22.284389;-43.120269
+CONCER;P3;2016;BR-40;MG;816.7;Simão Pereira;Principal;Crescente/Decrescente;Ativo;;-21.928252;-43.316282
+ECOSUL;Praça Glória;1996;BR-392;RS;111.4;Canguçu;Principal;Crescente/Decrescente;Ativo;;-31.449786;-52.640644
+ECOSUL;Praça Pavão;1996;BR-116;RS;541.2;Capão do Leão;Principal;Crescente/Decrescente;Ativo;;-31.820075;-52.526711
+ECOSUL;Praça Cristal;1996;BR-116;RS;430.8;Cristal;Principal;Crescente/Decrescente;Ativo;;-31.026386;-52.04943
+ECOSUL;Praça Retiro;1996;BR-116;RS;510.7;Pelotas;Principal;Crescente/Decrescente;Ativo;;-31.625261;-52.318116
+ECOSUL;Praça Capão Seco;1996;BR-392;RS;52.3;Rio Grande;Principal;Crescente/Decrescente;Ativo;;-31.851958;-52.326177
+ECOVIAS CAPIXABA;P3 - Aracruz ;2020;BR-101;ES;171.7;Aracruz;Principal;Crescente/Decrescente;Ativo;;-19.563099;-40.177621
+ECOVIAS CAPIXABA;P5 - Guarapari ;2020;BR-101;ES;320.8;Guarapari;Principal;Crescente/Decrescente;Ativo;;-20.519316;-40.478609
+ECOVIAS CAPIXABA;P6 - Itapemirim ;2020;BR-101;ES;398.9;Itapemirim;Principal;Crescente/Decrescente;Ativo;;-20.878586;-40.966118
+ECOVIAS CAPIXABA;P7 - Mimoso do Sul ;2020;BR-101;ES;452.0;Mimoso do Sul;Principal;Crescente/Decrescente;Ativo;;-21.158397;-41.280614
+ECOVIAS CAPIXABA;P1 - Pedro Canário ;2020;BR-101;ES;1.0;Pedro Canário;Principal;Crescente/Decrescente;Ativo;;-18.184708;-39.922116
+ECOVIAS CAPIXABA;P2 - São Mateus ;2020;BR-101;ES;85.8;São Mateus;Principal;Crescente/Decrescente;Ativo;;-18.863974;-39.938705
+ECOVIAS CAPIXABA;P4 - Serra ;2020;BR-101;ES;242.0;Serra;Principal;Crescente/Decrescente;Ativo;;-20.032565;-40.396624
+ECOVIAS DO ARAGUAIA;P1 - Aliança do Tocantins;2021;BR-153;TO;640.0;Aliança do Tocantins;Principal;Crescente/Decrescente;Ativo;;-11.4461;-48.990283
+ECOVIAS DO ARAGUAIA;P2 - Alvorada;2021;BR-153;TO;744.91;Alvorada;Principal;Crescente/Decrescente;Ativo;;-12.34;-49.15
+ECOVIAS DO ARAGUAIA;P6 - Hidrolina;2021;BR-153;GO;233.4;Hidrolina;Principal;Crescente/Decrescente;Ativo;;-14.799372;-49.284164
+ECOVIAS DO ARAGUAIA;P5 - Campinorte;2021;BR-153;GO;182.04;Campinorte;Principal;Crescente/Decrescente;Ativo;;-14.372969;-49.158264
+ECOVIAS DO ARAGUAIA;P9 - Corumbá de Goiás;2021;BR-414;GO;404.08;Corumbá de Goiás;Principal;Crescente/Decrescente;Ativo;;-16.001028;-48.840289
+ECOVIAS DO ARAGUAIA;P4 - Estrela do Norte;2021;BR-153;GO;116.12;Estrela do Norte;Principal;Crescente/Decrescente;Ativo;;-13.791358;-49.034842
+ECOVIAS DO ARAGUAIA;P7 - Jaraguá;2021;BR-153;GO;367.5;Jaraguá;Principal;Crescente/Decrescente;Ativo;;-15.827072;-49.281722
+ECOVIAS DO ARAGUAIA;P3 - Porangatu;2021;BR-153;GO;12.5;Porangatu;Principal;Crescente/Decrescente;Ativo;;-12.943414;-49.133122
+ECOVIAS DO ARAGUAIA;P8 - Santa Rita do Novo Destino;2021;BR-80;GO;155.5;Santa Rita do Novo Destino;Principal;Crescente/Decrescente;Ativo;;-14.814189;-49.042442
+ECOVIAS DO CERRADO;P7 - JATAÍ;2020;BR-364;GO;156.18;Jataí;Principal;Crescente/Decrescente;Ativo;;-18.11;-51.48
+ECOVIAS DO CERRADO;P6 - CACHOEIRA ALTA;2020;BR-364;GO;92.85;Cachoeira Alta;Principal;Crescente/Decrescente;Ativo;;-18.47;-51.08
+ECOVIAS DO CERRADO;P3 - ITUIUTABA;2020;BR-365;MG;765.37;Ituiutaba;Principal;Crescente/Decrescente;Ativo;;-18.96;-49.59
+ECOVIAS DO CERRADO;P1 - UBERLÂNDIA;2020;BR-365;MG;646.0;Uberlândia;Principal;Crescente/Decrescente;Ativo;;-18.88;-48.52
+ECOVIAS DO CERRADO;P2 - MONTE ALEGRE;2020;BR-365;MG;704.12;Monte Alegre de Minas;Principal;Crescente/Decrescente;Ativo;;-18.88;-49.04
+ECOVIAS DO CERRADO;P4 - SANTA VITÓRIA;2020;BR-365;MG;834.45;Santa Vitória;Principal;Crescente/Decrescente;Ativo;;-18.912533;-50.224138
+ECOVIAS MINAS GOIÁS;UBERABA;2017;BR-50;MG;104.98;Uberaba;Principal;Crescente/Decrescente;Ativo;;-19.18;-48.16
+ECOVIAS MINAS GOIÁS;ARAGUARI I;2017;BR-50;MG;13.94;Araguari;Principal;Crescente/Decrescente;Ativo;;-18.54;-48.05
+ECOVIAS MINAS GOIÁS;ARAGUARI II;2017;BR-50;MG;51.5;Araguari;Principal;Crescente/Decrescente;Ativo;;-18.75;-48.24
+ECOVIAS MINAS GOIÁS;CAMPO ALEGRE;2017;BR-50;GO;226.0;Campo Alegre de Goiás;Principal;Crescente/Decrescente;Ativo;;-17.77;-47.75
+ECOVIAS MINAS GOIÁS;IPAMERI;2017;BR-50;GO;144.0;Ipameri;Principal;Crescente/Decrescente;Ativo;;-17.12;-47.72
+ECOVIAS PONTE;NITEROÍ-1;2017;BR-101;RJ;322.23;Niterói;Principal;Decrescente;Ativo;;-22.877944;-43.115734
+ECOVIAS RIO MINAS;P04 Viúva Graça;2021;BR-116;RJ;211.674;Seropédica;Principal;Crescente/Decrescente;Ativo;;-22.716277;-43.716858
+ECOVIAS RIO MINAS;P05 Viúva Graça (B);2021;BR-116;RJ;213.103;Seropédica;Principal;Crescente/Decrescente;Ativo;;-22.715213;-43.730252
+ECOVIAS RIO MINAS;P14 Inhapim;2021;BR-116;MG;488.7;Inhapim;Principal;Crescente/Decrescente;Ativo;;-19.468055;-42.133888
+ECOVIAS RIO MINAS;P10 Laranjal;2021;BR-116;MG;724.02;Laranjal;Principal;Crescente/Decrescente;Ativo;;-21.278333;-42.412222
+ECOVIAS RIO MINAS;P09 Leopoldina;2021;BR-116;MG;784.32;Leopoldina;Principal;Crescente/Decrescente;Ativo;;-21.638611;-42.710277
+ECOVIAS RIO MINAS;P15 Engenheiro Caldas;2021;BR-116;MG;433.6;Engenheiro Caldas;Principal;Crescente/Decrescente;Ativo;;-19.027777;-41.989444
+ECOVIAS RIO MINAS;P11 São Francisco do Glória;2021;BR-116;MG;664.0;São Francisco do Glória;Principal;Crescente/Decrescente;Ativo;;-20.823611;-42.321111
+ECOVIAS RIO MINAS;P12 São João do Manhuaçu;2021;BR-116;MG;610.94;São João do Manhuaçu;Principal;Crescente/Decrescente;Ativo;;-20.430277;-42.163055
+ECOVIAS RIO MINAS;P13 Santa Bárbara do Leste;2021;BR-116;MG;551.88;Santa Bárbara do Leste;Principal;Crescente/Decrescente;Ativo;;-19.991666;-42.143611
+ECOVIAS RIO MINAS;P07 Magé;2021;BR-116;RJ;118.2;Magé;Principal;Crescente/Decrescente;Ativo;;-22.607222;-43.028611
+ECOVIAS RIO MINAS;P08 Guapimirim;2021;BR-493;RJ;13.86;Guapimirim;Principal;Crescente/Decrescente;Ativo;;-22.67;-42.98
+ECOVIAS RIO MINAS;P06 Itaguaí;2021;BR-493;RJ;112.7;Itaguaí;Principal;Crescente/Decrescente;Ativo;;-22.820833;-43.805
+ELOVIAS;P1;2020;BR-40;RJ;101.825;Duque de Caxias;Principal;Crescente/Decrescente;Ativo;;-22.610206;-43.285708
+ELOVIAS;P3;2020;BR-40;MG;819.379;Simão Pereira;Principal;Crescente/Decrescente;Ativo;;-21.928252;-43.316282
+ELOVIAS;P2;2020;BR-40;RJ;45.819;Petrópolis;Principal;Crescente/Decrescente;Ativo;;-22.284389;-43.120269
+EPR IGUAÇU;P01 FREEFLOW SANTA LUCIA - NORTE ;2019;BR-163;PR;154.0;Santa Lúcia;Principal;Crescente;Ativo;;-25.359202;-53.575788
+EPR IGUAÇU;P01 FREEFLOW SANTA LUCIA - SUL ;2019;BR-163;PR;156.1;Santa Lúcia;Principal;Decrescente;Ativo;;-25.345684;-53.586687
+EPR IGUAÇU;P07 SÃO MIQUEL DO IGUAÇU;2019;BR-277;PR;706.07;São Miguel do Iguaçu;Principal;Crescente/Decrescente;Ativo;;-25.426994;-54.364086
+EPR IGUAÇU;P02 PRUDENTROPOLIS;2019;BR-277;PR;308.29;Prudentópolis;Principal;Crescente/Decrescente;Ativo;;-25.309611;-51.168325
+EPR IGUAÇU;P9 FREEFLOW VITORINO ;2019;280;PR;234.3;Vitorino;Principal;Crescente/Decrescente;Ativo;;-26.204017;-52.845956
+EPR IGUAÇU;P8 FREEFLOW AMPERE  ;2019;182;PR;517.4;Ampére;Principal;Crescente/Decrescente;Ativo;;-25.988737;-53.382903
+EPR IGUAÇU;P03 CANDOI;2019;BR-277;PR;393.04;Candói;Principal;Crescente/Decrescente;Ativo;;-25.443731;-51.859064
+EPR IGUAÇU;P05 CASCAVEL;2019;BR-277;PR;571.34;Cascavel;Principal;Crescente/Decrescente;Ativo;;-25.021742;-53.278772
+EPR IGUAÇU;P06 CÉU AZUL;2019;BR-277;PR;615.34;Céu Azul;Principal;Crescente/Decrescente;Ativo;;-25.084119;-53.713553
+EPR IGUAÇU;P04 LARANJEIRAS DO SUL;2019;BR-277;PR;468.11;Laranjeiras do Sul;Principal;Crescente/Decrescente;Ativo;;-25.346486;-52.491192
+EPR PARANÁ;Free Flow Marialva - P06 Decrescente;2019;BR-376;PR;196.0;Marialva;Principal;Crescente/Decrescente;Ativo;;-23.509475;-51.722148
+EPR PARANÁ;Free Flow Marialva - P06;2019;BR-376;PR;196.0;Marialva;Principal;Crescente/Decrescente;Ativo;;-23.500056;-51.764972
+EPR PARANÁ;Free Flow Jataizinho - P08 Decrescente;2019;BR-369;PR;126.0;Jataizinho;Principal;Crescente/Decrescente;Ativo;;-23.283089;-50.9555
+EPR PARANÁ;Free Flow Jataizinho - P08;2019;BR-369;PR;126.0;Jataizinho;Principal;Crescente/Decrescente;Ativo;;-23.28058;-50.958563
+EPR PARANÁ;Validador 7012 Rolândia - P07;2019;444;PR;3.3;Arapongas;Principal;Crescente/Decrescente;Ativo;;-23.372791;-51.43724
+EPR PARANÁ;Free Flow Pres. Castelo Branco - P05 Decrescente;2019;BR-376;PR;145.8;Presidente Castelo Branco;Principal;Crescente/Decrescente;Ativo;;-23.310828;-52.109825
+EPR PARANÁ;Free Flow Pres. Castelo Branco - P05;2019;BR-376;PR;145.8;Presidente Castelo Branco;Principal;Crescente/Decrescente;Ativo;;-23.285167;-52.146114
+EPR PARANÁ;Validador 7011 Rolândia - P07 ;2019;BR-369;PR;180.2;Rolândia;Principal;Crescente/Decrescente;Ativo;;-23.358784;-51.39698
+EPR PARANÁ;Free Flow Rolândia - P07;2019;BR-369;PR;180.2;Rolândia;Principal;Crescente/Decrescente;Ativo;;-23.355625;-51.393128
+EPR PARANÁ;Free Flow Rolândia - P07  Decrescente;2019;BR-369;PR;180.2;Rolândia;Principal;Crescente/Decrescente;Ativo;;-23.3508;-51.387389
+EPR VIA MINEIRA;P2 - Lafaiete;2012;BR-40;MG;642.85;Conselheiro Lafaiete;Principal;Crescente/Decrescente;Ativo;;-20.76702;-43.80668
+EPR VIA MINEIRA;P1 - Itabirito;2012;BR-40;MG;577.2;Itabirito;Principal;Crescente/Decrescente;Ativo;;-20.27288;-43.95112
+EPR VIA MINEIRA;P3 - Barbacena;2012;BR-40;MG;714.1;Barbacena;Principal;Crescente/Decrescente;Ativo;;-21.26271;-43.66224
+LITORAL PIONEIRO;P01 SÃO JOSÉ DOS PINHAIS;2019;BR-277;PR;60.25;São José dos Pinhais;Principal;Crescente/Decrescente;Ativo;;-25.55;-49.04
+LITORAL PIONEIRO;P07 QUATIGUÁ;2019;092;PR;286.74;Siqueira Campos;Principal;Crescente/Decrescente;Ativo;;-24.643739;-49.840669
+LITORAL PIONEIRO;P02 SENGES;2019;151;PR;187.7;Sengés;Principal;Crescente/Decrescente;Ativo;;-24.123056;-49.543889
+LITORAL PIONEIRO;P05 CARAMBEÍ;2019;151;PR;304.25;Carambeí;Principal;Crescente/Decrescente;Ativo;;-24.912222;-50.086388
+LITORAL PIONEIRO;P03 JACAREZINHO;2019;BR-369;PR;1.4;Jacarezinho;Principal;Crescente/Decrescente;Ativo;;-23.003888;-49.909722
+LITORAL PIONEIRO;P08 JACAREZINHO AUX I;2019;Acesso para SP-278;PR;1.653;Jacarezinho;Principal;Crescente/Decrescente;Ativo;;-23.008611;-49.906388
+LITORAL PIONEIRO;P09 JACAREZINHO AUX II;2019;Saída para BR-153;PR;1.698;Jacarezinho;Principal;Crescente/Decrescente;Ativo;;-23.008333;-49.906388
+LITORAL PIONEIRO;P06 JAGUARIAÍVA;2019;151;PR;223.1;Jaguariaíva;Principal;Crescente/Decrescente;Ativo;;-24.319166;-49.778611
+MOTIVA MINAS SP;2 (Vargem);2007;BR-381;SP;7.3;Vargem;Principal;Crescente/Decrescente;Ativo;;-22.908685;-46.424877
+MOTIVA MINAS SP;3 (Cambuí);2007;BR-381;MG;900.9;Cambuí;Principal;Crescente/Decrescente;Ativo;;-22.628487;-46.07789
+MOTIVA MINAS SP;5 (Carmo da Cachoeira);2007;BR-381;MG;735.5;Carmo da Cachoeira;Principal;Crescente/Decrescente;Ativo;;-21.5457;-45.240203
+MOTIVA MINAS SP;7 (Carmópolis de Minas);2007;BR-381;MG;597.7;Carmópolis de Minas;Principal;Crescente/Decrescente;Ativo;;-20.591486;-44.701506
+MOTIVA MINAS SP;8 (Itatiaiuçu);2007;BR-381;MG;545.9;Itatiaiuçu;Principal;Crescente/Decrescente;Ativo;;-20.268346;-44.423711
+MOTIVA MINAS SP;4 (São Gonçalo);2007;BR-381;MG;805.2;São Gonçalo do Sapucaí;Principal;Crescente/Decrescente;Ativo;;-21.970441;-45.631188
+MOTIVA MINAS SP;6 (Santo Antônio do Amparo);2007;BR-381;MG;658.3;Santo Antônio do Amparo;Principal;Crescente/Decrescente;Ativo;;-21.000367;-44.966967
+MOTIVA MINAS SP;1 Norte - Defasada (Mairiporã);2007;BR-381;SP;67.8;Mairiporã;Principal;Decrescente;Ativo;;-23.34121;-46.573664
+MOTIVA MINAS SP;1 Norte (Mairiporã);2007;BR-381;SP;65.7;Mairiporã;Principal;Decrescente;Ativo;;-23.322298;-46.581097
+MOTIVA MINAS SP;1 Sul (Mairiporã);2007;BR-381;SP;66.6;Mairiporã;Principal;Crescente;Ativo;;-23.330558;-46.578337
+MOTIVA PARANÁ;FREE FLOW P2 MAUÁ DA SERRA;2023;BR-376;PR;294.8;Mauá da Serra;Principal;Crescente/Decrescente;Ativo;;-23.905773;-51.199273
+MOTIVA PARANÁ;FREE FLOW P7 LONDRINA;2023;445;PR;2.47;Mauá da Serra;Principal;Crescente/Decrescente;Ativo;;-23.889283;-51.183664
+MOTIVA PARANÁ;P03 ORTIGUEIRA;2023;BR-376;PR;316.35;Ortigueira;Principal;Crescente/Decrescente;Ativo;;-24.034399;-51.089008
+MOTIVA PARANÁ;P04 IMBAÚ;2023;BR-376;PR;370.95;Ortigueira;Principal;Crescente/Decrescente;Ativo;;-24.382178;-50.790301
+MOTIVA PARANÁ;P06 WITMARSUM;2023;BR-376;PR;529.85;Palmeira;Principal;Crescente/Decrescente;Ativo;;-25.346974;-49.843065
+MOTIVA PARANÁ;P01 SERTANEJA;2023;323;PR;2.97;Sertaneja;Principal;Crescente/Decrescente;Ativo;;-22.915601;-50.817212
+MOTIVA PARANÁ;P05 TIBAGI;2023;BR-376;PR;448.55;Tibagi;Principal;Crescente/Decrescente;Ativo;;-24.923695;-50.409044
+NOVA 364;Free Flow Itapuã - P02;2021;BR-364;RO;562.3;Alto Paraíso;Principal;Crescente/Decrescente;Ativo;;-9.5397;-63.0767
+NOVA 364;Free Flow Pres. Médici - P05;2021;BR-364;RO;272.4;Cacoal;Principal;Crescente/Decrescente;Ativo;;-11.384193;-61.73566
+NOVA 364;Free Flow Candeias - P01;2021;BR-364;RO;686.9;Candeias do Jamari;Principal;Crescente/Decrescente;Ativo;;-8.792398;-63.650532
+NOVA 364;Free Flow Ouro Preto  - P04;2021;BR-364;RO;399.3;Ouro Preto do Oeste;Principal;Crescente/Decrescente;Ativo;;-10.6081;-62.3395
+NOVA 364;Free Flow Pimenta Bueno1 - P06;2021;BR-364;RO;221.3;Pimenta Bueno;Principal;Crescente/Decrescente;Ativo;;-11.527534;-61.333997
+NOVA 364;Free Flow Pimenta Bueno2 - P07;2021;BR-364;RO;122.2;Pimenta Bueno;Principal;Crescente/Decrescente;Ativo;;-12.110803;-60.746925
+NOVA 364;Free Flow Jarú -  P03 ;2021;BR-364;RO;452.3;Theobroma;Principal;Crescente/Decrescente;Ativo;;-10.287172;-62.670764
+NOVA 381;Free Flow Belo Oriente - P04;2022;BR-381;MG;227.5;Belo Oriente;Principal;Crescente/Decrescente;Ativo;;-19.348242;-42.433175
+NOVA 381;Free Flow Caeté - P01;2022;BR-381;MG;411.85;Caeté;Principal;Crescente/Decrescente;Ativo;;-19.743897;-43.615283
+NOVA 381;Free Flow Jaguaraçú - P03;2022;BR-381;MG;280.15;Jaguaraçu;Principal;Crescente/Decrescente;Ativo;;-19.609967;-42.766233
+NOVA 381;Free Flow João Monlevade - P02;2022;BR-381;MG;342.27;João Monlevade;Principal;Crescente/Decrescente;Ativo;;-19.853947;-43.132689
+NOVA 381;Free Flow Governador Valadares - P05;2022;BR-381;MG;176.55;Governador Valadares;Principal;Crescente/Decrescente;Ativo;;-19.028744;-42.147708
+NOVA ROTA DO OESTE;P3 ;2016;BR-364;MT;316.55;Campo Verde;Principal;Crescente/Decrescente;Ativo;;-15.81;-55.31
+NOVA ROTA DO OESTE;P1;2016;BR-163;MT;33.6;Itiquira;Principal;Crescente/Decrescente;Ativo;;-17.219391;-54.758685
+NOVA ROTA DO OESTE;P5;2016;BR-364;MT;479.1;Jangada;Principal;Crescente/Decrescente;Ativo;;-15.349875;-56.415628
+NOVA ROTA DO OESTE;P8;2016;BR-163;MT;664.45;Lucas do Rio Verde;Principal;Crescente/Decrescente;Ativo;;-13.26599;-56.022777
+NOVA ROTA DO OESTE;P6;2016;BR-364;MT;579.1;Nobres;Principal;Crescente/Decrescente;Ativo;;-14.599728;-56.240858
+NOVA ROTA DO OESTE;P7;2016;BR-163;MT;586.9;Nova Mutum;Principal;Crescente/Decrescente;Ativo;;-13.91952;-56.093419
+NOVA ROTA DO OESTE;P2;2016;BR-364;MT;214.4;Rondonópolis;Principal;Crescente/Decrescente;Ativo;;-16.393565;-54.714281
+NOVA ROTA DO OESTE;P4;2016;BR-364;MT;383.1;Santo Antônio de Leverger;Principal;Crescente/Decrescente;Ativo;;-15.702041;-55.829527
+NOVA ROTA DO OESTE;P9;2016;BR-163;MT;766.7;Sorriso;Principal;Crescente/Decrescente;Ativo;;-12.441635;-55.653798
+PANTANAL;P3-Caarapó;2014;BR-163;MS;228.2;Caarapó;Principal;Crescente/Decrescente;Ativo;;-22.476042;-54.860799
+PANTANAL;P5-Campo Grande;2014;BR-163;MS;431.8;Campo Grande;Principal;Crescente/Decrescente;Ativo;;-20.882783;-54.504644
+PANTANAL;P2-Itaquirai;2014;BR-163;MS;113.0;Itaquiraí;Principal;Crescente/Decrescente;Ativo;;-23.167432;-54.19897
+PANTANAL;P6-Jaraguari;2014;BR-163;MS;533.8;Jaraguari;Principal;Crescente/Decrescente;Ativo;;-20.04;-54.41
+PANTANAL;P1-Mundo Novo;2014;BR-163;MS;28.2;Mundo Novo;Principal;Crescente/Decrescente;Ativo;;-23.865169;-54.329788
+PANTANAL;P4-Rio Brilhante;2014;BR-163;MS;313.5;Rio Brilhante;Principal;Crescente/Decrescente;Ativo;;-21.865146;-54.528504
+PANTANAL;P8-Rio Verde;2014;BR-163;MS;704.3;Rio Verde de Mato Grosso;Principal;Crescente/Decrescente;Ativo;;-18.722782;-54.814951
+PANTANAL;P7-São Gabriel;2014;BR-163;MS;605.0;São Gabriel do Oeste;Principal;Crescente/Decrescente;Ativo;;-19.473376;-54.496991
+PANTANAL;P9-Sonora;2014;BR-163;MS;819.2;Sonora;Principal;Crescente/Decrescente;Ativo;;-17.766671;-54.750815
+RIOSP;Moreira César Norte;2000;BR-116;SP;87.0;Pindamonhangaba;Principal;Decrescente;Ativo;;-22.93;-45.36
+RIOSP;Moreira César Sul;2000;BR-116;SP;87.0;Pindamonhangaba;Principal;Crescente;Ativo;;-22.93;-45.36
+RIOSP;Guararema Norte;2000;BR-116;SP;182.4;Santa Isabel;Principal;Decrescente;Ativo;;-23.35;-46.16
+RIOSP;Free Flow Itaguaí;2000;BR-101;RJ;414.9;Itaguaí;Principal;Crescente/Decrescente;Ativo;;-22.91;-43.89
+RIOSP;Itatiaia Norte;2000;BR-116;RJ;324.8;Itatiaia;Principal;Decrescente;Ativo;;-22.49;-44.57
+RIOSP;Itatiaia Sul;2000;BR-116;RJ;324.8;Itatiaia;Principal;Crescente;Ativo;;-22.49;-44.57
+RIOSP;Free Flow Mangaratiba;2000;BR-101;RJ;447.3;Mangaratiba;Principal;Crescente/Decrescente;Ativo;;-23.00632;-44.099135
+RIOSP;Arujá Rodoanel;2000;BR-116;SP;204.8;Arujá;Principal;Decrescente;Ativo;;-23.42;-46.37
+RIOSP;Arujá Norte;2000;BR-116;SP;204.3;Arujá;Principal;Decrescente;Ativo;;-23.41;-46.36
+RIOSP;Arujá Sul;2000;BR-116;SP;204.3;Arujá;Principal;Crescente;Ativo;;-23.41;-46.36
+RIOSP;Free Flow Paraty;2000;BR-101;RJ;538.5;Paraty;Principal;Crescente/Decrescente;Ativo;;-23.05;-44.58
+RIOSP;Viúva Graça Norte;2000;BR-116;RJ;207.1;Seropédica;Principal;Decrescente;Ativo;;-22.716155;-43.716697
+RIOSP;Viuvinha Norte;2000;BR-116;RJ;208.6;Seropédica;Principal;Decrescente;Ativo;;-22.715133;-43.730239
+RIOSP;Free Flow PFE004 - PFS003 Sul;2000;BR-116;SP;227.0;São Paulo;Principal;Crescente;Ativo;;-23.497507;-46.560039
+RIOSP;Free Flow PFE004 - PFS004 Sul;2000;BR-116;SP;227.0;São Paulo;Principal;Crescente;Ativo;;-23.497507;-46.560039
+RIOSP;Free Flow PFE004 - PFS005 Sul;2000;BR-116;SP;227.0;São Paulo;Principal;Crescente;Ativo;;-23.497507;-46.560039
+RIOSP;Free Flow PFE005 - BAIRRO Norte;2000;BR-116;SP;231.3;São Paulo;Principal;Decrescente;Ativo;;-23.526095;-46.588329
+RIOSP;Free Flow PFE005 - PEDARD Norte;2000;BR-116;SP;231.3;São Paulo;Principal;Decrescente;Ativo;;-23.526095;-46.588329
+RIOSP;Free Flow PFE005 - PEDARU Norte;2000;BR-116;SP;231.3;São Paulo;Principal;Decrescente;Ativo;;-23.526095;-46.588329
+RIOSP;Free Flow PFE005 - PFS006 Norte;2000;BR-116;SP;231.3;São Paulo;Principal;Decrescente;Ativo;;-23.526095;-46.588329
+RIOSP;Free Flow PFE005 - PFS007 Norte;2000;BR-116;SP;231.3;São Paulo;Principal;Decrescente;Ativo;;-23.526095;-46.588329
+RIOSP;Free Flow PFE005 - PFS008 Norte;2000;BR-116;SP;231.3;São Paulo;Principal;Decrescente;Ativo;;-23.526095;-46.588329
+RIOSP;Free Flow PFE005 - PFS009 Norte;2000;BR-116;SP;231.3;São Paulo;Principal;Decrescente;Ativo;;-23.526095;-46.588329
+RIOSP;Free Flow PFE005 - PFS010 Norte;2000;BR-116;SP;231.3;São Paulo;Principal;Decrescente;Ativo;;-23.526095;-46.588329
+RIOSP;Free Flow PFE006 - BAIRRO Norte;2000;BR-116;SP;228.85;São Paulo;Principal;Decrescente;Ativo;;-23.50926;-46.572718
+RIOSP;Free Flow PFE006 - PEDARD Norte;2000;BR-116;SP;228.85;São Paulo;Principal;Decrescente;Ativo;;-23.50926;-46.572718
+RIOSP;Free Flow PFE006 - PEDARU Norte;2000;BR-116;SP;228.85;São Paulo;Principal;Decrescente;Ativo;;-23.50926;-46.572718
+RIOSP;Free Flow PFE006 - PFS006 Norte;2000;BR-116;SP;228.85;São Paulo;Principal;Decrescente;Ativo;;-23.50926;-46.572718
+RIOSP;Free Flow PFE006 - PFS007 Norte;2000;BR-116;SP;228.85;São Paulo;Principal;Decrescente;Ativo;;-23.50926;-46.572718
+RIOSP;Free Flow PFE006 - PFS008 Norte;2000;BR-116;SP;228.85;São Paulo;Principal;Decrescente;Ativo;;-23.50926;-46.572718
+RIOSP;Free Flow PFE006 - PFS009 Norte;2000;BR-116;SP;228.85;São Paulo;Principal;Decrescente;Ativo;;-23.50926;-46.572718
+RIOSP;Free Flow PFE006 - PFS010 Norte;2000;BR-116;SP;228.85;São Paulo;Principal;Decrescente;Ativo;;-23.50926;-46.572718
+RIOSP;Guararema Sul;2000;BR-116;SP;180.7;Guararema;Principal;Crescente;Ativo;;-23.34;-46.15
+RIOSP;Free Flow PPF001 Sul - PFS001 Sul;2000;BR-116;SP;206.0;Guarulhos;Principal;Crescente;Ativo;;-23.417379;-46.37647
+RIOSP;Free Flow PPF001 Sul - PFS002 Sul;2000;BR-116;SP;206.0;Guarulhos;Principal;Crescente;Ativo;;-23.417379;-46.37647
+RIOSP;Free Flow PPF001 Sul - PFS003 Sul;2000;BR-116;SP;206.0;Guarulhos;Principal;Crescente;Ativo;;-23.417379;-46.37647
+RIOSP;Free Flow PPF001 Sul - PFS004 Sul;2000;BR-116;SP;206.0;Guarulhos;Principal;Crescente;Ativo;;-23.417379;-46.37647
+RIOSP;Free Flow PPF001 Sul - PFS005 Sul;2000;BR-116;SP;206.0;Guarulhos;Principal;Crescente;Ativo;;-23.417379;-46.37647
+RIOSP;Free Flow PFE001 - PFS001 Sul;2000;BR-116;SP;211.7;Guarulhos;Principal;Crescente;Ativo;;-23.43512;-46.426737
+RIOSP;Free Flow PFE001 - PFS002 Sul;2000;BR-116;SP;211.7;Guarulhos;Principal;Crescente;Ativo;;-23.43512;-46.426737
+RIOSP;Free Flow PFE001 - PFS003 Sul;2000;BR-116;SP;211.7;Guarulhos;Principal;Crescente;Ativo;;-23.43512;-46.426737
+RIOSP;Free Flow PFE001 - PFS004 Sul;2000;BR-116;SP;211.7;Guarulhos;Principal;Crescente;Ativo;;-23.43512;-46.426737
+RIOSP;Free Flow PFE001 - PFS005 Sul;2000;BR-116;SP;211.7;Guarulhos;Principal;Crescente;Ativo;;-23.43512;-46.426737
+RIOSP;Free Flow PFE002 - PFS002 Sul;2000;BR-116;SP;219.0;Guarulhos;Principal;Crescente;Ativo;;-23.463679;-46.495578
+RIOSP;Free Flow PFE002 - PFS003 Sul;2000;BR-116;SP;219.0;Guarulhos;Principal;Crescente;Ativo;;-23.463679;-46.495578
+RIOSP;Free Flow PFE002 - PFS004 Sul;2000;BR-116;SP;219.0;Guarulhos;Principal;Crescente;Ativo;;-23.463679;-46.495578
+RIOSP;Free Flow PFE002 - PFS005 Sul;2000;BR-116;SP;219.0;Guarulhos;Principal;Crescente;Ativo;;-23.463679;-46.495578
+RIOSP;Free Flow PFE003 - PFS002 Sul;2000;BR-116;SP;224.4;Guarulhos;Principal;Crescente;Ativo;;-23.484416;-46.539191
+RIOSP;Free Flow PFE003 - PFS003 Sul;2000;BR-116;SP;224.4;Guarulhos;Principal;Crescente;Ativo;;-23.484416;-46.539191
+RIOSP;Free Flow PFE003 - PFS004 Sul;2000;BR-116;SP;224.4;Guarulhos;Principal;Crescente;Ativo;;-23.484416;-46.539191
+RIOSP;Free Flow PFE003 - PFS005 Sul;2000;BR-116;SP;224.4;Guarulhos;Principal;Crescente;Ativo;;-23.484416;-46.539191
+RIOSP;Free Flow PFE007 - BAIRRO Norte;2000;BR-116;SP;223.35;Guarulhos;Principal;Decrescente;Ativo;;-23.479177;-46.530417
+RIOSP;Free Flow PFE007 - PEDARD Norte;2000;BR-116;SP;223.35;Guarulhos;Principal;Decrescente;Ativo;;-23.479177;-46.530417
+RIOSP;Free Flow PFE007 - PEDARU Norte;2000;BR-116;SP;223.35;Guarulhos;Principal;Decrescente;Ativo;;-23.479177;-46.530417
+RIOSP;Free Flow PFE007 - PFS008 Norte;2000;BR-116;SP;223.35;Guarulhos;Principal;Decrescente;Ativo;;-23.479177;-46.530417
+RIOSP;Free Flow PFE007 - PFS009 Norte;2000;BR-116;SP;223.35;Guarulhos;Principal;Decrescente;Ativo;;-23.479177;-46.530417
+RIOSP;Free Flow PFE007 - PFS010 Norte;2000;BR-116;SP;223.35;Guarulhos;Principal;Decrescente;Ativo;;-23.479177;-46.530417
+RIOSP;Free Flow PFE008 - BAIRRO Norte;2000;BR-116;SP;214.1;Guarulhos;Principal;Decrescente;Ativo;;-23.44491;-46.449184
+RIOSP;Free Flow PFE008 - PEDARD Norte;2000;BR-116;SP;214.1;Guarulhos;Principal;Decrescente;Ativo;;-23.44491;-46.449184
+RIOSP;Free Flow PFE008 - PEDARU Norte;2000;BR-116;SP;214.1;Guarulhos;Principal;Decrescente;Ativo;;-23.44491;-46.449184
+RIOSP;Free Flow PFE008 - PFS010 Norte;2000;BR-116;SP;214.1;Guarulhos;Principal;Decrescente;Ativo;;-23.44491;-46.449184
+RIOSP;Free Flow PFE009 - BAIRRO Norte;2000;BR-116;SP;210.2;Guarulhos;Principal;Decrescente;Ativo;;-23.429571;-46.412718
+RIOSP;Free Flow PFE009 - PEDARD Norte;2000;BR-116;SP;210.2;Guarulhos;Principal;Decrescente;Ativo;;-23.429571;-46.412718
+RIOSP;Free Flow PFE009 - PEDARU Norte;2000;BR-116;SP;210.2;Guarulhos;Principal;Decrescente;Ativo;;-23.429571;-46.412718
+RIOSP;Free Flow PFE009 - PFS010 Norte;2000;BR-116;SP;210.2;Guarulhos;Principal;Decrescente;Ativo;;-23.429571;-46.412718
+RIOSP;Jacareí Norte;2000;BR-116;SP;165.1;Jacareí;Principal;Decrescente;Ativo;;-23.3;-46.01
+RIOSP;Jacareí Sul;2000;BR-116;SP;165.1;Jacareí;Principal;Crescente;Ativo;;-23.3;-46.01
+RODOVIA DO AÇO;SAPUCAIA;2016;BR-393;RJ;125.7;Sapucaia;Principal;Crescente/Decrescente;Ativo;;-21.962326;-42.861675
+RODOVIA DO AÇO;PARAÍBA DO SUL;2016;BR-393;RJ;195.2;Paraíba do Sul;Principal;Crescente/Decrescente;Ativo;;-22.208911;-43.382139
+RODOVIA DO AÇO;BARRA DA PIRAI;2016;BR-393;RJ;265.2;Barra do Piraí;Principal;Crescente/Decrescente;Ativo;;-22.485435;-43.919084
+ROTA VERDE GOIÁS;Free Flow Bom Jesus de Goiás - P06;2025;BR-452;GO;99.85;Bom Jesus de Goiás;Principal;Crescente/Decrescente;Ativo;;-18.114585;-50.039087
+ROTA VERDE GOIÁS;Free Flow Bom Jesus de Goiás - P07;2025;BR-452;GO;147.59;Bom Jesus de Goiás;Principal;Crescente/Decrescente;Ativo;;-18.276646;-49.631116
+ROTA VERDE GOIÁS;Free Flow Abadia de Goiás - P01A;2025;BR-60;GO;172.0;Abadia de Goiás;Principal;Decrescente;Ativo;;-16.747265;-49.422998
+ROTA VERDE GOIÁS;Free Flow Abadia de Goiás - P01B;2025;BR-60;GO;182.595;Abadia de Goiás;Principal;Crescente;Ativo;;-16.792644;-49.505717
+ROTA VERDE GOIÁS;Free Flow Acreuna - P04A;2025;BR-60;GO;326.0;Acreúna;Principal;Decrescente;Ativo;;-17.542722;-50.508903
+ROTA VERDE GOIÁS;Free Flow Acreuna - P04B;2025;BR-60;GO;325.89;Acreúna;Principal;Crescente;Ativo;;-17.5426;-50.5082
+ROTA VERDE GOIÁS;Free Flow Indiara - P02A;2025;BR-60;GO;233.75;Indiara;Principal;Decrescente;Ativo;;-17.082876;-49.837071
+ROTA VERDE GOIÁS;Free Flow Indiara - P02B;2025;BR-60;GO;233.85;Indiara;Principal;Crescente;Ativo;;-17.082695;-49.837551
+ROTA VERDE GOIÁS;Free Flow Jandaia - P03A;2025;BR-60;GO;281.6;Jandaia;Principal;Decrescente;Ativo;;-17.263997;-50.229512
+ROTA VERDE GOIÁS;Free Flow Jandaia - P03B;2025;BR-60;GO;281.7;Jandaia;Principal;Crescente;Ativo;;-17.263889;-50.229722
+ROTA VERDE GOIÁS;Free Flow Santa Helena de Goiás - P05;2025;BR-452;GO;44.9;Santa Helena de Goiás;Principal;Crescente/Decrescente;Ativo;;-17.944974;-50.517476
+TRANSBRASILIANA;P 01;2015;BR-153;SP;35.8;Onda Verde;Principal;Crescente/Decrescente;Ativo;;-20.588611;-49.318055
+TRANSBRASILIANA;P 04;2015;BR-153;SP;268.1;Vera Cruz;Principal;Crescente/Decrescente;Ativo;;-22.336311;-49.898833
+TRANSBRASILIANA;P 03;2015;BR-153;SP;183.8;Lins;Principal;Crescente/Decrescente;Ativo;;-21.710555;-49.808611
+TRANSBRASILIANA;P 02;2015;BR-153;SP;98.9;José Bonifácio;Principal;Crescente/Decrescente;Ativo;;-20.9975;-49.628333
+VIA ARAUCÁRIA;P01 São Luiz do Purunã;2019;BR-277;PR;140.0;Balsa Nova;Principal;Crescente/Decrescente;Ativo;;-25.47;-49.66
+VIA ARAUCÁRIA;P02 Porto Amazonas;2019;BR-277;PR;165.7;Porto Amazonas;Principal;Crescente/Decrescente;Ativo;;-25.47;-49.9
+VIA ARAUCÁRIA;P05 Lapa;2019;BR-476;PR;191.42;Lapa;Principal;Crescente/Decrescente;Ativo;;-25.725664;-49.699992
+VIA ARAUCÁRIA;P04 Imbituva;2019;BR-373;PR;216.0;Imbituva;Principal;Crescente/Decrescente;Ativo;;-25.16;-50.54
+VIA ARAUCÁRIA;P03 Irati;2019;BR-277;PR;256.1;Irati;Principal;Crescente/Decrescente;Ativo;;-25.44;-50.72
+VIA BRASIL;P1 - Claúdia;2021;BR-163;MT;897.0;Cláudia;Principal;Crescente/Decrescente;Ativo;;-11.339218;-55.331222
+VIA BRASIL;P2 - Guarantã do Norte;2021;BR-163;MT;1089.45;Terra Nova do Norte;Principal;Crescente/Decrescente;Ativo;;-9.756473;-54.89443
+VIA BRASIL;P3 - Trairão;2021;BR-163;PA;636.015;Trairão;Principal;Crescente/Decrescente;Ativo;;-4.620594;-55.951381
+VIA CAMPO;P02 - Mamborê;2025;BR-369;PR;363.0;Campo Mourão;Principal;Crescente/Decrescente;Ativo;;-24.197723;-52.501062
+VIA CAMPO;P03 - Corbélia;2025;BR-369;PR;479.0;Corbélia;Principal;Crescente/Decrescente;Ativo;;-24.743943;-53.268683
+VIA CAMPO;P01 - Floresta;2025;317;PR;129.6;Floresta;Principal;Crescente/Decrescente;Ativo;;-23.636463;-52.10762
+VIA COSTEIRA;P1-Laguna;2020;BR-101;SC;298.66;Laguna;Principal;Crescente/Decrescente;Ativo;;-28.350722;-48.739429
+VIA COSTEIRA;P3-Araranguá;2020;BR-101;SC;404.55;Maracajá;Principal;Crescente/Decrescente;Ativo;;-28.89774;-49.473136
+VIA COSTEIRA;P4-São João do Sul;2020;BR-101;SC;457.53;São João do Sul;Principal;Crescente/Decrescente;Ativo;;-29.243667;-49.754475
+VIA COSTEIRA;P2-Tubarão;2020;BR-101;SC;344.7;Tubarão;Principal;Crescente/Decrescente;Ativo;;-28.554278;-49.054214
+VIA CRISTAIS;P7 - Capim Branco;2010;BR-40;MG;487.341;Capim Branco;Principal;Crescente/Decrescente;Ativo;;-19.60121;-44.22196
+VIA CRISTAIS;P6 - Curvelo;2010;BR-40;MG;405.353;Curvelo;Principal;Crescente/Decrescente;Ativo;;-19.0793;-44.65495
+VIA CRISTAIS;P5 - Felixlândia;2010;BR-40;MG;328.705;Felixlândia;Principal;Crescente/Decrescente;Ativo;;-18.5654;-45.02116
+VIA CRISTAIS;P3 - João Pinheiro;2010;BR-40;MG;172.985;João Pinheiro;Principal;Crescente/Decrescente;Ativo;;-17.94577;-46.03425
+VIA CRISTAIS;P2 - Lagoa Grande;2010;BR-40;MG;91.295;Lagoa Grande;Principal;Crescente/Decrescente;Ativo;;-17.50598;-46.56465
+VIA CRISTAIS;P1 - Paracatu;2010;BR-40;MG;17.65;Paracatu;Principal;Crescente/Decrescente;Ativo;;-17.09831;-47.02624
+VIA CRISTAIS;P4 - São Gonçalo do Abaeté;2010;BR-40;MG;254.1;São Gonçalo do Abaeté;Principal;Crescente/Decrescente;Ativo;;-18.13265;-45.40817
+VIA SUL;P2-Santo Antônio da Patrulha;2017;BR-290;RS;19.4;Santo Antônio da Patrulha;Principal;Crescente/Decrescente;Ativo;;-29.885897;-50.448964
+VIA SUL;P1-Três Cachoeiras;2019;BR-101;RS;35.2;Três Cachoeiras;Principal;Crescente/Decrescente;Ativo;;-29.520461;-49.996581
+VIA SUL;P7-Victor Graeff;2019;BR-386;RS;204.4;Victor Graeff;Principal;Crescente/Decrescente;Ativo;;-28.502039;-52.644709
+VIA SUL;P6-Fontoura Xavier;2019;BR-386;RS;262.7;Fontoura Xavier;Principal;Crescente/Decrescente;Ativo;;-28.905316;-52.396797
+VIA SUL;P3-Gravatai;2019;BR-290;RS;60.0;Gravataí;Principal;Crescente/Decrescente;Ativo;;-29.925023;-50.859104
+VIA SUL;P4-Montenegro;2019;BR-386;RS;426.0;Montenegro;Principal;Crescente/Decrescente;Ativo;;-29.81976;-51.360405
+VIA SUL;P5-Paverama;2019;BR-386;RS;375.8;Paverama;Principal;Crescente/Decrescente;Ativo;;-29.626833;-51.775773
+WAY 153;Praça 01 - Piracanjuba;2025;BR-153;GO;553.265;Professor Jamil;Principal;Crescente/Decrescente;Ativo;;-17.16337;-49.21284
+WAY 153;Praça 02 - Itumbiara;2025;BR-153;GO;685.39;Itumbiara;Principal;Crescente/Decrescente;Ativo;;-18.26855;-49.24592
+WAY 153;Praça 03 - Prata;2025;BR-153;MG;128.49;Prata;Principal;Crescente/Decrescente;Ativo;;-19.47152;-48.87108
+WAY 153;Praça 04 - Fronteira;2025;BR-153;MG;225.83;Fronteira;Principal;Crescente/Decrescente;Ativo;;-20.14244;-49.111056
+WAY 153;Praça 05 - Campo Florido;2025;BR-262;MG;853.19;Conceição das Alagoas;Principal;Crescente/Decrescente;Ativo;;-19.77688;-48.45822
+WAY 262;Praça 04 - Campos Altos;2023;BR-262;MG;591.8;Campos Altos;Principal;Crescente/Decrescente;Ativo;;-19.647218;-46.240041
+WAY 262;Praça 05 - Ibiá - Free Flow;2023;BR-262;MG;665.1;Ibiá;Principal;Crescente/Decrescente;Ativo;;-19.55027;-46.850368
+WAY 262;Praça 01 - Florestal;2023;BR-262;MG;384.78;Florestal;Principal;Crescente/Decrescente;Ativo;;-19.909936;-44.506876
+WAY 262;Praça 03 - Luz;2023;BR-262;MG;505.4;Luz;Principal;Crescente/Decrescente;Ativo;;-19.788222;-45.584607
+WAY 262;Praça 06 - Perdizes;2023;BR-262;MG;721.63;Perdizes;Principal;Crescente/Decrescente;Ativo;;-19.617598;-47.34653
+WAY 262;Praça 02 - Nova Serrana - Free Flow;2023;BR-262;MG;452.95;Nova Serrana;Principal;Crescente/Decrescente;Ativo;;-19.812626;-45.103461

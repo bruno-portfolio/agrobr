@@ -16,14 +16,20 @@ from tests import helpers
 from tests.helpers import sem_excecao
 
 GOLDEN = Path(__file__).resolve().parents[2] / "golden_data"
-R4 = GOLDEN / "reconciliacao_custos_conab_20260918"
-ARROZ = GOLDEN / "conab" / "custos_c17_20260925"
+RECONCILIACAO_CUSTOS = GOLDEN / "reconciliacao_custos_conab_20260918"
+ARROZ = GOLDEN / "conab" / "custos_arroz_subtotais_20260925"
 SERIES = {
-    "cafe_arabica": ("seriehistoricacustoscafearabica2003a2025.xls", R4 / "feb4999ec69b7274.xls"),
-    "cafe_conilon": ("seriehistoricacustoscafeconilon2007a2025.xls", R4 / "aceab784e7d4a6f2.xls"),
+    "cafe_arabica": (
+        "seriehistoricacustoscafearabica2003a2025.xls",
+        RECONCILIACAO_CUSTOS / "feb4999ec69b7274.xls",
+    ),
+    "cafe_conilon": (
+        "seriehistoricacustoscafeconilon2007a2025.xls",
+        RECONCILIACAO_CUSTOS / "aceab784e7d4a6f2.xls",
+    ),
     "algodao": (
         "serie-historica-custos-algodao-em-pluma-1998-a-2026.xlsx",
-        R4 / "a6cdcd1877333e68.xlsx",
+        RECONCILIACAO_CUSTOS / "a6cdcd1877333e68.xlsx",
     ),
     "soja": (
         "serie-historica-custos-soja-1997-a-2025.xls",
@@ -90,7 +96,7 @@ def _linha(celulas: list[tuple[int, str, float | None]], inicio: str) -> tuple[i
 
 
 async def _publicado(monkeypatch, cultura: str, aba: str):
-    helpers.install_reconciliacao_r4_http(monkeypatch)
+    helpers.install_reconciliacao_custos_http(monkeypatch)
     warn_once_reset()
     with warnings.catch_warnings(record=True) as capturados:
         warnings.simplefilter("always")
@@ -299,7 +305,7 @@ async def test_categoria_sai_da_secao_publicada(monkeypatch):
 
 
 def test_subtotal_sem_valor_por_hectare_fica_fora_da_conferencia():
-    folha, contexto = helpers.load_r4_cost_sheet(
+    folha, contexto = helpers.load_custo_sheet(
         "feb4999ec69b7274.xls", "cafe_arabica", "L.Eduardo-BA-2005"
     )
     celulas = _celulas(SERIES["cafe_arabica"][1], "L.Eduardo-BA-2005")

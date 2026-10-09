@@ -23,8 +23,6 @@ def _reset_rate_limiter():
 
 
 class TestRateLimiter:
-    """Testes para RateLimiter."""
-
     @pytest.mark.asyncio
     @pytest.mark.parametrize("elapsed", [0.0, 0.25, 1.0, 1.5])
     async def test_acquire_enforces_delay_between_requests(self, monkeypatch, elapsed):

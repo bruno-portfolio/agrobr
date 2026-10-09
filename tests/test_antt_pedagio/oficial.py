@@ -12,7 +12,7 @@ from pathlib import Path
 
 import pandas as pd
 
-GOLDEN = Path(__file__).resolve().parents[1] / "golden_data/antt_pedagio/veracidade20260922"
+GOLDEN = Path(__file__).resolve().parents[1] / "golden_data/antt_pedagio/oficial_20260922"
 COUNT = re.compile(r"[+]?[0-9]+(?:[,.]0+)?")
 
 

@@ -1,0 +1,45 @@
+concessionaria;mes_ano;sentido;praca;tipo_cobranca;categoria;tipo_de_veiculo;volume_total
+"CONCER";"01/11/2023";"CRESCENTE";"P1";"N/I";"Categoria 1";"Passeio";269173,00
+"CONCER";"01/11/2023";"CRESCENTE";"P1";"N/I";"Categoria 2";"Comercial";22458,00
+"CONCER";"01/11/2023";"CRESCENTE";"P1";"N/I";"Categoria 3";"Passeio";694,00
+"CONCER";"01/11/2023";"CRESCENTE";"P1";"N/I";"Categoria 4";"Comercial";10402,00
+"CONCER";"01/11/2023";"CRESCENTE";"P1";"N/I";"Categoria 5";"Passeio";104,00
+"CONCER";"01/11/2023";"CRESCENTE";"P1";"N/I";"Categoria 6";"Comercial";8242,00
+"CONCER";"01/11/2023";"CRESCENTE";"P1";"N/I";"Categoria 7";"Comercial";4341,00
+"CONCER";"01/11/2023";"CRESCENTE";"P1";"N/I";"Categoria 8";"Comercial";7334,00
+"CONCER";"01/11/2023";"CRESCENTE";"P1";"N/I";"Categoria 9";"Moto";5431,00
+"CONCER";"01/11/2023";"CRESCENTE";"P1";"N/I";"Outros";"Comercial";2828,00
+"CONCER";"02/12/2023";"CRESCENTE";"P1";"N/I";"Categoria 1";"Passeio";311592,00
+"CONCER";"02/12/2023";"CRESCENTE";"P1";"N/I";"Categoria 2";"Comercial";21985,00
+"CONCER";"02/12/2023";"CRESCENTE";"P1";"N/I";"Categoria 3";"Passeio";775,00
+"CONCER";"02/12/2023";"CRESCENTE";"P1";"N/I";"Categoria 4";"Comercial";9741,00
+"CONCER";"02/12/2023";"CRESCENTE";"P1";"N/I";"Categoria 5";"Passeio";97,00
+"CONCER";"02/12/2023";"CRESCENTE";"P1";"N/I";"Categoria 6";"Comercial";7577,00
+"CONCER";"02/12/2023";"CRESCENTE";"P1";"N/I";"Categoria 7";"Comercial";4222,00
+"CONCER";"02/12/2023";"CRESCENTE";"P1";"N/I";"Categoria 8";"Comercial";7215,00
+"CONCER";"02/12/2023";"CRESCENTE";"P1";"N/I";"Categoria 9";"Moto";6499,00
+"CONCER";"02/12/2023";"CRESCENTE";"P1";"N/I";"Outros";"Comercial";2709,00
+"CONCER";"02/12/2023";"DECRESCENTE";"P1";"N/I";"Categoria 1";"Passeio";304266,00
+"CONCER";"02/12/2023";"DECRESCENTE";"P1";"N/I";"Categoria 2";"Comercial";22818,00
+"CONCER";"02/12/2023";"DECRESCENTE";"P1";"N/I";"Categoria 3";"Passeio";758,00
+"CONCER";"02/12/2023";"DECRESCENTE";"P1";"N/I";"Categoria 4";"Comercial";9643,00
+"CONCER";"02/12/2023";"DECRESCENTE";"P1";"N/I";"Categoria 5";"Passeio";94,00
+"CONCER";"02/12/2023";"DECRESCENTE";"P1";"N/I";"Categoria 6";"Comercial";7308,00
+"CONCER";"02/12/2023";"DECRESCENTE";"P1";"N/I";"Categoria 7";"Comercial";3886,00
+"CONCER";"02/12/2023";"DECRESCENTE";"P1";"N/I";"Categoria 8";"Comercial";4569,00
+"CONCER";"02/12/2023";"DECRESCENTE";"P1";"N/I";"Categoria 9";"Moto";5793,00
+"CONCER";"02/12/2023";"DECRESCENTE";"P1";"N/I";"Outros";"Comercial";1486,00
+"CRO";"31/01/2023";"Crescente ";"P1";"N/I";"Moto";"Moto";923,00
+"CRO";"31/01/2023";"Crescente ";"P1";"N/I";"Veículo Comercial 10 eixos ";"Comercial";3,00
+"CRO";"31/01/2023";"Crescente ";"P1";"N/I";"Veículo Comercial 2 eixos ";"Comercial";2244,00
+"CRO";"31/01/2023";"Crescente ";"P1";"N/I";"Veículo Comercial 3 eixos ";"Comercial";4356,00
+"ECOVIAS DO ARAGUAIA";"02/01/2023";"Crescente";"P1 - Aliança do Tocantins";"N/I";"Categoria 2";"Comercial";7301,00
+"ECOVIAS DO ARAGUAIA";"02/01/2023";"Crescente";"P2 - Alvorada";"N/I";"Categoria 3";"Passeio";413,00
+"ECOVIAS DO ARAGUAIA";"02/01/2023";"Crescente";"P3 - Porangatu";"N/I";"Categoria Esp. 10";"Comercial";6,00
+"ECOVIAS DO ARAGUAIA";"02/01/2023";"Crescente";"P7 - Jaraguá";"N/I";"Categoria 1";"Passeio";93729,00
+"ECOVIAS DO ARAGUAIA";"02/01/2023";"Crescente";"P8 - Santa Rita do Novo Destino";"N/I";"Categoria 8";"Comercial";2242,00
+"ECOVIAS DO ARAGUAIA";"02/01/2023";"Crescente";"P9 - Corumbá de Goiás";"N/I";"Categoria Esp. 09";"Comercial";384,00
+"RIOSP";"01/04/2023";"Crescente";"Arujá Rodoanel";"N/I";"Categoria 1";"Passeio";0,00
+"RIOSP";"01/04/2023";"Crescente";"Arujá Rodoanel";"N/I";"Categoria 2";"Comercial";0,00
+"RIOSP";"01/04/2023";"Crescente";"Arujá Rodoanel";"N/I";"Categoria 3";"Passeio";0,00
+"RIOSP";"01/04/2023";"Crescente";"Moreira César Sul";"N/I";"Categoria 1";"Passeio";404699,10

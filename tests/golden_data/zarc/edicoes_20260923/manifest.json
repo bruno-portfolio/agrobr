@@ -1,5 +1,5 @@
 {
- "format": "agrobr.veracidade.fp_zarc.edicoes",
+ "format": "agrobr.golden.zarc.edicoes",
  "version": 1,
  "built_at": "2026-09-23T05:17:12.410465-03:00",
  "catalog": {
@@ -56,7 +56,7 @@
   "Aveia Sequeiro": "aveia_sequeiro",
   "Aveia Irrigada": "aveia_irrigada"
  },
- "alias_decisions_perene_integral_r11": {
+ "alias_decisions_perene_integral_reconciliacao": {
   "Abacaxi": "abacaxi",
   "Açaí Implatação": "acai_implantacao",
   "Açaí Produção": "acai",
@@ -446,7 +446,7 @@
     "dec35",
     "dec36"
    ],
-   "headers_equal_r11": true,
+   "headers_equal_reconciliacao": true,
    "bom": true,
    "widths": {
     "55": 168540
@@ -630,7 +630,7 @@
     "dec35",
     "dec36"
    ],
-   "headers_equal_r11": true,
+   "headers_equal_reconciliacao": true,
    "bom": true,
    "widths": {
     "55": 249082
@@ -828,7 +828,7 @@
     "dec35",
     "dec36"
    ],
-   "headers_equal_r11": true,
+   "headers_equal_reconciliacao": true,
    "bom": true,
    "widths": {
     "55": 374780
@@ -1040,7 +1040,7 @@
     "dec35",
     "dec36"
    ],
-   "headers_equal_r11": true,
+   "headers_equal_reconciliacao": true,
    "bom": true,
    "widths": {
     "55": 652558
@@ -1275,7 +1275,7 @@
     "dec35",
     "dec36"
    ],
-   "headers_equal_r11": true,
+   "headers_equal_reconciliacao": true,
    "bom": true,
    "widths": {
     "55": 788751
@@ -1522,7 +1522,7 @@
     "dec35",
     "dec36"
    ],
-   "headers_equal_r11": true,
+   "headers_equal_reconciliacao": true,
    "bom": true,
    "widths": {
     "55": 747836
@@ -1770,7 +1770,7 @@
     "dec35",
     "dec36"
    ],
-   "headers_equal_r11": true,
+   "headers_equal_reconciliacao": true,
    "bom": true,
    "widths": {
     "55": 935748
@@ -2039,7 +2039,7 @@
     "dec35",
     "dec36"
    ],
-   "headers_equal_r11": true,
+   "headers_equal_reconciliacao": true,
    "bom": true,
    "widths": {
     "55": 931278
@@ -2287,7 +2287,7 @@
     "dec35",
     "dec36"
    ],
-   "headers_equal_r11": true,
+   "headers_equal_reconciliacao": true,
    "bom": true,
    "widths": {
     "55": 1026973

@@ -4,14 +4,14 @@ import pytest
 
 from agrobr.alt.anp_diesel import api
 from tests.helpers import assert_replay_served, sem_excecao
-from tests.test_anp_diesel import test_reconciliacao as r11
+from tests.test_anp_diesel import test_reconciliacao as reconciliacao
 
-CASOS = {caso["id"]: caso for caso in r11.MANIFEST["cases"]}
+CASOS = {caso["id"]: caso for caso in reconciliacao.MANIFEST["cases"]}
 SEMANA = {"produto": "DIESEL S10", "inicio": "2026-09-06", "fim": "2026-09-06"}
 
 
 async def test_preco_da_uf_e_do_brasil_nao_e_media_por_postos_dos_niveis_de_baixo(monkeypatch):
-    visto = r11.install_inputs(monkeypatch)
+    visto = reconciliacao.install_inputs(monkeypatch)
     with sem_excecao():
         municipios = await api.precos_diesel(uf="AL", nivel="municipio", **SEMANA)
         uf = await api.precos_diesel(uf="AL", nivel="uf", **SEMANA)

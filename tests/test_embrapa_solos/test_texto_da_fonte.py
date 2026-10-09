@@ -12,7 +12,7 @@ from agrobr import embrapa_solos
 from agrobr.embrapa_solos import parser
 from tests.helpers import install_embrapa_solos_wfs, sem_excecao
 
-R39 = Path(__file__).parents[1] / "golden_data" / "embrapa_solos" / "r39_20260926"
+PERFIS_TEXTO = Path(__file__).parents[1] / "golden_data" / "embrapa_solos" / "perfis_texto_20260926"
 AVISO = (
     "Texto publicado pela Embrapa com dupla codificação (UTF-8 lido como Latin-1), reparado por "
     "coluna: municipio 1, uso_atual 1, titulo 1, autor 1, responsave 1, material_o 1, descricao_ 1, "
@@ -21,8 +21,8 @@ AVISO = (
 
 
 def _corpo(nome: str) -> dict[str, Any]:
-    recibo = json.loads((R39 / "manifest.json").read_bytes())["arquivos"][nome]
-    corpo = (R39 / nome).read_bytes()
+    recibo = json.loads((PERFIS_TEXTO / "manifest.json").read_bytes())["arquivos"][nome]
+    corpo = (PERFIS_TEXTO / nome).read_bytes()
     digest = hashlib.sha256(corpo).hexdigest()
     assert (digest, len(corpo)) == (recibo["sha256"], recibo["bytes"])
     return json.loads(corpo)

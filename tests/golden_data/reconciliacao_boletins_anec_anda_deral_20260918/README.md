@@ -76,5 +76,5 @@ mudanças rotineiras de mês ou células ocupadas também podem exigir revisão.
 
 `--live` compara somente os três boletins correntes; seu sucesso não certifica
 todos os anos e layouts. O overlay em
-`coverage_update.json` (fora do repositório) preserva os 10 IDs da R2 e
+`coverage_update.json` (fora do repositório) preserva os 10 IDs da matriz de variantes e
 suas pendências. Não alterar a matriz original para ocultar lacunas.

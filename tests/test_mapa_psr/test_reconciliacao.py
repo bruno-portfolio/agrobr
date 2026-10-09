@@ -283,7 +283,7 @@ def test_n1_psr_catalogo_desconhecido(mutation: str):
     assert reconciliation.compare_catalog(changed, original)["status"] == "mismatch"
 
 
-def captura_r11(destino: Path, trocas: dict[str, bytes] | None = None) -> Path:
+def captura_reconciliacao(destino: Path, trocas: dict[str, bytes] | None = None) -> Path:
     destino.mkdir()
     recibos = []
     for resource in MANIFEST["resources"]:
@@ -317,7 +317,7 @@ def captura_r11(destino: Path, trocas: dict[str, bytes] | None = None) -> Path:
 
 
 def test_n1_psr_run_confere_a_captura_inteira(tmp_path: Path):
-    captura = captura_r11(tmp_path / "captura")
+    captura = captura_reconciliacao(tmp_path / "captura")
     with helpers.sem_excecao():
         codigo = reconciliation.run(captura, tmp_path / "relatorio.json")
     relatorio = json.loads((tmp_path / "relatorio.json").read_text(encoding="utf-8"))
@@ -331,7 +331,7 @@ def test_n1_psr_run_confere_a_captura_inteira(tmp_path: Path):
 def test_n1_psr_run_aponta_publicacao_divergente(tmp_path: Path):
     resource = MANIFEST["resources"][0]
     mutado = mutated_csv("width", tmp_path / "mutado.csv").read_text(encoding="utf-8")
-    captura = captura_r11(
+    captura = captura_reconciliacao(
         tmp_path / "captura", {resource["derived_file"]: mutado.encode(resource["encoding"])}
     )
     with helpers.sem_excecao():

@@ -11,9 +11,14 @@ from tests.helpers import levanta_exatamente
 from tests.test_zarc import test_oraculo_edicoes as edicoes
 
 ORACULO = json.loads(
-    (edicoes.r11.ROOT / "tests/golden_data/zarc/renomeacoes_20260925/manifest.json").read_bytes()
+    (
+        edicoes.reconciliacao.ROOT / "tests/golden_data/zarc/renomeacoes_20260925/manifest.json"
+    ).read_bytes()
 )
-CHAVES = {**edicoes.r11.MANIFEST["alias_decisions"], **edicoes.MANIFEST["alias_decisions"]}
+CHAVES = {
+    **edicoes.reconciliacao.MANIFEST["alias_decisions"],
+    **edicoes.MANIFEST["alias_decisions"],
+}
 PARES = {CHAVES[par["rotulo_ate_2023_2024"]]: par for par in ORACULO["pares"]}
 NOVAS = {CHAVES[par["rotulo_desde_2024_2025"]] for par in ORACULO["pares"]}
 

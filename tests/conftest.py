@@ -105,7 +105,6 @@ def _reset_global_state():
 
 @pytest.fixture
 def sample_html_cepea() -> str:
-    """HTML mínimo para testes de parsing CEPEA."""
     return """
     <html>
     <head><title>CEPEA - Indicador</title></head>

@@ -22,7 +22,6 @@ from agrobr.health.state import (
 
 @pytest.fixture()
 def mock_conn():
-    """Provide a mock DuckDB connection for health state tests."""
     conn = MagicMock()
     store = MagicMock()
     store._conexao.return_value.__enter__.return_value = conn

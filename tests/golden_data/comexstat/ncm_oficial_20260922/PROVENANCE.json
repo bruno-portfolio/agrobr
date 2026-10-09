@@ -2,7 +2,7 @@
   "purpose": "Oráculo independente do mapeamento produto → NCM do ComexStat",
   "sources": {
     "bulk_csv": "https://balanca.mdic.gov.br/balanca/bd/comexstat-bd/ncm/{EXP,IMP}_<ano>.csv (fonte do agrobr)",
-    "ncm_dictionary": "https://balanca.mdic.gov.br/balanca/bd/tabelas/NCM.csv (captura do auditor, rodada 7)",
+    "ncm_dictionary": "https://balanca.mdic.gov.br/balanca/bd/tabelas/NCM.csv (captura de conferência de 22/09/2026)",
     "panel_api": "POST https://api-comexstat.mdic.gov.br/general?language=pt (painel oficial ComexStat)",
     "nomenclature": "https://portalunico.siscomex.gov.br/classif/api/publico/nomenclatura/download/json (posições citadas nos testes; SHA 5450bea12c713e9fbc452884115fa6f14959df50c624c5d081e66174f9feea96)"
   },

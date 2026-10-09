@@ -16,11 +16,6 @@ from agrobr.exceptions import ParseError
 GOLDEN_DIR = Path(__file__).parent / "golden_data"
 
 
-# ============================================================================
-# Discovery helpers
-# ============================================================================
-
-
 def _discover_cases(
     source_filter: str | None = None,
     format_filter: str | None = None,
@@ -77,7 +72,6 @@ def get_golden_test_cases() -> list[tuple[str, Path]]:
 
 
 def get_conab_golden_test_cases() -> list[tuple[str, Path]]:
-    """Descobre todos os casos de teste golden para XLSX (CONAB)."""
     cases: list[tuple[str, Path]] = []
     conab_dir = GOLDEN_DIR / "conab"
     if not conab_dir.exists():
@@ -149,11 +143,6 @@ def _assert_dataframe_golden(df: pd.DataFrame, expected: dict[str, Any]) -> None
                 assert null_count == 0, f"Column {col} has {null_count} null values"
 
 
-# ============================================================================
-# CEPEA Golden Tests (original)
-# ============================================================================
-
-
 @pytest.mark.skipif(not get_golden_test_cases(), reason="No golden data available")
 @pytest.mark.parametrize("_name,path", get_golden_test_cases())
 def test_golden_parsing(_name: str, path: Path):
@@ -207,7 +196,6 @@ def test_golden_parsing(_name: str, path: Path):
 @pytest.mark.skipif(not get_golden_test_cases(), reason="No golden data available")
 @pytest.mark.parametrize("_name,path", get_golden_test_cases())
 def test_golden_fingerprint(_name: str, path: Path):
-    """Testa que fingerprint do golden data é reconhecida."""
     html = (path / "response.html").read_text(encoding="utf-8")
     metadata = json.loads((path / "metadata.json").read_text(encoding="utf-8"))
 
@@ -223,7 +211,6 @@ def test_golden_fingerprint(_name: str, path: Path):
 @pytest.mark.skipif(not get_golden_test_cases(), reason="No golden data available")
 @pytest.mark.parametrize("_name,path", get_golden_test_cases())
 def test_golden_parser_can_parse(_name: str, path: Path):
-    """Testa que parser reconhece o golden data."""
     html = (path / "response.html").read_text(encoding="utf-8")
     metadata = json.loads((path / "metadata.json").read_text(encoding="utf-8"))
 
@@ -237,15 +224,9 @@ def test_golden_parser_can_parse(_name: str, path: Path):
         assert confidence >= 0.4, f"Confidence too low: {confidence}"
 
 
-# ============================================================================
-# CONAB Golden Tests (original)
-# ============================================================================
-
-
 @pytest.mark.skipif(not get_conab_golden_test_cases(), reason="No CONAB golden data available")
 @pytest.mark.parametrize("_name,path", get_conab_golden_test_cases())
 def test_conab_golden_parsing_soja(_name: str, path: Path):
-    """Testa parsing de soja contra golden data CONAB."""
     from io import BytesIO
 
     from agrobr.conab.parsers.v1 import ConabParserV1
@@ -272,7 +253,6 @@ def test_conab_golden_parsing_soja(_name: str, path: Path):
 @pytest.mark.skipif(not get_conab_golden_test_cases(), reason="No CONAB golden data available")
 @pytest.mark.parametrize("_name,path", get_conab_golden_test_cases())
 def test_conab_golden_parsing_milho(_name: str, path: Path):
-    """Testa parsing de milho contra golden data CONAB."""
     from io import BytesIO
 
     from agrobr.conab.parsers.v1 import ConabParserV1
@@ -294,7 +274,6 @@ def test_conab_golden_parsing_milho(_name: str, path: Path):
 @pytest.mark.skipif(not get_conab_golden_test_cases(), reason="No CONAB golden data available")
 @pytest.mark.parametrize("_name,path", get_conab_golden_test_cases())
 def test_conab_golden_parsing_suprimento(_name: str, path: Path):
-    """Testa parsing de suprimento contra golden data CONAB."""
     from io import BytesIO
 
     from agrobr.conab.parsers.v1 import ConabParserV1
@@ -316,7 +295,6 @@ def test_conab_golden_parsing_suprimento(_name: str, path: Path):
 @pytest.mark.skipif(not get_conab_golden_test_cases(), reason="No CONAB golden data available")
 @pytest.mark.parametrize("_name,path", get_conab_golden_test_cases())
 def test_conab_golden_parsing_brasil_total(_name: str, path: Path):
-    """Testa parsing de totais do Brasil contra golden data CONAB."""
     from io import BytesIO
 
     from agrobr.conab.parsers.v1 import ConabParserV1
@@ -333,11 +311,6 @@ def test_conab_golden_parsing_brasil_total(_name: str, path: Path):
     assert len(totais) == expected["brasil_total"]["count"], (
         f"Expected {expected['brasil_total']['count']} brasil_total records, got {len(totais)}"
     )
-
-
-# ============================================================================
-# BCB Golden Tests
-# ============================================================================
 
 
 def _get_bcb_cases() -> list[tuple[str, Path]]:
@@ -364,11 +337,6 @@ def test_bcb_golden_parsing(_name: str, path: Path):
         assert df["uf"].str.isupper().all(), "uf should be uppercase"
 
 
-# ============================================================================
-# INMET Golden Tests
-# ============================================================================
-
-
 def _get_inmet_cases() -> list[tuple[str, Path]]:
     return _discover_cases(source_filter="inmet")
 
@@ -391,11 +359,6 @@ def test_inmet_golden_parsing(_name: str, path: Path):
         assert len(sentinel_rows) == 0, "Sentinel -9999 should be replaced with NaN"
 
 
-# ============================================================================
-# NASA POWER Golden Tests
-# ============================================================================
-
-
 def _get_nasa_power_cases() -> list[tuple[str, Path]]:
     return _discover_cases(source_filter="nasa_power")
 
@@ -415,11 +378,6 @@ def test_nasa_power_golden_parsing(_name: str, path: Path):
     _assert_dataframe_golden(df, expected)
 
     assert df["data"].is_monotonic_increasing, "data should be sorted ascending"
-
-
-# ============================================================================
-# ComexStat Golden Tests
-# ============================================================================
 
 
 def _get_comexstat_cases() -> list[tuple[str, Path]]:
@@ -534,11 +492,6 @@ def test_comexstat_golden_parsing(_name: str, path: Path):
         assert parsed.details["eof_reached"]
 
 
-# ============================================================================
-# Notícias Agrícolas Golden Tests
-# ============================================================================
-
-
 def _get_na_cases() -> list[tuple[str, Path]]:
     return _discover_cases(source_filter="na")
 
@@ -575,11 +528,6 @@ def test_na_golden_parsing(_name: str, path: Path):
         assert last.unidade == exp_last["unidade"]
 
 
-# ============================================================================
-# IBGE Golden Tests
-# ============================================================================
-
-
 def _get_ibge_cases() -> list[tuple[str, Path]]:
     return _discover_cases(source_filter="ibge", format_filter="dataframe")
 
@@ -599,11 +547,6 @@ def test_ibge_golden_parsing(_name: str, path: Path):
 
     if "valor" in df.columns:
         assert pd.api.types.is_numeric_dtype(df["valor"]), "valor should be numeric after parsing"
-
-
-# ============================================================================
-# DERAL Golden Tests
-# ============================================================================
 
 
 def _get_deral_cases() -> list[tuple[str, Path]]:
@@ -634,11 +577,6 @@ def test_deral_golden_parsing(_name: str, path: Path):
         assert (df["produto"] == expected["produto_expected"]).all()
 
 
-# ============================================================================
-# ABIOVE Golden Tests
-# ============================================================================
-
-
 def _get_abiove_cases() -> list[tuple[str, Path]]:
     return _discover_cases(source_filter="abiove")
 
@@ -662,11 +600,6 @@ def test_abiove_golden_parsing(_name: str, path: Path):
         produtos = set(df["produto"].unique())
         for p in expected.get("produtos_expected", []):
             assert p in produtos, f"Missing produto: {p}. Got: {produtos}"
-
-
-# ============================================================================
-# ANTAQ Golden Tests
-# ============================================================================
 
 
 def _get_antaq_cases() -> list[tuple[str, Path]]:
@@ -709,11 +642,6 @@ def test_antaq_golden_parsing(_name: str, path: Path):
         )
         non_null_peso = df["peso_bruto_ton"].dropna()
         assert (non_null_peso >= 0).all(), "peso_bruto_ton should be >= 0"
-
-
-# ============================================================================
-# ANP Diesel Golden Tests
-# ============================================================================
 
 
 def _get_anp_diesel_cases() -> list[tuple[str, Path]]:
@@ -778,18 +706,8 @@ def test_anp_diesel_golden_parsing(_name: str, path: Path):
         assert (diff < 0.01).all(), "margem should equal preco_venda - preco_compra"
 
 
-# ============================================================================
-# MAPA PSR Golden Tests
-# ============================================================================
-
-
 def _get_mapa_psr_cases() -> list[tuple[str, Path]]:
     return _discover_cases(source_filter="mapa_psr")
-
-
-# ============================================================================
-# ANTT Pedagio Golden Tests
-# ============================================================================
 
 
 def _get_antt_pedagio_cases() -> list[tuple[str, Path]]:
@@ -906,11 +824,6 @@ def test_mapa_psr_golden_parsing(_name: str, path: Path):
         assert df["area_total"].dtype == "float64", "area_total should be float64"
 
 
-# ============================================================================
-# B3 Golden Tests
-# ============================================================================
-
-
 def _get_b3_cases() -> list[tuple[str, Path]]:
     return _discover_cases(source_filter="b3")
 
@@ -946,11 +859,6 @@ def test_b3_golden_parsing(_name: str, path: Path):
                 assert row["variacao_posicoes"] == sample["variacao_posicoes"]
     else:
         pytest.skip(f"No recognized response file in {path}")
-
-
-# ============================================================================
-# Comtrade Golden Tests
-# ============================================================================
 
 
 def _get_comtrade_cases() -> list[tuple[str, Path]]:
@@ -1066,11 +974,6 @@ def test_comtrade_golden_parsing(_name: str, path: Path):
         pytest.skip(f"No recognized response file in {path}")
 
 
-# ============================================================================
-# Queimadas Golden Tests
-# ============================================================================
-
-
 def _get_queimadas_cases() -> list[tuple[str, Path]]:
     return _discover_cases(source_filter="queimadas")
 
@@ -1086,11 +989,6 @@ def test_queimadas_golden_parsing(_name: str, path: Path):
 
     assert len(df) == expected["record_count"]
     _assert_dataframe_golden(df, expected)
-
-
-# ============================================================================
-# CONAB CEASA Golden Tests
-# ============================================================================
 
 
 def _get_conab_ceasa_cases() -> list[tuple[str, Path]]:
@@ -1118,11 +1016,6 @@ def test_conab_ceasa_golden_parsing(_name: str, path: Path):
         row = df[(df["produto"] == s["produto"]) & (df["ceasa"] == s["ceasa"])].iloc[0]
         assert row["ceasa_uf"] == s["ceasa_uf"]
         assert row["preco"] == pytest.approx(s["preco"], rel=1e-2)
-
-
-# ============================================================================
-# CONAB Progresso Golden Tests
-# ============================================================================
 
 
 def _get_conab_progresso_cases() -> list[tuple[str, Path]]:
@@ -1153,11 +1046,6 @@ def test_conab_progresso_golden_parsing(_name: str, path: Path):
         assert row.iloc[0]["pct_semana_atual"] == pytest.approx(
             expected["mt_soja_colheita_pct_atual"], rel=1e-2
         )
-
-
-# ============================================================================
-# MapBiomas Golden Tests
-# ============================================================================
 
 
 def _get_mapbiomas_cases() -> list[tuple[str, Path]]:
@@ -1195,11 +1083,6 @@ def test_mapbiomas_golden_parsing(_name: str, path: Path):
     assert sorted(df_trans["uf"].unique().tolist()) == exp_trans["estados_expected"]
     for p in exp_trans["periodos_expected"]:
         assert p in df_trans["periodo"].values, f"Period {p} not found in transicao"
-
-
-# ============================================================================
-# FUNAI Golden Tests
-# ============================================================================
 
 
 def _get_funai_cases() -> list[tuple[str, Path]]:
@@ -1316,11 +1199,6 @@ def test_funai_golden_parsing(_name: str, path: Path):
     assert reviewed == 8
 
 
-# ============================================================================
-# ICMBio Golden Tests
-# ============================================================================
-
-
 def _get_icmbio_cases() -> list[tuple[str, Path]]:
     return _discover_cases(source_filter="icmbio")
 
@@ -1350,11 +1228,6 @@ def test_icmbio_golden_parsing(_name: str, path: Path):
         return
 
     _assert_dataframe_golden(df, expected)
-
-
-# ============================================================================
-# INCRA Golden Tests
-# ============================================================================
 
 
 def _get_incra_cases() -> list[tuple[str, Path]]:
@@ -1539,11 +1412,6 @@ def test_incra_golden_parsing(_name: str, path: Path):
         assert all(len(row["properties"]) == 10 for row in raw["features"])
     with pytest.raises(ParseError):
         parser.parse_page(body, include_geometry=geo)
-
-
-# ============================================================================
-# MapBiomas Alerta Golden Tests
-# ============================================================================
 
 
 def _get_mapbiomas_alerta_cases() -> list[tuple[str, Path]]:

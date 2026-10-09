@@ -1,7 +1,7 @@
 {
  "fonte": "nasa_power",
- "origem": "rodada 25 de conferência: corpos com recibo e derivação independente",
- "oraculo": "por mês e parâmetro, dias válidos, primeiro e último dia e agregado (soma na chuva, média nos demais), derivados do corpo oficial pela R25 sem o parser do agrobr; a cobertura do mês é a união dos dias válidos dos parâmetros",
+ "origem": "conferência de 25/09/2026: corpos com recibo e derivação independente",
+ "oraculo": "por mês e parâmetro, dias válidos, primeiro e último dia e agregado (soma na chuva, média nos demais), derivados do corpo oficial na conferência de 25/09/2026, sem o parser do agrobr; a cobertura do mês é a união dos dias válidos dos parâmetros",
  "corpos": {
   "partial": {
    "arquivo": "partial.json",

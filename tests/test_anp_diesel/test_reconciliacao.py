@@ -23,7 +23,7 @@ from tests import helpers
 ROOT = Path(__file__).resolve().parents[2]
 GOLDEN = ROOT / "tests/golden_data/reconciliacao_registros_precos_zoneamento_seguro_20260918/anp"
 MANIFEST = json.loads((GOLDEN / "manifest.json").read_text(encoding="utf-8"))
-ORIGINALS = os.environ.get("AGROBR_R11_ANP_ORIGINALS", "")
+ORIGINALS = os.environ.get("AGROBR_RECONCILIACAO_ANP_ORIGINALS", "")
 KEYS = ["data", "nivel", "uf", "municipio", "produto"]
 DATES = {"data", "periodo_inicio", "periodo_fim"}
 NUMERIC = {"preco_venda", "preco_compra", "margem", "n_postos", "n_postos_media", "n_semanas"}

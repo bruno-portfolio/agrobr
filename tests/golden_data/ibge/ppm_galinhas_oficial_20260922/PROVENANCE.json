@@ -1,5 +1,5 @@
 {
-  "capture_session": "conferência, rodada 5, reaproveitada, 22/09/2026",
+  "capture_session": "conferência de 22/09/2026, reaproveitada",
   "source": "IBGE (API de agregados v3)",
   "method": "Respostas oficiais preservadas byte a byte, sem reserializar.",
   "notes": "Notas técnicas PPM 2024 (https://www.ibge.gov.br/biblioteca/visualizacao/periodicos/84/ppm_2024_v52_br_notas_tecnicas.pdf, sha256 88746b76a203330daa2a6ed07df47d7de773287d1a28fa3f02c33ed0dc711d29, capturadas em 2026-09-22T21:24:16Z), página 8 do PDF (6 impressa), verbete galinhas: 'Total de aves fêmeas da espécie Gallus gallus destinadas à produção de ovos, independentemente do destino da produção (consumo, industrialização ou incubação). Inclui poedeiras e matrizeiras.'",

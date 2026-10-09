@@ -39,8 +39,6 @@ class TestRetriableStatusError:
 
 
 class TestRetryAsync:
-    """Testes para retry_async."""
-
     @pytest.mark.asyncio
     async def test_exhausts_max_retries_raises(self):
         func = AsyncMock(side_effect=httpx.TimeoutException("timeout"))
@@ -73,8 +71,6 @@ class TestRetryAsync:
 
 
 class TestWithRetryDecorator:
-    """Testes para o decorator with_retry."""
-
     @pytest.mark.asyncio
     async def test_decorator_success(self):
         @with_retry(max_attempts=3, base_delay=0.01)
@@ -86,16 +82,12 @@ class TestWithRetryDecorator:
 
 
 class TestShouldRetryStatus:
-    """Testes para should_retry_status."""
-
     def test_retriable_codes(self):
         for code in [408, 429, 500, 502, 503, 504]:
             assert should_retry_status(code) is True
 
 
 class TestRetriableExceptions:
-    """Verifica composição do tuple RETRIABLE_EXCEPTIONS."""
-
     def test_contains_expected_types(self):
         assert httpx.TimeoutException in RETRIABLE_EXCEPTIONS
         assert httpx.NetworkError in RETRIABLE_EXCEPTIONS

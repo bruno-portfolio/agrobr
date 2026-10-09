@@ -1,7 +1,7 @@
 {
  "fonte": "anec",
- "transcricao_r25": {
-  "origem": "R25 de conferência: transcrição manual das páginas 2 e 3 do PDF baixado à parte, com as imagens conferidas; sem o parser do agrobr",
+ "transcricao_manual": {
+  "origem": "Conferência de 25/09/2026: transcrição manual das páginas 2 e 3 do PDF baixado à parte, com as imagens conferidas; sem o parser do agrobr",
   "metodo": "Manual transcription from independently downloaded PDF, pages 2 and 3; rendered PNGs visually inspected. No production parser used.",
   "boletins": {
    "36": {
@@ -38,8 +38,8 @@
    }
   }
  },
- "calendario_r11": {
-  "origem": "R11 de conferência: a semana da ANEC vai de domingo a sábado, e a semana w de 2026 começa em 26/07 + 7·(w−30); o boletim da semana w traz a semana w em 'Last Week' e a w+1 em 'Current Week'",
+ "calendario": {
+  "origem": "Calendário conferido: a semana da ANEC vai de domingo a sábado, e a semana w de 2026 começa em 26/07 + 7·(w−30); o boletim da semana w traz a semana w em 'Last Week' e a w+1 em 'Current Week'",
   "inicio_da_semana_30_de_2026": "2026-07-26"
  }
 }

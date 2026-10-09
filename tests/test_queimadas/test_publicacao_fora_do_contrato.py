@@ -16,7 +16,7 @@ from agrobr.queimadas import client
 from agrobr.queimadas.models import CHAVE
 from tests.helpers import conferir_corpo, sem_excecao
 
-R48 = Path(__file__).parents[1] / "golden_data" / "queimadas" / "r48_202408"
+AGOSTO_2024 = Path(__file__).parents[1] / "golden_data" / "queimadas" / "mensal_202408"
 RECORTE = "focos_mensal_br_202408_recorte.csv"
 CSV_AGOSTO = f"{client.BASE_URL}/mensal/Brasil/focos_mensal_br_202408.csv"
 ASYNC_CLIENT_REAL = httpx.AsyncClient
@@ -40,8 +40,8 @@ def _aviso_frp(anulados: int) -> str:
 
 
 def _recorte() -> tuple[bytes, list[dict[str, str]]]:
-    manifesto = json.loads((R48 / "manifest.json").read_bytes())
-    corpo = (R48 / RECORTE).read_bytes()
+    manifesto = json.loads((AGOSTO_2024 / "manifest.json").read_bytes())
+    corpo = (AGOSTO_2024 / RECORTE).read_bytes()
     assert (hashlib.sha256(corpo).hexdigest(), len(corpo)) == (
         manifesto["recorte"]["sha256"],
         manifesto["recorte"]["bytes"],

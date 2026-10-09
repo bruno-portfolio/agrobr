@@ -1,5 +1,5 @@
 {
- "fonte": "WFS ICMBio (geoservicos.inde.gov.br), capturas da rodada 11 de conferência, copiadas byte a byte",
+ "fonte": "WFS ICMBio (geoservicos.inde.gov.br), capturas da conferência de 23/09/2026, copiadas byte a byte",
  "arquivos": {
   "geo_4674.json": {
    "url": "https://geoservicos.inde.gov.br/geoserver/ICMBio/ows?service=WFS&version=1.1.0&request=GetFeature&typeName=ICMBio%3Alimiteucsfederais_a&outputFormat=application%2Fjson&CQL_FILTER=BBOX%28the_geom%2C-56%2C-16%2C-54%2C-14%2C%27EPSG%3A4674%27%29&maxFeatures=1000",

@@ -25,12 +25,12 @@ Geração: `select_zarc.py` e `build_zarc_oracle.py`, fora do repositório.
 Replays integrais e a comparação de multiconjuntos ficam no mesmo relatório.
 N3 não concedido; publicações/formatos da mesma origem não são independentes.
 
-Formato identificado: `agrobr.reconciliation.r11.family`, versão 1, documentado
+Formato identificado: `agrobr.reconciliation.family`, versão 1, documentado
 em `../FORMAT.md`; distinto do manifesto genérico v2. A mudança de rótulo não
 recalcula esperados nem modifica os corpos CSV/XLSX.
 
 Replays dos corpos integrais fazem parte da suíte em `tests/test_zarc/test_reconciliacao_originais.py`.
-Aponte `AGROBR_R11_ZARC_ORIGINALS` para o diretório com os corpos originais para executá-los; o modo padrão registra skips explícitos.
+Aponte `AGROBR_RECONCILIACAO_ZARC_ORIGINALS` para o diretório com os corpos originais para executá-los; o modo padrão registra skips explícitos.
 Os arquivos têm os nomes de `resources[].original.file`; se o modo
 for ativado sem os arquivos, os testes falham indicando o corpo ausente.
 

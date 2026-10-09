@@ -77,8 +77,6 @@ UFS_IBGE = [
 
 
 class TestPamValidation:
-    """Testes de validacao da funcao PAM."""
-
     async def test_validacao_pam(self):
         cases = [
             (
@@ -133,11 +131,8 @@ class TestPamValidation:
 
 
 class TestPolarsSupport:
-    """Testes do suporte a Polars."""
-
     @pytest.fixture
     def mock_response(self):
-        """Resposta mockada."""
         return pd.DataFrame(
             {
                 "NC": ["3"],
