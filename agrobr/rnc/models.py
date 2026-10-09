@@ -66,6 +66,8 @@ PROTEGIDAS_COLS: list[str] = [
 DATE_COLS_REG: list[str] = ["data_registro", "data_validade"]
 DATE_COLS_PROT: list[str] = ["inicio_protecao", "termino_protecao"]
 
+COLUNAS_DE_ESPECIE: frozenset[str] = frozenset({"nome_cientifico", "nome_comum"})
+
 
 def civil_date(value: object, *, conditional_end: bool = False) -> date | None:
     if not isinstance(value, str):
@@ -89,8 +91,14 @@ class RncRecord(pydantic.BaseModel):
 
     @pydantic.field_validator("*", mode="before")
     @classmethod
-    def strip_text(cls, value: object) -> object:
-        return value.strip() if isinstance(value, str) else value
+    def strip_text(cls, value: object, info: pydantic.ValidationInfo) -> object:
+        """Nas colunas de espécie, também junta brancos internos repetidos (e NBSP) num espaço:
+        a SNPC publica ``Glycine max (L.)  Merr.`` e o RNC ``Glycine max (L.) Merr.``."""
+        if not isinstance(value, str):
+            return value
+        if info.field_name in COLUNAS_DE_ESPECIE:
+            return " ".join(value.split())
+        return value.strip()
 
 
 class RncRegistrada(RncRecord):

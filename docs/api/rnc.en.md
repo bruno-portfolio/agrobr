@@ -78,7 +78,7 @@ All four date columns use `datetime64[ns]`: civil dates at midnight, without a t
 
 Protection end also accepts the official literal `até a emissão do certificado definitivo` (“until the definitive certificate is issued”). In that case, `termino_protecao` is `NaT`, while `termino_protecao_texto` preserves the condition. The text column contains the published cell with outer whitespace removed, including dates and blanks. A condition can therefore be distinguished from an absent value. No deadline is calculated from this expression, and no administrative status is inferred from it.
 
-Other columns contain text, in the installed pandas default dtype (`str` on pandas 3, `object` on 2). Outer whitespace is removed; blank strings, punctuation and compound content remain. Identifiers are not converted to numbers.
+Other columns contain text, in the installed pandas default dtype (`str` on pandas 3, `object` on 2). Outer whitespace is removed; blank strings, punctuation and compound content remain. In `nome_cientifico` and `nome_comum`, repeated internal whitespace (including the no-break space) is also collapsed into 1 space: SNPC publishes soybean as `Glycine max (L.)  Merr.`, with 2 spaces, and RNC as `Glycine max (L.) Merr.`, so the scientific name matches across the 2 families. In the other columns, internal whitespace stays as published. Identifiers are not converted to numbers.
 
 ## Validation and selection
 

@@ -46,7 +46,10 @@ def assert_publication(frame: pd.DataFrame, case: dict[str, Any]) -> None:
         positions = set(case["expected_original_records"])
         rows = [row for row in rows if row["original_record"] in positions]
     assert len(frame) == len(rows) == case["expected_rows"]
-    expected = Counter(tuple(row["values"][name] for name in columns) for row in rows)
+    expected = Counter(
+        tuple(helpers.rnc_saida_do_publicado(name, row["values"][name]) for name in columns)
+        for row in rows
+    )
     actual = Counter(
         tuple(
             None

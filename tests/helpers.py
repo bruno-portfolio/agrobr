@@ -775,6 +775,14 @@ def rnc_csv_acquisition(
     )
 
 
+def rnc_saida_do_publicado(coluna: str, valor: Any) -> Any:
+    """Célula publicada pelo CultivarWeb como o RNC/SNPC a entrega: nas colunas de espécie, brancos internos
+    repetidos viram 1 espaço; nas outras, o texto fica como publicado."""
+    if coluna in ("nome_cientifico", "nome_comum") and isinstance(valor, str):
+        return " ".join(valor.split())
+    return valor
+
+
 def mapbiomas_workbook_bundle(content: bytes, url: str) -> mapbiomas_resources.WorkbookAcquisition:
     response = httpx.Response(200, content=content, request=httpx.Request("GET", url))
     return mapbiomas_resources.WorkbookAcquisition(

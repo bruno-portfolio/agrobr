@@ -9,8 +9,8 @@ As onze colunas anteriores permanecem como prefixo. `termino_protecao_texto` é 
 | Coluna | Tipo pandas | Nulo | Significado |
 |---|---|---|---|
 | `cultivar` | str | Não | Nome publicado da cultivar |
-| `nome_cientifico` | str | Não | Nome científico publicado |
-| `nome_comum` | str | Não | Nome comum da espécie |
+| `nome_cientifico` | str | Não | Nome científico publicado, com brancos internos repetidos juntados em 1 espaço |
+| `nome_comum` | str | Não | Nome comum da espécie, com brancos internos repetidos juntados em 1 espaço |
 | `nr_processo` | str | Não | Número de processo, chave textual não vazia |
 | `situacao` | str | Não | Situação de proteção publicada |
 | `nr_certificado` | str | Não | Número de certificado; pode repetir entre processos |

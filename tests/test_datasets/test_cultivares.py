@@ -15,7 +15,7 @@ from agrobr import contracts, datasets, rnc
 from agrobr.datasets.deterministic import deterministic
 from agrobr.exceptions import ContractViolationError, InvalidParameterError
 from agrobr.rnc import client, snapshot
-from tests.helpers import levanta_exatamente
+from tests.helpers import levanta_exatamente, rnc_saida_do_publicado
 
 FILTERS = {
     "registradas": [
@@ -97,7 +97,7 @@ async def test_official_replay_compares_all_cells_through_public_dataset(kind, c
                     else actual[column] == pd.Timestamp(value)
                 )
             else:
-                assert actual[column] == value
+                assert actual[column] == rnc_saida_do_publicado(column, value)
     assert contracts.get_contract(f"rnc_{kind}").validate(frame) == (True, [])
     assert meta.dataset == name and meta.source == f"datasets.{name}/rnc_{kind}"
     assert meta.selected_source == f"rnc_{kind}" and meta.attempted_sources == [f"rnc_{kind}"]

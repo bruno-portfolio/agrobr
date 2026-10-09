@@ -9,8 +9,8 @@ The ten columns retain the RNC API names and order. Text fields contain strings,
 | Column | pandas type | Nullable | Meaning |
 |---|---|---|---|
 | `cultivar` | str | No | Published name; legitimate empty strings are retained |
-| `nome_comum` | str | No | Common species name |
-| `nome_cientifico` | str | No | Published scientific name |
+| `nome_comum` | str | No | Common species name, with repeated internal whitespace collapsed into 1 space |
+| `nome_cientifico` | str | No | Published scientific name, with repeated internal whitespace collapsed into 1 space |
 | `grupo` | str | No | Species group |
 | `situacao` | str | No | Published registration status |
 | `nr_formulario` | str | No | Form number; may repeat or be empty |

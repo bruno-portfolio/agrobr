@@ -31,7 +31,7 @@ The key is the process number, scoped to the export. Repeated certificates acros
 
 `termino_protecao_texto` preserves the end cell after removing outer whitespace. The date column separates valid dates from values without a determined date: blanks and `até a emissão do certificado definitivo` (“until the definitive certificate is issued”) become `NaT`, with their text retained alongside. The cited capture contained 5,251 dates, 171 conditions and two blanks. The condition occurs under several administrative statuses and does not automatically mean provisional protection.
 
-All four date columns are civil `datetime64[ns]`, without a timezone, and allow published missing values. Other invalid non-empty date text raises an explicit error. Remaining columns contain text; the SDK removes outer whitespace and preserves legitimate blanks.
+All four date columns are civil `datetime64[ns]`, without a timezone, and allow published missing values. Other invalid non-empty date text raises an explicit error. Remaining columns contain text; the SDK removes outer whitespace and preserves legitimate blanks. In `nome_cientifico` and `nome_comum`, it also collapses repeated internal whitespace (including the no-break space) into one space: SNPC publishes soybean as `Glycine max (L.)  Merr.`, with 2 spaces, and RNC as `Glycine max (L.) Merr.`, so the scientific name matches across the 2 families. Other columns stay as published.
 
 ## Access and validation
 

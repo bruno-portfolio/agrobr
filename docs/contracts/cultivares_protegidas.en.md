@@ -9,8 +9,8 @@ The previous eleven columns remain as a prefix. `termino_protecao_texto` is the 
 | Column | pandas type | Nullable | Meaning |
 |---|---|---|---|
 | `cultivar` | str | No | Published cultivar name |
-| `nome_cientifico` | str | No | Published scientific name |
-| `nome_comum` | str | No | Common species name |
+| `nome_cientifico` | str | No | Published scientific name, with repeated internal whitespace collapsed into 1 space |
+| `nome_comum` | str | No | Common species name, with repeated internal whitespace collapsed into 1 space |
 | `nr_processo` | str | No | Process number, a nonblank textual key |
 | `situacao` | str | No | Published protection status |
 | `nr_certificado` | str | No | Certificate number; may repeat across processes |

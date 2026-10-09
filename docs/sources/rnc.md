@@ -31,7 +31,7 @@ A chave é o número de processo, com escopo da exportação. Certificados repet
 
 `termino_protecao_texto` conserva a célula de término após remover espaços externos. A coluna de data distingue datas válidas de valores sem uma data determinada: vazio e `até a emissão do certificado definitivo` resultam em `NaT`, mantendo o texto ao lado. Na captura mencionada, havia 5.251 datas, 171 condições e dois vazios. A condição ocorre em mais de uma situação administrativa e não equivale automaticamente a proteção provisória.
 
-As quatro colunas de datas são civis `datetime64[ns]`, sem fuso, e permitem ausência publicada. Qualquer outro texto não vazio inválido causa erro explícito. As demais colunas são texto; o SDK remove apenas espaços externos e mantém vazios legítimos.
+As quatro colunas de datas são civis `datetime64[ns]`, sem fuso, e permitem ausência publicada. Qualquer outro texto não vazio inválido causa erro explícito. As demais colunas são texto; o SDK remove os espaços externos e mantém vazios legítimos. Em `nome_cientifico` e `nome_comum`, também junta brancos internos repetidos (inclusive o espaço não separável) num espaço: a SNPC publica a soja como `Glycine max (L.)  Merr.`, com 2 espaços, e o RNC como `Glycine max (L.) Merr.`, e assim o nome científico casa entre as 2 famílias. As outras colunas ficam como publicadas.
 
 ## Acesso e validação
 

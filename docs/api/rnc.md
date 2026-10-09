@@ -78,7 +78,7 @@ As quatro colunas de datas usam `datetime64[ns]`, como datas civis à meia-noite
 
 O término da proteção também admite o literal oficial `até a emissão do certificado definitivo`. Nesse caso, `termino_protecao` é `NaT` e `termino_protecao_texto` conserva a condição. A coluna textual contém a célula publicada após remover espaços externos, inclusive quando ela contém uma data ou está vazia. Assim, uma condição não se confunde com ausência. Não se calcula um prazo para essa expressão nem se deduz a situação administrativa a partir dela.
 
-As outras colunas usam texto, no dtype padrão do pandas instalado (`str` no pandas 3, `object` no 2). Espaços externos são removidos; textos vazios, pontuação e conteúdo composto permanecem. Identificadores não são convertidos em números.
+As outras colunas usam texto, no dtype padrão do pandas instalado (`str` no pandas 3, `object` no 2). Espaços externos são removidos; textos vazios, pontuação e conteúdo composto permanecem. Em `nome_cientifico` e `nome_comum`, os brancos internos repetidos (inclusive o espaço não separável) também viram 1 espaço: a SNPC publica a soja como `Glycine max (L.)  Merr.`, com 2 espaços, e o RNC como `Glycine max (L.) Merr.`, e assim o nome científico casa entre as 2 famílias. Nas outras colunas, o espaço interno fica como publicado. Identificadores não são convertidos em números.
 
 ## Validação e seleção
 

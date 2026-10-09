@@ -296,3 +296,34 @@ def test_oversized_numeric_search_total_is_parse_error():
     with levanta_exatamente(ParseError, match="incompatível com a contagem") as raised:
         parser.parse_reported_total(raw)
     assert isinstance(raised.value.__cause__, ValueError)
+
+
+def test_especie_junta_brancos_internos_e_o_resto_fica_como_publicado():
+    header, row = csv_rows()[:2]
+    row[header.index("CULTIVAR")] = "HA BR\xa004HO"
+    row[header.index("NOME COMUM")] = "Biri\xa0 do brejo"
+    row[header.index("NOME CIENTÍFICO")] = "Canna\xa0paniculata  Ruiz & Pav."
+    row[header.index("MANTENEDOR (REQUERENTE) (NOME)")] = "INSTITUTO  AGRONÔMICO - IAC"
+
+    linha = parser.parse_registradas_bundle(encode([header, row])).frame.iloc[0]
+
+    assert linha["nome_comum"] == "Biri do brejo"
+    assert linha["nome_cientifico"] == "Canna paniculata Ruiz & Pav."
+    assert linha["cultivar"] == "HA BR\xa004HO"
+    assert linha["mantenedor"] == "INSTITUTO  AGRONÔMICO - IAC"
+
+
+def test_soja_da_snpc_casa_com_o_rnc_pelo_nome_cientifico():
+    registradas = csv_rows()[:2]
+    registradas[1][registradas[0].index("NOME CIENTÍFICO")] = "Glycine max (L.) Merr."
+    rnc = parser.parse_registradas_bundle(encode(registradas)).frame
+    snpc = parser.parse_protegidas_bundle(encode(csv_rows("protegidas"))).frame
+
+    cruzado = snpc.merge(rnc[["nome_cientifico"]], on="nome_cientifico")
+
+    assert cruzado["cultivar"].tolist() == [
+        "BRSGO 7654RR",
+        "CZ15B99I2X",
+        "DM  Nobre",
+        "SYN 1665 IPRO",
+    ]

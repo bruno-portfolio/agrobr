@@ -9,8 +9,8 @@ As dez colunas mantêm a ordem e os nomes da API RNC. Campos textuais são strin
 | Coluna | Tipo pandas | Nulo | Significado |
 |---|---|---|---|
 | `cultivar` | str | Não | Nome publicado; string vazia legítima é preservada |
-| `nome_comum` | str | Não | Nome comum da espécie |
-| `nome_cientifico` | str | Não | Nome científico publicado |
+| `nome_comum` | str | Não | Nome comum da espécie, com brancos internos repetidos juntados em 1 espaço |
+| `nome_cientifico` | str | Não | Nome científico publicado, com brancos internos repetidos juntados em 1 espaço |
 | `grupo` | str | Não | Grupo da espécie |
 | `situacao` | str | Não | Situação cadastral textual |
 | `nr_formulario` | str | Não | Número de formulário; pode repetir ou ser vazio |
