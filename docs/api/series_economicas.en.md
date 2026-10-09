@@ -48,7 +48,7 @@ The source partitions long ranges into blocks of at most ten years ending at ann
 
 Dates are published reference dates. A monthly series may return `2024-01-01` when the requested start is `02/01/2024`; the SDK retains it with a diagnostic warning, including when metadata is not requested. Saturdays, negative values and explicit JSON nulls are preserved. There is no daily filling, interpolation or replacement of missing values with zero. Series that publish `dataFim` (e.g. TR) gain the optional `data_fim` column with the end of the period.
 
-A duplicate within one response is an error. Repeated dates across blocks are reconciled only when their values agree, with origins retained; conflicts fail. A valid `[]` or the recognized no-values envelope can yield a typed empty frame. A recognized HTTP 404 emits a warning and does not establish that the series code exists.
+A duplicate within one response is an error. Repeated dates across blocks are reconciled only when their values agree, with origins retained; conflicts fail. A valid `[]` or the recognized no-values envelope can yield a typed empty frame. The recognized envelope, with HTTP 404 or 200, emits a warning and does not establish that the series code exists.
 
 The dataset base wraps source availability and contract failures in `SourceUnavailableError`, retaining their classification in `errors`; a layout failure raises `ParseError` ("Todas as fontes falharam por layout"), with the errors in `errors`. Invalid parameters retain `InvalidParameterError`. `bcb_sgs` is the only source; there is no fallback. Contract validation also runs on empty results and without metadata.
 

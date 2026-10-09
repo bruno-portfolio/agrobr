@@ -168,7 +168,7 @@ Intervalos longos são divididos por anos civis, unidos e ordenados antes de apl
 
 Parâmetros booleanos usados como código/quantidade, strings numéricas como código, datas malformadas e intervalos invertidos agora falham antes da rede. Dados inválidos deixam de virar nulos silenciosamente. Duplicatas no mesmo corpo e valores conflitantes entre blocos geram erro. Referências mensais/trimestrais anteriores ao dia inicial continuam presentes, com aviso e origem; não as trate automaticamente como observações diárias.
 
-O 404 oficial de ausência de valores passa a vazio tipado com aviso, sem comprovar a existência do código. Falhas de blocos não retornam parcial. Preserve os metadados: cobertura distingue aquisição dos blocos de completude da série, que permanece desconhecida; o hash/tamanho superiores identificam um manifesto, com hashes próprios dos corpos. Veja a [API SGS](../api/bcb.md#sgs) e o [contrato](../contracts/bcb_sgs.md).
+O envelope oficial de ausência de valores, com HTTP 404 ou 200, passa a vazio tipado com aviso, sem comprovar a existência do código. Falhas de blocos não retornam parcial. Preserve os metadados: cobertura distingue aquisição dos blocos de completude da série, que permanece desconhecida; o hash/tamanho superiores identificam um manifesto, com hashes próprios dos corpos. Veja a [API SGS](../api/bcb.md#sgs) e o [contrato](../contracts/bcb_sgs.md).
 
 ## Comtrade: World, cobertura e contratos 2.0
 

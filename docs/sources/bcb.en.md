@@ -211,7 +211,7 @@ The example query returns 3,767 daily observations for 2010–2024 across two bl
 
 [Contract 2.1](../contracts/bcb_sgs.en.md) retains `data`, `valor`, `codigo`, and `nome_serie`, including empty output, and adds `data_fim` when the series publishes `dataFim`. The 17 aliases remain available; other integer codes can be queried without inventing names. IPCA values can be negative. Check units and frequency in the particular series' catalogue; a historical exchange-rate code does not imply BRL throughout its history.
 
-Metadata records every final response, hash, status, UTC acquisition, and references outside the requested bounds. Obtaining every planned block does not establish series completeness because the endpoint provides no independent total. The official missing-values 404 does not establish that a code exists. The [verified ODbL license](../licenses.en.md#bcb-sgs) belongs to the series 1 catalogue and was not generalized to arbitrary codes.
+Metadata records every final response, hash, status, UTC acquisition, and references outside the requested bounds. Obtaining every planned block does not establish series completeness because the endpoint provides no independent total. The official missing-values envelope (with HTTP 404 or 200) does not establish that a code exists. The [verified ODbL license](../licenses.en.md#bcb-sgs) belongs to the series 1 catalogue and was not generalized to arbitrary codes.
 
 ---
 

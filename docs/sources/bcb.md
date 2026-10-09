@@ -208,7 +208,7 @@ A consulta do exemplo devolve 3.767 observações diárias em 2010–2024, em do
 
 O [contrato 3.0](../contracts/bcb_sgs.md) mantém `data`, `valor`, `codigo` e `nome_serie`, inclusive em vazio, e acrescenta `data_fim` quando a série publica `dataFim`. Os 17 aliases continuam disponíveis; outros códigos inteiros podem ser consultados sem receber um nome inventado. O IPCA pode ser negativo. Unidade monetária e frequência devem ser verificadas no cadastro específico; um código de câmbio histórico não implica BRL em toda a série.
 
-Metadados registram cada resposta, hash, status, aquisição UTC e referências fora da janela. Todos os blocos obtidos não comprovam completude da série, pois o endpoint não informa total independente. O 404 oficial de ausência de valores não comprova existência do código. A [licença verificada](../licenses.md#bcb-sgs) ODbL pertence ao catálogo da série 1; não foi generalizada para qualquer código.
+Metadados registram cada resposta, hash, status, aquisição UTC e referências fora da janela. Todos os blocos obtidos não comprovam completude da série, pois o endpoint não informa total independente. O envelope oficial de ausência de valores (com HTTP 404 ou 200) não comprova existência do código. A [licença verificada](../licenses.md#bcb-sgs) ODbL pertence ao catálogo da série 1; não foi generalizada para qualquer código.
 
 ---
 

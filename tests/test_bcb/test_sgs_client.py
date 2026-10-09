@@ -12,6 +12,10 @@ from agrobr.bcb import sgs_client, sgs_query
 from agrobr.exceptions import InvalidParameterError, ParseError, SourceUnavailableError
 from tests.helpers import collect_failures, levanta_exatamente, sem_excecao
 
+ENVELOPE_AUSENCIA = (
+    b'{"erro":{"statusCode":404,"detail":"br.gov.bcb.pec.sgs.comum.excecoes.'
+    b'SGSNegocioException: Value(s) not found"}}'
+)
 AUSENCIA_404 = (
     "SGS declarou ausência de valores (HTTP 404); esse envelope não comprova existência ou "
     "validade do código da série."
@@ -199,6 +203,42 @@ async def test_404_conhecido_e_vazio_valido_nao_inventam_observacoes(sgs_http, s
         )
     assert (vazio.records, vazio.warnings) == ([], [])
     assert (vazio.coverage.completeness, vazio.coverage.returned_count) == ("unknown", 0)
+
+
+@pytest.mark.parametrize("status", [200, 404])
+async def test_envelope_de_ausencia_vira_vazio_com_200_ou_404(sgs_http, status):
+    sgs_http(lambda _request, _index: httpx.Response(status, content=ENVELOPE_AUSENCIA))
+    with sem_excecao():
+        ausente = await sgs_client.fetch_sgs_acquisition(
+            selection(data_inicial="06/01/2024", data_final="07/01/2024")
+        )
+    assert ausente.records == []
+    assert ausente.warnings == [
+        f"SGS declarou ausência de valores (HTTP {status}); esse envelope não comprova "
+        "existência ou validade do código da série."
+    ]
+    assert ausente.resources[0].status_code == status
+    assert ausente.resources[0].size_bytes == 112
+    assert (ausente.coverage.completeness, ausente.coverage.returned_count) == ("unknown", 0)
+
+
+async def test_200_com_outro_objeto_segue_parse_error(sgs_http):
+    with collect_failures() as check:
+        for payload in [
+            {"erro": {"statusCode": 404, "detail": "generic missing resource"}},
+            {"erro": {"statusCode": "404", "detail": "Value(s) not found"}},
+            {"error": "Value(s) not found"},
+        ]:
+            sgs_http(lambda _request, _index, payload=payload: httpx.Response(200, json=payload))
+            with (
+                check(payload),
+                levanta_exatamente(
+                    ParseError, match=re.escape("Resposta SGS deve ser uma lista de observações")
+                ),
+            ):
+                await sgs_client.fetch_sgs_acquisition(
+                    selection(data_inicial="06/01/2024", data_final="07/01/2024")
+                )
 
 
 async def test_replay_latest_route_keeps_dates_omitted(sgs_http, sgs_captures):

@@ -48,7 +48,7 @@ Períodos longos são divididos pela fonte em blocos de até dez anos, encerrado
 
 As datas são referências publicadas. Uma série mensal pode retornar a referência `01/01/2024` ao consultar a partir de `02/01/2024`; o SDK preserva essa referência e emite diagnóstico, inclusive sem metadados. Sábados, valores negativos e nulos JSON explícitos não são descartados. Não há preenchimento diário, interpolação ou substituição de ausência por zero. Séries que publicam `dataFim` (ex.: TR) ganham a coluna opcional `data_fim` com o fim do período.
 
-Duplicata dentro de um corpo é erro. Referências repetidas entre blocos somente são reconciliadas quando o valor coincide, preservando as origens; conflito falha. `[]` válido ou o envelope específico de ausência de valores pode produzir o esquema vazio tipado. O HTTP 404 reconhecido emite aviso e não comprova que o código exista.
+Duplicata dentro de um corpo é erro. Referências repetidas entre blocos somente são reconciliadas quando o valor coincide, preservando as origens; conflito falha. `[]` válido ou o envelope específico de ausência de valores pode produzir o esquema vazio tipado. O envelope reconhecido, com HTTP 404 ou 200, emite aviso e não comprova que o código exista.
 
 A base do dataset encapsula indisponibilidade e violação de contrato da fonte em `SourceUnavailableError`, com classificação em `errors`; erro de layout sai como `ParseError` ("Todas as fontes falharam por layout"), com os erros em `errors`. Parâmetros inválidos mantêm `InvalidParameterError`. Existe somente a fonte `bcb_sgs`, sem fallback. O contrato é validado também sem `return_meta` e no resultado vazio.
 

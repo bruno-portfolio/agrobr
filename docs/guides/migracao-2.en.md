@@ -164,7 +164,7 @@ Long ranges are partitioned by calendar years, reconciled, and sorted before app
 
 Boolean codes/counts, numeric strings as codes, malformed dates, and inverted ranges now fail before network access. Invalid observations no longer silently become null. Duplicates within a body and conflicting values across blocks raise errors. Monthly/quarterly references before the starting day remain present with a warning and provenance; do not automatically interpret them as daily observations.
 
-The official missing-values 404 now returns typed empty output with a warning, without establishing that the code exists. Failed blocks do not yield partial output. Retain metadata: coverage distinguishes acquired blocks from series completeness, which remains unknown; top hash/size identify a manifest, with individual body hashes. See the [SGS API](../api/bcb.en.md#sgs) and [contract](../contracts/bcb_sgs.en.md).
+The official missing-values envelope, with HTTP 404 or 200, now returns typed empty output with a warning, without establishing that the code exists. Failed blocks do not yield partial output. Retain metadata: coverage distinguishes acquired blocks from series completeness, which remains unknown; top hash/size identify a manifest, with individual body hashes. See the [SGS API](../api/bcb.en.md#sgs) and [contract](../contracts/bcb_sgs.en.md).
 
 ## Comtrade: World, coverage and contracts 2.0
 

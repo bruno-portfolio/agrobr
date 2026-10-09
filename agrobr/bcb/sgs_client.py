@@ -56,15 +56,15 @@ def _parse_response(response: httpx.Response) -> tuple[sgs_models.SGSParsedBlock
             pass
         else:
             raise InvalidParameterError(limit.erro.detail.partition(": ")[2])
-    if response.status_code == 404:
+    if response.status_code in {200, 404}:
         try:
             sgs_acquisition.SGSNotFoundEnvelope.model_validate_json(response.content)
         except pydantic.ValidationError:
             pass
         else:
             warning = (
-                "SGS declarou ausência de valores (HTTP 404); esse envelope não comprova "
-                "existência ou validade do código da série."
+                f"SGS declarou ausência de valores (HTTP {response.status_code}); esse envelope "
+                "não comprova existência ou validade do código da série."
             )
             return sgs_models.SGSParsedBlock(
                 records=[],
