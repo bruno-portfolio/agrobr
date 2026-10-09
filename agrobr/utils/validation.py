@@ -4,6 +4,8 @@ import re
 from datetime import date, datetime
 from typing import overload
 
+import pandas as pd
+
 from agrobr.exceptions import InvalidParameterError
 from agrobr.normalize import dates
 from agrobr.utils import time as time_utils
@@ -44,11 +46,13 @@ def parse_data(valor: str | date | datetime | None, nome: str = "data") -> date 
     Outro formato nunca é adivinhado: `01/02/2024` é sempre 1º de fevereiro.
 
     Raises:
-        InvalidParameterError: tipo ou formato fora dos aceitos, ou data inexistente.
+        InvalidParameterError: tipo ou formato fora dos aceitos, data inexistente ou `pd.NaT`.
     """
     if valor is None:
         return None
     if isinstance(valor, datetime):
+        if pd.isna(valor):
+            raise InvalidParameterError(f"{nome} é NaT (data ausente): informe uma data")
         return valor.date()
     if isinstance(valor, date):
         return valor

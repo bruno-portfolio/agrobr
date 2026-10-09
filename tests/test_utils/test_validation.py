@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from datetime import date, datetime
 
+import pandas as pd
 import pytest
 
 from agrobr.exceptions import InvalidParameterError
@@ -38,6 +39,15 @@ class TestParseData:
     def test_data_inexistente(self, valor):
         with pytest.raises(InvalidParameterError, match="fim contém data inexistente"):
             parse_data(valor, "fim")
+
+    def test_nat_recusado(self):
+        with pytest.raises(InvalidParameterError, match="inicio é NaT"):
+            parse_data(pd.NaT, "inicio")
+
+    def test_timestamp_aceito(self):
+        resultado = parse_data(pd.Timestamp("2024-02-01 10:30"), "inicio")
+        assert resultado == date(2024, 2, 1)
+        assert type(resultado) is date
 
 
 class TestValidateBioma:
