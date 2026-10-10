@@ -434,13 +434,33 @@ async def test_cache_com_erro_ainda_devolve_a_serie(cache, monkeypatch):
     assert frame["valor"].tolist() == esperado[1].astype(float).tolist()
 
 
+def _erro_de_abertura(caminho: Path) -> duckdb.Error | None:
+    """O erro da abertura que o cache faz em toda operação (conexão e esquema, como no
+    `_get_conn`); consulta com filtro pode não chegar ao bloco que falta."""
+    try:
+        with duckdb.connect(str(caminho)) as conexao:
+            duckdb_store.DuckDBStore._init_schema(conexao)
+    except duckdb.Error as erro:
+        return erro
+    return None
+
+
+def _danificar(caminho: Path) -> None:
+    """Trunca o banco pela metade; se o DuckDB instalado ainda o abre (o 2.0 abre), zera o bloco
+    de cabeçalho com a assinatura do arquivo, que nenhuma versão abre."""
+    with caminho.open("r+b") as arquivo:
+        arquivo.truncate(caminho.stat().st_size // 2)
+    if _erro_de_abertura(caminho) is None:
+        with caminho.open("r+b") as arquivo:
+            arquivo.write(bytes(4096))
+    erro = _erro_de_abertura(caminho)
+    assert erro is not None and duckdb_store._arquivo_danificado(erro), erro
+
+
 @pytest.mark.usefixtures("sem_pagina")
 async def test_cache_danificado_vai_para_o_lado_e_a_consulta_segue(cache, baixar):
     await api.indicador("soja", **AGOSTO)
-    tamanho = cache.db_path.stat().st_size
-    with cache.db_path.open("r+b") as arquivo:
-        arquivo.truncate(tamanho // 2)
-    duckdb.connect(str(cache.db_path)).close()
+    _danificar(cache.db_path)
     esperado = diario("soja_92.xls", **AGOSTO)
 
     with warnings.catch_warnings(record=True) as emitidos, sem_excecao():
