@@ -191,7 +191,7 @@ def test_tabela_de_culturas_e_operacoes_da_doc_confere_as_planilhas():
             (OFICIAL / "progresso_20260920.xlsx").read_bytes()
         ).items()
     }
-    for doc, titulo in [(DOC, "### Culturas Disponiveis"), (DOC_EN, "### Available Crops")]:
+    for doc, titulo in [(DOC, "### Culturas Disponíveis"), (DOC_EN, "### Available Crops")]:
         tabela = doc.read_text(encoding="utf-8").split(titulo, 1)[1].split("\n\n", 2)[1]
         linhas = [linha.split("|") for linha in tabela.splitlines()[2:]]
         operacoes = {
