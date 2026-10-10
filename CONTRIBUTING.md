@@ -292,7 +292,7 @@ Verifique e documente em `docs/licenses.md` antes do merge:
 ## Gates de publicação
 
 `publish.yml` chama o workflow local `tests.yml` do mesmo commit antes do build.
-Esse gate reúne Python 3.11–3.13, dependências mínimas, Windows, Ruff, mypy,
+Esse gate reúne Python 3.11–3.14 (e um job com o Polars), dependências mínimas, Windows, Ruff, mypy,
 calculadora, documentação estrita e instalação somente core. O pacote é
 construído uma vez; o smoke de instalação e os destinos de publicação baixam
 esse mesmo artefato por ID, com verificação de digest.

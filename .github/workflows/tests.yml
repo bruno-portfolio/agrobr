@@ -10,6 +10,10 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: tests-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' || github.event_name == 'push' }}
+
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
@@ -19,11 +23,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ["3.11", "3.12", "3.13", "3.14"]
-        extras: ["dev,pdf,geo"]
-        include:
-          - python-version: "3.14"
-            extras: "dev,pdf,geo,polars"
+        include: ${{ fromJSON(github.event_name == 'pull_request' && '[{"python-version":"3.11","extras":"dev,pdf,geo"},{"python-version":"3.14","extras":"dev,pdf,geo,polars"}]' || '[{"python-version":"3.11","extras":"dev,pdf,geo"},{"python-version":"3.12","extras":"dev,pdf,geo"},{"python-version":"3.13","extras":"dev,pdf,geo"},{"python-version":"3.14","extras":"dev,pdf,geo"},{"python-version":"3.14","extras":"dev,pdf,geo,polars"}]') }}
 
     steps:
       - uses: actions/checkout@v7
@@ -52,9 +52,10 @@ jobs:
 
       - name: Run tests
         run: |
-          pytest tests/ -v -n auto --disable-socket --allow-unix-socket -m "not integration and not benchmark" --cov=agrobr --cov-report=xml --cov-report=term-missing
+          pytest tests/ -v -n auto --disable-socket --allow-unix-socket -m "not integration and not benchmark" ${{ matrix.python-version == '3.11' && '--cov=agrobr --cov-report=xml --cov-report=term-missing' || '' }}
 
       - name: Upload coverage
+        if: matrix.python-version == '3.11'
         uses: codecov/codecov-action@v7
         with:
           files: ./coverage.xml
@@ -68,6 +69,7 @@ jobs:
           pip-audit --skip-editable
 
   minimum-compatibility:
+    if: github.event_name != 'pull_request'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
@@ -140,7 +142,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ["3.11", "3.12", "3.13", "3.14"]
+        python-version: ${{ fromJSON(github.event_name == 'pull_request' && '["3.11"]' || '["3.11", "3.12", "3.13", "3.14"]') }}
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-python@v7

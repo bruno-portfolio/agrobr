@@ -9,7 +9,7 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 
 ### Changed
 
-- **ci** — a suíte roda em paralelo no CI (`pytest -n auto`, com `pytest-xdist` no extra `dev`): os jobs `test` e `minimum-compatibility` usam todos os núcleos da máquina do GitHub, em vez de um só.
+- **ci** — a suíte roda em paralelo no CI (`pytest -n auto`, com `pytest-xdist` no extra `dev`): os jobs `test` e `minimum-compatibility` usam todos os núcleos da máquina do GitHub, em vez de um só, e um run novo do mesmo PR ou da `main` cancela o anterior. Nos PRs rodam o Python 3.11 (com a cobertura) e o 3.14 com o Polars, um `core-package`, Windows, documentação e calculadora; a matriz completa, o `minimum-compatibility` e os outros `core-package` ficam no push da `main` e na Release.
 
 ## [2.0.0] - 2026-10-10
 

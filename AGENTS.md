@@ -35,8 +35,8 @@ node --test calculadora/tests/*.test.mjs   # Node.js 24
 - O mypy roda em modo strict, e a cobertura mínima é 85%.
 - O `pytest` sem argumentos já bloqueia a rede e pula `slow`, `benchmark` e `integration`. Teste que precisa de rede leva o
   marcador `integration`.
-- A CI roda também:
-  - Python 3.11, 3.12 e 3.13;
+- A CI roda também (nos PRs, só o Python 3.11 e o 3.14 com o Polars; o resto no push da `main` e na Release):
+  - Python 3.11 a 3.14 e um job com o Polars;
   - as dependências mínimas (`scripts/constraints-minimum.txt`);
   - Windows;
   - a instalação só do core, fora do checkout;
