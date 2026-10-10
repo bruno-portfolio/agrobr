@@ -21,6 +21,7 @@ Catálogo desta versão: **54 datasets e 89 contratos registrados**. Mudanças i
 - **Reconciliação semanal:** o workflow `reconciliacao.yml` compara, toda segunda-feira, a saída com as fontes oficiais e abre issue quando diverge.
 - **Documentação:** guia de migração e páginas "O que o agrobr grava no disco", da API pública, das variáveis de ambiente e da referência da CLI, em PT e EN.
 - **API uniforme:** o mesmo nome para o mesmo conceito em toda a API (`inicio`/`fim`, `ano_inicio`/`ano_fim`, `uf`, `produto` e `municipio` pelo nome inteiro ou pelo código IBGE), `as_polars`, `return_meta` e as opções depois deles só por nome, tipos de saída padronizados (data em `datetime64`, inteiro em `Int64`, texto no dtype padrão do pandas e vazio com os tipos do cheio), entrada inválida recusada antes da rede com os valores válidos, `ParseError` quando todas as fontes falham por layout, variáveis de ambiente corrigidas e a lista explícita da API pública. As mudanças caladas estão no topo do [guia de migração](docs/guides/migracao-2.md#resumo-o-que-quebra).
+- **Comunidade:** obrigado a [@mpcabete](https://github.com/mpcabete), que reportou e corrigiu a série histórica da CONAB (#104, #105, #106, #109, #110, #111, #112), e a [@zandora](https://github.com/zandora), que pediu e propôs o indicador do bezerro do CEPEA (#102, #103).
 
 ### Added
 
