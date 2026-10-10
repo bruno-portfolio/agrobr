@@ -192,6 +192,21 @@ async def serie_historica(
 
 Bounds are inclusive integer years, applied to the starting year of `safra`. Replace `inicio=`/`fim=` with `ano_inicio=`/`ano_fim=`. Metric names and units remain as defined in [contract 1.1](../contracts/serie_historica_safra.md).
 
+### `cana_industria`
+
+```python
+async def cana_industria(
+    ano_inicio: int | None = None,
+    ano_fim: int | None = None,
+    uf: str | None = None,
+    *,
+    as_polars: bool = False,
+    return_meta: bool = False,
+) -> pd.DataFrame | pl.DataFrame  # (df, MetaInfo) if return_meta=True
+```
+
+Sugarcane industrial historical series (`canaseriehist-industria.xls`): one row per season and state with sugar (thousand t), cane and corn anhydrous and hydrated ethanol and total ethanol (thousand liters) and average ATR (kg/t of cane), in the published units. `etanol_total_mil_l` includes corn ethanol: it is not cane ethanol. Filters and pre-network validation are those of `serie_historica`; `serie_historica("cana_industria")` raises `InvalidParameterError` pointing to this function. Zero vs. empty, warnings and layout errors are in [contract 1.0](../contracts/producao_acucar_etanol.md); the dataset is `datasets.producao_acucar_etanol`.
+
 ### `produtos_serie_historica`
 
 `conab.produtos_serie_historica()` returns a list of dictionaries containing `produto`, `categoria` and `url`, without a request. It lists historical series; `conab.produtos()` lists the products in monthly surveys.
@@ -240,6 +255,7 @@ The CONAB module also exposes (documented in their own pages or in the contracts
 
 - `custo_producao(produto, uf=..., planilha=..., aba=...)` / `custo_producao_total(...)` — production costs per hectare; `as_polars` and `return_meta` are keyword-only. `catalogo_custos(produto)` lists agricultural workbooks, and a product with no workbook in the catalog raises `InvalidParameterError` listing the published crops; with `planilha=...`, it lists sheets and identified or unresolved contexts, with `data_referencia` as `datetime64[ns]`. Any product with multiple candidate workbooks or contexts requires explicit `planilha` and `aba` selection until a single context is identified; the API lists candidates and does not select a revision automatically. Coffee uses `cafe_arabica` or `cafe_conilon`. A subtotal or formula total that does not close with the published items issues a warning in `meta.validation_warnings`. See the dataset's eight products and their semantics in the [custo_producao](../contracts/custo_producao.md) contract
 - `serie_historica(produto, ...)` — crop historical series (45 products, with coverage depending on the product). Coffee includes producing/developing areas and explicit conversions to thousand ha, thousand tonnes and kg/ha; sugarcane publishes harvested area in `area_colhida_mil_ha`. Warns when the sum of the states does not match the published BRASIL, under the `safras` rule. See the [serie_historica_safra](../contracts/serie_historica_safra.md) contract
+- `cana_industria(ano_inicio, ano_fim, uf)` — sugar, cane and corn ethanol and ATR by season and state; `etanol_total_mil_l` includes corn. Warns when the total does not match the four parts or the sum of the states does not match BRASIL, and passes on the published numbers. See the [producao_acucar_etanol](../contracts/producao_acucar_etanol.md) contract
 - `progresso_safra(...)` / `semanas_disponiveis()` — weekly planting/harvest progress. See the [CONAB Progress API](conab_progresso.md)
 - `ceasa_precos(...)` / `ceasa_produtos()` / `ceasa_categorias()` / `lista_ceasas()` — wholesale produce prices. See the [CONAB CEASA API](conab_ceasa.md)
 

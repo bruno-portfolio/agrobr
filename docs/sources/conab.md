@@ -248,6 +248,30 @@ Abas selecionadas ilegíveis, ausentes ou ambíguas geram `ParseError`; filtros 
 
 `arroz_sequeiro`: o rótulo de unidade das abas Produtividade e Produção está errado na planilha oficial (set/2026); os valores são kg/ha e mil t, conforme a relação produção/área.
 
+## Série histórica industrial da cana
+
+`conab.cana_industria(ano_inicio=None, ano_fim=None, uf=None)` lê a `canaseriehist-industria.xls` (Séries Históricas, cana-de-açúcar, indústria): sete abas, uma coluna por aba, uma linha por safra e UF, nas unidades publicadas. É uma API própria porque o esquema não é o da série agrícola; `conab.serie_historica("cana_industria")` levanta `InvalidParameterError` apontando para ela.
+
+```python
+df = await conab.cana_industria(ano_inicio=2020, ano_fim=2025, uf="MT")
+etanol_cana = df["etanol_anidro_cana_mil_l"] + df["etanol_hidratado_cana_mil_l"]
+```
+
+| Coluna | Tipo | Descricao |
+|--------|------|-----------|
+| `safra` | str | Safra (ex: "2024/25") |
+| `regiao` | str | Região da UF |
+| `uf` | str | Sigla da UF |
+| `acucar_mil_ton` | float | Açúcar, mil toneladas |
+| `etanol_anidro_cana_mil_l` | float | Etanol anidro de cana, mil litros |
+| `etanol_hidratado_cana_mil_l` | float | Etanol hidratado de cana, mil litros |
+| `etanol_anidro_milho_mil_l` | float | Etanol anidro de milho, mil litros |
+| `etanol_hidratado_milho_mil_l` | float | Etanol hidratado de milho, mil litros |
+| `etanol_total_mil_l` | float | Etanol total publicado, de cana e de milho, mil litros |
+| `atr_kg_t` | float | ATR médio, kg/t de cana |
+
+A aba "Etanol Total (cana e milho)" inclui o etanol de milho, publicado a partir de 2018/19: ler `etanol_total_mil_l` como etanol de cana superestima o MT em 2024/25 5,7 vezes. Zero publicado sai `0.0`; traço, vazio e erro do Excel saem nulos. A estimativa (última coluna, marcada com `(¹)`) e as linhas de região e BRASIL ficam fora. Total diferente das quatro parcelas, soma das UFs diferente do BRASIL, erro do Excel e a safra fechada mais recente geram aviso, sem alterar os números; layout diferente do medido gera `ParseError`. Detalhes no [contrato 1.0](../contracts/producao_acucar_etanol.md).
+
 ## Cache
 
 As consultas da CONAB não guardam cópia local: cada chamada baixa a publicação. `meta.cache_expires_at` sai nulo; em `conab.safras`, o
@@ -264,7 +288,9 @@ As consultas da CONAB não guardam cópia local: cada chamada baixa a publicaç�
 
 - [`estimativa_safra`](../contracts/estimativa_safra.md) — contrato 3.1 com levantamento CONAB ou mês LSPA explícito
 
-- [`serie_historica_safra`](../contracts/serie_historica_safra.md) — wraps `conab.serie_historica()` (45 produtos; `cana_industria` removida do suporte anunciado na versão 2.0)
+- [`serie_historica_safra`](../contracts/serie_historica_safra.md) — wraps `conab.serie_historica()` (45 produtos; a série industrial da cana tem API própria, `conab.cana_industria()`)
+
+- [`producao_acucar_etanol`](../contracts/producao_acucar_etanol.md) — wraps `conab.cana_industria()` (açúcar, etanol de cana e de milho e ATR por safra e UF)
 
 ## Semântica na versão 2.0
 

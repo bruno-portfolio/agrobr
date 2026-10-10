@@ -1,0 +1,179 @@
+{
+  "name": "conab.producao_acucar_etanol",
+  "schema_version": "1.0",
+  "effective_from": "2.0.0",
+  "breaking_policy": "major",
+  "primary_key": [
+    "safra",
+    "uf"
+  ],
+  "required_columns": [
+    "safra",
+    "regiao",
+    "uf",
+    "acucar_mil_ton",
+    "etanol_anidro_cana_mil_l",
+    "etanol_hidratado_cana_mil_l",
+    "etanol_anidro_milho_mil_l",
+    "etanol_hidratado_milho_mil_l",
+    "etanol_total_mil_l",
+    "atr_kg_t"
+  ],
+  "dtypes": {
+    "safra": "str",
+    "regiao": "str",
+    "uf": "str",
+    "acucar_mil_ton": "float",
+    "etanol_anidro_cana_mil_l": "float",
+    "etanol_hidratado_cana_mil_l": "float",
+    "etanol_anidro_milho_mil_l": "float",
+    "etanol_hidratado_milho_mil_l": "float",
+    "etanol_total_mil_l": "float",
+    "atr_kg_t": "float"
+  },
+  "nullable": {
+    "safra": false,
+    "regiao": false,
+    "uf": false,
+    "acucar_mil_ton": true,
+    "etanol_anidro_cana_mil_l": true,
+    "etanol_hidratado_cana_mil_l": true,
+    "etanol_anidro_milho_mil_l": true,
+    "etanol_hidratado_milho_mil_l": true,
+    "etanol_total_mil_l": true,
+    "atr_kg_t": true
+  },
+  "columns": [
+    {
+      "name": "safra",
+      "type": "str",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "Safra da cana como publicada (AAAA/AA)",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "regiao",
+      "type": "str",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "Grande região da UF: NORTE, NORDESTE, CENTRO-OESTE, SUDESTE ou SUL",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "uf",
+      "type": "str",
+      "nullable": false,
+      "unit": null,
+      "stable": true,
+      "deprecated": false,
+      "description": "Sigla da UF",
+      "min_value": null,
+      "max_value": null
+    },
+    {
+      "name": "acucar_mil_ton",
+      "type": "float",
+      "nullable": true,
+      "unit": "mil t",
+      "stable": true,
+      "deprecated": false,
+      "description": "Produção de açúcar",
+      "min_value": 0,
+      "max_value": null
+    },
+    {
+      "name": "etanol_anidro_cana_mil_l",
+      "type": "float",
+      "nullable": true,
+      "unit": "mil litros",
+      "stable": true,
+      "deprecated": false,
+      "description": "Etanol anidro de cana-de-açúcar",
+      "min_value": 0,
+      "max_value": null
+    },
+    {
+      "name": "etanol_hidratado_cana_mil_l",
+      "type": "float",
+      "nullable": true,
+      "unit": "mil litros",
+      "stable": true,
+      "deprecated": false,
+      "description": "Etanol hidratado de cana-de-açúcar",
+      "min_value": 0,
+      "max_value": null
+    },
+    {
+      "name": "etanol_anidro_milho_mil_l",
+      "type": "float",
+      "nullable": true,
+      "unit": "mil litros",
+      "stable": true,
+      "deprecated": false,
+      "description": "Etanol anidro de milho",
+      "min_value": 0,
+      "max_value": null
+    },
+    {
+      "name": "etanol_hidratado_milho_mil_l",
+      "type": "float",
+      "nullable": true,
+      "unit": "mil litros",
+      "stable": true,
+      "deprecated": false,
+      "description": "Etanol hidratado de milho",
+      "min_value": 0,
+      "max_value": null
+    },
+    {
+      "name": "etanol_total_mil_l",
+      "type": "float",
+      "nullable": true,
+      "unit": "mil litros",
+      "stable": true,
+      "deprecated": false,
+      "description": "Etanol total publicado, de cana e de milho; não é o etanol de cana",
+      "min_value": 0,
+      "max_value": null
+    },
+    {
+      "name": "atr_kg_t",
+      "type": "float",
+      "nullable": true,
+      "unit": "kg/t de cana",
+      "stable": true,
+      "deprecated": false,
+      "description": "ATR médio; 0 publicado acompanha UF sem açúcar nem etanol de cana na safra",
+      "min_value": 0,
+      "max_value": null
+    }
+  ],
+  "constraints": {
+    "no_duplicates": true,
+    "acucar_mil_ton_min": 0,
+    "etanol_anidro_cana_mil_l_min": 0,
+    "etanol_hidratado_cana_mil_l_min": 0,
+    "etanol_anidro_milho_mil_l_min": 0,
+    "etanol_hidratado_milho_mil_l_min": 0,
+    "etanol_total_mil_l_min": 0,
+    "atr_kg_t_min": 0
+  },
+  "guarantees": [
+    "PK única por safra + uf",
+    "Só linhas de UF, as 27 em toda safra fechada; regiões, NORTE/NORDESTE, CENTRO-SUL e BRASIL ficam fora",
+    "Safras fechadas desde 2005/06; a coluna da estimativa (marcada com nota) fica fora",
+    "Unidades da fonte, sem conversão: açúcar em mil t, etanol em mil litros, ATR em kg/t de cana",
+    "Zero publicado sai 0.0; traço, célula vazia e erro do Excel saem NaN, nunca zero",
+    "etanol_total_mil_l é o publicado e inclui o etanol de milho; total diferente da soma das 4 parcelas (vazio conta 0) gera aviso em validation_warnings e UserWarning, sem alterar número",
+    "Soma das UFs diferente do BRASIL publicado nas colunas de volume gera aviso, sem alterar número",
+    "Métricas >= 0 quando presentes",
+    "Aba, título, unidade, UFs ou colunas de safra diferentes do layout medido levantam ParseError"
+  ]
+}

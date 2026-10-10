@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import hashlib
 import time
 from datetime import date
 from typing import Literal, overload
@@ -7,6 +8,7 @@ from typing import Literal, overload
 import pandas as pd
 
 from agrobr import _log
+from agrobr.contracts import producao_acucar_etanol
 from agrobr.exceptions import InvalidParameterError
 from agrobr.models import MetaInfo
 from agrobr.utils import result as result_utils
@@ -15,7 +17,7 @@ from agrobr.utils.time import hoje
 from agrobr.utils.validation import validate_uf
 from agrobr.utils.warnings import warn_once
 
-from . import client
+from . import client, industria
 from .parser import (
     PARSER_VERSION,
     avisar_soma_das_ufs,
@@ -29,6 +31,14 @@ logger = _log.get_logger(__name__)
 
 def _hoje() -> date:
     return hoje()
+
+
+def _validar_periodo(ano_inicio: int | None, ano_fim: int | None) -> None:
+    for nome, ano in (("ano_inicio", ano_inicio), ("ano_fim", ano_fim)):
+        if ano is not None and (isinstance(ano, bool) or not isinstance(ano, int)):
+            raise InvalidParameterError(f"{nome} deve ser um ano inteiro ou None: {ano!r}")
+    if ano_inicio is not None and ano_fim is not None and ano_inicio > ano_fim:
+        raise InvalidParameterError(f"ano_inicio ({ano_inicio}) posterior a ano_fim ({ano_fim})")
 
 
 def _safras_em_revisao(hoje: date) -> set[str]:
@@ -97,11 +107,7 @@ async def serie_historica(
     return_meta: bool = False,
 ) -> result_utils.DataFrameResult:
     client.get_xls_url(produto)
-    for nome, ano in (("ano_inicio", ano_inicio), ("ano_fim", ano_fim)):
-        if ano is not None and (isinstance(ano, bool) or not isinstance(ano, int)):
-            raise InvalidParameterError(f"{nome} deve ser um ano inteiro ou None: {ano!r}")
-    if ano_inicio is not None and ano_fim is not None and ano_inicio > ano_fim:
-        raise InvalidParameterError(f"ano_inicio ({ano_inicio}) posterior a ano_fim ({ano_fim})")
+    _validar_periodo(ano_inicio, ano_fim)
     uf = validate_uf(uf)
     t0 = time.monotonic()
 
@@ -163,6 +169,99 @@ async def serie_historica(
     meta.contract_version = "1.1"
     meta.schema_version = "1.1"
     return finalize_result(df, meta, as_polars=as_polars, return_meta=return_meta)
+
+
+@overload
+async def cana_industria(
+    ano_inicio: int | None = None,
+    ano_fim: int | None = None,
+    uf: str | None = None,
+    *,
+    as_polars: Literal[False] = False,
+    return_meta: Literal[False] = False,
+) -> pd.DataFrame: ...
+
+
+@overload
+async def cana_industria(
+    ano_inicio: int | None = None,
+    ano_fim: int | None = None,
+    uf: str | None = None,
+    *,
+    as_polars: bool = False,
+    return_meta: Literal[False] = False,
+) -> result_utils.DataFrame: ...
+
+
+@overload
+async def cana_industria(
+    ano_inicio: int | None = None,
+    ano_fim: int | None = None,
+    uf: str | None = None,
+    *,
+    as_polars: Literal[False] = False,
+    return_meta: Literal[True],
+) -> tuple[pd.DataFrame, MetaInfo]: ...
+
+
+@overload
+async def cana_industria(
+    ano_inicio: int | None = None,
+    ano_fim: int | None = None,
+    uf: str | None = None,
+    *,
+    as_polars: bool = False,
+    return_meta: Literal[True],
+) -> tuple[result_utils.DataFrame, MetaInfo]: ...
+
+
+async def cana_industria(
+    ano_inicio: int | None = None,
+    ano_fim: int | None = None,
+    uf: str | None = None,
+    *,
+    as_polars: bool = False,
+    return_meta: bool = False,
+) -> result_utils.DataFrameResult:
+    """Série histórica industrial da cana (CONAB): açúcar, etanol de cana e de milho e ATR por
+    safra e UF, nas unidades publicadas. `ano_inicio`/`ano_fim` filtram pelo 1º ano da safra."""
+    _validar_periodo(ano_inicio, ano_fim)
+    uf = validate_uf(uf)
+    t0 = time.monotonic()
+    logger.info("conab_cana_industria_request", ano_inicio=ano_inicio, ano_fim=ano_fim, uf=uf)
+
+    xls, metadata = await client.download_xls(industria.PRODUTO)
+    raw = xls.getvalue()
+
+    t1 = time.monotonic()
+    df = industria.parse_cana_industria(raw, ano_inicio, ano_fim, uf)
+    parse_ms = int((time.monotonic() - t1) * 1000)
+    fetch_ms = int((time.monotonic() - t0) * 1000)
+
+    meta = build_source_meta(
+        industria.FONTE,
+        metadata["url"],
+        "httpx",
+        fetch_ms,
+        parse_ms,
+        df,
+        industria.PARSER_VERSION,
+        attempted_sources=[industria.FONTE],
+        selected_source=industria.FONTE,
+        raw_content_hash=hashlib.sha256(raw).hexdigest(),
+        raw_content_size=len(raw),
+    )
+    meta.dataset = "producao_acucar_etanol"
+    meta.contract_version = meta.schema_version = (
+        producao_acucar_etanol.PRODUCAO_ACUCAR_ETANOL_V1.version
+    )
+    return finalize_result(
+        df,
+        meta,
+        as_polars=as_polars,
+        return_meta=return_meta,
+        string_columns=("safra", "regiao", "uf"),
+    )
 
 
 def produtos_disponiveis() -> list[dict[str, str]]:

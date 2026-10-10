@@ -55,6 +55,7 @@ SONDA = {
     "preco_atacado": {"produtos": ["batata"]},
     "preco_diario": {"produtos": ["soja"]},
     "precos_diesel": {"ufs": ["SP"]},
+    "producao_acucar_etanol": {"ufs": ["SP"]},
     "producao_anual": {"ufs": ["DF"]},
     "progresso_safra": {"estado": "MT"},
     "queimadas": {"ufs": ["MT"]},

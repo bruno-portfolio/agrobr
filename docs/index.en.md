@@ -15,7 +15,7 @@
 
 Python infrastructure for Brazilian agricultural data with a **semantic layer** over 41 public sources.
 
-**v2.0.0** — 54 datasets | 89 versioned contracts | parameter validation before network calls | per-source golden tests
+**v2.0.0** — 55 datasets | 90 versioned contracts | parameter validation before network calls | per-source golden tests
 
 - **CEPEA/ESALQ**: 22 price indicators (soybean, corn, live cattle, arabica coffee, robusta coffee, cotton, wheat, rice, sugar, ethanol, poultry, hog, milk, orange)
 - **CONAB**: Crop surveys, supply/demand balance, production costs, historical series, weekly planting/harvest progress, and wholesale produce prices (CEASA/PROHORT)
@@ -56,7 +56,7 @@ Python infrastructure for Brazilian agricultural data with a **semantic layer** 
 
 ## Datasets — Semantic Layer
 
-54 datasets are available with tracked provenance. Fallback depends on the alternative sources configured for each dataset:
+55 datasets are available with tracked provenance. Fallback depends on the alternative sources configured for each dataset:
 
 | Dataset | Description | Sources |
 |---------|-------------|------------------------------|
@@ -106,6 +106,7 @@ Python infrastructure for Brazilian agricultural data with a **semantic layer** 
 | `posicionamento_fundos` | Fund positioning by trader category (COT) | CFTC |
 | `preco_atacado` | Wholesale produce prices at CEASAs | CONAB CEASA/PROHORT |
 | `preco_diario` | Daily spot prices | CEPEA |
+| `producao_acucar_etanol` | Sugar, cane and corn ethanol and ATR by season and state | CONAB |
 | `producao_anual` | Consolidated annual output | IBGE PAM → CONAB |
 | `progresso_safra` | Weekly sowing/harvest progress | CONAB |
 | `queimadas` | Satellite fire hotspots (6 biomes) | INPE |

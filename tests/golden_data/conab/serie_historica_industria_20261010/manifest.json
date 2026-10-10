@@ -1,0 +1,869 @@
+{
+ "fonte": "conferência de 10/10/2026",
+ "oraculo": "xlrd, células A1 cruas (tipo e valor); sem o parser do agrobr",
+ "arquivo": {
+  "file": "canaseriehist-industria.xls",
+  "url": "https://www.gov.br/conab/pt-br/atuacao/informacoes-agropecuarias/safras/series-historicas/cana-de-acucar/industria/canaseriehist-industria.xls",
+  "fetched_at": "2026-10-10T08:25:50-03:00",
+  "status": 200,
+  "bytes": 122368,
+  "sha256": "0ae836e26f4bee07b5901014e60d027a6572b06902b73d7a5f2303039aed6280"
+ },
+ "abas": {
+  "Açúcar": {
+   "campo": "acucar_mil_ton",
+   "unidade": "Em mil toneladas"
+  },
+  "Etanol Anidro": {
+   "campo": "etanol_anidro_cana_mil_l",
+   "unidade": "Em mil litros"
+  },
+  "Etanol Hidratado": {
+   "campo": "etanol_hidratado_cana_mil_l",
+   "unidade": "Em mil litros"
+  },
+  "Etanol Anidro (Milho)": {
+   "campo": "etanol_anidro_milho_mil_l",
+   "unidade": "Em mil litros"
+  },
+  "Etanol Hidratado (Milho)": {
+   "campo": "etanol_hidratado_milho_mil_l",
+   "unidade": "Em mil litros"
+  },
+  "Etanol Total (cana e milho)": {
+   "campo": "etanol_total_mil_l",
+   "unidade": "Em mil litros"
+  },
+  "ATR Médio": {
+   "campo": "atr_kg_t",
+   "unidade": "Kg/t cana"
+  }
+ },
+ "safras": [
+  "2005/06",
+  "2006/07",
+  "2007/08",
+  "2008/09",
+  "2009/10",
+  "2010/11",
+  "2011/12",
+  "2012/13",
+  "2013/14",
+  "2014/15",
+  "2015/16",
+  "2016/17",
+  "2017/18",
+  "2018/19",
+  "2019/20",
+  "2020/21",
+  "2021/22",
+  "2022/23",
+  "2023/24",
+  "2024/25",
+  "2025/26"
+ ],
+ "estimativa": [
+  "2026/27 (¹)"
+ ],
+ "ufs": [
+  "AC",
+  "AL",
+  "AM",
+  "AP",
+  "BA",
+  "CE",
+  "DF",
+  "ES",
+  "GO",
+  "MA",
+  "MG",
+  "MS",
+  "MT",
+  "PA",
+  "PB",
+  "PE",
+  "PI",
+  "PR",
+  "RJ",
+  "RN",
+  "RO",
+  "RR",
+  "RS",
+  "SC",
+  "SE",
+  "SP",
+  "TO"
+ ],
+ "celulas": [
+  {
+   "aba": "Açúcar",
+   "celula": "U26",
+   "uf": "MT",
+   "safra": "2024/25",
+   "campo": "acucar_mil_ton",
+   "tipo": "numero",
+   "bruto": 578.431818,
+   "esperado": 578.431818
+  },
+  {
+   "aba": "Açúcar",
+   "celula": "B34",
+   "uf": "SP",
+   "safra": "2005/06",
+   "campo": "acucar_mil_ton",
+   "tipo": "numero",
+   "bruto": 16740.8931,
+   "esperado": 16740.8931
+  },
+  {
+   "aba": "Açúcar",
+   "celula": "Q8",
+   "uf": "RR",
+   "safra": "2020/21",
+   "campo": "acucar_mil_ton",
+   "tipo": "numero",
+   "bruto": 0.0,
+   "esperado": 0.0
+  },
+  {
+   "aba": "Açúcar",
+   "celula": "R8",
+   "uf": "RR",
+   "safra": "2021/22",
+   "campo": "acucar_mil_ton",
+   "tipo": "texto",
+   "bruto": "-",
+   "esperado": null
+  },
+  {
+   "aba": "Açúcar",
+   "celula": "P29",
+   "uf": "DF",
+   "safra": "2019/20",
+   "campo": "acucar_mil_ton",
+   "tipo": "numero",
+   "bruto": 0.0,
+   "esperado": 0.0
+  },
+  {
+   "aba": "Açúcar",
+   "celula": "N26",
+   "uf": "MT",
+   "safra": "2017/18",
+   "campo": "acucar_mil_ton",
+   "tipo": "numero",
+   "bruto": 410.5,
+   "esperado": 410.5
+  },
+  {
+   "aba": "Açúcar",
+   "celula": "F18",
+   "uf": "CE",
+   "safra": "2009/10",
+   "campo": "acucar_mil_ton",
+   "tipo": "numero",
+   "bruto": 0.0,
+   "esperado": 0.0
+  },
+  {
+   "aba": "Açúcar",
+   "celula": "O9",
+   "uf": "RO",
+   "safra": "2018/19",
+   "campo": "acucar_mil_ton",
+   "tipo": "numero",
+   "bruto": 0.0,
+   "esperado": 0.0
+  },
+  {
+   "aba": "Açúcar",
+   "celula": "R9",
+   "uf": "RO",
+   "safra": "2021/22",
+   "campo": "acucar_mil_ton",
+   "tipo": "texto",
+   "bruto": "-",
+   "esperado": null
+  },
+  {
+   "aba": "Açúcar",
+   "celula": "R37",
+   "uf": "SC",
+   "safra": "2021/22",
+   "campo": "acucar_mil_ton",
+   "tipo": "texto",
+   "bruto": "-",
+   "esperado": null
+  },
+  {
+   "aba": "Etanol Anidro",
+   "celula": "U26",
+   "uf": "MT",
+   "safra": "2024/25",
+   "campo": "etanol_anidro_cana_mil_l",
+   "tipo": "numero",
+   "bruto": 420496.5,
+   "esperado": 420496.5
+  },
+  {
+   "aba": "Etanol Anidro",
+   "celula": "B34",
+   "uf": "SP",
+   "safra": "2005/06",
+   "campo": "etanol_anidro_cana_mil_l",
+   "tipo": "numero",
+   "bruto": 5849529.8,
+   "esperado": 5849529.8
+  },
+  {
+   "aba": "Etanol Anidro",
+   "celula": "Q8",
+   "uf": "RR",
+   "safra": "2020/21",
+   "campo": "etanol_anidro_cana_mil_l",
+   "tipo": "numero",
+   "bruto": 0.0,
+   "esperado": 0.0
+  },
+  {
+   "aba": "Etanol Anidro",
+   "celula": "R8",
+   "uf": "RR",
+   "safra": "2021/22",
+   "campo": "etanol_anidro_cana_mil_l",
+   "tipo": "texto",
+   "bruto": "-",
+   "esperado": null
+  },
+  {
+   "aba": "Etanol Anidro",
+   "celula": "P29",
+   "uf": "DF",
+   "safra": "2019/20",
+   "campo": "etanol_anidro_cana_mil_l",
+   "tipo": "numero",
+   "bruto": 0.0,
+   "esperado": 0.0
+  },
+  {
+   "aba": "Etanol Anidro",
+   "celula": "N26",
+   "uf": "MT",
+   "safra": "2017/18",
+   "campo": "etanol_anidro_cana_mil_l",
+   "tipo": "numero",
+   "bruto": 511939.0,
+   "esperado": 511939.0
+  },
+  {
+   "aba": "Etanol Anidro",
+   "celula": "F18",
+   "uf": "CE",
+   "safra": "2009/10",
+   "campo": "etanol_anidro_cana_mil_l",
+   "tipo": "numero",
+   "bruto": 643.4,
+   "esperado": 643.4
+  },
+  {
+   "aba": "Etanol Anidro",
+   "celula": "O9",
+   "uf": "RO",
+   "safra": "2018/19",
+   "campo": "etanol_anidro_cana_mil_l",
+   "tipo": "numero",
+   "bruto": 0.0,
+   "esperado": 0.0
+  },
+  {
+   "aba": "Etanol Anidro",
+   "celula": "R9",
+   "uf": "RO",
+   "safra": "2021/22",
+   "campo": "etanol_anidro_cana_mil_l",
+   "tipo": "texto",
+   "bruto": "-",
+   "esperado": null
+  },
+  {
+   "aba": "Etanol Anidro",
+   "celula": "R37",
+   "uf": "SC",
+   "safra": "2021/22",
+   "campo": "etanol_anidro_cana_mil_l",
+   "tipo": "texto",
+   "bruto": "-",
+   "esperado": null
+  },
+  {
+   "aba": "Etanol Hidratado",
+   "celula": "U26",
+   "uf": "MT",
+   "safra": "2024/25",
+   "campo": "etanol_hidratado_cana_mil_l",
+   "tipo": "numero",
+   "bruto": 739075.2,
+   "esperado": 739075.2
+  },
+  {
+   "aba": "Etanol Hidratado",
+   "celula": "B34",
+   "uf": "SP",
+   "safra": "2005/06",
+   "campo": "etanol_hidratado_cana_mil_l",
+   "tipo": "numero",
+   "bruto": 4431662.7,
+   "esperado": 4431662.7
+  },
+  {
+   "aba": "Etanol Hidratado",
+   "celula": "Q8",
+   "uf": "RR",
+   "safra": "2020/21",
+   "campo": "etanol_hidratado_cana_mil_l",
+   "tipo": "numero",
+   "bruto": 0.0,
+   "esperado": 0.0
+  },
+  {
+   "aba": "Etanol Hidratado",
+   "celula": "R8",
+   "uf": "RR",
+   "safra": "2021/22",
+   "campo": "etanol_hidratado_cana_mil_l",
+   "tipo": "texto",
+   "bruto": "-",
+   "esperado": null
+  },
+  {
+   "aba": "Etanol Hidratado",
+   "celula": "P29",
+   "uf": "DF",
+   "safra": "2019/20",
+   "campo": "etanol_hidratado_cana_mil_l",
+   "tipo": "erro",
+   "bruto": null,
+   "esperado": null
+  },
+  {
+   "aba": "Etanol Hidratado",
+   "celula": "N26",
+   "uf": "MT",
+   "safra": "2017/18",
+   "campo": "etanol_hidratado_cana_mil_l",
+   "tipo": "numero",
+   "bruto": 593676.0,
+   "esperado": 593676.0
+  },
+  {
+   "aba": "Etanol Hidratado",
+   "celula": "F18",
+   "uf": "CE",
+   "safra": "2009/10",
+   "campo": "etanol_hidratado_cana_mil_l",
+   "tipo": "numero",
+   "bruto": 10924.0,
+   "esperado": 10924.0
+  },
+  {
+   "aba": "Etanol Hidratado",
+   "celula": "O9",
+   "uf": "RO",
+   "safra": "2018/19",
+   "campo": "etanol_hidratado_cana_mil_l",
+   "tipo": "numero",
+   "bruto": 2100.0,
+   "esperado": 2100.0
+  },
+  {
+   "aba": "Etanol Hidratado",
+   "celula": "R9",
+   "uf": "RO",
+   "safra": "2021/22",
+   "campo": "etanol_hidratado_cana_mil_l",
+   "tipo": "texto",
+   "bruto": "-",
+   "esperado": null
+  },
+  {
+   "aba": "Etanol Hidratado",
+   "celula": "R37",
+   "uf": "SC",
+   "safra": "2021/22",
+   "campo": "etanol_hidratado_cana_mil_l",
+   "tipo": "numero",
+   "bruto": 251.0,
+   "esperado": 251.0
+  },
+  {
+   "aba": "Etanol Anidro (Milho)",
+   "celula": "U26",
+   "uf": "MT",
+   "safra": "2024/25",
+   "campo": "etanol_anidro_milho_mil_l",
+   "tipo": "numero",
+   "bruto": 1793111.507,
+   "esperado": 1793111.507
+  },
+  {
+   "aba": "Etanol Anidro (Milho)",
+   "celula": "B34",
+   "uf": "SP",
+   "safra": "2005/06",
+   "campo": "etanol_anidro_milho_mil_l",
+   "tipo": "vazio",
+   "bruto": null,
+   "esperado": null
+  },
+  {
+   "aba": "Etanol Anidro (Milho)",
+   "celula": "Q8",
+   "uf": "RR",
+   "safra": "2020/21",
+   "campo": "etanol_anidro_milho_mil_l",
+   "tipo": "vazio",
+   "bruto": null,
+   "esperado": null
+  },
+  {
+   "aba": "Etanol Anidro (Milho)",
+   "celula": "R8",
+   "uf": "RR",
+   "safra": "2021/22",
+   "campo": "etanol_anidro_milho_mil_l",
+   "tipo": "vazio",
+   "bruto": null,
+   "esperado": null
+  },
+  {
+   "aba": "Etanol Anidro (Milho)",
+   "celula": "P29",
+   "uf": "DF",
+   "safra": "2019/20",
+   "campo": "etanol_anidro_milho_mil_l",
+   "tipo": "vazio",
+   "bruto": null,
+   "esperado": null
+  },
+  {
+   "aba": "Etanol Anidro (Milho)",
+   "celula": "N26",
+   "uf": "MT",
+   "safra": "2017/18",
+   "campo": "etanol_anidro_milho_mil_l",
+   "tipo": "vazio",
+   "bruto": null,
+   "esperado": null
+  },
+  {
+   "aba": "Etanol Anidro (Milho)",
+   "celula": "F18",
+   "uf": "CE",
+   "safra": "2009/10",
+   "campo": "etanol_anidro_milho_mil_l",
+   "tipo": "vazio",
+   "bruto": null,
+   "esperado": null
+  },
+  {
+   "aba": "Etanol Anidro (Milho)",
+   "celula": "O9",
+   "uf": "RO",
+   "safra": "2018/19",
+   "campo": "etanol_anidro_milho_mil_l",
+   "tipo": "vazio",
+   "bruto": null,
+   "esperado": null
+  },
+  {
+   "aba": "Etanol Anidro (Milho)",
+   "celula": "R9",
+   "uf": "RO",
+   "safra": "2021/22",
+   "campo": "etanol_anidro_milho_mil_l",
+   "tipo": "numero",
+   "bruto": 0.0,
+   "esperado": 0.0
+  },
+  {
+   "aba": "Etanol Anidro (Milho)",
+   "celula": "R37",
+   "uf": "SC",
+   "safra": "2021/22",
+   "campo": "etanol_anidro_milho_mil_l",
+   "tipo": "vazio",
+   "bruto": null,
+   "esperado": null
+  },
+  {
+   "aba": "Etanol Hidratado (Milho)",
+   "celula": "U26",
+   "uf": "MT",
+   "safra": "2024/25",
+   "campo": "etanol_hidratado_milho_mil_l",
+   "tipo": "numero",
+   "bruto": 3624888.492,
+   "esperado": 3624888.492
+  },
+  {
+   "aba": "Etanol Hidratado (Milho)",
+   "celula": "B34",
+   "uf": "SP",
+   "safra": "2005/06",
+   "campo": "etanol_hidratado_milho_mil_l",
+   "tipo": "vazio",
+   "bruto": null,
+   "esperado": null
+  },
+  {
+   "aba": "Etanol Hidratado (Milho)",
+   "celula": "Q8",
+   "uf": "RR",
+   "safra": "2020/21",
+   "campo": "etanol_hidratado_milho_mil_l",
+   "tipo": "vazio",
+   "bruto": null,
+   "esperado": null
+  },
+  {
+   "aba": "Etanol Hidratado (Milho)",
+   "celula": "R8",
+   "uf": "RR",
+   "safra": "2021/22",
+   "campo": "etanol_hidratado_milho_mil_l",
+   "tipo": "vazio",
+   "bruto": null,
+   "esperado": null
+  },
+  {
+   "aba": "Etanol Hidratado (Milho)",
+   "celula": "P29",
+   "uf": "DF",
+   "safra": "2019/20",
+   "campo": "etanol_hidratado_milho_mil_l",
+   "tipo": "vazio",
+   "bruto": null,
+   "esperado": null
+  },
+  {
+   "aba": "Etanol Hidratado (Milho)",
+   "celula": "N26",
+   "uf": "MT",
+   "safra": "2017/18",
+   "campo": "etanol_hidratado_milho_mil_l",
+   "tipo": "vazio",
+   "bruto": null,
+   "esperado": null
+  },
+  {
+   "aba": "Etanol Hidratado (Milho)",
+   "celula": "F18",
+   "uf": "CE",
+   "safra": "2009/10",
+   "campo": "etanol_hidratado_milho_mil_l",
+   "tipo": "vazio",
+   "bruto": null,
+   "esperado": null
+  },
+  {
+   "aba": "Etanol Hidratado (Milho)",
+   "celula": "O9",
+   "uf": "RO",
+   "safra": "2018/19",
+   "campo": "etanol_hidratado_milho_mil_l",
+   "tipo": "vazio",
+   "bruto": null,
+   "esperado": null
+  },
+  {
+   "aba": "Etanol Hidratado (Milho)",
+   "celula": "R9",
+   "uf": "RO",
+   "safra": "2021/22",
+   "campo": "etanol_hidratado_milho_mil_l",
+   "tipo": "numero",
+   "bruto": 0.0,
+   "esperado": 0.0
+  },
+  {
+   "aba": "Etanol Hidratado (Milho)",
+   "celula": "R37",
+   "uf": "SC",
+   "safra": "2021/22",
+   "campo": "etanol_hidratado_milho_mil_l",
+   "tipo": "vazio",
+   "bruto": null,
+   "esperado": null
+  },
+  {
+   "aba": "Etanol Total (cana e milho)",
+   "celula": "U26",
+   "uf": "MT",
+   "safra": "2024/25",
+   "campo": "etanol_total_mil_l",
+   "tipo": "numero",
+   "bruto": 6577571.699,
+   "esperado": 6577571.699
+  },
+  {
+   "aba": "Etanol Total (cana e milho)",
+   "celula": "B34",
+   "uf": "SP",
+   "safra": "2005/06",
+   "campo": "etanol_total_mil_l",
+   "tipo": "numero",
+   "bruto": 10281192.5,
+   "esperado": 10281192.5
+  },
+  {
+   "aba": "Etanol Total (cana e milho)",
+   "celula": "Q8",
+   "uf": "RR",
+   "safra": "2020/21",
+   "campo": "etanol_total_mil_l",
+   "tipo": "numero",
+   "bruto": 0.0,
+   "esperado": 0.0
+  },
+  {
+   "aba": "Etanol Total (cana e milho)",
+   "celula": "R8",
+   "uf": "RR",
+   "safra": "2021/22",
+   "campo": "etanol_total_mil_l",
+   "tipo": "texto",
+   "bruto": "-",
+   "esperado": null
+  },
+  {
+   "aba": "Etanol Total (cana e milho)",
+   "celula": "P29",
+   "uf": "DF",
+   "safra": "2019/20",
+   "campo": "etanol_total_mil_l",
+   "tipo": "erro",
+   "bruto": null,
+   "esperado": null
+  },
+  {
+   "aba": "Etanol Total (cana e milho)",
+   "celula": "N26",
+   "uf": "MT",
+   "safra": "2017/18",
+   "campo": "etanol_total_mil_l",
+   "tipo": "numero",
+   "bruto": 1105615.0,
+   "esperado": 1105615.0
+  },
+  {
+   "aba": "Etanol Total (cana e milho)",
+   "celula": "F18",
+   "uf": "CE",
+   "safra": "2009/10",
+   "campo": "etanol_total_mil_l",
+   "tipo": "numero",
+   "bruto": 10924.0,
+   "esperado": 10924.0
+  },
+  {
+   "aba": "Etanol Total (cana e milho)",
+   "celula": "O9",
+   "uf": "RO",
+   "safra": "2018/19",
+   "campo": "etanol_total_mil_l",
+   "tipo": "numero",
+   "bruto": 1503.0,
+   "esperado": 1503.0
+  },
+  {
+   "aba": "Etanol Total (cana e milho)",
+   "celula": "R9",
+   "uf": "RO",
+   "safra": "2021/22",
+   "campo": "etanol_total_mil_l",
+   "tipo": "numero",
+   "bruto": 7200.0,
+   "esperado": 7200.0
+  },
+  {
+   "aba": "Etanol Total (cana e milho)",
+   "celula": "R37",
+   "uf": "SC",
+   "safra": "2021/22",
+   "campo": "etanol_total_mil_l",
+   "tipo": "texto",
+   "bruto": "-",
+   "esperado": null
+  },
+  {
+   "aba": "ATR Médio",
+   "celula": "U26",
+   "uf": "MT",
+   "safra": "2024/25",
+   "campo": "atr_kg_t",
+   "tipo": "numero",
+   "bruto": 134.26,
+   "esperado": 134.26
+  },
+  {
+   "aba": "ATR Médio",
+   "celula": "B34",
+   "uf": "SP",
+   "safra": "2005/06",
+   "campo": "atr_kg_t",
+   "tipo": "numero",
+   "bruto": 133.27334368044686,
+   "esperado": 133.27334368044686
+  },
+  {
+   "aba": "ATR Médio",
+   "celula": "Q8",
+   "uf": "RR",
+   "safra": "2020/21",
+   "campo": "atr_kg_t",
+   "tipo": "numero",
+   "bruto": 0.0,
+   "esperado": 0.0
+  },
+  {
+   "aba": "ATR Médio",
+   "celula": "R8",
+   "uf": "RR",
+   "safra": "2021/22",
+   "campo": "atr_kg_t",
+   "tipo": "texto",
+   "bruto": "-",
+   "esperado": null
+  },
+  {
+   "aba": "ATR Médio",
+   "celula": "P29",
+   "uf": "DF",
+   "safra": "2019/20",
+   "campo": "atr_kg_t",
+   "tipo": "numero",
+   "bruto": 0.0,
+   "esperado": 0.0
+  },
+  {
+   "aba": "ATR Médio",
+   "celula": "N26",
+   "uf": "MT",
+   "safra": "2017/18",
+   "campo": "atr_kg_t",
+   "tipo": "numero",
+   "bruto": 145.2,
+   "esperado": 145.2
+  },
+  {
+   "aba": "ATR Médio",
+   "celula": "F18",
+   "uf": "CE",
+   "safra": "2009/10",
+   "campo": "atr_kg_t",
+   "tipo": "numero",
+   "bruto": 119.6616658031088,
+   "esperado": 119.6616658031088
+  },
+  {
+   "aba": "ATR Médio",
+   "celula": "O9",
+   "uf": "RO",
+   "safra": "2018/19",
+   "campo": "atr_kg_t",
+   "tipo": "numero",
+   "bruto": 61.236724137931034,
+   "esperado": 61.236724137931034
+  },
+  {
+   "aba": "ATR Médio",
+   "celula": "R9",
+   "uf": "RO",
+   "safra": "2021/22",
+   "campo": "atr_kg_t",
+   "tipo": "vazio",
+   "bruto": null,
+   "esperado": null
+  },
+  {
+   "aba": "ATR Médio",
+   "celula": "R37",
+   "uf": "SC",
+   "safra": "2021/22",
+   "campo": "atr_kg_t",
+   "tipo": "texto",
+   "bruto": "-",
+   "esperado": null
+  }
+ ],
+ "divergencias": {
+  "total_componentes": [
+   {
+    "uf": "CE",
+    "safra": "2009/10",
+    "total": 10924.0,
+    "soma_componentes": 11567.4
+   },
+   {
+    "uf": "RO",
+    "safra": "2018/19",
+    "total": 1503.0,
+    "soma_componentes": 2100.0
+   },
+   {
+    "uf": "RO",
+    "safra": "2021/22",
+    "total": 7200.0,
+    "soma_componentes": 0.0
+   },
+   {
+    "uf": "SC",
+    "safra": "2021/22",
+    "total": null,
+    "soma_componentes": 251.0
+   }
+  ],
+  "brasil_soma_ufs": [
+   {
+    "campo": "acucar_mil_ton",
+    "safra": "2005/06",
+    "brasil": 26420.082700000003,
+    "soma_ufs": 26713.5391
+   },
+   {
+    "campo": "etanol_anidro_cana_mil_l",
+    "safra": "2009/10",
+    "brasil": 6949840.2,
+    "soma_ufs": 6950483.6
+   },
+   {
+    "campo": "etanol_anidro_cana_mil_l",
+    "safra": "2025/26",
+    "brasil": 10118714.200965503,
+    "soma_ufs": 10119720.200965505
+   },
+   {
+    "campo": "etanol_total_mil_l",
+    "safra": "2021/22",
+    "brasil": 29875445.0,
+    "soma_ufs": 29882645.0
+   }
+  ]
+ },
+ "erros_excel": [
+  {
+   "aba": "Etanol Hidratado",
+   "celula": "P29",
+   "uf": "DF",
+   "safra": "2019/20",
+   "campo": "etanol_hidratado_cana_mil_l"
+  },
+  {
+   "aba": "Etanol Total (cana e milho)",
+   "celula": "P29",
+   "uf": "DF",
+   "safra": "2019/20",
+   "campo": "etanol_total_mil_l"
+  }
+ ]
+}

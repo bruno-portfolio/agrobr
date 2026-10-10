@@ -9,7 +9,7 @@ What has a SemVer guarantee in each source is in the [public API](../api/index.m
 | Source | Type | Update | Coverage |
 |--------|------|--------|----------|
 | [CEPEA/ESALQ](cepea.md) | Prices | Daily | Agricultural commodities |
-| [CONAB](conab.md) | Crops, costs, historical series, [weekly progress](conab_progresso.md), [CEASA/PROHORT](conab_ceasa.md) | Monthly/Weekly/Daily | National production |
+| [CONAB](conab.md) | Crops, costs, historical series (crops and sugarcane industry), [weekly progress](conab_progresso.md), [CEASA/PROHORT](conab_ceasa.md) | Monthly/Weekly/Daily | National production |
 | [IBGE/SIDRA](ibge.md) | Statistics | Annual/Monthly/Quarterly | Official data (PAM, LSPA, PPM, Slaughter, PEVS, Milk, GDP, Census), municipal mesh and urbanized areas (WFS geo) |
 | [NASA POWER](nasa_power.md) | Daily and monthly weather | Daily | Global, 0.5 degree grid |
 | [BCB](bcb.en.md) | Rural credit, time series, exchange-rate bulletins, and forecasts | Varies by service | Crop/state, series, currency/bulletin, or indicator |

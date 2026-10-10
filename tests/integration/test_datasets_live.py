@@ -75,6 +75,7 @@ LIVE_CASES: dict[str, tuple[tuple[Any, ...], dict[str, Any]]] = {
     ),
     "preco_atacado": (("TOMATE",), {"ceasa": "CEAGESP - SAO PAULO"}),
     "preco_diario": (("soja",), {}),
+    "producao_acucar_etanol": ((), {"ano_inicio": 2024, "ano_fim": 2024, "uf": "SP"}),
     "producao_anual": (("soja",), {"ano": 2023, "uf": "AC"}),
     "progresso_safra": (
         ("milho_2",),

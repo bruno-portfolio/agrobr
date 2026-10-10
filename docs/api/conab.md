@@ -192,6 +192,21 @@ async def serie_historica(
 
 Os limites são anos inteiros inclusivos, aplicados ao ano inicial de `safra`. Substitua `inicio=`/`fim=` por `ano_inicio=`/`ano_fim=`. Os nomes das métricas e suas unidades permanecem no [contrato 1.1](../contracts/serie_historica_safra.md).
 
+### `cana_industria`
+
+```python
+async def cana_industria(
+    ano_inicio: int | None = None,
+    ano_fim: int | None = None,
+    uf: str | None = None,
+    *,
+    as_polars: bool = False,
+    return_meta: bool = False,
+) -> pd.DataFrame | pl.DataFrame  # (df, MetaInfo) se return_meta=True
+```
+
+Série histórica industrial da cana (`canaseriehist-industria.xls`): uma linha por safra e UF com açúcar (mil t), etanol anidro e hidratado de cana e de milho e etanol total (mil litros) e ATR médio (kg/t de cana), nas unidades publicadas. `etanol_total_mil_l` inclui o etanol de milho: não é o etanol de cana. Filtros e validação antes da rede são os de `serie_historica`; `serie_historica("cana_industria")` levanta `InvalidParameterError` apontando para esta função. Zero × vazio, avisos e erros de layout estão no [contrato 1.0](../contracts/producao_acucar_etanol.md); o dataset é `datasets.producao_acucar_etanol`.
+
 ### `produtos_serie_historica`
 
 `conab.produtos_serie_historica()` devolve uma lista de dicionários com `produto`, `categoria` e `url`, sem requisição. É o catálogo da série histórica; `conab.produtos()` lista os produtos dos levantamentos mensais.
@@ -240,6 +255,7 @@ O módulo CONAB também expõe (documentadas em páginas próprias ou nos contra
 
 - `custo_producao(produto, uf=..., planilha=..., aba=...)` / `custo_producao_total(...)` — custos de produção por hectare; `as_polars` e `return_meta` só por nome. `catalogo_custos(produto)` lista as planilhas agrícolas, e produto sem planilha no catálogo levanta `InvalidParameterError` com as culturas publicadas; com `planilha=...`, lista abas e contextos reconhecidos ou pendentes, com `data_referencia` em `datetime64[ns]`. Qualquer produto com múltiplas planilhas ou contextos candidatos exige seleção explícita por `planilha` e `aba`, até identificar um contexto único; a API informa os candidatos e não escolhe uma revisão automaticamente. Café usa `cafe_arabica` ou `cafe_conilon`. Subtotal ou total de fórmula que não fecha com os itens publicados gera aviso em `meta.validation_warnings`. Ver os oito produtos do dataset e sua semântica no contrato [custo_producao](../contracts/custo_producao.md)
 - `serie_historica(produto, ...)` — série histórica de safras (45 produtos, com início conforme produto). Café inclui áreas em produção/formação e conversões explícitas para mil ha, mil toneladas e kg/ha; cana publica a área colhida em `area_colhida_mil_ha`. Avisa quando a soma das UFs não fecha com o BRASIL publicado, na regra de `safras`. Ver contrato [serie_historica_safra](../contracts/serie_historica_safra.md)
+- `cana_industria(ano_inicio, ano_fim, uf)` — açúcar, etanol de cana e de milho e ATR por safra e UF; `etanol_total_mil_l` inclui o milho. Avisa quando o total não fecha com as quatro parcelas ou a soma das UFs não fecha com o BRASIL, e repassa os números publicados. Ver contrato [producao_acucar_etanol](../contracts/producao_acucar_etanol.md)
 - `progresso_safra(...)` / `semanas_disponiveis()` — progresso semanal de plantio/colheita. Ver [API CONAB Progresso](conab_progresso.md)
 - `ceasa_precos(...)` / `ceasa_produtos()` / `ceasa_categorias()` / `lista_ceasas()` — preços de atacado hortifrúti. Ver [API CONAB CEASA](conab_ceasa.md)
 

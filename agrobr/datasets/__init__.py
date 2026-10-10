@@ -44,6 +44,7 @@ from agrobr.datasets.posicionamento_fundos import posicionamento_fundos
 from agrobr.datasets.preco_atacado import preco_atacado
 from agrobr.datasets.preco_diario import preco_diario
 from agrobr.datasets.precos_diesel import precos_diesel
+from agrobr.datasets.producao_acucar_etanol import producao_acucar_etanol
 from agrobr.datasets.producao_anual import producao_anual
 from agrobr.datasets.progresso_safra import progresso_safra
 from agrobr.datasets.queimadas import queimadas
@@ -117,6 +118,7 @@ __all__ = [
     "preco_atacado",
     "preco_diario",
     "precos_diesel",
+    "producao_acucar_etanol",
     "producao_anual",
     "progresso_safra",
     "queimadas",

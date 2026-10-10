@@ -50,6 +50,19 @@ class SafraHistorica(BaseModel):
         return v.upper().strip()
 
 
+class SafraIndustrial(BaseModel):
+    safra: str = Field(..., pattern=r"^\d{4}/\d{2}$")
+    regiao: str = Field(..., min_length=3)
+    uf: str = Field(..., min_length=2, max_length=2)
+    acucar_mil_ton: float | None = Field(None, ge=0)
+    etanol_anidro_cana_mil_l: float | None = Field(None, ge=0)
+    etanol_hidratado_cana_mil_l: float | None = Field(None, ge=0)
+    etanol_anidro_milho_mil_l: float | None = Field(None, ge=0)
+    etanol_hidratado_milho_mil_l: float | None = Field(None, ge=0)
+    etanol_total_mil_l: float | None = Field(None, ge=0)
+    atr_kg_t: float | None = Field(None, ge=0)
+
+
 SERIE_HISTORICA_PRODUTOS: dict[str, str] = {
     "graos": "graos",
     "grãos": "graos",

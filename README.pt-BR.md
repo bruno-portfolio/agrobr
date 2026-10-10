@@ -27,7 +27,7 @@ Infraestrutura Python para dados agrícolas brasileiros com camada semântica so
 
 O Brasil é um dos maiores produtores agrícolas do mundo, mas os dados públicos estão espalhados por dezenas de portais do governo, cada um com seu formato, codificação e peculiaridades. O agrobr transforma tudo isso em DataFrames limpos e validados.
 
-**v2.0.0** — 54 datasets | 89 contratos versionados | evidências de validação por incremento | validação de parâmetros antes da rede | golden tests por fonte
+**v2.0.0** — 55 datasets | 90 contratos versionados | evidências de validação por incremento | validação de parâmetros antes da rede | golden tests por fonte
 
 ## Demo
 ![Animation](https://github.com/user-attachments/assets/40e1341e-f47b-4eb5-b18e-55b49c63ee97)
@@ -353,7 +353,7 @@ print(meta.selected_source, meta.attempted_sources, meta.contract_version)
 print(datasets.list_datasets())
 ```
 
-54 datasets disponíveis. Veja a [lista completa](#datasets-disponíveis) abaixo.
+55 datasets disponíveis. Veja a [lista completa](#datasets-disponíveis) abaixo.
 
 ## Reprodutibilidade — snapshots e modo determinístico
 
@@ -486,6 +486,7 @@ agrobr snapshot list
 | `pib_agro` | PIB Agropecuária por setor e trimestre | IBGE SIDRA |
 | `preco_atacado` | Preços de atacado hortifrúti em CEASAs | CONAB CEASA/PROHORT |
 | `preco_diario` | Preços diários spot | CEPEA |
+| `producao_acucar_etanol` | Açúcar, etanol de cana e de milho e ATR por safra e UF | CONAB |
 | `producao_anual` | Produção anual consolidada | IBGE PAM → CONAB |
 | `progresso_safra` | Progresso semanal semeadura/colheita | CONAB |
 | `queimadas` | Focos de calor por satélite (6 biomas) | INPE |

@@ -159,6 +159,7 @@ nav:
     - preco_atacado: contracts/preco_atacado.md
     - preco_diario: contracts/preco_diario.md
     - precos_diesel: contracts/precos_diesel.md
+    - producao_acucar_etanol: contracts/producao_acucar_etanol.md
     - producao_anual: contracts/producao_anual.md
     - progresso_safra: contracts/progresso_safra.md
     - queimadas: contracts/queimadas.md

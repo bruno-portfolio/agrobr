@@ -27,7 +27,7 @@ Python infrastructure for Brazilian agricultural data with a semantic layer over
 
 Brazil is one of the world's largest agricultural producers, but its public data is scattered across dozens of government portals, each with its own format, encoding and quirks. agrobr turns all of that into clean, validated DataFrames.
 
-**v2.0.0** — 54 datasets | 89 versioned contracts | validation evidence scoped to each increment | parameter validation before network calls | per-source golden tests
+**v2.0.0** — 55 datasets | 90 versioned contracts | validation evidence scoped to each increment | parameter validation before network calls | per-source golden tests
 
 ## Demo
 ![Animation](https://github.com/user-attachments/assets/40e1341e-f47b-4eb5-b18e-55b49c63ee97)
@@ -355,7 +355,7 @@ print(meta.selected_source, meta.attempted_sources, meta.contract_version)
 print(datasets.list_datasets())
 ```
 
-54 datasets available. See the [full list](#available-datasets) below.
+55 datasets available. See the [full list](#available-datasets) below.
 
 ## Reproducibility — snapshots and deterministic mode
 
@@ -489,6 +489,7 @@ agrobr snapshot list
 | `posicionamento_fundos` | Weekly trader positioning in Chicago/NY agri futures (COT) | CFTC |
 | `preco_atacado` | Wholesale produce prices at CEASA hubs | CONAB CEASA/PROHORT |
 | `preco_diario` | Daily spot prices | CEPEA |
+| `producao_acucar_etanol` | Sugar, cane and corn ethanol and ATR by season and state | CONAB |
 | `producao_anual` | Consolidated annual production | IBGE PAM → CONAB |
 | `progresso_safra` | Weekly planting/harvest progress | CONAB |
 | `queimadas` | Satellite fire hotspots (6 biomes) | INPE |

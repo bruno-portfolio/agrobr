@@ -15,7 +15,7 @@
 
 Infraestrutura Python para dados agrícolas brasileiros com **camada semântica** sobre 41 fontes públicas.
 
-**v2.0.0** — 54 datasets | 89 contratos versionados | validação de parâmetros antes da rede | golden tests por fonte
+**v2.0.0** — 55 datasets | 90 contratos versionados | validação de parâmetros antes da rede | golden tests por fonte
 
 - **CEPEA/ESALQ**: 22 indicadores de preços (soja, milho, boi, café arábica, café robusta, algodão, trigo, arroz, açúcar, etanol, frango, suíno, leite, laranja)
 - **CONAB**: Safras, balanço oferta/demanda, custos de produção, série histórica, progresso semanal de plantio/colheita e preços atacado hortifruti (CEASA/PROHORT)
@@ -56,7 +56,7 @@ Infraestrutura Python para dados agrícolas brasileiros com **camada semântica*
 
 ## Datasets — Camada Semântica
 
-54 datasets disponíveis, com proveniência. O fallback depende das fontes alternativas configuradas para cada dataset:
+55 datasets disponíveis, com proveniência. O fallback depende das fontes alternativas configuradas para cada dataset:
 
 | Dataset | Descrição | Fontes |
 |---------|-----------|------------------------------|
@@ -106,6 +106,7 @@ Infraestrutura Python para dados agrícolas brasileiros com **camada semântica*
 | `posicionamento_fundos` | Posicionamento de fundos por categoria de trader (COT) | CFTC |
 | `preco_atacado` | Preços de atacado hortifrúti em CEASAs | CONAB CEASA/PROHORT |
 | `preco_diario` | Preços diários spot | CEPEA |
+| `producao_acucar_etanol` | Açúcar, etanol de cana e de milho e ATR por safra e UF | CONAB |
 | `producao_anual` | Produção anual consolidada | IBGE PAM → CONAB |
 | `progresso_safra` | Progresso semanal semeadura/colheita | CONAB |
 | `queimadas` | Focos de calor por satélite (6 biomas) | INPE |

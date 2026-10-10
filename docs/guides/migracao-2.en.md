@@ -865,7 +865,7 @@ In 1.1.0, `censo_agro_legado("maquinas", uf="PA")` silently returned Table 6 (pe
 
 ## 22. Coffee, sugarcane and the CONAB catalog
 
-Remove `cana_industria` from historical-series queries: industrial tables were not interpreted and the product is no longer advertised in version 2.0. This API has no industrial replacement.
+Remove `cana_industria` from historical-series queries: in 1.x the industrial tables went through the crop parser, which did not interpret them, and in 2.0 `serie_historica("cana_industria")` raises `InvalidParameterError`. Sugar, cane and corn ethanol and ATR by season and state come from `conab.cana_industria()` and `datasets.producao_acucar_etanol()`, with their own columns ([contract](../contracts/producao_acucar_etanol.md)); `etanol_total_mil_l` includes corn ethanol.
 
 For coffee, contract `serie_historica_safra` 1.1 adds optional columns `area_em_producao_mil_ha` and `area_formacao_mil_ha`. Total planted area is their sum when both exist; yield still refers to producing area. Production and yield are correctly converted from thousand 60 kg bags and bags/ha to thousand tonnes and kg/ha. Review coffee series persisted using the previous parser. In every historical-series product, not only coffee, a zero published in the spreadsheet now comes out as `0.0`: it used to become null, and a state with no production in that season had no row (peanut 2nd crop, BA 2011/12: null production in 1.1.0, `0.0` in 2.0). Series persisted with the previous parser have fewer rows and nulls where the source publishes zero. A season that is zero in every state (not surveyed) is still left out.
 

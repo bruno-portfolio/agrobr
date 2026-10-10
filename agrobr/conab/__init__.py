@@ -9,8 +9,8 @@ from agrobr.conab._custo_producao import (
     custo_producao_total,
     custo_sociobiodiversidade,
 )
+from agrobr.conab._serie_historica import cana_industria, serie_historica
 from agrobr.conab._serie_historica import produtos_disponiveis as produtos_serie_historica
-from agrobr.conab._serie_historica import serie_historica
 from agrobr.conab.api import (
     balanco,
     brasil_total,
@@ -39,6 +39,7 @@ __all__ = [
     "custo_sociobiodiversidade",
     "serie_historica",
     "produtos_serie_historica",
+    "cana_industria",
     "progresso_safra",
     "semanas_disponiveis",
     "ceasa_precos",

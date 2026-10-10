@@ -219,16 +219,19 @@ def _classify_row(label: str) -> tuple[str, str | None, str | None]:
     return "unknown", None, None
 
 
-def parse_sheet(
+def celulas_por_uf(
     df_raw: pd.DataFrame,
     produto: str,
     metric_field: str,
     inicio: int | None = None,
     fim: int | None = None,
-    uf_filter: str | None = None,
-    value_multiplier: float = 1.0,
     sheet_name: str | None = None,
-) -> list[SafraHistorica]:
+    *,
+    so_levantadas: bool = True,
+) -> list[tuple[str, str | None, str, float | None]]:
+    """Células (uf, região, safra, valor) das linhas de UF da aba, inclusive as vazias (valor
+    None). Com `so_levantadas`, só as safras levantadas: coluna com algum valor diferente de zero
+    (na série agrícola, a coluna toda zerada é safra não levantada)."""
     produto_norm = normalize_produto(produto)
 
     header_idx = _find_header_row(df_raw)
@@ -273,7 +276,7 @@ def parse_sheet(
     if not safra_columns:
         return []
 
-    celulas: list[tuple[str | None, str | None, int, str, float]] = []
+    celulas: list[tuple[str, str | None, int, str, float | None]] = []
     current_regiao: str | None = None
 
     for row_idx in range(header_idx + 1, len(df_raw)):
@@ -306,10 +309,27 @@ def parse_sheet(
             value = (
                 safe_float(row.iloc[col_idx], strip=("(", ")", "*")) if col_idx < len(row) else None
             )
-            if value is not None:
-                celulas.append((uf, current_regiao, col_idx, safra, value))
+            celulas.append((str(uf), current_regiao, col_idx, safra, value))
 
     safras_levantadas = {col_idx for _, _, col_idx, _, value in celulas if value}
+    return [
+        (uf, regiao, safra, value)
+        for uf, regiao, col_idx, safra, value in celulas
+        if not so_levantadas or col_idx in safras_levantadas
+    ]
+
+
+def parse_sheet(
+    df_raw: pd.DataFrame,
+    produto: str,
+    metric_field: str,
+    inicio: int | None = None,
+    fim: int | None = None,
+    uf_filter: str | None = None,
+    value_multiplier: float = 1.0,
+    sheet_name: str | None = None,
+) -> list[SafraHistorica]:
+    produto_norm = normalize_produto(produto)
     return [
         SafraHistorica(
             produto=produto_norm,
@@ -318,8 +338,10 @@ def parse_sheet(
             regiao=regiao,
             **{metric_field: value * value_multiplier},
         )
-        for uf, regiao, col_idx, safra, value in celulas
-        if col_idx in safras_levantadas and (not uf_filter or uf == uf_filter.upper())
+        for uf, regiao, safra, value in celulas_por_uf(
+            df_raw, produto_norm, metric_field, inicio, fim, sheet_name
+        )
+        if value is not None and (not uf_filter or uf == uf_filter.upper())
     ]
 
 
@@ -427,29 +449,36 @@ def linhas_brasil(raw: bytes, produto: str) -> dict[tuple[str, str], float]:
         ):
             continue
         df_raw = _read_selected_sheet(xls_file, sheet_name, produto_norm)
-        header_idx = _find_header_row(df_raw)
-        headers = [str(v) if pd.notna(v) else "" for v in df_raw.iloc[header_idx]]
-        linhas = [
-            idx
-            for idx in range(header_idx + 1, len(df_raw))
-            if pd.notna(df_raw.iloc[idx, 0])
-            and _classify_row(str(df_raw.iloc[idx, 0]))[0] == "brasil"
-        ]
-        if len(linhas) != 1:
-            continue
-        for coluna, periodo in resolve_period_columns(headers).items():
-            valor = safe_float(df_raw.iloc[linhas[0], coluna], strip=("(", ")", "*"))
-            if periodo.estado == "mapeada" and valor is not None:
-                valores[(periodo.safra, decision.campo)] = valor * decision.multiplicador
+        for safra, valor in brasil_por_safra(df_raw).items():
+            valores[(safra, decision.campo)] = valor * decision.multiplicador
+    return valores
+
+
+def brasil_por_safra(df_raw: pd.DataFrame) -> dict[str, float]:
+    header_idx = _find_header_row(df_raw)
+    headers = [str(v) if pd.notna(v) else "" for v in df_raw.iloc[header_idx]]
+    linhas = [
+        idx
+        for idx in range(header_idx + 1, len(df_raw))
+        if pd.notna(df_raw.iloc[idx, 0]) and _classify_row(str(df_raw.iloc[idx, 0]))[0] == "brasil"
+    ]
+    if len(linhas) != 1:
+        return {}
+    valores: dict[str, float] = {}
+    for coluna, periodo in resolve_period_columns(headers).items():
+        valor = safe_float(df_raw.iloc[linhas[0], coluna], strip=("(", ")", "*"))
+        if periodo.estado == "mapeada" and valor is not None:
+            valores[periodo.safra] = valor
     return valores
 
 
 def avisar_soma_das_ufs(
     produto: str, publicacao: str, frame: pd.DataFrame, brasil: dict[tuple[str, str], float]
-) -> None:
+) -> list[str]:
     """Confere, por (safra, coluna) de `brasil`, a soma das UFs de `frame` com o BRASIL publicado
-    (boletim ou série). Planilha que lista só parte das UFs deixa as outras no BRASIL, como no
-    café: aí só a soma acima dele é incoerente."""
+    (boletim ou série) e devolve os avisos. Planilha que lista só parte das UFs deixa as outras no
+    BRASIL, como no café: aí só a soma acima dele é incoerente."""
+    avisos: list[str] = []
     for (safra, coluna), publicado in sorted(brasil.items()):
         valores = frame.loc[frame["safra"] == safra, coluna].dropna()
         soma = float(valores.sum())
@@ -461,12 +490,14 @@ def avisar_soma_das_ufs(
             or (parcial and diferenca < 0)
         ):
             continue
-        warn_once(
-            f"conab_soma_ufs:{publicacao}:{produto}:{safra}:{coluna}",
+        aviso = (
             f"CONAB: em {produto} {safra} ({publicacao}), a soma das {len(valores)} UFs em "
             f"{coluna} dá {soma:.1f}, e o BRASIL publicado, {publicado:.1f} (diferença de "
-            f"{diferenca:.1f}); o agrobr repassa os números publicados",
+            f"{diferenca:.1f}); o agrobr repassa os números publicados"
         )
+        warn_once(f"conab_soma_ufs:{publicacao}:{produto}:{safra}:{coluna}", aviso)
+        avisos.append(aviso)
+    return avisos
 
 
 def parse_serie_historica(

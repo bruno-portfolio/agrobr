@@ -869,7 +869,7 @@ Na 1.1.0, `censo_agro_legado("maquinas", uf="PA")` devolvia calada a Tabela 6 (p
 
 ## 22. Café, cana e catálogo CONAB
 
-Remova `cana_industria` das consultas de série histórica: as tabelas industriais não eram interpretadas e o produto deixa de ser anunciado na versão 2.0. Não há substituto industrial nessa API.
+Remova `cana_industria` das consultas de série histórica: na 1.x, as tabelas industriais passavam pelo parser agrícola, que não as interpretava, e na 2.0 `serie_historica("cana_industria")` levanta `InvalidParameterError`. Açúcar, etanol de cana e de milho e ATR por safra e UF saem de `conab.cana_industria()` e de `datasets.producao_acucar_etanol()`, com colunas próprias ([contrato](../contracts/producao_acucar_etanol.md)); `etanol_total_mil_l` inclui o etanol de milho.
 
 Para café, o contrato `serie_historica_safra` 1.1 acrescenta as colunas opcionais `area_em_producao_mil_ha` e `area_formacao_mil_ha`. A área plantada total é a soma quando ambas existem; produtividade continua referente à área em produção. Produção e produtividade passam corretamente de mil sacas de 60 kg e sacas/ha para mil toneladas e kg/ha. Revise séries de café persistidas com o parser anterior. Em todos os produtos da série histórica, e não só no café, o zero publicado na planilha passa a sair `0.0`: antes virava nulo, e a UF sem produção naquela safra não tinha linha (amendoim 2ª safra, BA 2011/12: produção nula na 1.1.0, `0.0` na 2.0). Séries persistidas com o parser anterior têm menos linhas e nulos onde a fonte publica zero. A safra zerada em todas as UFs (não levantada) continua fora.
 

@@ -9,7 +9,7 @@ O que tem garantia de SemVer em cada fonte está na [API pública](../api/index.
 | Fonte | Tipo | Atualizacao | Cobertura |
 |-------|------|-------------|-----------|
 | [CEPEA/ESALQ](cepea.md) | Precos | Diaria | Commodities agricolas |
-| [CONAB](conab.md) | Safras, custos, serie historica, [progresso semanal](conab_progresso.md), [CEASA/PROHORT](conab_ceasa.md) | Mensal/Semanal/Diaria | Producao nacional |
+| [CONAB](conab.md) | Safras, custos, serie historica (agrícola e industrial da cana), [progresso semanal](conab_progresso.md), [CEASA/PROHORT](conab_ceasa.md) | Mensal/Semanal/Diaria | Producao nacional |
 | [IBGE/SIDRA](ibge.md) | Estatisticas | Anual/Mensal/Trimestral | Dados oficiais (PAM, LSPA, PPM, Abate, PEVS, Leite, PIB, Censo), malha municipal e áreas urbanizadas (WFS geo) |
 | [NASA POWER](nasa_power.md) | Clima diário e mensal | Diaria | Global, grid 0.5 grau |
 | [BCB](bcb.md) | Crédito rural, séries temporais, câmbio/boletins e expectativas | Varia por serviço | Cultura/UF, série, moeda/boletim ou indicador |

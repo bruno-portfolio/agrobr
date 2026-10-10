@@ -178,7 +178,7 @@ agrobr/
 │   │   ├── base.py            #    BaseDataset (fallback, contrato, meta)
 │   │   ├── registry.py        #    Auto-descoberta de datasets
 │   │   ├── deterministic.py   #    Modo determinístico (contextvars)
-│   │   └── *.py               #    54 datasets
+│   │   └── *.py               #    55 datasets
 │   │
 │   ├── contracts/             # Schema contracts + validação
 │   ├── schemas/               # JSON schemas gerados

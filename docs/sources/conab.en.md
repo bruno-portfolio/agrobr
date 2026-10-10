@@ -248,6 +248,30 @@ Unreadable, missing or ambiguous selected sheets raise `ParseError`; filters wit
 
 `arroz_sequeiro`: the official spreadsheet has incorrect unit labels in the Produtividade and Produção sheets (September 2026); values are kg/ha and thousand tonnes, as confirmed by the production/area ratio.
 
+## Sugarcane industrial historical series
+
+`conab.cana_industria(ano_inicio=None, ano_fim=None, uf=None)` reads `canaseriehist-industria.xls` (Historical Series, sugarcane, industry): seven sheets, one column per sheet, one row per season and state, in the published units. It is a separate API because the schema is not the crop series one; `conab.serie_historica("cana_industria")` raises `InvalidParameterError` pointing to it.
+
+```python
+df = await conab.cana_industria(ano_inicio=2020, ano_fim=2025, uf="MT")
+etanol_cana = df["etanol_anidro_cana_mil_l"] + df["etanol_hidratado_cana_mil_l"]
+```
+
+| Column | Type | Description |
+|--------|------|-------------|
+| `safra` | str | Season (e.g. "2024/25") |
+| `regiao` | str | State region |
+| `uf` | str | State code |
+| `acucar_mil_ton` | float | Sugar, thousand tonnes |
+| `etanol_anidro_cana_mil_l` | float | Cane anhydrous ethanol, thousand liters |
+| `etanol_hidratado_cana_mil_l` | float | Cane hydrated ethanol, thousand liters |
+| `etanol_anidro_milho_mil_l` | float | Corn anhydrous ethanol, thousand liters |
+| `etanol_hidratado_milho_mil_l` | float | Corn hydrated ethanol, thousand liters |
+| `etanol_total_mil_l` | float | Published total ethanol, cane and corn, thousand liters |
+| `atr_kg_t` | float | Average ATR, kg/t of cane |
+
+The "Etanol Total (cana e milho)" sheet includes corn ethanol, published from 2018/19: reading `etanol_total_mil_l` as cane ethanol overstates MT in 2024/25 5.7 times. A published zero becomes `0.0`; dash, empty cell and Excel error become null. The estimate (last column, marked `(¹)`) and the region and BRASIL rows are left out. A total different from the four parts, a sum of the states different from BRASIL, an Excel error and the most recent closed season raise a warning, without changing the numbers; a layout different from the measured one raises `ParseError`. Details in [contract 1.0](../contracts/producao_acucar_etanol.md).
+
 ## Cache
 
 CONAB queries keep no local copy: each call downloads the publication. `meta.cache_expires_at` is null; in `conab.safras`, `meta.cache_key`
@@ -264,7 +288,9 @@ identifies the query (product, crop year, publication, survey and state), and in
 
 - [`estimativa_safra`](../contracts/estimativa_safra.md) — contract 3.1 with an explicit CONAB survey or LSPA month
 
-- [`serie_historica_safra`](../contracts/serie_historica_safra.md) — wraps `conab.serie_historica()` (45 products; `cana_industria` removed from advertised support in version 2.0)
+- [`serie_historica_safra`](../contracts/serie_historica_safra.md) — wraps `conab.serie_historica()` (45 products; the sugarcane industrial series has its own API, `conab.cana_industria()`)
+
+- [`producao_acucar_etanol`](../contracts/producao_acucar_etanol.md) — wraps `conab.cana_industria()` (sugar, cane and corn ethanol and ATR by season and state)
 
 ## Semantics in version 2.0
 

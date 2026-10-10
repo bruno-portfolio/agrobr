@@ -70,8 +70,9 @@ preserved separately. Production in thousand 60 kg bags of processed coffee is
 converted to thousand tonnes (× 0.06); yield in bags/ha is converted to kg/ha
 (× 60) and remains based on the producing area.
 
-`cana_industria` was removed from advertised support in package version 2.0:
-sugar, ethanol and ATR metrics require their own contract.
+`cana_industria` is not a product of this series: sugar, ethanol and ATR metrics
+have their own contract, [producao_acucar_etanol](producao_acucar_etanol.md), read by
+`conab.cana_industria()`.
 
 ## Example
 

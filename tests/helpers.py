@@ -59,6 +59,9 @@ RECONCILIACAO_CONAB_GOLDEN = Path(__file__).parent / "golden_data/reconciliacao_
 
 RETRY_SLEEP = "agrobr.http.retry.asyncio.sleep"
 SERIE_HISTORICA_GOLDEN = Path(__file__).parent / "golden_data/conab/serie_historica_20260917"
+CANA_INDUSTRIA_GOLDEN = (
+    Path(__file__).parent / "golden_data/conab/serie_historica_industria_20261010"
+)
 SOCIOBIO_GOLDEN = Path(__file__).parent / "golden_data/conab/sociobio_20260916"
 PROGRESSO_HISTORICAL_GOLDEN = (
     Path(__file__).parent / "golden_data/conab_progresso/historico_20250927"
@@ -332,6 +335,39 @@ def install_serie_historica_http(monkeypatch: Any, case: dict[str, Any]) -> list
         requests.append(str(request.url))
         return httpx.Response(
             200, content=raw, headers={"Content-Type": "application/vnd.ms-excel"}, request=request
+        )
+
+    def factory(**kwargs: Any) -> httpx.AsyncClient:
+        return original_client(transport=httpx.MockTransport(respond), **kwargs)
+
+    monkeypatch.setattr(serie_historica_client.httpx, "AsyncClient", factory)
+    return requests
+
+
+def load_cana_industria_manifest() -> dict[str, Any]:
+    manifest: dict[str, Any] = json.loads(
+        (CANA_INDUSTRIA_GOLDEN / "manifest.json").read_text(encoding="utf-8")
+    )
+    raw = (CANA_INDUSTRIA_GOLDEN / manifest["arquivo"]["file"]).read_bytes()
+    assert hashlib.sha256(raw).hexdigest() == manifest["arquivo"]["sha256"]
+    manifest["raw"] = raw
+    return manifest
+
+
+def install_cana_industria_http(monkeypatch: Any, raw: bytes | None = None) -> list[str]:
+    manifest = load_cana_industria_manifest()
+    original_client = httpx.AsyncClient
+    requests: list[str] = []
+
+    def respond(request: httpx.Request) -> httpx.Response:
+        assert request.method == "GET"
+        assert str(request.url) == manifest["arquivo"]["url"]
+        requests.append(str(request.url))
+        return httpx.Response(
+            200,
+            content=manifest["raw"] if raw is None else raw,
+            headers={"Content-Type": "application/vnd.ms-excel"},
+            request=request,
         )
 
     def factory(**kwargs: Any) -> httpx.AsyncClient:

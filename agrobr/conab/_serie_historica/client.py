@@ -69,6 +69,10 @@ _PRODUCT_REGISTRY: dict[str, tuple[str, str, str]] = {
     "cana_area_total": ("cana-de-acucar", "area-total", "canaseriehist-area-total.xls"),
 }
 
+_REGISTRO_INTERNO: dict[str, tuple[str, str, str]] = {
+    "cana_industria": ("cana-de-acucar", "industria", "canaseriehist-industria.xls"),
+}
+
 TIMEOUT = get_timeout()
 
 ACCEPT_EXCEL = (
@@ -85,8 +89,9 @@ def get_xls_url(produto: str) -> str:
 
     if produto_lower == "cana_industria":
         raise InvalidParameterError(
-            "cana_industria não é suportado: as métricas industriais de açúcar e etanol "
-            "exigem um parser próprio. Use 'cana' para a série agrícola."
+            "cana_industria não é produto da série histórica agrícola: as métricas industriais "
+            "(açúcar, etanol e ATR) têm esquema próprio. Use conab.cana_industria() ou "
+            "datasets.producao_acucar_etanol(); para a série agrícola da cana, use 'cana'."
         )
 
     if produto_lower not in _PRODUCT_REGISTRY:
@@ -116,7 +121,8 @@ def list_produtos() -> list[dict[str, str]]:
 async def download_xls(produto: str) -> tuple[BytesIO, dict[str, Any]]:
     from agrobr.http.retry import retry_on_status
 
-    url = get_xls_url(produto)
+    interno = _REGISTRO_INTERNO.get(produto)
+    url = "/".join((SERIES_HISTORICAS_URL, *interno)) if interno else get_xls_url(produto)
     logger.debug("conab_serie_historica_download", url=url)
     logger.info("conab_serie_historica_download", source="conab_serie", produto=produto)
 
@@ -139,7 +145,7 @@ async def download_xls(produto: str) -> tuple[BytesIO, dict[str, Any]]:
                 size_bytes=len(content),
             )
 
-            categoria, _, _ = _PRODUCT_REGISTRY[models.normalize_produto(produto)]
+            categoria, _, _ = interno or _PRODUCT_REGISTRY[models.normalize_produto(produto)]
             metadata: dict[str, Any] = {
                 "url": str(response.url),
                 "produto": produto,

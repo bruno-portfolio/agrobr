@@ -70,8 +70,9 @@ preservadas separadamente. A produção em mil sacas beneficiadas de 60 kg é
 convertida para mil toneladas (× 0,06); a produtividade em sacas/ha é convertida
 para kg/ha (× 60) e continua referida à área em produção.
 
-`cana_industria` foi retirado do suporte anunciado na versão 2.0 do pacote: suas
-métricas de açúcar, etanol e ATR exigem um contrato próprio.
+`cana_industria` não é produto desta série: as métricas de açúcar, etanol e ATR
+têm contrato próprio, [producao_acucar_etanol](producao_acucar_etanol.md), lido por
+`conab.cana_industria()`.
 
 ## Exemplo
 

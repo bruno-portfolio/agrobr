@@ -232,6 +232,7 @@ SOURCE_DATASET_MAP: dict[str, list[str]] = {
         "custo_sociobiodiversidade",
         "estimativa_safra",
         "preco_atacado",
+        "producao_acucar_etanol",
         "producao_anual",
         "progresso_safra",
         "serie_historica_safra",

@@ -32,6 +32,7 @@ tests/golden_data/conab/levantamento_12_2024_25_20260922/** -text
 tests/golden_data/conab/serie_historica_20260917/** -text
 tests/golden_data/conab/serie_historica_zeros_20260923/** -text
 tests/golden_data/conab/serie_historica_20260924/** -text
+tests/golden_data/conab/serie_historica_industria_20261010/** -text
 tests/golden_data/conab/sociobio_20260916/** -text
 tests/golden_data/conab/custos_arroz_subtotais_20260925/** -text
 tests/golden_data/conab_progresso/historico_20250927/** -text

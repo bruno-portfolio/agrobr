@@ -24,7 +24,7 @@ Validation is automatic: every dataset `fetch()` validates the DataFrame against
 
 > This table lists the **documented** contracts — it is not identical to `datasets.list_datasets()`. `bcb_focus`, `bcb_ptax` and `bcb_ptax_moedas` are source contracts reused by `expectativas_mercado`, `cotacoes_cambio` and `moedas_cambio`; their dataset names do not add contract aliases. The PTAX page covers both quotes and the catalogue.
 
-The four Agrofit dataset names reuse the existing `agrofit_*` contracts through `_contract_name`; they do not register contract aliases. There are 54 datasets and 89 registered contracts. `bcb_credito_rural_total` is the source contract of the `bcb.credito_rural_total` function, without a dataset, and `bcb_credito_rural_registro` that of `agregacao="registro"` in `bcb.credito_rural` and in the `credito_rural` dataset. `autorizacoes_defensivos` preserves published duplicate rows and has no artificial primary key.
+The four Agrofit dataset names reuse the existing `agrofit_*` contracts through `_contract_name`; they do not register contract aliases. There are 55 datasets and 90 registered contracts. `bcb_credito_rural_total` is the source contract of the `bcb.credito_rural_total` function, without a dataset, and `bcb_credito_rural_registro` that of `agregacao="registro"` in `bcb.credito_rural` and in the `credito_rural` dataset. `autorizacoes_defensivos` preserves published duplicate rows and has no artificial primary key.
 
 `series_economicas` reuses `bcb_sgs` 3.0 without a contract alias. Selection uses an SGS code or alias, with units and frequency depending on the series. The dataset preserves query provenance and does not reconstruct historical revisions.
 
@@ -93,6 +93,7 @@ The two [cultivar datasets](../api/cultivares.en.md) reuse the new `rnc_registra
 | [movimentacao_portuaria](./movimentacao_portuaria.md) | Port cargo movement ⚠️ (source offline) | ANTAQ |
 | [seguro_rural](./seguro_rural.md) | Rural insurance — policies (`mapa_psr_apolices` v2.1) and claims (`mapa_psr_sinistros` v1.2) | MAPA PSR |
 | [serie_historica_safra](./serie_historica_safra.md) | Crop historical series (45 products) | CONAB |
+| [producao_acucar_etanol](./producao_acucar_etanol.md) | Sugar, cane and corn ethanol and ATR by season and state (sugarcane industrial series) | CONAB |
 | [series_economicas](./series_economicas.en.md) | Series by SGS code or alias, date range and latest observations | BCB SGS |
 | [uso_do_solo](./uso_do_solo.md) | Land cover and use (MapBiomas) | MapBiomas |
 | [zoneamento_agricola](./zoneamento_agricola.md) | Agricultural climate risk zoning (ZARC) | MAPA/Embrapa |
@@ -127,7 +128,7 @@ from agrobr import datasets
 
 # List datasets
 print(datasets.list_datasets())
-# 54 datasets
+# 55 datasets
 
 # List a dataset's products
 datasets.list_products("preco_diario")
@@ -168,6 +169,7 @@ exportacao: ComexStat → ABIOVE
 fertilizante: ANDA
 custo_producao: CONAB
 custo_sociobiodiversidade: CONAB
+producao_acucar_etanol: CONAB
 clima: INMET API → INMET ZIP → NASA POWER (state mode only)
 futuros_agricolas: B3
 ```
