@@ -16,6 +16,8 @@ pip install agrobr[browser]
 playwright install chromium
 ```
 
+agrobr requires `httpx<1`: httpx 1.0, still in development, changes the API (`AsyncClient`, `HTTPStatusError` and `Timeout` are gone), and agrobr does not import with it. An environment that already has httpx 1.0 needs a separate virtual environment for agrobr.
+
 ### Via Docker (no local Python)
 
 ```bash

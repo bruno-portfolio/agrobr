@@ -52,7 +52,7 @@ classifiers = [
     "Typing :: Typed",
 ]
 dependencies = [
-    "httpx>=0.28.1",
+    "httpx>=0.28.1,<1",
     "httpcore>=1.0.9",
     "certifi>=2026.7.22",
     "beautifulsoup4>=4.12.0",
