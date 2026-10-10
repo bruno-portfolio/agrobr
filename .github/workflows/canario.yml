@@ -48,7 +48,7 @@ jobs:
 
       - name: Run tests
         run: |
-          python -m pytest tests/ --disable-socket --allow-unix-socket -m "not integration and not benchmark" -ra
+          python -m pytest tests/ -n auto --disable-socket --allow-unix-socket -m "not integration and not benchmark" -ra
 
       - name: Record dependency versions
         if: always()
