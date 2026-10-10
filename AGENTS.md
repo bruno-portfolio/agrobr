@@ -27,7 +27,7 @@ Extras opcionais: `polars`, `pdf`, `geo`, `browser`, `bigquery` e `docs` (ver `p
 ruff check agrobr/ tests/ scripts/ examples/
 ruff format --check agrobr/ tests/ scripts/ examples/
 mypy agrobr/
-pytest tests/ --disable-socket --allow-unix-socket -m "not integration and not benchmark" --cov=agrobr
+pytest tests/ -n auto --disable-socket --allow-unix-socket -m "not integration and not benchmark" --cov=agrobr
 python -m mkdocs build --strict            # requer o extra docs
 node --test calculadora/tests/*.test.mjs   # Node.js 24
 ```

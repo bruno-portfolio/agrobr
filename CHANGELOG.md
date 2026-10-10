@@ -7,6 +7,10 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 
 ## [Unreleased]
 
+### Changed
+
+- **ci** — a suíte roda em paralelo no CI (`pytest -n auto`, com `pytest-xdist` no extra `dev`): os jobs `test` e `minimum-compatibility` usam todos os núcleos da máquina do GitHub, em vez de um só.
+
 ## [2.0.0] - 2026-10-10
 
 Catálogo desta versão: **55 datasets e 90 contratos registrados**. Mudanças incompatíveis com 1.x estão em Changed; consulte o [guia de migração](docs/guides/migracao-2.md).
