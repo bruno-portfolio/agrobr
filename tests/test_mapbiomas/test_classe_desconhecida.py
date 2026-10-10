@@ -7,6 +7,7 @@ from pathlib import Path
 from unittest.mock import AsyncMock, patch
 
 import openpyxl
+import pandas as pd
 import pytest
 
 from agrobr import datasets
@@ -98,6 +99,39 @@ async def test_classe_fora_da_legenda_no_municipal_sai_nula_com_aviso():
     assert rotulos[3] == "Formação Florestal"
     assert frame.loc[frame["classe_id"] == DESCONHECIDA, "classe"].isna().all()
     _conferir_aviso(meta, emitidos, 11)
+
+
+@pytest.mark.parametrize(
+    ("aba", "colunas", "parse", "rotulos"),
+    [
+        ("COVERAGE_10", ("class",), parser.parse_cobertura_xlsx, ("classe",)),
+        (
+            "TRANSITION_10",
+            ("class_from", "class_to"),
+            parser.parse_transicao_xlsx,
+            ("classe_de", "classe_para"),
+        ),
+    ],
+)
+def test_rotulo_de_recorte_so_com_classes_desconhecidas_sai_no_dtype_de_texto(
+    aba, colunas, parse, rotulos
+):
+    workbook = openpyxl.load_workbook(io.BytesIO(RECORTE.read_bytes()))
+    sheet = workbook[aba]
+    cabecalho = [cell.value for cell in sheet[1]]
+    for coluna in colunas:
+        for linha in range(2, sheet.max_row + 1):
+            sheet.cell(row=linha, column=cabecalho.index(coluna) + 1, value=DESCONHECIDA)
+    content = io.BytesIO()
+    workbook.save(content)
+    workbook.close()
+
+    frame = parse(content.getvalue(), colecao=10)
+
+    assert len(frame) > 0
+    for rotulo in rotulos:
+        assert frame[rotulo].dtype == pd.Series([""]).dtype, (rotulo, frame[rotulo].dtype)
+        assert frame[rotulo].isna().all()
 
 
 @pytest.mark.parametrize(

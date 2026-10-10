@@ -23,6 +23,14 @@ logger = _log.get_logger(__name__)
 PARSER_VERSION = 1
 
 
+def _rotulos_de_classe(ids: pd.Series, colecao: int) -> pd.Series:
+    return pd.Series(
+        [classe_para_nome(int(classe_id), colecao) for classe_id in ids],
+        index=ids.index,
+        dtype=pd.Series([""]).dtype,
+    )
+
+
 def _validar_ids_de_classe(df: pd.DataFrame, coluna: str) -> None:
     ids = pd.to_numeric(df[coluna], errors="coerce")
     invalidos = ids.isna() | ids.mod(1).ne(0)
@@ -103,7 +111,7 @@ def parse_cobertura_xlsx(data: bytes, colecao: int = COLECAO_ATUAL) -> pd.DataFr
     melted["bioma"] = melted["biome"]
     melted["uf"] = melted["state"].apply(estado_para_uf)
     melted["classe_id"] = pd.to_numeric(melted["class"], errors="coerce").astype("Int64")
-    melted["classe"] = melted["classe_id"].apply(lambda x: classe_para_nome(int(x), colecao))
+    melted["classe"] = _rotulos_de_classe(melted["classe_id"], colecao)
     melted["nivel_0"] = melted["class_level_0"].fillna("")
     melted["ano"] = pd.to_numeric(melted["ano"], errors="coerce").astype("Int64")
     melted["area_ha"] = pd.to_numeric(melted["area_ha"], errors="coerce")
@@ -163,11 +171,9 @@ def parse_transicao_xlsx(data: bytes, colecao: int = COLECAO_ATUAL) -> pd.DataFr
     melted["bioma"] = melted["biome"]
     melted["uf"] = melted["state"].apply(estado_para_uf)
     melted["classe_de_id"] = pd.to_numeric(melted["class_from"], errors="coerce").astype("Int64")
-    melted["classe_de"] = melted["classe_de_id"].apply(lambda x: classe_para_nome(int(x), colecao))
+    melted["classe_de"] = _rotulos_de_classe(melted["classe_de_id"], colecao)
     melted["classe_para_id"] = pd.to_numeric(melted["class_to"], errors="coerce").astype("Int64")
-    melted["classe_para"] = melted["classe_para_id"].apply(
-        lambda x: classe_para_nome(int(x), colecao)
-    )
+    melted["classe_para"] = _rotulos_de_classe(melted["classe_para_id"], colecao)
     melted["periodo"] = melted["periodo_raw"].astype(str).str.lstrip("p").str.replace("_", "-")
     melted["area_ha"] = pd.to_numeric(melted["area_ha"], errors="coerce")
 
