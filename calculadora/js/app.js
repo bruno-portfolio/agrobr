@@ -1,645 +1,291 @@
-import { STATE_PRIMARY_METHOD } from "./constants.js";
-import { createSoilLayer, createLimestone, createLimingRequest, ValidationError } from "./models.js";
-import { runDiagnostic } from "./diagnostic.js";
-import { renderChart, destroyChart } from "./charts.js";
-import { parseNum, stepNumber } from "./numeric.js";
+import { CAO_MGO_LEGAL_MIN, CA_SAT_TARGET, K_MG_TO_CMOLC, MG_CRITICAL } from "./constants.js";
+import { ValidationError, createLimestone, createLimingRequest, createSoilLayer } from "./models.js";
+import { parseNum } from "./numeric.js";
+import { recommend } from "./recommend.js";
+import { SOURCES, sourceIndex } from "./sources.js";
 
-// ─── STATE ───
-const state = {
-  currentStep: 1,
-  state: "",
-  crop: "",
-  system: "abertura",
-  include2040: false,
-};
-
-const METHOD_DISPLAY = {
-  moreira_2025: { name: "Moreira et al. (2025)", desc: "Elevação da %Ca na CTC, multicamada, calibrado em Latossolos de MG" },
-  v_percent: { name: "Saturação por Bases (V%)", desc: "Raij (1979), calibração estadual" },
-  al_ca_mg: { name: "Al+Ca+Mg (5ª Aprox.)", desc: "Alvarez V. & Ribeiro (1999), MG" },
-  smp: { name: "Tabela SMP", desc: "CQFS (2016), RS/SC" },
-};
-
-const STATE_METHOD_NAMES = {
-  v_percent: "V% (Saturação por Bases)",
-  al_ca_mg: "Al+Ca+Mg (5ª Aproximação)",
-  smp: "SMP (Tabela RS/SC)",
-};
-
-// ─── DOM REFS ───
 const $ = id => document.getElementById(id);
-const panels = [null, $("step-1"), $("step-2"), $("step-3"), $("step-4")];
-const stepperItems = document.querySelectorAll(".stepper-item");
+const form = $("form");
+const resultEl = $("result");
 
-// ─── STEPPER +/- BUTTONS ───
-function initSteppers() {
-  document.querySelectorAll("input[data-step]").forEach(input => {
-    const step = parseFloat(input.dataset.step);
-    const min = parseFloat(input.dataset.min);
-    const max = parseFloat(input.dataset.max);
-    const decimals = step < 1 ? (step < 0.1 ? 2 : 1) : 0;
+const SOIL_FIELDS = [
+  { key: "ca", id: "ca", label: "Ca", unit: "base" },
+  { key: "mg", id: "mg", label: "Mg", unit: "base" },
+  { key: "k", id: "k", label: "K", unit: "k" },
+  { key: "al", id: "al", label: "Al", unit: "base" },
+  { key: "h_al", id: "h-al", label: "H+Al", unit: "base" },
+];
+const OPTIONAL_FIELDS = { clay_pct: "clay", ph_smp: "ph-smp" };
+const LAYER_SUFFIX = { "0-20": "020", "20-40": "2040" };
+const SMP_STATES = ["RS", "SC"];
+const UNIT_LABEL = { cmolc: "cmolc/dm³", mmolc: "mmolc/dm³", mg: "mg/dm³" };
 
-    const wrapper = document.createElement("div");
-    wrapper.className = "stepper-input";
-
-    const btnDec = document.createElement("button");
-    btnDec.type = "button";
-    btnDec.className = "stepper-btn stepper-dec";
-    btnDec.textContent = "−";
-    btnDec.setAttribute("aria-label", `Diminuir ${input.id}`);
-    btnDec.tabIndex = -1;
-
-    const btnInc = document.createElement("button");
-    btnInc.type = "button";
-    btnInc.className = "stepper-btn stepper-inc";
-    btnInc.textContent = "+";
-    btnInc.setAttribute("aria-label", `Aumentar ${input.id}`);
-    btnInc.tabIndex = -1;
-
-    input.parentNode.insertBefore(wrapper, input);
-    wrapper.appendChild(btnDec);
-    wrapper.appendChild(input);
-    wrapper.appendChild(btnInc);
-
-    function stepValue(direction) {
-      const next = stepNumber(parseNum(input.value), step * direction, min, max);
-      input.value = next.toFixed(decimals);
-      input.dispatchEvent(new Event("input", { bubbles: true }));
-    }
-
-    btnDec.addEventListener("click", () => stepValue(-1));
-    btnInc.addEventListener("click", () => stepValue(1));
-  });
+function fmt(value, digits = 1) {
+  return value.toLocaleString("pt-BR", { minimumFractionDigits: digits, maximumFractionDigits: digits });
 }
 
-initSteppers();
-
-// ─── NAVIGATION ───
-function goToStep(n) {
-  panels[state.currentStep].classList.remove("active");
-  panels[n].classList.add("active");
-
-  stepperItems.forEach((item, i) => {
-    item.classList.remove("active", "completed");
-    const stepNum = i + 1;
-    if (stepNum < n) item.classList.add("completed");
-    if (stepNum === n) item.classList.add("active");
-    item.setAttribute("aria-selected", stepNum === n ? "true" : "false");
-  });
-
-  state.currentStep = n;
-  window.scrollTo({ top: 0, behavior: "smooth" });
-
-  if (n === 4) runAndRender();
+function esc(text) {
+  return String(text).replace(/[&<>"']/g, ch => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[ch]);
 }
 
-// ─── STEP 1 LOGIC ───
-$("state").addEventListener("change", e => {
-  state.state = e.target.value;
-  clearError("state");
-  const hint = $("state-method-hint");
-  const method = STATE_PRIMARY_METHOD[state.state];
-  if (method) {
-    hint.textContent = `Moreira 2025 ✓ + comparação com ${STATE_METHOD_NAMES[method]}`;
-    hint.classList.add("visible");
-  } else if (state.state) {
-    hint.textContent = "Moreira 2025 ✓ (sem método estadual para comparação)";
-    hint.classList.add("visible");
-  } else {
-    hint.classList.remove("visible");
+function cites(ids = []) {
+  return ids.map(id => `<a class="cite" href="#ref-${id}" title="${esc(SOURCES[id].short)}">[${sourceIndex(id)}]</a>`).join(" ");
+}
+
+function radio(name) {
+  return form.querySelector(`input[name="${name}"]:checked`).value;
+}
+
+function toCmolc(value, unit) {
+  if (unit === "mmolc") return value / 10;
+  if (unit === "mg") return value / K_MG_TO_CMOLC;
+  return value;
+}
+
+function setFieldError(id, message) {
+  const input = $(id);
+  const error = $(`${id}-error`);
+  if (input) input.toggleAttribute("aria-invalid", Boolean(message));
+  if (error) error.textContent = message ?? "";
+}
+
+function readLayer(depth) {
+  const suffix = LAYER_SUFFIX[depth];
+  const unit = radio("unit");
+  const kunit = radio("kunit");
+  const values = {};
+  const missing = [];
+
+  for (const field of SOIL_FIELDS) {
+    const id = `${field.id}-${suffix}`;
+    const raw = $(id).value;
+    const number = parseNum(raw);
+    setFieldError(id, raw.trim() !== "" && Number.isNaN(number) ? "Número inválido" : null);
+    if (Number.isNaN(number)) missing.push(field.label);
+    values[field.key] = toCmolc(number, field.unit === "k" ? kunit : unit);
   }
-  updateContextualFields();
-});
-
-document.querySelectorAll(".crop-card").forEach(card => {
-  card.addEventListener("click", () => selectCrop(card.dataset.crop));
-  card.addEventListener("keydown", e => {
-    if (e.key === "Enter" || e.key === " ") { e.preventDefault(); selectCrop(card.dataset.crop); }
-  });
-});
-
-function selectCrop(crop) {
-  state.crop = crop;
-  clearError("crop");
-  document.querySelectorAll(".crop-card").forEach(c => {
-    const selected = c.dataset.crop === crop;
-    c.classList.toggle("selected", selected);
-    c.setAttribute("aria-checked", selected ? "true" : "false");
-  });
-}
-
-document.querySelectorAll(".toggle-option").forEach(opt => {
-  opt.addEventListener("click", () => selectSystem(opt.dataset.system));
-  opt.addEventListener("keydown", e => {
-    if (e.key === "Enter" || e.key === " ") { e.preventDefault(); selectSystem(opt.dataset.system); }
-  });
-});
-
-function selectSystem(system) {
-  state.system = system;
-  document.querySelectorAll(".toggle-option").forEach(o => {
-    const selected = o.dataset.system === system;
-    o.classList.toggle("selected", selected);
-    o.setAttribute("aria-checked", selected ? "true" : "false");
-  });
-}
-
-$("btn-next-1").addEventListener("click", () => {
-  let valid = true;
-  if (!state.state) { showError("state", "Selecione um estado."); valid = false; }
-  if (!state.crop) { showError("crop", "Selecione uma cultura."); valid = false; }
-  if (valid) goToStep(2);
-});
-
-// ─── STEP 2 LOGIC ───
-$("include-2040").addEventListener("change", e => {
-  state.include2040 = e.target.checked;
-  const col = $("soil-2040");
-  const columns = $("soil-columns");
-  if (state.include2040) {
-    col.classList.remove("hidden");
-    columns.classList.add("two-columns");
-  } else {
-    col.classList.add("hidden");
-    columns.classList.remove("two-columns");
+  for (const [key, prefix] of Object.entries(OPTIONAL_FIELDS)) {
+    const input = $(`${prefix}-${suffix}`);
+    if (!input || input.closest("[hidden]")) continue;
+    const number = parseNum(input.value);
+    setFieldError(input.id, input.value.trim() !== "" && Number.isNaN(number) ? "Número inválido" : null);
+    if (!Number.isNaN(number)) values[key] = number;
   }
-});
+  if (missing.length) return { missing };
 
-function updateContextualFields() {
-  const clayGroup = $("clay-group-020");
-  const smpGroup = $("ph-smp-group-020");
-  clayGroup.classList.remove("field-emphasized");
-  smpGroup.classList.remove("field-emphasized");
-
-  if (state.state === "MG") clayGroup.classList.add("field-emphasized");
-  if (state.state === "RS" || state.state === "SC") smpGroup.classList.add("field-emphasized");
+  try {
+    return { layer: createSoilLayer({ depth, ...values }) };
+  } catch (error) {
+    if (!(error instanceof ValidationError)) throw error;
+    const prefix = { h_al: "h-al", clay_pct: "clay", ph_smp: "ph-smp" }[error.field] ?? error.field;
+    setFieldError(`${prefix}-${suffix}`, error.message);
+    return { error: error.message };
+  }
 }
 
-const soilFields020 = ["ca-020", "mg-020", "k-020", "al-020", "h-al-020"];
-soilFields020.forEach(id => {
-  $(id).addEventListener("input", updateLivePanel);
-  $(id).addEventListener("blur", () => validateSoilField(id));
-});
+function readLimestone() {
+  const values = { cao_pct: parseNum($("cao").value), mgo_pct: parseNum($("mgo").value), prnt: parseNum($("prnt").value) };
+  ["cao", "mgo", "prnt"].forEach(id => setFieldError(id, null));
+  try {
+    return { limestone: createLimestone(values) };
+  } catch (error) {
+    if (!(error instanceof ValidationError)) throw error;
+    setFieldError(error.field, error.message);
+    return { error: error.message };
+  }
+}
 
-function updateLivePanel() {
-  const ca = parseNum($("ca-020").value);
-  const mg = parseNum($("mg-020").value);
-  let k = parseNum($("k-020").value);
-  const al = parseNum($("al-020").value);
-  const hAl = parseNum($("h-al-020").value);
-
-  if ([ca, mg, k, hAl].some(v => isNaN(v))) {
-    $("live-ctc").textContent = "—";
-    $("live-vpct").textContent = "—";
-    $("live-t").textContent = "—";
+function renderLive(depth, outcome) {
+  const el = $(`live-${LAYER_SUFFIX[depth]}`);
+  if (!outcome.layer) {
+    el.innerHTML = outcome.error ? `<span class="bad">${esc(outcome.error)}</span>` : "CTC, V% e saturações aparecem aqui.";
     return;
   }
-
-  if (k > 5) k = k / 391;
-
-  const ctc = ca + mg + k + hAl;
-  const vpct = ctc === 0 ? 0 : ((ca + mg + k) / ctc) * 100;
-  const t = ca + mg + k + (isNaN(al) ? 0 : al);
-
-  $("live-ctc").textContent = ctc.toFixed(2);
-  $("live-vpct").textContent = vpct.toFixed(1) + "%";
-  $("live-t").textContent = t.toFixed(2);
+  const l = outcome.layer;
+  const caClass = l.ca_sat_pct >= CA_SAT_TARGET * 100 ? "ok" : "bad";
+  el.innerHTML = `<span>CTC pH 7 <b>${fmt(l.ctc_ph7, 2)}</b></span><span>V <b>${fmt(l.v_pct)}%</b></span><span>Ca na CTC <b class="${caClass}">${fmt(l.ca_sat_pct)}%</b></span><span>Sat. Al <b>${fmt(l.al_sat_pct, 0)}%</b></span>`;
 }
 
-function validateSoilField(id) {
-  const val = parseNum($(id).value);
-  if ($(id).value.trim() !== "" && isNaN(val)) {
-    showFieldError(id, "Valor numérico inválido");
-    return false;
-  }
-  clearFieldError(id);
-  return true;
-}
-
-$("btn-prev-2").addEventListener("click", () => goToStep(1));
-$("btn-next-2").addEventListener("click", () => {
-  if (validateStep2()) goToStep(3);
-});
-
-function validateStep2() {
-  let valid = true;
-  const required020 = ["ca-020", "mg-020", "k-020", "al-020", "h-al-020"];
-  for (const id of required020) {
-    const val = parseNum($(id).value);
-    if ($(id).value.trim() === "" || isNaN(val)) {
-      showFieldError(id, "Campo obrigatório"); valid = false;
-    } else if (val < 0) {
-      showFieldError(id, "Valor não pode ser negativo"); valid = false;
-    } else {
-      clearFieldError(id);
-    }
-  }
-
-  if (valid) {
-    const al020 = parseNum($("al-020").value);
-    const hAl020 = parseNum($("h-al-020").value);
-    if (!isNaN(al020) && !isNaN(hAl020) && al020 > hAl020) {
-      showFieldError("al-020", "Al não pode ser maior que H+Al");
-      valid = false;
-    }
-  }
-
-  if (state.include2040) {
-    const required2040 = ["ca-2040", "mg-2040", "k-2040", "al-2040", "h-al-2040"];
-    for (const id of required2040) {
-      const val = parseNum($(id).value);
-      if ($(id).value.trim() === "" || isNaN(val)) {
-        showFieldError(id, "Campo obrigatório"); valid = false;
-      } else if (val < 0) {
-        showFieldError(id, "Valor não pode ser negativo"); valid = false;
-      } else {
-        clearFieldError(id);
-      }
-    }
-
-    if (valid) {
-      const al2040 = parseNum($("al-2040").value);
-      const hAl2040 = parseNum($("h-al-2040").value);
-      if (!isNaN(al2040) && !isNaN(hAl2040) && al2040 > hAl2040) {
-        showFieldError("al-2040", "Al não pode ser maior que H+Al");
-        valid = false;
-      }
-    }
-  }
-
-  return valid;
-}
-
-// ─── STEP 3 LOGIC ───
-$("quick-select").addEventListener("click", e => {
-  const btn = e.target.closest(".quick-btn");
-  if (!btn) return;
-  $("cao").value = btn.dataset.cao;
-  $("mgo").value = btn.dataset.mgo;
-  $("prnt").value = btn.dataset.prnt;
-  updateLimestoneLive();
-});
-
-["cao", "mgo", "prnt"].forEach(id => {
-  $(id).addEventListener("input", updateLimestoneLive);
-});
-
-function updateLimestoneLive() {
+function renderLimestoneLive() {
   const cao = parseNum($("cao").value);
   const mgo = parseNum($("mgo").value);
-
-  if (isNaN(cao) || isNaN(mgo)) {
-    $("limestone-tipo").textContent = "—";
-    $("limestone-sum").textContent = "—";
+  const el = $("live-limestone");
+  if (Number.isNaN(cao) || Number.isNaN(mgo)) {
+    el.textContent = "Tipo e garantia mínima aparecem aqui.";
     return;
   }
-
   const tipo = mgo > 12 ? "dolomítico" : mgo >= 5 ? "magnesiano" : "calcítico";
-  $("limestone-tipo").textContent = tipo;
-
-  const sum = cao + mgo;
-  const sumEl = $("limestone-sum");
-  const legalEl = $("limestone-legal");
-  sumEl.textContent = sum.toFixed(1) + "%";
-  if (sum >= 38) {
-    sumEl.className = "";
-    legalEl.className = "limestone-live-item legal-ok";
-  } else {
-    legalEl.className = "limestone-live-item legal-fail";
-  }
+  const legal = cao + mgo >= CAO_MGO_LEGAL_MIN;
+  el.innerHTML = `<span>Tipo <b>${tipo}</b></span><span>CaO + MgO <b class="${legal ? "ok" : "bad"}">${fmt(cao + mgo)}%</b> ${legal ? "atende" : "abaixo de"} o mínimo legal de ${CAO_MGO_LEGAL_MIN}%</span>`;
 }
 
-$("btn-prev-3").addEventListener("click", () => goToStep(2));
-$("btn-next-3").addEventListener("click", () => {
-  if (validateStep3()) goToStep(4);
-});
-
-function validateStep3() {
-  let valid = true;
-  for (const id of ["cao", "mgo", "prnt"]) {
-    const val = parseNum($(id).value);
-    if ($(id).value.trim() === "" || isNaN(val)) {
-      showFieldError(id, "Campo obrigatório"); valid = false;
-    } else {
-      clearFieldError(id);
-    }
-  }
-  return valid;
+function emptyState(message) {
+  resultEl.innerHTML = `<div class="result-empty"><strong>Resultado</strong><span>${esc(message)}</span></div>`;
 }
 
-// ─── STEP 4: RUN + RENDER ───
-$("btn-prev-4").addEventListener("click", () => {
-  destroyChart();
-  goToStep(3);
-});
-
-$("btn-print").addEventListener("click", () => window.print());
-
-function runAndRender() {
-  let request, report;
-  try {
-    request = buildRequest();
-    report = runDiagnostic(request);
-  } catch (e) {
-    if (e instanceof ValidationError) {
-      renderValidationError(e);
-      return;
-    }
-    renderGenericError(e);
-    return;
-  }
-
-  try {
-    $("result-banner").style.display = "";
-    $("chart-container").style.display = "";
-    renderBanner(report);
-    renderMethodCards(report);
-    renderDelta(report);
-    renderChart(report.results, report.primary_method);
-    renderProjections(report, request);
-    renderWarnings(report);
-    renderInputSummary(request);
-  } catch (e) {
-    renderGenericError(e);
-  }
-}
-
-function buildRequest() {
-  const layers = [buildLayer("0-20", "020")];
-  if (state.include2040) layers.push(buildLayer("20-40", "2040"));
-  const limestone = createLimestone({
-    cao_pct: parseNum($("cao").value),
-    mgo_pct: parseNum($("mgo").value),
-    prnt: parseNum($("prnt").value),
-  });
-  return createLimingRequest({
-    state: state.state,
-    crop: state.crop,
-    system: state.system,
-    layers,
-    limestone,
-  });
-}
-
-function buildLayer(depth, suffix) {
-  const data = {
-    depth,
-    ca: parseNum($(`ca-${suffix}`).value),
-    mg: parseNum($(`mg-${suffix}`).value),
-    k: parseNum($(`k-${suffix}`).value),
-    al: parseNum($(`al-${suffix}`).value),
-    h_al: parseNum($(`h-al-${suffix}`).value),
-  };
-  const clay = parseNum($(`clay-${suffix}`).value);
-  if (!isNaN(clay)) data.clay_pct = clay;
-  const phSmp = parseNum($(`ph-smp-${suffix}`).value);
-  if (!isNaN(phSmp)) data.ph_smp = phSmp;
-  const ctcLab = parseNum($(`ctc-lab-${suffix}`).value);
-  if (!isNaN(ctcLab)) data.ctc_lab = ctcLab;
-  return createSoilLayer(data);
-}
-
-// ─── RENDERERS ───
-function renderBanner(report) {
-  const layers = report.moreira_result.nc_per_layer;
-  const hasSubsurface = "20-40" in layers;
-  const bannerLabel = $("result-banner-label");
-
-  if (hasSubsurface) {
-    bannerLabel.textContent = "Necessidade de Calagem — Moreira et al. (2025) — Perfil 0-40 cm";
-  } else {
-    bannerLabel.textContent = "Necessidade de Calagem — Moreira et al. (2025) — Camada 0-20 cm";
-  }
-
-  $("banner-nc").textContent = report.moreira_result.nc_tha.toFixed(2);
-  const breakdown = $("banner-breakdown");
-  breakdown.innerHTML = "";
-
-  for (const [depth, nc] of Object.entries(layers)) {
-    const span = document.createElement("span");
-    span.className = "breakdown-item";
-    span.textContent = `${depth} cm: ${nc.toFixed(2)} t/ha`;
-    breakdown.appendChild(span);
-  }
-
-  if (hasSubsurface) {
-    const total = document.createElement("span");
-    total.className = "breakdown-item breakdown-total";
-    total.textContent = `Total perfil: ${report.moreira_result.nc_tha.toFixed(2)} t/ha`;
-    breakdown.appendChild(total);
-  }
-}
-
-function renderMethodCards(report) {
-  const grid = $("method-grid");
-  grid.innerHTML = "";
-
-  for (const result of report.results) {
-    const display = METHOD_DISPLAY[result.method] || { name: result.method, desc: "" };
-    const isPrimary = result.method === report.primary_method;
-    const isMoreira = result.method === "moreira_2025";
-
-    const card = document.createElement("div");
-    card.className = `method-card${isPrimary ? " primary" : ""}${!result.available ? " unavailable" : ""}`;
-
-    let badges = "";
-    if (isMoreira) badges += `<span class="badge badge-green">Referência</span>`;
-    if (isPrimary && result.available) badges += `<span class="badge badge-gold">Estadual</span>`;
-
-    card.innerHTML = `
-      <div class="method-name">${display.name} ${badges}</div>
-      <div class="method-nc">${result.available ? result.nc_tha.toFixed(2) + " t/ha" : "—"}</div>
-      <div class="method-desc">${display.desc}</div>
-      ${result.reason ? `<div class="method-reason">${escapeHtml(result.reason)}</div>` : ""}
-    `;
-    grid.appendChild(card);
-  }
-}
-
-function renderDelta(report) {
-  const section = $("delta-section");
-  if (report.delta_tha === null) {
-    section.style.display = "none";
-    return;
-  }
-  section.style.display = "block";
-
-  const moreira020 = report.moreira_result.nc_per_layer["0-20"];
-  const primaryResult = report.results.find(r => r.method === report.primary_method);
-  const estadual = primaryResult ? primaryResult.nc_tha : 0;
-  const maxVal = Math.max(moreira020, estadual, 1);
-
-  const bars = $("delta-bars");
-  bars.innerHTML = `
-    <div class="delta-bar-row">
-      <div class="delta-bar-label">Moreira (0-20)</div>
-      <div class="delta-bar-track">
-        <div class="delta-bar-fill green" style="width:${(moreira020 / maxVal * 100).toFixed(0)}%">
-          <span class="delta-bar-value">${moreira020.toFixed(2)}</span>
-        </div>
-      </div>
+function meter(label, before, after, target) {
+  const pct = v => Math.max(0, Math.min(100, v));
+  return `<div class="meter">
+    <div class="meter-head"><span>${label}</span><b>${fmt(before)}% → ${fmt(after)}%</b></div>
+    <div class="meter-track">
+      <div class="meter-fill after" style="width:${pct(after)}%"></div>
+      <div class="meter-fill" style="width:${pct(before)}%"></div>
+      <div class="meter-target" style="left:${pct(target)}%"></div>
     </div>
-    <div class="delta-bar-row">
-      <div class="delta-bar-label">${STATE_METHOD_NAMES[report.primary_method] || "Estadual"}</div>
-      <div class="delta-bar-track">
-        <div class="delta-bar-fill amber" style="width:${(estadual / maxVal * 100).toFixed(0)}%">
-          <span class="delta-bar-value">${estadual.toFixed(2)}</span>
-        </div>
-      </div>
-    </div>
-  `;
-
-  const interp = $("delta-interpretation");
-  const delta = report.delta_tha;
-  if (delta > 0.5) {
-    interp.textContent = `Moreira recomenda ${Math.abs(delta).toFixed(2)} t/ha a mais que o método estadual na camada 0-20. Possível subdosagem histórica pelo método regional.`;
-  } else if (delta < -0.5) {
-    interp.textContent = `O método estadual recomenda ${Math.abs(delta).toFixed(2)} t/ha a mais que Moreira na 0-20. O método regional pode estar sendo conservador ou o solo tem acidez subsuperficial importante.`;
-  } else {
-    interp.textContent = `Os métodos convergem na camada 0-20 (diferença de apenas ${Math.abs(delta).toFixed(2)} t/ha). Boa convergência entre abordagens.`;
-  }
-}
-
-function renderProjections(report, request) {
-  const tbody = $("projection-tbody");
-  tbody.innerHTML = "";
-
-  const layers = request.layers;
-  for (const layer of layers) {
-    const d = layer.depth;
-    const caProj = report.ca_projection[d];
-    const mgProj = report.mg_projection[d];
-    const ratio = d === "0-20" && report.ca_mg_ratio_projected !== null
-      ? report.ca_mg_ratio_projected.toFixed(1) : "—";
-    const mgSat = report.mg_saturation_projected[d];
-
-    const tr = document.createElement("tr");
-    tr.innerHTML = `
-      <td>${d} cm</td>
-      <td class="mono">${layer.ca.toFixed(2)}</td>
-      <td class="arrow">&rarr;</td>
-      <td class="mono">${caProj.toFixed(2)}</td>
-      <td class="mono">${layer.mg.toFixed(2)}</td>
-      <td class="arrow">&rarr;</td>
-      <td class="mono">${mgProj.toFixed(2)}</td>
-      <td class="mono">${ratio}</td>
-      <td class="mono">${mgSat.toFixed(0)}%</td>
-    `;
-    tbody.appendChild(tr);
-  }
-}
-
-function renderWarnings(report) {
-  const section = $("warnings-section");
-  section.innerHTML = "";
-  if (report.warnings.length === 0) return;
-
-  const title = document.createElement("h3");
-  title.className = "card-title";
-  title.style.marginBottom = "1rem";
-  title.textContent = "Avisos e Recomendações";
-  section.appendChild(title);
-
-  for (const w of report.warnings) {
-    const card = document.createElement("div");
-    const isError = w.includes("não atende") || w.includes("fora do range");
-    const isInfo = w.includes("não informada") || w.includes("gessagem") || w.includes("Corretivo especial");
-    card.className = `warning-card ${isError ? "error" : isInfo ? "info" : "warning"}`;
-    card.innerHTML = `
-      <span class="warning-icon">${isError ? "&#9888;" : isInfo ? "&#8505;" : "&#9888;"}</span>
-      <span class="warning-text">${escapeHtml(w)}</span>
-    `;
-    section.appendChild(card);
-  }
-}
-
-function renderInputSummary(request) {
-  const grid = $("input-summary-grid");
-  grid.innerHTML = "";
-  const layer020 = request.layers.find(l => l.depth === "0-20");
-  const items = [
-    ["Estado", request.state],
-    ["Cultura", request.crop],
-    ["Sistema", request.system === "abertura" ? "Abertura de Área" : "SPD"],
-    ["Ca (0-20)", layer020.ca.toFixed(2)],
-    ["Mg (0-20)", layer020.mg.toFixed(2)],
-    ["K (0-20)", layer020.k.toFixed(3)],
-    ["Al (0-20)", layer020.al.toFixed(2)],
-    ["H+Al (0-20)", layer020.h_al.toFixed(2)],
-    ["CaO%", request.limestone.cao_pct.toFixed(1)],
-    ["MgO%", request.limestone.mgo_pct.toFixed(1)],
-    ["PRNT%", request.limestone.prnt.toFixed(1)],
-    ["Tipo", request.limestone.tipo],
-  ];
-  if (layer020.clay_pct !== null) items.push(["Argila%", layer020.clay_pct.toFixed(1)]);
-  if (layer020.ph_smp !== null) items.push(["pH SMP", layer020.ph_smp.toFixed(1)]);
-
-  for (const [label, value] of items) {
-    const div = document.createElement("div");
-    div.className = "input-summary-item";
-    div.innerHTML = `<span class="input-summary-label">${escapeHtml(label)}</span><span class="input-summary-value">${escapeHtml(String(value))}</span>`;
-    grid.appendChild(div);
-  }
-}
-
-function hideResultSections() {
-  $("result-banner").style.display = "none";
-  $("delta-section").style.display = "none";
-  $("chart-container").style.display = "none";
-  $("warnings-section").innerHTML = "";
-  $("projection-tbody").innerHTML = "";
-  $("input-summary-grid").innerHTML = "";
-}
-
-function renderValidationError(e) {
-  hideResultSections();
-  const grid = $("method-grid");
-  grid.innerHTML = `<div class="warning-card error" style="grid-column:1/-1">
-    <span class="warning-icon">&#9888;</span>
-    <span class="warning-text"><strong>Erro de validação (${escapeHtml(e.field)}):</strong> ${escapeHtml(e.message)}</span>
   </div>`;
 }
 
-function renderGenericError(e) {
-  hideResultSections();
-  const grid = $("method-grid");
-  grid.innerHTML = `<div class="warning-card error" style="grid-column:1/-1">
-    <span class="warning-icon">&#9888;</span>
-    <span class="warning-text"><strong>Erro:</strong> ${escapeHtml(e.message || String(e))}</span>
+function renderDose(request, research) {
+  const layers = Object.entries(research.perLayer);
+  const chips = layers.length > 1
+    ? `<div class="dose-layers">${layers.map(([d, v]) => `<span class="chip">${d} cm <b>${fmt(v, 2)} t/ha</b></span>`).join("")}</div>`
+    : "";
+  const lime = request.limestone;
+  return `<div class="dose">
+    <span class="dose-label">Dose pela pesquisa · ${esc(research.name)} ${cites(research.sources)}</span>
+    <div class="dose-value"><strong>${fmt(research.total, 1)}</strong><span>t/ha</span></div>
+    <p class="dose-basis">${esc(research.basis)}. Calcário com ${fmt(lime.cao_pct, 0)}% de CaO, ${fmt(lime.mgo_pct, 0)}% de MgO e PRNT ${fmt(lime.prnt, 0)}%.</p>
+    ${chips}
   </div>`;
 }
 
-// ─── HELPERS ───
-function escapeHtml(str) {
-  const div = document.createElement("div");
-  div.textContent = str;
-  return div.innerHTML;
+function renderProjection(request, projection) {
+  if (!projection) return "";
+  const meters = request.layers.map(l => {
+    const after = projection[l.depth];
+    return meter(`Ca na CTC, ${l.depth} cm`, l.ca_sat_pct, after.caSat, CA_SAT_TARGET * 100);
+  }).join("");
+  const rows = request.layers.map(l => {
+    const after = projection[l.depth];
+    return `<tr><td>${l.depth} cm</td><td>${fmt(l.ca, 2)} → <span class="strong">${fmt(after.ca, 2)}</span></td><td>${fmt(l.mg, 2)} → <span class="strong">${fmt(after.mg, 2)}</span> <span class="ref">mín. ${fmt(MG_CRITICAL[l.depth])}</span></td><td>${fmt(l.v_pct, 0)} → <span class="strong">${fmt(after.v, 0)}%</span></td></tr>`;
+  }).join("");
+  return `<section class="result-section">
+    <div class="section-label">Antes e depois ${cites(["moreira2026"])}</div>
+    ${meters}
+    <div class="meter-legend"><span><i style="background:var(--muted)"></i>hoje</span><span><i style="background:var(--gold)"></i>após a calagem</span><span><i style="background:var(--text)"></i>alvo de 60%</span></div>
+    <table class="table"><thead><tr><th>Camada</th><th>Ca (cmolc)</th><th>Mg (cmolc)</th><th>V</th></tr></thead><tbody>${rows}</tbody></table>
+  </section>`;
 }
 
-function showError(field, msg) {
-  const el = $(`${field}-error`);
-  if (el) { el.textContent = msg; el.classList.add("visible"); }
-  const input = $(field);
-  if (input) input.setAttribute("aria-invalid", "true");
+function renderComparison(request, result) {
+  const { research, manual, projection } = result;
+  const top = request.layers.find(l => l.depth === "0-20");
+  const research020 = research.perLayer["0-20"];
+  const researchRow = `<div class="compare-row primary"><span class="compare-name">Pela pesquisa, camada 0-20</span><span class="compare-value">${fmt(research020, 2)} t/ha</span><span class="compare-desc">${esc(research.name)} ${cites(research.sources)}</span></div>`;
+
+  if (!manual.available || manual.dose === null) {
+    return `<section class="result-section"><div class="section-label">Manual do estado</div>${researchRow}<p class="compare-explain">${esc(manual.reason)}</p></section>`;
+  }
+
+  const manualRow = `<div class="compare-row"><span class="compare-name">${esc(manual.name)}</span><span class="compare-value">${fmt(manual.dose, 2)} t/ha</span><span class="compare-desc">${esc(manual.target)}${manual.reason ? `. ${esc(manual.reason)}` : ""} ${cites(manual.sources)}</span></div>`;
+  const diff = research020 - manual.dose;
+  let explain;
+  if (Math.abs(diff) < 0.3) {
+    explain = "Na camada 0-20, a pesquisa e o manual chegam à mesma dose.";
+  } else if (projection) {
+    explain = `Na camada 0-20, a dose pela pesquisa é ${fmt(Math.abs(diff), 1)} t/ha ${diff > 0 ? "maior" : "menor"} que a do manual. A diferença vem do alvo: a pesquisa leva o Ca a 60% da CTC, o que deixa o solo com V de ${fmt(projection["0-20"].v, 0)}%. O alvo do manual é outro: ${esc(manual.target)}.`;
+  } else {
+    explain = `Na camada 0-20, a dose pela pesquisa é ${fmt(Math.abs(diff), 1)} t/ha ${diff > 0 ? "maior" : "menor"} que a do manual. Hoje o solo está com V de ${fmt(top.v_pct, 0)}%.`;
+  }
+  return `<section class="result-section"><div class="section-label">Comparação com o manual do estado</div><div class="compare">${researchRow}${manualRow}</div><p class="compare-explain">${explain}</p></section>`;
 }
 
-function clearError(field) {
-  const el = $(`${field}-error`);
-  if (el) { el.textContent = ""; el.classList.remove("visible"); }
-  const input = $(field);
-  if (input) input.removeAttribute("aria-invalid");
+function renderNotes(notes) {
+  if (!notes.length) return "";
+  const items = notes.map(n => `<li class="note ${n.level === "warn" ? "warn" : n.level === "info" ? "info" : ""}"><span>${esc(n.text)} ${cites(n.sources)}</span></li>`).join("");
+  return `<section class="result-section"><div class="section-label">Recomendações e avisos</div><ul class="notes">${items}</ul></section>`;
 }
 
-function showFieldError(id, msg) {
-  const el = $(`${id}-error`);
-  if (el) { el.textContent = msg; el.classList.add("visible"); }
-  const input = $(id);
-  if (input) input.setAttribute("aria-invalid", "true");
+function render() {
+  const smpVisible = SMP_STATES.includes($("state").value);
+  $("ph-smp-field").hidden = !smpVisible;
+
+  const include2040 = $("include-2040").checked;
+  $("fields-2040").hidden = !include2040;
+  $("empty-2040").hidden = include2040;
+  $("live-2040").hidden = !include2040;
+
+  document.querySelectorAll("[data-unit]").forEach(el => { el.textContent = UNIT_LABEL[radio("unit")]; });
+  document.querySelectorAll("[data-kunit]").forEach(el => { el.textContent = UNIT_LABEL[radio("kunit")]; });
+
+  const top = readLayer("0-20");
+  renderLive("0-20", top);
+  const sub = include2040 ? readLayer("20-40") : null;
+  if (sub) renderLive("20-40", sub);
+  renderLimestoneLive();
+  const lime = readLimestone();
+
+  if (top.missing) return emptyState(`Preencha ${top.missing.join(", ")} da camada 0-20 cm para ver a dose.`);
+  if (top.error) return emptyState(top.error);
+  if (sub?.missing) return emptyState(`Complete ${sub.missing.join(", ")} da camada 20-40 cm ou desligue essa camada.`);
+  if (sub?.error) return emptyState(sub.error);
+  if (lime.error) return emptyState(lime.error);
+
+  const request = createLimingRequest({
+    state: $("state").value,
+    crop: radio("crop"),
+    system: radio("system"),
+    layers: sub ? [top.layer, sub.layer] : [top.layer],
+    limestone: lime.limestone,
+  });
+  const result = recommend(request);
+
+  resultEl.innerHTML = renderDose(request, result.research)
+    + renderProjection(request, result.projection)
+    + renderComparison(request, result)
+    + renderNotes(result.notes)
+    + `<div class="result-actions"><button type="button" class="button button-primary" id="print">Imprimir</button><a class="button button-secondary" href="#metodo">Como é calculado</a></div>`;
+  $("print").addEventListener("click", () => window.print());
 }
 
-function clearFieldError(id) {
-  const el = $(`${id}-error`);
-  if (el) { el.textContent = ""; el.classList.remove("visible"); }
-  const input = $(id);
-  if (input) input.removeAttribute("aria-invalid");
+function renderReferences() {
+  $("refs").innerHTML = Object.entries(SOURCES).map(([id, s]) =>
+    `<li id="ref-${id}"><span>${esc(s.citation)} <a href="${esc(s.url)}" target="_blank" rel="noopener noreferrer">${esc(s.url.replace(/^https?:\/\//, ""))}</a><span class="kind">${esc(s.kind)}</span></span></li>`
+  ).join("");
 }
+
+function renderMethod() {
+  $("metodo-corpo").innerHTML = `
+    <div>
+      <h3>Abertura ou reforma de área</h3>
+      <p>A dose leva o cálcio a 60% da CTC a pH 7, camada por camada, e soma as duas camadas quando há análise da 20-40 cm. É a equação de Moreira et al. (2026), calibrada em sete experimentos de quatro anos em Latossolos de Minas Gerais, com soja, feijão, milho, trigo e sorgo e calcário incorporado até 40 cm. ${cites(["moreira2026"])}</p>
+    </div>
+    <p class="formula">NC (t/ha) = (0,6 × CTC pH 7 − Ca) × 5600 ÷ (CaO% × PRNT%)</p>
+    <p>Nas áreas do estudo, 95% da produtividade máxima veio com cerca de 60% de Ca e 29% de Mg na CTC da camada 0-20 cm, e 39% de Ca e 20% de Mg na 20-40 cm. Os níveis críticos foram 4,1 e 1,9 cmolc/dm³ de Ca e 2,0 e 1,0 cmolc/dm³ de Mg. ${cites(["moreira2026"])} A correção em profundidade é o que sustenta a resposta: com 15 t/ha incorporadas até 40 cm, o milho de segunda safra produziu 2.700 kg/ha a mais que sem calcário, em condição de calor e seca. ${cites(["moraes2023"])}</p>
+    <div>
+      <h3>Plantio direto consolidado</h3>
+      <p>O estudo de Moreira et al. não avaliou calcário em superfície. No plantio direto, a calculadora segue a pesquisa de longo prazo da UNESP em Botucatu: reaplicar quando a saturação por bases da camada 0-20 cm cai abaixo de 50% e, nesse caso, aplicar em superfície a dose que a leva a 70%. A produtividade máxima de milho e aveia ficou muito próxima dessa dose, com o maior lucro em quatro safras. ${cites(["crusciol2016", "bossolani2022"])} Em 2016, no mesmo experimento, a dose passou a ser calculada para a camada 0-40 cm, porque o cálculo pela 0-20 subestimava a necessidade. Os micronutrientes foram repostos depois de cada calagem. ${cites(["bossolani2022"])}</p>
+      <p>Quando a 20-40 cm tem saturação por Al acima de 20% ou Ca abaixo de 0,5 cmolc/dm³, a calculadora indica gesso: no Sul, pela fórmula que eleva o Ca a 60% da CTC efetiva; nas demais regiões, 50 kg por ponto de argila. ${cites(["embrapaSoja2020", "cairesGuimaraes2018"])} Em plantio direto no Paraná, incorporar o calcário reduziu a matéria orgânica da superfície, e o gesso com o calcário foi a alternativa indicada. ${cites(["besen2021"])}</p>
+    </div>
+    <div>
+      <h3>O que a pesquisa recente mostra</h3>
+      <p>Em 33 solos de Mato Grosso, chegar a uma saturação por bases de 60% a 80% exigiu até o dobro da dose do método de saturação por bases. Os autores consideram as metas de Ca+Mg de 2,0 cmolc/dm³ e de V de 50% do Cerrado ultrapassadas para a agricultura atual. ${cites(["lange2025"])}</p>
+      <p>Em áreas novas de soja no Piauí, 10 t/ha de calcário renderam 18% e 12% a mais em duas safras. Acima de 10 t/ha, P, K e micronutrientes caíram no solo e nas folhas. Os autores recomendam não passar de 10 t/ha ou do dobro do que indicam os manuais. ${cites(["oliveira2024"])} Henrique Antunes de Souza, da Embrapa Meio-Norte e coautor do estudo, defende rever os documentos oficiais, apoiados em pesquisas dos anos 1980 e 1990. ${cites(["cultivar2024"])}</p>
+    </div>
+    <div>
+      <h3>Limites</h3>
+      <p>O artigo adota 60% de Ca nas duas camadas, embora seus dados indiquem 39% na 20-40 cm. O MgO do calcário não entra na equação; por isso a calculadora avisa quando o Mg projetado fica abaixo do nível crítico. Mesmo a dose do método ficou abaixo da dose de máxima produtividade medida em campo (em uma das áreas, 6 t/ha contra 11,2 t/ha). Fora de Latossolos, de grãos e da faixa de CTC de 3,1 a 9,5 cmolc/dm³, o resultado é indicativo. ${cites(["moreira2026"])}</p>
+    </div>
+    <div>
+      <h3>Manual do estado</h3>
+      <p>A comparação usa o critério oficial do seu estado quando o valor foi conferido na fonte. Quando não foi, a calculadora diz que não tem o parâmetro em vez de supor um valor.</p>
+    </div>`;
+}
+
+function applyPreset(button) {
+  $("cao").value = button.dataset.cao;
+  $("mgo").value = button.dataset.mgo;
+  $("prnt").value = button.dataset.prnt;
+  render();
+}
+
+form.addEventListener("input", render);
+form.addEventListener("change", render);
+$("presets").addEventListener("click", event => {
+  const button = event.target.closest(".preset");
+  if (button) applyPreset(button);
+});
+
+renderMethod();
+renderReferences();
+render();

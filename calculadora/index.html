@@ -3,442 +3,203 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dose Certa — Diagnóstico de Calagem</title>
-  <meta name="description" content="Diagnóstico comparativo de calagem: Moreira et al. (2025) + método estadual. Motor validado com 106 testes.">
-  <meta name="theme-color" content="#15803d">
-  <meta property="og:title" content="Dose Certa — Diagnóstico de Calagem">
-  <meta property="og:description" content="Compare métodos de calagem lado a lado. Moreira 2025 + V% + Al+Ca+Mg + SMP. Grátis, sem cadastro.">
+  <title>Calculadora de calagem — agrobr</title>
+  <meta name="description" content="Dose de calcário pela saturação por cálcio calibrada em campo (Moreira et al., 2026), com o manual do seu estado lado a lado. Grátis, sem cadastro, roda no navegador.">
+  <meta name="theme-color" content="#0c0c0f">
+  <link rel="canonical" href="https://agrobr.dev/calculadora/">
+  <meta property="og:title" content="Calculadora de calagem — agrobr">
+  <meta property="og:description" content="Dose de calcário pela pesquisa de campo mais recente, com o manual do seu estado lado a lado e as fontes de cada número.">
+  <meta property="og:url" content="https://agrobr.dev/calculadora/">
   <meta property="og:type" content="website">
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌱</text></svg>">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600;700&family=JetBrains+Mono:wght@400;600&display=swap">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 80 80'%3E%3Crect width='80' height='80' rx='18' fill='%230c0c0f'/%3E%3Ctext x='16' y='57' font-size='54' font-family='Georgia' fill='%23d7b879'%3Ea%3C/text%3E%3C/svg%3E">
+  <link rel="stylesheet" href="/assets/landing/fonts.css">
   <link rel="stylesheet" href="css/main.css">
   <link rel="stylesheet" href="css/print.css" media="print">
 </head>
 <body>
-
-  <!-- ─── HEADER ─── -->
-  <header class="app-header">
-    <div class="container">
-      <a href="." class="logo">
-        <div class="logo-icon">DC</div>
-        <span>Dose Certa</span>
+  <header class="site-header">
+    <nav class="container nav-inner" aria-label="Navegação principal">
+      <a class="logo" href="/" aria-label="agrobr — início">
+        <svg class="icon logo-mark" viewBox="0 0 24 28" aria-hidden="true"><path d="M12 26V3M12 10C6 10 4 7 4 3c6 0 8 3 8 7ZM12 16c6 0 8-3 8-7-6 0-8 3-8 7ZM12 23c-6 0-8-3-8-7 6 0 8 3 8 7Z"/></svg>
+        agrobr
       </a>
-      <span class="header-subtitle">Diagnóstico de Calagem</span>
-    </div>
-  </header>
-
-  <main class="container">
-
-    <!-- ─── STEPPER ─── -->
-    <nav class="stepper" role="tablist" aria-label="Etapas do diagnóstico">
-      <div class="stepper-item active" role="tab" aria-selected="true" data-step="1">
-        <span class="step-number"><span>1</span></span>
-        Local e Cultura
-      </div>
-      <div class="stepper-item" role="tab" aria-selected="false" data-step="2">
-        <span class="step-number"><span>2</span></span>
-        Análise do Solo
-      </div>
-      <div class="stepper-item" role="tab" aria-selected="false" data-step="3">
-        <span class="step-number"><span>3</span></span>
-        Calcário
-      </div>
-      <div class="stepper-item" role="tab" aria-selected="false" data-step="4">
-        <span class="step-number"><span>4</span></span>
-        Diagnóstico
+      <div class="nav-links">
+        <a href="/calculadora/" aria-current="page">Calagem</a>
+        <a href="#metodo">Método</a>
+        <a href="#fontes">Fontes</a>
+        <a href="https://www.agrobr.dev/docs/">Documentação</a>
+        <a href="https://github.com/bruno-portfolio/agrobr" target="_blank" rel="noopener noreferrer">GitHub ↗</a>
       </div>
     </nav>
+  </header>
 
-    <div class="wizard-content">
+  <main id="conteudo">
+    <section class="container hero" aria-labelledby="titulo">
+      <p class="eyebrow">Calculadora de calagem</p>
+      <h1 id="titulo">Quanto calcário o seu solo precisa, <em>pela pesquisa de campo de hoje</em></h1>
+      <p class="lead">A dose sai da saturação por cálcio calibrada em sete áreas de produção de grãos por Moreira et al. (2026). Ao lado, o que o manual do seu estado recomendaria e por que os números diferem. Cada número tem fonte.</p>
+      <p class="hero-meta"><span>Roda no seu navegador</span><span>Sem cadastro</span><span>Código aberto</span></p>
+    </section>
 
-      <!-- ═══ STEP 1 — Onde e O Que ═══ -->
-      <section id="step-1" class="step-panel active card" role="tabpanel">
-        <div class="card-header">
-          <h2 class="card-title">Onde e O Que</h2>
-          <p class="card-subtitle">Defina o estado, cultura e sistema de manejo.</p>
-        </div>
-
-        <div class="form-group">
-          <label class="form-label" for="state">Estado</label>
-          <select class="form-select" id="state" aria-required="true">
-            <option value="">Selecione o estado...</option>
-            <optgroup label="Moreira 2025 + método estadual de comparação">
-              <option value="SP">São Paulo (SP) — compara com V%</option>
-              <option value="PR">Paraná (PR) — compara com V%</option>
-              <option value="MG">Minas Gerais (MG) — compara com Al+Ca+Mg</option>
-              <option value="RS">Rio Grande do Sul (RS) — compara com SMP</option>
-              <option value="SC">Santa Catarina (SC) — compara com SMP</option>
-              <option value="MT">Mato Grosso (MT) — compara com V%</option>
-              <option value="GO">Goiás (GO) — compara com V%</option>
-              <option value="MS">Mato Grosso do Sul (MS) — compara com V%</option>
-              <option value="BA">Bahia (BA) — compara com V%</option>
-            </optgroup>
-            <optgroup label="Moreira 2025 (sem método estadual para comparação)">
-              <option value="AC">Acre (AC)</option>
-              <option value="AL">Alagoas (AL)</option>
-              <option value="AP">Amapá (AP)</option>
-              <option value="AM">Amazonas (AM)</option>
-              <option value="CE">Ceará (CE)</option>
-              <option value="DF">Distrito Federal (DF)</option>
-              <option value="ES">Espírito Santo (ES)</option>
-              <option value="MA">Maranhão (MA)</option>
-              <option value="PA">Pará (PA)</option>
-              <option value="PB">Paraíba (PB)</option>
-              <option value="PE">Pernambuco (PE)</option>
-              <option value="PI">Piauí (PI)</option>
-              <option value="RJ">Rio de Janeiro (RJ)</option>
-              <option value="RN">Rio Grande do Norte (RN)</option>
-              <option value="RO">Rondônia (RO)</option>
-              <option value="RR">Roraima (RR)</option>
-              <option value="SE">Sergipe (SE)</option>
-              <option value="TO">Tocantins (TO)</option>
-            </optgroup>
-          </select>
-          <div class="state-method-hint" id="state-method-hint"></div>
-          <div class="form-error" id="state-error"></div>
-        </div>
-
-        <div class="form-group">
-          <label class="form-label">Cultura</label>
-          <div class="crop-grid" id="crop-grid" role="radiogroup" aria-label="Seleção de cultura">
-            <div class="crop-card" data-crop="soja" tabindex="0" role="radio" aria-checked="false">
-              <span class="crop-icon">🫘</span>
-              <span class="crop-name">Soja</span>
-            </div>
-            <div class="crop-card" data-crop="milho" tabindex="0" role="radio" aria-checked="false">
-              <span class="crop-icon">🌽</span>
-              <span class="crop-name">Milho</span>
-            </div>
-            <div class="crop-card" data-crop="café" tabindex="0" role="radio" aria-checked="false">
-              <span class="crop-icon">☕</span>
-              <span class="crop-name">Café</span>
-            </div>
-            <div class="crop-card" data-crop="feijão" tabindex="0" role="radio" aria-checked="false">
-              <span class="crop-icon">🫛</span>
-              <span class="crop-name">Feijão</span>
-            </div>
-            <div class="crop-card" data-crop="pastagem" tabindex="0" role="radio" aria-checked="false">
-              <span class="crop-icon">🌿</span>
-              <span class="crop-name">Pastagem</span>
-            </div>
-            <div class="crop-card" data-crop="eucalipto" tabindex="0" role="radio" aria-checked="false">
-              <span class="crop-icon">🌲</span>
-              <span class="crop-name">Eucalipto</span>
-            </div>
-            <div class="crop-card" data-crop="trigo" tabindex="0" role="radio" aria-checked="false">
-              <span class="crop-icon">🌾</span>
-              <span class="crop-name">Trigo</span>
-            </div>
-          </div>
-          <div class="form-error" id="crop-error"></div>
-        </div>
-
-        <div class="form-group">
-          <label class="form-label">Sistema de manejo</label>
-          <div class="system-toggle" id="system-toggle" role="radiogroup" aria-label="Sistema de manejo">
-            <div class="toggle-option selected" data-system="abertura" tabindex="0" role="radio" aria-checked="true">
-              <span class="toggle-label">Abertura de Área</span>
-              <span class="toggle-desc">Com incorporação profunda do calcário.</span>
-            </div>
-            <div class="toggle-option" data-system="spd" tabindex="0" role="radio" aria-checked="false">
-              <span class="toggle-label">SPD</span>
-              <span class="toggle-desc">Plantio direto — aplicação superficial.</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="wizard-nav">
-          <div></div>
-          <button class="btn btn-primary" id="btn-next-1">Próximo</button>
-        </div>
-      </section>
-
-      <!-- ═══ STEP 2 — Análise do Solo ═══ -->
-      <section id="step-2" class="step-panel card" role="tabpanel">
-        <div class="card-header">
-          <h2 class="card-title">Análise do Solo</h2>
-          <p class="card-subtitle">Insira os dados do laudo laboratorial.</p>
-        </div>
-
-        <div class="switch-wrapper">
-          <label class="switch" for="include-2040">
-            <input type="checkbox" id="include-2040">
-            <span class="switch-track"></span>
-            <span class="switch-thumb"></span>
-          </label>
-          <span class="switch-label-text">Incluir camada 20-40 cm</span>
-        </div>
-
-        <div class="soil-columns" id="soil-columns">
-          <!-- 0-20 Column -->
-          <div class="soil-column" id="soil-020">
-            <div class="soil-column-title">Camada 0-20 cm</div>
-
-            <div class="form-row">
-              <div class="form-group">
-                <label class="form-label" for="ca-020">Ca <span class="form-hint">cmolc/dm³</span></label>
-                <input class="form-input" id="ca-020" type="text" inputmode="decimal" aria-required="true" placeholder="0.0" data-step="0.1" data-min="0" data-max="20">
-                <div class="form-error" id="ca-020-error"></div>
-              </div>
-              <div class="form-group">
-                <label class="form-label" for="mg-020">Mg <span class="form-hint">cmolc/dm³</span></label>
-                <input class="form-input" id="mg-020" type="text" inputmode="decimal" aria-required="true" placeholder="0.0" data-step="0.1" data-min="0" data-max="10">
-                <div class="form-error" id="mg-020-error"></div>
-              </div>
-            </div>
-
-            <div class="form-row">
-              <div class="form-group">
-                <label class="form-label" for="k-020">K <span class="form-hint" id="k-unit-hint-020">cmolc/dm³ ou mg/dm³</span></label>
-                <input class="form-input" id="k-020" type="text" inputmode="decimal" aria-required="true" placeholder="0.0"
-                       aria-describedby="k-unit-hint-020" data-step="0.01" data-min="0" data-max="800">
-                <div class="form-error" id="k-020-error"></div>
-              </div>
-              <div class="form-group">
-                <label class="form-label" for="al-020">Al <span class="form-hint">cmolc/dm³</span></label>
-                <input class="form-input" id="al-020" type="text" inputmode="decimal" aria-required="true" placeholder="0.0" data-step="0.1" data-min="0" data-max="10">
-                <div class="form-error" id="al-020-error"></div>
-              </div>
-            </div>
-
-            <div class="form-row">
-              <div class="form-group">
-                <label class="form-label" for="h-al-020">H+Al <span class="form-hint">cmolc/dm³</span></label>
-                <input class="form-input" id="h-al-020" type="text" inputmode="decimal" aria-required="true" placeholder="0.0" data-step="0.5" data-min="0" data-max="30">
-                <div class="form-error" id="h-al-020-error"></div>
-              </div>
-              <div class="form-group" id="clay-group-020">
-                <label class="form-label" for="clay-020">Argila <span class="form-hint">%</span></label>
-                <input class="form-input" id="clay-020" type="text" inputmode="decimal" placeholder="—" data-step="1" data-min="0" data-max="100">
-                <div class="form-error" id="clay-020-error"></div>
-              </div>
-            </div>
-
-            <div class="form-row">
-              <div class="form-group" id="ph-smp-group-020">
-                <label class="form-label" for="ph-smp-020">pH SMP</label>
-                <input class="form-input" id="ph-smp-020" type="text" inputmode="decimal" placeholder="—" data-step="0.1" data-min="3.5" data-max="8.0">
-                <div class="form-error" id="ph-smp-020-error"></div>
-              </div>
-              <div class="form-group">
-                <label class="form-label" for="ctc-lab-020">CTC lab <span class="form-hint">cmolc/dm³ (opcional)</span></label>
-                <input class="form-input" id="ctc-lab-020" type="text" inputmode="decimal" placeholder="—" data-step="0.1" data-min="0" data-max="50">
-                <div class="form-error" id="ctc-lab-020-error"></div>
+    <div class="container workspace">
+      <form class="panel inputs" id="form" novalidate autocomplete="off">
+        <section class="block" aria-labelledby="bloco-area">
+          <h2 class="block-title" id="bloco-area"><span class="step">01</span>Área</h2>
+          <div class="grid-2">
+            <label class="field">
+              <span class="field-label">Estado</span>
+              <select class="select" id="state" name="state">
+                <option value="">Selecione</option>
+                <option value="AC">Acre</option>
+                <option value="AL">Alagoas</option>
+                <option value="AP">Amapá</option>
+                <option value="AM">Amazonas</option>
+                <option value="BA">Bahia</option>
+                <option value="CE">Ceará</option>
+                <option value="DF">Distrito Federal</option>
+                <option value="ES">Espírito Santo</option>
+                <option value="GO">Goiás</option>
+                <option value="MA">Maranhão</option>
+                <option value="MT">Mato Grosso</option>
+                <option value="MS">Mato Grosso do Sul</option>
+                <option value="MG">Minas Gerais</option>
+                <option value="PA">Pará</option>
+                <option value="PB">Paraíba</option>
+                <option value="PR">Paraná</option>
+                <option value="PE">Pernambuco</option>
+                <option value="PI">Piauí</option>
+                <option value="RJ">Rio de Janeiro</option>
+                <option value="RN">Rio Grande do Norte</option>
+                <option value="RS">Rio Grande do Sul</option>
+                <option value="RO">Rondônia</option>
+                <option value="RR">Roraima</option>
+                <option value="SC">Santa Catarina</option>
+                <option value="SP">São Paulo</option>
+                <option value="SE">Sergipe</option>
+                <option value="TO">Tocantins</option>
+              </select>
+            </label>
+            <div class="field">
+              <span class="field-label">Cultura</span>
+              <div class="choices" role="radiogroup" aria-label="Cultura">
+                <label class="choice"><input type="radio" name="crop" value="soja" checked><span>Soja</span></label>
+                <label class="choice"><input type="radio" name="crop" value="milho"><span>Milho</span></label>
+                <label class="choice"><input type="radio" name="crop" value="feijão"><span>Feijão</span></label>
+                <label class="choice"><input type="radio" name="crop" value="trigo"><span>Trigo</span></label>
+                <label class="choice"><input type="radio" name="crop" value="café"><span>Café</span></label>
+                <label class="choice"><input type="radio" name="crop" value="pastagem"><span>Pastagem</span></label>
+                <label class="choice"><input type="radio" name="crop" value="eucalipto"><span>Eucalipto</span></label>
               </div>
             </div>
           </div>
-
-          <!-- 20-40 Column (hidden by default) -->
-          <div class="soil-column hidden" id="soil-2040">
-            <div class="soil-column-title">Camada 20-40 cm</div>
-
-            <div class="form-row">
-              <div class="form-group">
-                <label class="form-label" for="ca-2040">Ca <span class="form-hint">cmolc/dm³</span></label>
-                <input class="form-input" id="ca-2040" type="text" inputmode="decimal" placeholder="0.0" data-step="0.1" data-min="0" data-max="20">
-                <div class="form-error" id="ca-2040-error"></div>
-              </div>
-              <div class="form-group">
-                <label class="form-label" for="mg-2040">Mg <span class="form-hint">cmolc/dm³</span></label>
-                <input class="form-input" id="mg-2040" type="text" inputmode="decimal" placeholder="0.0" data-step="0.1" data-min="0" data-max="10">
-                <div class="form-error" id="mg-2040-error"></div>
-              </div>
-            </div>
-
-            <div class="form-row">
-              <div class="form-group">
-                <label class="form-label" for="k-2040">K <span class="form-hint">cmolc/dm³ ou mg/dm³</span></label>
-                <input class="form-input" id="k-2040" type="text" inputmode="decimal" placeholder="0.0" data-step="0.01" data-min="0" data-max="800">
-                <div class="form-error" id="k-2040-error"></div>
-              </div>
-              <div class="form-group">
-                <label class="form-label" for="al-2040">Al <span class="form-hint">cmolc/dm³</span></label>
-                <input class="form-input" id="al-2040" type="text" inputmode="decimal" placeholder="0.0" data-step="0.1" data-min="0" data-max="10">
-                <div class="form-error" id="al-2040-error"></div>
-              </div>
-            </div>
-
-            <div class="form-row">
-              <div class="form-group">
-                <label class="form-label" for="h-al-2040">H+Al <span class="form-hint">cmolc/dm³</span></label>
-                <input class="form-input" id="h-al-2040" type="text" inputmode="decimal" placeholder="0.0" data-step="0.5" data-min="0" data-max="30">
-                <div class="form-error" id="h-al-2040-error"></div>
-              </div>
-              <div class="form-group">
-                <label class="form-label" for="clay-2040">Argila <span class="form-hint">%</span></label>
-                <input class="form-input" id="clay-2040" type="text" inputmode="decimal" placeholder="—" data-step="1" data-min="0" data-max="100">
-                <div class="form-error" id="clay-2040-error"></div>
-              </div>
-            </div>
-
-            <div class="form-row">
-              <div class="form-group">
-                <label class="form-label" for="ph-smp-2040">pH SMP</label>
-                <input class="form-input" id="ph-smp-2040" type="text" inputmode="decimal" placeholder="—" data-step="0.1" data-min="3.5" data-max="8.0">
-                <div class="form-error" id="ph-smp-2040-error"></div>
-              </div>
-              <div class="form-group">
-                <label class="form-label" for="ctc-lab-2040">CTC lab <span class="form-hint">cmolc/dm³ (opcional)</span></label>
-                <input class="form-input" id="ctc-lab-2040" type="text" inputmode="decimal" placeholder="—" data-step="0.1" data-min="0" data-max="50">
-                <div class="form-error" id="ctc-lab-2040-error"></div>
-              </div>
+          <div class="field">
+            <span class="field-label">Manejo</span>
+            <div class="cards" role="radiogroup" aria-label="Manejo">
+              <label class="card-choice"><input type="radio" name="system" value="abertura" checked><span><strong>Abertura ou reforma</strong><small>Calcário incorporado até 40 cm antes de plantar.</small></span></label>
+              <label class="card-choice"><input type="radio" name="system" value="spd"><span><strong>Plantio direto consolidado</strong><small>Calcário em superfície, sem revolver o solo.</small></span></label>
             </div>
           </div>
-        </div>
+        </section>
 
-        <!-- Live Panel -->
-        <div class="live-panel" id="live-panel">
-          <div class="live-panel-title">Calculados em tempo real</div>
-          <div class="live-values">
-            <div class="live-item">
-              <span class="live-label">CTC pH7</span>
-              <span class="live-value" id="live-ctc">—</span>
+        <section class="block" aria-labelledby="bloco-solo">
+          <h2 class="block-title" id="bloco-solo"><span class="step">02</span>Análise de solo</h2>
+          <div class="units">
+            <span>Unidade do laudo</span>
+            <div class="segmented" role="radiogroup" aria-label="Unidade de Ca, Mg, Al e H+Al">
+              <label><input type="radio" name="unit" value="cmolc" checked><span>cmolc/dm³</span></label>
+              <label><input type="radio" name="unit" value="mmolc"><span>mmolc/dm³</span></label>
             </div>
-            <div class="live-item">
-              <span class="live-label">V%</span>
-              <span class="live-value" id="live-vpct">—</span>
-            </div>
-            <div class="live-item">
-              <span class="live-label">t efetiva</span>
-              <span class="live-value" id="live-t">—</span>
+            <span>K</span>
+            <div class="segmented" role="radiogroup" aria-label="Unidade do potássio">
+              <label><input type="radio" name="kunit" value="cmolc" checked><span>cmolc</span></label>
+              <label><input type="radio" name="kunit" value="mmolc"><span>mmolc</span></label>
+              <label><input type="radio" name="kunit" value="mg"><span>mg/dm³</span></label>
             </div>
           </div>
-        </div>
 
-        <div class="wizard-nav">
-          <button class="btn btn-secondary" id="btn-prev-2">Voltar</button>
-          <button class="btn btn-primary" id="btn-next-2">Próximo</button>
-        </div>
-      </section>
+          <div class="layer-tabs">
+            <div class="layer" data-layer="020">
+              <div class="layer-title">CAMADA 0–20 CM</div>
+              <div class="grid-2">
+                <label class="field"><span class="field-label">Ca <span class="unit" data-unit>cmolc/dm³</span></span><input class="input" id="ca-020" inputmode="decimal" placeholder="2,0"><span class="field-error" id="ca-020-error"></span></label>
+                <label class="field"><span class="field-label">Mg <span class="unit" data-unit>cmolc/dm³</span></span><input class="input" id="mg-020" inputmode="decimal" placeholder="0,8"><span class="field-error" id="mg-020-error"></span></label>
+                <label class="field"><span class="field-label">K <span class="unit" data-kunit>cmolc/dm³</span></span><input class="input" id="k-020" inputmode="decimal" placeholder="0,20"><span class="field-error" id="k-020-error"></span></label>
+                <label class="field"><span class="field-label">Al <span class="unit" data-unit>cmolc/dm³</span></span><input class="input" id="al-020" inputmode="decimal" placeholder="0,5"><span class="field-error" id="al-020-error"></span></label>
+                <label class="field"><span class="field-label">H+Al <span class="unit" data-unit>cmolc/dm³</span></span><input class="input" id="h-al-020" inputmode="decimal" placeholder="5,0"><span class="field-error" id="h-al-020-error"></span></label>
+                <label class="field"><span class="field-label">Argila <span class="unit">%</span></span><input class="input" id="clay-020" inputmode="decimal" placeholder="opcional"><span class="field-error" id="clay-020-error"></span></label>
+                <label class="field" id="ph-smp-field" hidden><span class="field-label">Índice SMP <span class="unit">RS/SC</span></span><input class="input" id="ph-smp-020" inputmode="decimal" placeholder="5,5"><span class="field-error" id="ph-smp-020-error"></span></label>
+              </div>
+              <p class="live" id="live-020" aria-live="polite"></p>
+            </div>
 
-      <!-- ═══ STEP 3 — Calcário ═══ -->
-      <section id="step-3" class="step-panel card" role="tabpanel">
-        <div class="card-header">
-          <h2 class="card-title">Calcário</h2>
-          <p class="card-subtitle">Dados do corretivo que será utilizado.</p>
-        </div>
-
-        <div class="quick-select" id="quick-select">
-          <button class="quick-btn" data-cao="48" data-mgo="3" data-prnt="85">Calcítico típico</button>
-          <button class="quick-btn" data-cao="36" data-mgo="12" data-prnt="85">Magnesiano típico</button>
-          <button class="quick-btn" data-cao="28" data-mgo="18" data-prnt="85">Dolomítico típico</button>
-        </div>
-
-        <div class="form-row-3">
-          <div class="form-group">
-            <label class="form-label" for="cao">CaO <span class="form-hint">%</span></label>
-            <input class="form-input" id="cao" type="text" inputmode="decimal" aria-required="true" placeholder="15–56" data-step="1" data-min="15" data-max="56">
-            <div class="form-error" id="cao-error"></div>
+            <div class="layer" data-layer="2040">
+              <div class="layer-title">CAMADA 20–40 CM <label class="toggle"><input type="checkbox" id="include-2040" aria-label="Incluir camada 20–40 cm"></label></div>
+              <div class="layer-empty" id="empty-2040">
+                <span>Com a análise da 20–40 cm, a dose cobre o perfil inteiro na abertura e a calculadora avalia a necessidade de gesso.</span>
+              </div>
+              <div class="grid-2" id="fields-2040" hidden>
+                <label class="field"><span class="field-label">Ca <span class="unit" data-unit>cmolc/dm³</span></span><input class="input" id="ca-2040" inputmode="decimal" placeholder="1,0"><span class="field-error" id="ca-2040-error"></span></label>
+                <label class="field"><span class="field-label">Mg <span class="unit" data-unit>cmolc/dm³</span></span><input class="input" id="mg-2040" inputmode="decimal" placeholder="0,4"><span class="field-error" id="mg-2040-error"></span></label>
+                <label class="field"><span class="field-label">K <span class="unit" data-kunit>cmolc/dm³</span></span><input class="input" id="k-2040" inputmode="decimal" placeholder="0,10"><span class="field-error" id="k-2040-error"></span></label>
+                <label class="field"><span class="field-label">Al <span class="unit" data-unit>cmolc/dm³</span></span><input class="input" id="al-2040" inputmode="decimal" placeholder="0,8"><span class="field-error" id="al-2040-error"></span></label>
+                <label class="field"><span class="field-label">H+Al <span class="unit" data-unit>cmolc/dm³</span></span><input class="input" id="h-al-2040" inputmode="decimal" placeholder="5,5"><span class="field-error" id="h-al-2040-error"></span></label>
+                <label class="field"><span class="field-label">Argila <span class="unit">%</span></span><input class="input" id="clay-2040" inputmode="decimal" placeholder="opcional"><span class="field-error" id="clay-2040-error"></span></label>
+              </div>
+              <p class="live" id="live-2040" aria-live="polite" hidden></p>
+            </div>
           </div>
-          <div class="form-group">
-            <label class="form-label" for="mgo">MgO <span class="form-hint">%</span></label>
-            <input class="form-input" id="mgo" type="text" inputmode="decimal" aria-required="true" placeholder="0–25" data-step="1" data-min="0" data-max="25">
-            <div class="form-error" id="mgo-error"></div>
+        </section>
+
+        <section class="block" aria-labelledby="bloco-calcario">
+          <h2 class="block-title" id="bloco-calcario"><span class="step">03</span>Calcário</h2>
+          <div class="presets" id="presets">
+            <button type="button" class="preset" data-cao="48" data-mgo="3" data-prnt="85">Calcítico típico</button>
+            <button type="button" class="preset" data-cao="36" data-mgo="12" data-prnt="85">Magnesiano típico</button>
+            <button type="button" class="preset" data-cao="28" data-mgo="18" data-prnt="85">Dolomítico típico</button>
           </div>
-          <div class="form-group">
-            <label class="form-label" for="prnt">PRNT <span class="form-hint">%</span></label>
-            <input class="form-input" id="prnt" type="text" inputmode="decimal" aria-required="true" placeholder="45–125" data-step="1" data-min="45" data-max="125">
-            <div class="form-error" id="prnt-error"></div>
+          <div class="grid-3">
+            <label class="field"><span class="field-label">CaO <span class="unit">%</span></span><input class="input" id="cao" inputmode="decimal" value="36"><span class="field-error" id="cao-error"></span></label>
+            <label class="field"><span class="field-label">MgO <span class="unit">%</span></span><input class="input" id="mgo" inputmode="decimal" value="12"><span class="field-error" id="mgo-error"></span></label>
+            <label class="field"><span class="field-label">PRNT <span class="unit">%</span></span><input class="input" id="prnt" inputmode="decimal" value="85"><span class="field-error" id="prnt-error"></span></label>
           </div>
-        </div>
+          <p class="live" id="live-limestone" aria-live="polite"></p>
+          <p class="block-note">Os valores de CaO, MgO e PRNT estão no rótulo ou na nota fiscal do calcário.</p>
+        </section>
+      </form>
 
-        <div class="limestone-live" id="limestone-live">
-          <div class="limestone-live-item">
-            Tipo: <strong id="limestone-tipo">—</strong>
-          </div>
-          <div class="limestone-live-item" id="limestone-legal">
-            CaO+MgO: <strong id="limestone-sum">—</strong>
-          </div>
-        </div>
-
-        <div class="wizard-nav">
-          <button class="btn btn-secondary" id="btn-prev-3">Voltar</button>
-          <button class="btn btn-primary" id="btn-next-3">Calcular Diagnóstico</button>
-        </div>
-      </section>
-
-      <!-- ═══ STEP 4 — Diagnóstico ═══ -->
-      <section id="step-4" class="step-panel card" role="tabpanel">
-
-        <!-- Print-only input summary -->
-        <div class="input-summary" id="input-summary">
-          <h3>Dados de Entrada</h3>
-          <div class="input-summary-grid" id="input-summary-grid"></div>
-        </div>
-
-        <!-- Banner principal -->
-        <div class="result-banner" id="result-banner">
-          <div class="banner-check"></div>
-          <div class="result-banner-label" id="result-banner-label">Necessidade de Calagem — Moreira et al. (2025)</div>
-          <div class="result-banner-value" id="banner-nc">—</div>
-          <div class="result-banner-unit">t/ha</div>
-          <div class="result-banner-breakdown" id="banner-breakdown"></div>
-        </div>
-
-        <!-- Method Cards -->
-        <div class="method-grid" id="method-grid"></div>
-
-        <!-- Delta Visual -->
-        <div class="delta-section card" id="delta-section" style="display:none">
-          <h3 class="card-title">Comparação na camada 0-20 cm (base comum entre métodos)</h3>
-          <div class="delta-bars" id="delta-bars"></div>
-          <div class="delta-interpretation" id="delta-interpretation"></div>
-        </div>
-
-        <!-- Chart -->
-        <div class="chart-container" id="chart-container">
-          <canvas id="comparison-chart"></canvas>
-          <div class="chart-fallback" id="chart-fallback"></div>
-        </div>
-
-        <!-- Projection Table -->
-        <div class="card" style="margin-bottom:1.5rem">
-          <h3 class="card-title" style="margin-bottom:1rem">Projeções de Ca e Mg pós-calagem</h3>
-          <div class="projection-table-wrapper">
-            <table class="projection-table" id="projection-table">
-              <thead>
-                <tr>
-                  <th>Camada</th>
-                  <th>Ca atual</th>
-                  <th></th>
-                  <th>Ca projetado</th>
-                  <th>Mg atual</th>
-                  <th></th>
-                  <th>Mg projetado</th>
-                  <th>Ca/Mg</th>
-                  <th>Mg sat%</th>
-                </tr>
-              </thead>
-              <tbody id="projection-tbody"></tbody>
-            </table>
-          </div>
-        </div>
-
-        <!-- Warnings -->
-        <div class="warnings-section" id="warnings-section" role="alert" aria-live="polite"></div>
-
-        <!-- Disclaimer -->
-        <div class="disclaimer">
-          <p><strong>Aviso:</strong> Este diagnóstico é uma ferramenta de apoio à decisão. A recomendação final deve ser feita por engenheiro agrônomo habilitado.</p>
-          <p>Os métodos implementados seguem as publicações oficiais e calibrações regionais. Resultados dependem da qualidade dos dados de entrada.</p>
-          <p>Motor de cálculo validado com 106 testes automatizados + fuzz testing (10.000 iterações).</p>
-          <div class="disclaimer-credits">
-            Dose Certa — Desenvolvido com base em Moreira et al. (2025), GMAP/UFLA. Consultoria científica: Prof. Silvino Guimarães Moreira.
-          </div>
-        </div>
-
-        <div class="wizard-nav">
-          <button class="btn btn-secondary" id="btn-prev-4">Voltar e Editar</button>
-          <button class="btn btn-print" id="btn-print" aria-label="Imprimir relatório">Imprimir Relatório</button>
-        </div>
-      </section>
-
+      <aside class="panel result" id="result" aria-live="polite" aria-label="Resultado"></aside>
     </div>
+
+    <section class="container doc" id="metodo" aria-labelledby="metodo-titulo">
+      <div class="doc-intro">
+        <p class="eyebrow">Método</p>
+        <h2 id="metodo-titulo">Como a dose é calculada</h2>
+        <p>Os manuais de calagem em uso foram calibrados para produtividades e cultivares de décadas atrás. A pesquisa de campo recente mostra que as doses que eles indicam ficam abaixo do que as lavouras atuais respondem. Esta calculadora parte dessa pesquisa e mostra o manual como referência.</p>
+      </div>
+      <div class="doc-body" id="metodo-corpo"></div>
+    </section>
+
+    <section class="container doc" id="fontes" aria-labelledby="fontes-titulo">
+      <div class="doc-intro">
+        <p class="eyebrow">Fontes</p>
+        <h2 id="fontes-titulo">De onde vem cada número</h2>
+        <p>Só entra na calculadora o que foi conferido no texto da fonte. Os números de cada recomendação levam ao item correspondente desta lista.</p>
+      </div>
+      <ol class="refs" id="refs"></ol>
+    </section>
   </main>
 
-  <script defer src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <p>Ferramenta de apoio à decisão. A recomendação final de calagem é responsabilidade de engenheiro agrônomo habilitado.</p>
+      <div class="footer-links">
+        <a href="/">agrobr</a>
+        <a href="https://www.agrobr.dev/docs/">Documentação</a>
+        <a href="https://github.com/bruno-portfolio/agrobr/tree/main/calculadora" target="_blank" rel="noopener noreferrer">Código da calculadora</a>
+      </div>
+    </div>
+  </footer>
+
   <script type="module" src="js/app.js"></script>
   <!-- Cloudflare Web Analytics -->
   <script type="module" src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token": "4726054c4e8b46c5b05f96ce684b68d7"}'></script>
