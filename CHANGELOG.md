@@ -5,7 +5,9 @@ Todas as mudanças notáveis neste projeto serão documentadas neste arquivo.
 O formato é baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/),
 e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 
-## [2.0.0] - Não lançado
+## [Unreleased]
+
+## [2.0.0] - 2026-10-10
 
 Catálogo desta versão: **55 datasets e 90 contratos registrados**. Mudanças incompatíveis com 1.x estão em Changed; consulte o [guia de migração](docs/guides/migracao-2.md).
 
@@ -2002,7 +2004,8 @@ Catálogo desta versão: **55 datasets e 90 contratos registrados**. Mudanças i
 - Type hints completos
 - Logging estruturado com structlog
 
-[2.0.0]: https://github.com/bruno-portfolio/agrobr/compare/v1.1.0...HEAD
+[Unreleased]: https://github.com/bruno-portfolio/agrobr/compare/v2.0.0...HEAD
+[2.0.0]: https://github.com/bruno-portfolio/agrobr/compare/v1.1.0...v2.0.0
 [1.1.0]: https://github.com/bruno-portfolio/agrobr/compare/1.0.5...v1.1.0
 [1.0.5]: https://github.com/bruno-portfolio/agrobr/compare/v1.0.4...1.0.5
 [1.0.4]: https://github.com/bruno-portfolio/agrobr/compare/v1.0.3...v1.0.4
