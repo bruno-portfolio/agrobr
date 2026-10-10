@@ -52,10 +52,10 @@ jobs:
 
       - name: Run tests
         run: |
-          pytest tests/ -v -n auto --disable-socket --allow-unix-socket -m "not integration and not benchmark" ${{ matrix.python-version == '3.11' && '--cov=agrobr --cov-report=xml --cov-report=term-missing' || '' }}
+          pytest tests/ -v -n auto --disable-socket --allow-unix-socket -m "not integration and not benchmark" ${{ matrix.extras == 'dev,pdf,geo,polars' && '--cov=agrobr --cov-report=xml --cov-report=term-missing' || '' }}
 
       - name: Upload coverage
-        if: matrix.python-version == '3.11'
+        if: matrix.extras == 'dev,pdf,geo,polars'
         uses: codecov/codecov-action@v7
         with:
           files: ./coverage.xml
