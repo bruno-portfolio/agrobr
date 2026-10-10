@@ -1,35 +1,35 @@
 # Fontes de Dados
 
-O agrobr integra dados de 41 fontes de dados agricolas.
+O agrobr integra dados de 41 fontes de dados agrícolas.
 As funções de dados das fontes que devolvem tabela aceitam `return_meta=True` (`cepea.ultimo`, que devolve um `Indicador`, não aceita); a Notícias Agrícolas, fallback do CEPEA, tem a proveniência no `cepea.indicador(..., return_meta=True)`.
 O que tem garantia de SemVer em cada fonte está na [API pública](../api/index.md).
 
 ## Visao Geral
 
-| Fonte | Tipo | Atualizacao | Cobertura |
+| Fonte | Tipo | Atualização | Cobertura |
 |-------|------|-------------|-----------|
-| [CEPEA/ESALQ](cepea.md) | Precos | Diaria | Commodities agricolas |
-| [CONAB](conab.md) | Safras, custos, serie historica (agrícola e industrial da cana), [progresso semanal](conab_progresso.md), [CEASA/PROHORT](conab_ceasa.md) | Mensal/Semanal/Diaria | Producao nacional |
-| [IBGE/SIDRA](ibge.md) | Estatisticas | Anual/Mensal/Trimestral | Dados oficiais (PAM, LSPA, PPM, Abate, PEVS, Leite, PIB, Censo), malha municipal e áreas urbanizadas (WFS geo) |
+| [CEPEA/ESALQ](cepea.md) | Precos | Diaria | Commodities agrícolas |
+| [CONAB](conab.md) | Safras, custos, serie histórica (agrícola e industrial da cana), [progresso semanal](conab_progresso.md), [CEASA/PROHORT](conab_ceasa.md) | Mensal/Semanal/Diaria | Produção nacional |
+| [IBGE/SIDRA](ibge.md) | Estatísticas | Anual/Mensal/Trimestral | Dados oficiais (PAM, LSPA, PPM, Abate, PEVS, Leite, PIB, Censo), malha municipal e áreas urbanizadas (WFS geo) |
 | [NASA POWER](nasa_power.md) | Clima diário e mensal | Diaria | Global, grid 0.5 grau |
 | [BCB](bcb.md) | Crédito rural, séries temporais, câmbio/boletins e expectativas | Varia por serviço | Cultura/UF, série, moeda/boletim ou indicador |
-| [ComexStat](comexstat.md) | Exportacoes | Semanal | NCM/UF |
+| [ComexStat](comexstat.md) | Exportações | Semanal | NCM/UF |
 | [ANDA](anda.md) | Fertilizantes | Mensal | UF/mes |
 | [ABIOVE](abiove.md) | Exportacao complexo soja | Mensal | Volume/receita |
 | [ANEC](anec.md) | Embarques semanais por porto | Semanal | 19 portos, 6 produtos |
 | [USDA PSD](usda.md) | Oferta/demanda internacional | Mensal | Commodities globais |
-| [IMEA](imea.md) | Cotacoes e indicadores MT | Diaria | Mato Grosso |
-| [DERAL](deral.md) | Condicao lavouras PR | Semanal | Parana |
+| [IMEA](imea.md) | Cotações e indicadores MT | Diaria | Mato Grosso |
+| [DERAL](deral.md) | Condição lavouras PR | Semanal | Parana |
 | [INMET](inmet.md) | Meteorologia | Diaria | 600+ estações (API observacional exige token; ZIPs históricos são públicos) |
 | [Notícias Agrícolas](noticias_agricolas.md) | Cotações (fallback CEPEA) | Diária | Commodities |
 | [Queimadas/INPE](queimadas.md) | Focos de calor | Diária | 6 biomas, 13 satélites |
 | [Desmatamento PRODES/DETER](desmatamento.md) | Desmatamento + alertas | Anual/Diária | Amazônia, Cerrado, Pantanal |
 | [MapBiomas](mapbiomas.md) | Cobertura e uso da terra | Anual | Municípios (1985-presente) |
-| [B3 Futuros Agro](b3.md) | Ajustes diarios + posicoes em aberto | Diaria | 7 contratos agricolas |
+| [B3 Futuros Agro](b3.md) | Ajustes diários + posicoes em aberto | Diaria | 7 contratos agrícolas |
 | [UN Comtrade](comtrade.md) | Bilateral 2.1 e espelho 2.0, contagem e partições | Mensal/Anual | HS, World ou parceiros publicados |
-| [ANTAQ](antaq.md) | Movimentacao portuaria de carga | Anual | ⚠️ Fonte fora do ar desde 23/06/2026 |
-| [ANP Diesel](anp_diesel.md) | Precos revenda + volumes diesel | Semanal/Mensal | UFs, municipios, 2013+ |
-| [ANTT Pedagio](antt_pedagio.md) | Fluxo de veiculos em pracas de pedagio | Mensal | 200+ pracas, 2010+ |
+| [ANTAQ](antaq.md) | Movimentacao portuária de carga | Anual | ⚠️ Fonte fora do ar desde 23/06/2026 |
+| [ANP Diesel](anp_diesel.md) | Precos revenda + volumes diesel | Semanal/Mensal | UFs, municípios, 2013+ |
+| [ANTT Pedagio](antt_pedagio.md) | Fluxo de veículos em pracas de pedagio | Mensal | 200+ pracas, 2010+ |
 | [MAPA PSR](mapa_psr.md) | Apolices e sinistros seguro rural | Anual | 27 UFs, 2006+ |
 | [SICAR](sicar.md) | Cadastro Ambiental Rural | Continua | 27 UFs, 7.4M+ imoveis |
 | [ZARC](zarc.md) | Zoneamento Agrícola de Risco Climático | Semanal | 107 culturas no catálogo; municípios de cada publicação |
@@ -42,18 +42,18 @@ O que tem garantia de SemVer em cada fonte está na [API pública](../api/index.
 | [IBAMA Embargos](ibama.md) | Embargos ambientais (CSV de dados abertos + WKT) | Diária | ~116 mil termos |
 | [MapBiomas Alerta](mapbiomas_alerta.md) | Alertas de desmatamento (GraphQL) | Semanal | Nacional |
 | [Lista Suja](lista_suja.md) | Cadastro MTE (CSV/TXT; alternativa PDF) | Publicação periódica com atualizações intermediárias | Nacional |
-| [ANA/SNIRH](ana.md) | Hidrografia, irrigacao, disponibilidade hidrica, massas d'água (ArcGIS REST) | Variavel | Nacional |
+| [ANA/SNIRH](ana.md) | Hidrografia, irrigação, disponibilidade hidrica, massas d'água (ArcGIS REST) | Variável | Nacional |
 | [SFB](sfb.md) | Florestas publicas, concessoes, IFN (ArcGIS REST) | Anual | Nacional |
 | [RNC/CultivarWeb](rnc.md) | Cultivares registradas/protegidas | Contínua | ~37K registradas, ~5K protegidas |
 | [EMBRAPA Solos](embrapa_solos.md) | Perfis de solo e mapa pedológico | Contínua | 34K perfis, 2.8K polígonos |
 | [Fundação Rio Verde](rio_verde.md) | Ensaios cultivares soja MT | Anual | 3 safras (2023/24 a 2025/26), até 4 épocas |
 | [CFTC COT](cftc.md) | Posicionamento de fundos em futuros agro | Semanal | 12 contratos Chicago/NY, 2006+ |
-| [UNICA](unica.md) | Moagem e producao acucar/etanol Centro-Sul | Quinzenal | Safra corrente + historico 1980-2021 |
+| [UNICA](unica.md) | Moagem e produção acucar/etanol Centro-Sul | Quinzenal | Safra corrente + historico 1980-2021 |
 
 ## Proveniencia e Rastreabilidade
 
-Toda informacao retornada pelo agrobr pode ser rastreada ate sua origem.
-Use o parametro `return_meta=True` para obter metadados completos de proveniencia.
+Toda informação retornada pelo agrobr pode ser rastreada até sua origem.
+Use o parâmetro `return_meta=True` para obter metadados completos de proveniencia.
 
 ```python
 import asyncio
@@ -79,11 +79,11 @@ asyncio.run(main())
 
 O objeto `MetaInfo` traz, entre outros, os campos abaixo; a lista completa, com `validation_warnings`, `source_details`, `schema_version`, `attempted_sources`, `selected_source` e `fetch_timestamp`, está em [Contratos](../contracts/index.md#metainfo). `cache_key` e `cache_expires_at` podem ser nulos; preenchidos, não indicam que o dado veio do cache: para isso, use `from_cache`.
 
-| Campo | Tipo | Descricao |
+| Campo | Tipo | Descrição |
 |-------|------|-----------|
 | `source` | str | Nome da fonte (cepea, conab, ibge) |
 | `source_url` | str | URL exata acessada |
-| `source_method` | str | Metodo de acesso (httpx, cache) |
+| `source_method` | str | Método de acesso (httpx, cache) |
 | `fetched_at` | datetime | Momento da coleta |
 | `from_cache` | bool | Se veio do cache local |
 | `cache_key` | str \| None | Chave no cache |
@@ -92,8 +92,8 @@ O objeto `MetaInfo` traz, entre outros, os campos abaixo; a lista completa, com 
 | `columns` | list | Colunas retornadas |
 | `fetch_duration_ms` | int | Tempo de fetch em ms |
 | `parse_duration_ms` | int | Tempo de parsing em ms |
-| `agrobr_version` | str | Versao do agrobr |
-| `parser_version` | int | Versao do parser usado |
+| `agrobr_version` | str | Versão do agrobr |
+| `parser_version` | int | Versão do parser usado |
 
 ## Exportar para auditoria
 
@@ -114,6 +114,6 @@ agrobr doctor
 
 Retorna:
 - Status de conectividade das fontes
-- Estatisticas do cache
-- Ultimas coletas
-- Configuracao atual
+- Estatísticas do cache
+- Últimas coletas
+- Configuração atual

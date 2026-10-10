@@ -1,7 +1,7 @@
 # EMBRAPA Solos/GeoInfo — Perfis de Solo e Mapa Pedologico
 
-> **Licenca:** CC BY-NC 3.0 BR.
-> Classificacao: `nc`
+> **Licença:** CC BY-NC 3.0 BR.
+> Classificação: `nc`
 
 Perfis de solo do PronaSolos e mapa pedologico do Brasil via WFS OGC
 da EMBRAPA GeoInfo.
@@ -10,24 +10,24 @@ da EMBRAPA GeoInfo.
 
 | Item | Detalhe |
 |------|---------|
-| Provedor | EMBRAPA (Empresa Brasileira de Pesquisa Agropecuaria) |
+| Provedor | EMBRAPA (Empresa Brasileira de Pesquisa Agropecuária) |
 | Dados | Perfis de solo (pontos) + mapa pedologico (poligonos) |
 | Acesso | WFS OGC (GeoServer) |
 | Formato | GeoJSON do WFS 2.0 (`application/json`) nos dois modos |
-| Autenticacao | Nenhuma |
-| Licenca | CC BY-NC 3.0 BR |
+| Autenticação | Nenhuma |
+| Licença | CC BY-NC 3.0 BR |
 | Features | 34.464 registros de horizontes/camadas (~9 mil pontos) + 2.852 poligonos |
 
 ## Acesso via WFS
 
-| Parametro | Valor |
+| Parâmetro | Valor |
 |-----------|-------|
 | Endpoint | `geoinfo.dados.embrapa.br/geoserver/ows` |
 | WFS Version | 2.0.0 |
 | Layer perfis | `geonode:perfis_pronasolos_2020` |
 | Layer mapa | `geonode:brasil_solos_5m_20201104` |
 | CRS | EPSG:4326 (declarado pelo WFS e pelo metadado ISO) |
-| Paginacao | Sim (count/startIndex) |
+| Paginação | Sim (count/startIndex) |
 
 ## Exemplo de Uso
 
@@ -62,11 +62,11 @@ asyncio.run(main())
 
 ## Colunas — Perfis
 
-| Coluna | Tipo | Descricao |
+| Coluna | Tipo | Descrição |
 |--------|------|-----------|
 | fid | int | Identificador do registro (horizonte ou camada) |
 | uf | str | UF (sigla) |
-| municipio | str | Municipio |
+| municipio | str | Município |
 | latitude | float | Latitude |
 | longitude | float | Longitude |
 | horizonte | str | Simbolo do horizonte |
@@ -75,13 +75,13 @@ asyncio.run(main())
 | silte | str | Silte (g/kg) |
 | argila | str | Argila (g/kg) |
 | ph_h2o | str | pH em agua |
-| carbono_organico | str | Carbono organico (unidade nao declarada pela fonte) |
+| carbono_organico | str | Carbono organico (unidade não declarada pela fonte) |
 | ctc | str | Capacidade de troca cationica (T) |
 | saturacao_bases | str | Saturacao por bases (V, %) |
 | aluminio | str | Aluminio trocavel |
 | fosforo | str | Fosforo assimilavel |
 | classe_textural | str | Classe textural |
-| nivel_levantamento | str | Nivel do levantamento |
+| nivel_levantamento | str | Nível do levantamento |
 | uso_atual | str | Uso atual do solo |
 
 A tabela mostra as colunas principais. O resultado tem 85 colunas, na ordem do contrato
@@ -91,19 +91,19 @@ amostragem.
 
 A coluna `ano` usa `Int64` anulável, e `data_colet` usa `datetime64[ns]`. Nulos da fonte e o literal `NULL` viram ausentes nessas duas colunas. Pela [regra de datas](../guides/normalizacao.md#datas-das-fontes), `data_colet` de formato válido com ano fora de 1900–2099 vira `NaT`, com `UserWarning` e a mesma mensagem em `meta.validation_warnings` (em 07/10/2026, 73 dos 34.464 registros da camada, com datas como `0982-11-01` e `1892-07-14`). Ano ou data fora do formato esperado, ou data impossível (`2024-02-30`), levanta `ParseError`; não vira ausente silenciosamente. O texto usa o dtype nativo do pandas (`str` no pandas 3, `object` no pandas 2). Tabelas vazias têm os mesmos dtypes das tabelas com registros.
 
-Os valores laboratoriais sao o texto publicado pela Embrapa (o WFS declara `xsd:string`), sem conversao:
-numeros com ponto decimal, as vezes com ruido de float32 (`4.400000095367432`), e o texto `NULL` para
-ausencia. Em `fosforo` tambem aparecem valores censurados (`<1`, `<0.5`), virgula decimal (`0,19`) e marcas
+Os valores laboratoriais são o texto publicado pela Embrapa (o WFS declara `xsd:string`), sem conversão:
+números com ponto decimal, as vezes com ruido de float32 (`4.400000095367432`), e o texto `NULL` para
+ausência. Em `fosforo` também aparecem valores censurados (`<1`, `<0.5`), virgula decimal (`0,19`) e marcas
 como `x`. Converta explicitamente, por exemplo `pd.to_numeric(df["argila"].replace("NULL", pd.NA))`; em
 `fosforo`, trate antes os censurados e a virgula.
 
-O WFS nao declara unidades. Na camada inteira, areia + silte + argila somam 1.000 (g/kg) em 99,2 % dos
+O WFS não declara unidades. Na camada inteira, areia + silte + argila somam 1.000 (g/kg) em 99,2 % dos
 horizontes com as tres medidas; `saturacao_bases` = 100 x S / T e `ctc` = S + H + Al (colunas `valor_s`,
 `hidrogenio` e `aluminio`) em mais de 98 % dos horizontes.
 
 ## Colunas — Mapa Pedologico
 
-| Coluna | Tipo | Descricao |
+| Coluna | Tipo | Descrição |
 |--------|------|-----------|
 | fid | int | Identificador do poligono |
 | simbolos | str | Simbolos SiBCS |
@@ -123,21 +123,21 @@ horizontes com as tres medidas; `saturacao_bases` = 100 x S / T e `ctc` = S + H 
 | ordem3 | str | Ordem pedologica 3 |
 | subordem3 | str | Subordem 3 |
 | gdegrupo3 | str | Grande grupo 3 |
-| feature_id | str | Identificador da feicao no WFS (texto, nao e chave) |
+| feature_id | str | Identificador da feicao no WFS (texto, não e chave) |
 
 ## Particularidades
 
-- **Funcoes `_geo()` requerem [geo]**: `pip install agrobr[geo]` (geopandas)
+- **Funções `_geo()` requerem [geo]**: `pip install agrobr[geo]` (geopandas)
 - **Filtro de ordem**: `ordem` casa a classe inteira de `ordem1`, uma das 15 publicadas na camada `brasil_solos_5m_20201104` (13 ordens de solo mais `AFLORAMENTOS DE ROCHAS` e `DUNAS`; leitura completa em 01/10/2026: 2.852 polígonos, 177 sem `ordem1`). Caixa, acento e singular são aceitos (`"latossolo"` vale `LATOSSOLOS`); trecho (`"latos"`), texto vazio, não textual ou fora das classes levanta `InvalidParameterError` antes da coleta, com a lista das classes. Uma leitura completa sem correspondência emite `UserWarning` e registra o valor pedido e as classes observadas em `MetaInfo.validation_warnings`; uma leitura parcial continua avisando sobre o prefixo remoto.
-- **Paginacao**: count/startIndex ordenado por `fid`, com 1 registro de sobreposicao entre paginas. `max_registros` (padrao 50.000; 5.000 perfis e 3.000 poligonos nas funcoes `_geo`) corta o prefixo remoto; os filtros `uf` e `ordem` sao aplicados localmente sobre esse prefixo e, quando o corte deixa a selecao parcial, sai um `UserWarning` (`max_registros=None` varre a camada inteira)
-- **CRS**: EPSG:4326, o CRS padrao das duas camadas no WFS; o `bbox` tambem e EPSG:4326
-- **Licenca NC**: uso comercial requer autorizacao da EMBRAPA
+- **Paginação**: count/startIndex ordenado por `fid`, com 1 registro de sobreposicao entre páginas. `max_registros` (padrão 50.000; 5.000 perfis e 3.000 poligonos nas funções `_geo`) corta o prefixo remoto; os filtros `uf` e `ordem` são aplicados localmente sobre esse prefixo e, quando o corte deixa a selecao parcial, sai um `UserWarning` (`max_registros=None` varre a camada inteira)
+- **CRS**: EPSG:4326, o CRS padrão das duas camadas no WFS; o `bbox` também e EPSG:4326
+- **Licença NC**: uso comercial requer autorizacao da EMBRAPA
 - **Texto com dupla codificação**: a Embrapa publica parte dos textos dos perfis com dupla codificação (UTF-8 lido como Latin-1: "AptidÃ£o", "SÃ£o Carlos"), no JSON e no CSV do WFS. O agrobr repara só o texto que volta inteiro por Latin-1 → UTF-8 e tem a assinatura ("Ã" ou "Â" seguido de um caractere entre U+0080 e U+00BF). Texto legítimo com "Ã" fica como está. A contagem por coluna sai em `MetaInfo.validation_warnings`. Ficam sem reparo, contados à parte no mesmo aviso ("com a assinatura e sem reparo"), 3 casos que a fonte publica assim: texto cortado a cerca de 254 caracteres no meio de uma sequência UTF-8, texto com "�" publicado e texto com "€" (33 células no DF em 26/09/2026)
 
 ## Limitacoes
 
-- Cobertura de perfis nao e uniforme (PronaSolos ainda em execucao)
-- Mapa pedologico na escala 1:5.000.000 (visao nacional, nao cadastral)
+- Cobertura de perfis não e uniforme (PronaSolos ainda em execução)
+- Mapa pedologico na escala 1:5.000.000 (visao nacional, não cadastral)
 - CC BY-NC 3.0 BR: redistribuicao comercial requer autorizacao
 
 ## Geometria inválida

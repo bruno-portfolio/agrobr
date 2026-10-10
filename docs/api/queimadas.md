@@ -1,8 +1,8 @@
 # API Queimadas/INPE
 
-O modulo Queimadas fornece acesso aos dados de focos de calor detectados por satelite, disponibilizados pelo INPE (Instituto Nacional de Pesquisas Espaciais) via BDQueimadas.
+O módulo Queimadas fornece acesso aos dados de focos de calor detectados por satelite, disponibilizados pelo INPE (Instituto Nacional de Pesquisas Espaciais) via BDQueimadas.
 
-## Funcoes
+## Funções
 
 ### `focos`
 
@@ -22,13 +22,13 @@ async def focos(
 ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]
 ```
 
-**Parametros:**
+**Parâmetros:**
 
-| Parametro | Tipo | Descricao |
+| Parâmetro | Tipo | Descrição |
 |-----------|------|-----------|
 | `ano` | `int` | Ano (ex: 2024) |
 | `mes` | `int` | Mes (1-12) |
-| `dia` | `int \| None` | Dia especifico (1-31). O INPE só mantém o arquivo diário dos últimos dias: dia mais antigo levanta `SourceUnavailableError` (use o mês inteiro). Se None, busca mes completo |
+| `dia` | `int \| None` | Dia específico (1-31). O INPE só mantém o arquivo diário dos últimos dias: dia mais antigo levanta `SourceUnavailableError` (use o mês inteiro). Se None, busca mes completo |
 | `uf` | `str \| None` | Filtrar por UF (ex: "MT", "SP"). Case insensitive |
 | `bioma` | `str \| None` | Filtrar por bioma (ex: "Amazonia", "Cerrado"). Aceita com ou sem acentos; valor desconhecido levanta `ValueError` |
 | `satelite` | `str \| None` | Filtrar por satelite (ex: "AQUA_M-T", "NOAA-20"), sem diferenciar caixa; sem filtro, vêm os focos de todos os satélites. Satélite que não aparece no arquivo do período levanta `InvalidParameterError` com os publicados, depois do download |
@@ -43,13 +43,13 @@ DataFrame com colunas:
 - `lat`: Latitude (float)
 - `lon`: Longitude (float)
 - `satelite`: Nome do satelite detector (str)
-- `municipio`: Nome do municipio (str)
-- `municipio_id`: Codigo IBGE do municipio (Int64)
+- `municipio`: Nome do município (str)
+- `municipio_id`: Código IBGE do município (Int64)
 - `estado`: Nome do estado (str)
 - `bioma`: Bioma canônico (str) — Amazônia, Cerrado, Mata Atlântica, Caatinga, Pampa, Pantanal
-- `numero_dias_sem_chuva`: Dias sem precipitacao (float)
-- `precipitacao`: Precipitacao em mm (float)
-- `risco_fogo`: Indice de risco de fogo 0-1 (float)
+- `numero_dias_sem_chuva`: Dias sem precipitação (float)
+- `precipitacao`: Precipitação em mm (float)
+- `risco_fogo`: Índice de risco de fogo 0-1 (float)
 - `frp`: Fire Radiative Power em MW (float); o negativo publicado pela fonte sai nulo, com aviso
 
 As 4 colunas numéricas saem em `float64`, com `NaN` onde a fonte publica -999 ou nada.
@@ -131,9 +131,9 @@ focos_por_municipio = gpd.sjoin(gdf, municipios)
 
 ---
 
-## Satelites Disponiveis
+## Satelites Disponíveis
 
-| Satelite | Descricao |
+| Satelite | Descrição |
 |----------|-----------|
 | `AQUA_M-T` | AQUA MODIS (referencia) |
 | `AQUA_M-M` | AQUA MODIS (Morning) |
@@ -160,7 +160,7 @@ focos_por_municipio = gpd.sjoin(gdf, municipios)
 | Pampa | 176k km2 |
 | Pantanal | 150k km2 |
 
-## Versao Sincrona
+## Versão Síncrona
 
 ```python
 from agrobr.sync import queimadas

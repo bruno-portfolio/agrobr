@@ -4,25 +4,25 @@ Registros de imoveis rurais do Cadastro Ambiental Rural (CAR) por UF.
 
 ## Fontes
 
-| Prioridade | Fonte | Descricao |
+| Prioridade | Fonte | Descrição |
 |------------|-------|-----------|
-| 1 | SICAR/GeoServer WFS | Servico Florestal Brasileiro / MMA |
+| 1 | SICAR/GeoServer WFS | Serviço Florestal Brasileiro / MMA |
 
 ## Schema
 
-| Coluna | Tipo | Nullable | Descricao |
+| Coluna | Tipo | Nullable | Descrição |
 |--------|------|----------|-----------|
-| `cod_imovel` | str | ❌ | Codigo unico do imovel no CAR |
+| `cod_imovel` | str | ❌ | Código único do imovel no CAR |
 | `status` | str | ❌ | Status do registro: AT, PE, SU, CA ou RE |
 | `data_criacao` | datetime64[ns, UTC] | ✅ | Instante UTC de criação do registro |
 | `data_atualizacao` | datetime64[ns, UTC] | ✅ | Instante UTC da última atualização, onde disponível |
 | `area_ha` | float64 | ❌ | Area do imovel em hectares (>= 0) |
-| `condicao` | str | ✅ | Condicao do imovel |
+| `condicao` | str | ✅ | Condição do imovel |
 | `uf` | str | ❌ | Sigla da UF |
-| `municipio` | str | ❌ | Nome do municipio |
-| `cod_municipio_ibge` | int | ❌ | Codigo IBGE do municipio |
+| `municipio` | str | ❌ | Nome do município |
+| `cod_municipio_ibge` | int | ❌ | Código IBGE do município |
 | `cod_municipio` | int | ✅ | Código IBGE do município (7 dígitos), a chave comum dos datasets municipais; nulo fora da linha de município; igual ao `cod_municipio_ibge` |
-| `modulos_fiscais` | float64 | ❌ | Quantidade de modulos fiscais (>= 0) |
+| `modulos_fiscais` | float64 | ❌ | Quantidade de módulos fiscais (>= 0) |
 | `tipo` | str | ❌ | Tipo do imovel: IRU, AST, PCT |
 
 ## Primary Key
@@ -31,14 +31,14 @@ Registros de imoveis rurais do Cadastro Ambiental Rural (CAR) por UF.
 
 ## Filtros
 
-| Parametro | Tipo | Descricao |
+| Parâmetro | Tipo | Descrição |
 |-----------|------|-----------|
-| `uf` | str | Sigla da UF (obrigatorio) |
+| `uf` | str | Sigla da UF (obrigatório) |
 | `municipio` | int \| str | Código IBGE de 7 dígitos ou nome inteiro do município da UF, sem diferenciar caixa e acento; ambíguo, inexistente ou pedaço de nome gera `InvalidParameterError` com os candidatos |
 | `status` | str | AT (Ativo), PE (Pendente), SU (Suspenso), CA (Cancelado) ou RE (publicado pelo SICAR; definição oficial não localizada) |
 | `tipo` | str | IRU, AST ou PCT, conforme a classificação SICAR |
-| `area_min` | float | Area minima em hectares |
-| `area_max` | float | Area maxima em hectares |
+| `area_min` | float | Area mínima em hectares |
+| `area_max` | float | Area máxima em hectares |
 | `criado_apos` | str | `YYYY-MM-DD`; criação maior ou igual à data (`>=`) |
 | `atualizado_apos` | str | Data ou datetime ISO com fração opcional e `Z`/offset; sem fuso, interpreta UTC. Atualização estritamente posterior (`>`) |
 | `as_polars` | bool | Retorna Polars após validar o contrato; exige o extra `[polars]` |
@@ -106,7 +106,7 @@ contagem não garante uma fotografia consistente entre páginas. O contrato 2.1 
 - `status` sempre AT, PE, SU, CA ou RE. `RE` sai como publicado; sua definição oficial não foi localizada.
 - `tipo` sempre IRU, AST ou PCT
 - `area_ha` sempre >= 0
-- `uf` sempre codigo valido de estado brasileiro
+- `uf` sempre código válido de estado brasileiro
 - Resultados vazios conservam as colunas do contrato
 
 ## Exemplo
@@ -128,7 +128,7 @@ print(meta.source_url)
 
 ## Schema JSON
 
-Disponivel em `agrobr/schemas/cadastro_rural.json`.
+Disponível em `agrobr/schemas/cadastro_rural.json`.
 
 ```python
 from agrobr.contracts import get_contract

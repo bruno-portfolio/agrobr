@@ -4,17 +4,17 @@
 
 | Item | Detalhe |
 |------|---------|
-| Provedor | FUNAI (Fundacao Nacional dos Povos Indigenas) |
+| Provedor | FUNAI (Fundação Nacional dos Povos Indigenas) |
 | Dados | Terras Indigenas poligonais |
 | Acesso | WFS OGC (GeoServer) |
 | Formato | GeoJSON do WFS 2.0 (`application/json`) nos dois modos |
-| Autenticacao | Nenhuma |
-| Licenca | Termo da FUNAI: reprodução com citação da fonte ([detalhes](../licenses.md#funai)) |
+| Autenticação | Nenhuma |
+| Licença | Termo da FUNAI: reprodução com citação da fonte ([detalhes](../licenses.md#funai)) |
 | Features | 665 TIs (23/09/2026) |
 
 ## Acesso via WFS
 
-| Parametro | Valor |
+| Parâmetro | Valor |
 |-----------|-------|
 | Endpoint | `geoserver.funai.gov.br/geoserver/Funai/ows` |
 | WFS Version | 2.0.0 |
@@ -48,23 +48,23 @@ asyncio.run(main())
 
 ## Colunas
 
-| Coluna | Tipo | Descricao |
+| Coluna | Tipo | Descrição |
 |--------|------|-----------|
-| codigo | int | Codigo da TI |
+| codigo | int | Código da TI |
 | nome | str | Nome da TI |
 | etnia | str | Etnia predominante |
-| municipio | str | Municipio sede |
+| municipio | str | Município sede |
 | uf | str | UF da TI como publicada; 18 TIs trazem mais de uma (ex. "AM, RR") |
 | area_ha | float | Área declarada pela FUNAI em hectares (`superficie_perimetro_ha`), não a do polígono |
 | fase | str | Fase do processo |
 | modalidade | str | Modalidade da TI |
 | data_atualizacao | datetime64[ns] | Data de atualização publicada em dd/mm/aaaa; nula em 146 das 665 TIs |
-| feature_id | str | Identificador da feicao no WFS (texto; pode variar entre requisicoes) |
+| feature_id | str | Identificador da feicao no WFS (texto; pode variar entre requisições) |
 | gid | int | Identificador do registro na camada |
-| reestudo_ti | str | Situacao de reestudo como publicada (vazio, "Reestudo" ou "Principal") |
+| reestudo_ti | str | Situação de reestudo como publicada (vazio, "Reestudo" ou "Principal") |
 | cr | str | Coordenacao Regional da FUNAI |
 | faixa_fronteira | str | "Sim"/"Não", como publicado |
-| undadm_codigo | int | Codigo da unidade administrativa |
+| undadm_codigo | int | Código da unidade administrativa |
 | undadm_nome | str | Nome da unidade administrativa |
 | undadm_sigla | str | Sigla da unidade administrativa |
 | dominio_uniao | str | "t"/"f", como publicado |
@@ -80,14 +80,14 @@ Em `terras_indigenas_geo`, a terra cuja área declarada difere mais de 5 % da á
 sai com aviso em `validation_warnings` e `UserWarning`, e a lista com as 2 áreas fica em `source_details["area_divergente"]`.
 `terras_indigenas`, sem geometria, não faz a comparação. No AC, 3 das 34 terras passam dos 5 %.
 
-## Parametros
+## Parâmetros
 
-| Parametro | Padrao | Descricao |
+| Parâmetro | Padrão | Descrição |
 |-----------|--------|-----------|
 | `uf` | `None` | Sigla; casa qualquer UF do campo publicado (TIs em mais de um estado vem como "AM, RR") |
 | `fase` | `None` | Uma das fases abaixo, igualdade exata |
 | `bbox` | `None` | (lon_min, lat_min, lon_max, lat_max) em EPSG:4326 |
-| `max_registros` | 10.000 (1.000 em `_geo`) | Teto de TIs lidas em ordem de codigo; `uf` e `fase` filtram localmente esse prefixo, e o corte que deixa a selecao parcial emite `UserWarning` |
+| `max_registros` | 10.000 (1.000 em `_geo`) | Teto de TIs lidas em ordem de código; `uf` e `fase` filtram localmente esse prefixo, e o corte que deixa a selecao parcial emite `UserWarning` |
 | `tamanho_pagina` | 250 (10 em `_geo` ou com `bbox`) | Máximo 1.000 (100 em `_geo` ou com `bbox`) |
 
 ## Fases

@@ -1,6 +1,6 @@
 # MapBiomas (Cobertura e Uso da Terra)
 
-Dados tabulares do Projeto MapBiomas — area (ha) por classe de cobertura e uso da terra, bioma e estado, com serie historica anual desde 1985.
+Dados tabulares do Projeto MapBiomas — area (ha) por classe de cobertura e uso da terra, bioma e estado, com serie histórica anual desde 1985.
 
 ## `mapbiomas.cobertura()`
 
@@ -12,19 +12,19 @@ import agrobr
 df = await agrobr.mapbiomas.cobertura(bioma="Cerrado", ano=2020, uf="GO")
 ```
 
-### Parametros
+### Parâmetros
 
-| Parametro | Tipo | Obrigatorio | Descricao |
+| Parâmetro | Tipo | Obrigatório | Descrição |
 |-----------|------|-------------|-----------|
-| `bioma` | `str` | Nao | Bioma: "Amazonia", "Cerrado", "Caatinga", "Mata Atlantica", "Pampa", "Pantanal". Se None, todos |
-| `uf` | `str` | Nao | Sigla ou nome completo da UF (ex: `"MT"`, `"Mato Grosso"`). Caixa e acentos são opcionais; valor inválido levanta `InvalidParameterError` com as siglas válidas, antes do download |
-| `ano` | `int` | Nao | Ano: 1985-2025 na coleção 11; 1985-2024 na coleção 10. Se None, todos os anos |
-| `classe_id` | `int` | Nao | Codigo de classe MapBiomas (ex: 15 para Pastagem). Código fora das classes publicadas na coleção levanta `InvalidParameterError` com a lista, depois do download |
-| `nivel` | `str` | Nao | `"estado"` (default) ou `"municipio"`. O arquivo municipal é baixado inteiro antes dos filtros |
-| `municipio` | `str` ou `int` | Nao | Nome inteiro do município (sem diferenciar caixa e acento; com `uf` para desambiguar) ou código territorial de sete dígitos (`int` ou texto). Pedaço de nome, nome de mais de um município sem `uf` e código fora do recurso levantam `InvalidParameterError`. Requer `nivel="municipio"` |
-| `colecao` | `int` | Nao | `10` ou `11`; `None` usa a coleção atual (11). Outras coleções levantam `ValueError` antes do download |
-| `as_polars` | `bool` | Nao | Retornar como polars.DataFrame |
-| `return_meta` | `bool` | Nao | Se True, retorna `(DataFrame, MetaInfo)` |
+| `bioma` | `str` | Não | Bioma: "Amazonia", "Cerrado", "Caatinga", "Mata Atlantica", "Pampa", "Pantanal". Se None, todos |
+| `uf` | `str` | Não | Sigla ou nome completo da UF (ex: `"MT"`, `"Mato Grosso"`). Caixa e acentos são opcionais; valor inválido levanta `InvalidParameterError` com as siglas válidas, antes do download |
+| `ano` | `int` | Não | Ano: 1985-2025 na coleção 11; 1985-2024 na coleção 10. Se None, todos os anos |
+| `classe_id` | `int` | Não | Código de classe MapBiomas (ex: 15 para Pastagem). Código fora das classes publicadas na coleção levanta `InvalidParameterError` com a lista, depois do download |
+| `nivel` | `str` | Não | `"estado"` (default) ou `"municipio"`. O arquivo municipal é baixado inteiro antes dos filtros |
+| `municipio` | `str` ou `int` | Não | Nome inteiro do município (sem diferenciar caixa e acento; com `uf` para desambiguar) ou código territorial de sete dígitos (`int` ou texto). Pedaço de nome, nome de mais de um município sem `uf` e código fora do recurso levantam `InvalidParameterError`. Requer `nivel="municipio"` |
+| `colecao` | `int` | Não | `10` ou `11`; `None` usa a coleção atual (11). Outras coleções levantam `ValueError` antes do download |
+| `as_polars` | `bool` | Não | Retornar como polars.DataFrame |
+| `return_meta` | `bool` | Não | Se True, retorna `(DataFrame, MetaInfo)` |
 
 ### Seleção da coleção
 
@@ -42,12 +42,12 @@ print(meta.data_sources, meta.source_url)
 
 ### Colunas de Retorno
 
-| Coluna | Tipo | Descricao |
+| Coluna | Tipo | Descrição |
 |--------|------|-----------|
 | `bioma` | str | Nome do bioma |
 | `uf` | str | Sigla da UF (ex: "MT") |
-| `municipio` | str | Nome do municipio (apenas quando `nivel="municipio"`) |
-| `classe_id` | int | Codigo da classe MapBiomas |
+| `municipio` | str | Nome do município (apenas quando `nivel="municipio"`) |
+| `classe_id` | int | Código da classe MapBiomas |
 | `classe` | str | Rótulo normalizado pelo SDK conforme a coleção; não é transcrição literal da aba de legenda |
 | `nivel_0` | str | Texto publicado, como `Natural`, `Antropic`, `Natural/Antropic` e `Undefined` |
 | `ano` | int | Ano de referencia |
@@ -74,7 +74,7 @@ A legenda também depende da coleção: no recurso municipal 10, classe 13 corre
 
 ### Classes MapBiomas (principais)
 
-| Codigo | Classe | Nivel 0 |
+| Código | Classe | Nível 0 |
 |--------|--------|---------|
 | 3 | Formação Florestal | Natural |
 | 4 | Formação Savânica | Natural |
@@ -137,7 +137,7 @@ Consulte `df.periodo.unique()` sem o filtro `periodo` para obter os intervalos e
 
 ---
 
-## Uso Sincrono
+## Uso Síncrono
 
 ```python
 from agrobr import sync
@@ -201,7 +201,7 @@ print(pivot)
 - **Projeto:** MapBiomas — Mapeamento Anual de Cobertura e Uso da Terra no Brasil
 - **Coleção padrão:** 11 (agosto de 2026); coleção 10 disponível explicitamente
 - **Série histórica:** 1985-2025 na coleção 11; 1985-2024 na coleção 10
-- **Resolucao:** 30m (Landsat)
+- **Resolução:** 30m (Landsat)
 - **Provedor:** Rede colaborativa multi-institucional
 - **Dados:** [Cobertura e uso da terra — MapBiomas 30m](https://brasil.mapbiomas.org/iniciativas-e-produtos/cobertura-e-uso-da-terra/cobertura-30m/cobertura/)
-- **Licenca:** Dados publicos — livre para uso com citacao ao Projeto MapBiomas
+- **Licença:** Dados publicos — livre para uso com citacao ao Projeto MapBiomas

@@ -1,12 +1,12 @@
 # API ComexStat
 
-O modulo ComexStat fornece dados de exportacao e importacao brasileira do MDIC/SECEX — volumes, valores FOB (USD) por produto, UF e pais.
+O módulo ComexStat fornece dados de exportacao e importacao brasileira do MDIC/SECEX — volumes, valores FOB (USD) por produto, UF e pais.
 
-## Funcoes
+## Funções
 
 ### `exportacao`
 
-Dados de exportacao por produto agricola.
+Dados de exportacao por produto agrícola.
 
 ```python
 async def exportacao(
@@ -27,7 +27,7 @@ async def exportacao(
 
 ### `importacao`
 
-Dados de importacao por produto agricola. Mesma interface de `exportacao()`.
+Dados de importacao por produto agrícola. Mesma interface de `exportacao()`.
 
 ```python
 async def importacao(
@@ -46,9 +46,9 @@ async def importacao(
 ) -> DataFrameResult
 ```
 
-**Parametros (ambas):**
+**Parâmetros (ambas):**
 
-| Parametro | Tipo | Descricao |
+| Parâmetro | Tipo | Descrição |
 |-----------|------|-----------|
 | `produto` | `str` | Alias da tabela abaixo ou prefixo NCM de 2 a 8 dígitos, sem pontos (ex.: `"1507"`, `"22071010"`) |
 | `ano` | `int \| None` | Ano de referência (1997 até o corrente em Brasília). Default: ano anterior |
@@ -123,7 +123,7 @@ df = await comexstat.exportacao("milho", ano=2024, uf="MT")
 df = await comexstat.exportacao("cafe", ano=2024, agregacao="detalhado")
 ```
 
-## Versao Sincrona
+## Versão Síncrona
 
 ```python
 from agrobr.sync import comexstat
@@ -134,7 +134,7 @@ df = comexstat.importacao("soja", ano=2024)
 
 ## Notas
 
-- Fonte: [ComexStat/MDIC](https://comexstat.mdic.gov.br) — licenca livre
+- Fonte: [ComexStat/MDIC](https://comexstat.mdic.gov.br) — licença livre
 - Cada alias soma os códigos vigentes em cada ano: quando a nomenclatura desdobra
   ou renumera um código (etanol `22071000` → `22071010`/`22071090` em 2011; soja
   `12010090` → `12019000` em 2012; frango `02071400` → 14 subitens em 2024), o
@@ -145,7 +145,7 @@ df = comexstat.importacao("soja", ano=2024)
   ele, sem as exclusões dos aliases
 - `MetaInfo.source_details["query"]` registra `ncm_prefixos` e `ncm_excluidos`
 - Arquivos CSV anuais de ~100MB cada
-- Dados disponiveis a partir de 1997
+- Dados disponíveis a partir de 1997
 
 ### `dicionario`
 

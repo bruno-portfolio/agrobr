@@ -309,7 +309,7 @@ A API SIDRA é a fonte mais estável, mas tem particularidades:
 | Censo Agro | uma tabela por tema e ano (ex.: 6907 efetivo 2017, 323 efetivo 1995) | N1, N2, N3, N6 |
 | PEVS Silvicultura | 291 | N1, N2, N3, N6 |
 | PEVS Silvicultura Area | 5930 | N1, N2, N3, N6 |
-| PEVS Extracao Vegetal | 289 | N1, N2, N3, N6 |
+| PEVS Extração Vegetal | 289 | N1, N2, N3, N6 |
 | Leite Trimestral | 1086 | N1, N3 |
 | PIB Agro (corrente) | 1846 | N1 |
 | PIB Agro (real) | 6612 | N1 |

@@ -1,6 +1,6 @@
-# ZARC (Zoneamento Agricola de Risco Climatico)
+# ZARC (Zoneamento Agrícola de Risco Climático)
 
-Janelas de plantio recomendadas por municipio, cultura, tipo de solo e ciclo do cultivar.
+Janelas de plantio recomendadas por município, cultura, tipo de solo e ciclo do cultivar.
 
 ## zoneamento
 
@@ -12,36 +12,36 @@ import agrobr
 df = await agrobr.zarc.zoneamento(produto="soja", uf="MT", safra="2025/2026")
 ```
 
-### Parametros
+### Parâmetros
 
-| Parametro | Tipo | Obrigatorio | Descricao |
+| Parâmetro | Tipo | Obrigatório | Descrição |
 |-----------|------|-------------|-----------|
-| produto | str | Nao | Nome canonico da cultura (ex: "soja", "milho_1", "trigo"); a coluna de saída continua `cultura` |
-| uf | str | Nao | Sigla da UF (ex: "MT", "SP"); outra gera `InvalidParameterError` com a lista das válidas |
-| municipio | int \| str | Nao | Código IBGE de 7 dígitos (`int` ou `str`) ou nome inteiro do município, sem diferenciar caixa nem acento; o filtro compara o `geocodigo`. Pedaço de nome, nome inexistente ou nome repetido sem `uf` geram `InvalidParameterError` com os candidatos, antes da rede |
-| safra | str | Nao | "2025/2026" ou "perene" (default: safra mais recente) |
-| solo | int | Nao | Codigo tipo de solo (1-3 classico, 11-16 novo 6-AD) |
-| ciclo | int | Nao | Codigo ciclo do cultivar (13, 19, 20, 21, 22, 24, 25, 26) |
-| as_polars | bool | Nao | Se True, retorna polars DataFrame |
-| return_meta | bool | Nao | Se True, retorna (DataFrame, MetaInfo) |
+| produto | str | Não | Nome canonico da cultura (ex: "soja", "milho_1", "trigo"); a coluna de saída continua `cultura` |
+| uf | str | Não | Sigla da UF (ex: "MT", "SP"); outra gera `InvalidParameterError` com a lista das válidas |
+| municipio | int \| str | Não | Código IBGE de 7 dígitos (`int` ou `str`) ou nome inteiro do município, sem diferenciar caixa nem acento; o filtro compara o `geocodigo`. Pedaço de nome, nome inexistente ou nome repetido sem `uf` geram `InvalidParameterError` com os candidatos, antes da rede |
+| safra | str | Não | "2025/2026" ou "perene" (default: safra mais recente) |
+| solo | int | Não | Código tipo de solo (1-3 classico, 11-16 novo 6-AD) |
+| ciclo | int | Não | Código ciclo do cultivar (13, 19, 20, 21, 22, 24, 25, 26) |
+| as_polars | bool | Não | Se True, retorna polars DataFrame |
+| return_meta | bool | Não | Se True, retorna (DataFrame, MetaInfo) |
 | use_cache | bool | Não | Padrão True; False ignora o cache do catálogo e da tábua |
 
 A primeira consulta de cada revisão baixa e parseia a tábua inteira (cerca de 3 minutos, quase todo na validação de cada registro). As seguintes consultam os dados validados no cache local DuckDB, inclusive em outro processo Python: TTL de 24 horas desde a aquisição e até três revisões. O arquivo ZARC é separado do cache CEPEA. O catálogo usa cache em memória por uma hora. `use_cache=False` ignora leitura e gravação de ambos; falhas no cache local geram log de aviso e seguem por download e parse. Metadados preservam SHA, aquisição original e culturas observadas na tábua inteira. O download é conferido contra o tamanho que o servidor publica (o `Content-Range` do portal do MAPA, ou o `Content-Length`): corpo menor levanta `SourceUnavailableError` e não vai para o cache. Sem o tamanho publicado, o resultado avisa em `validation_warnings` ("tamanho do arquivo não conferido") e não é gravado; entrada do cache sem tamanho conferido ou sem registros é baixada de novo.
 
 ### Colunas de retorno
 
-| Coluna | Tipo | Descricao |
+| Coluna | Tipo | Descrição |
 |--------|------|-----------|
 | cultura | str | Nome canonico (ex: "soja", "milho_1") |
 | safra | str | "2025/2026" ou "perene" |
-| geocodigo | str | Codigo IBGE do municipio (7 digitos) |
+| geocodigo | str | Código IBGE do município (7 digitos) |
 | uf | str | Sigla UF |
-| municipio | str | Nome do municipio |
+| municipio | str | Nome do município |
 | solo_codigo | int | Tipo de solo |
 | ciclo_codigo | int | Ciclo do cultivar |
 | clima | str | Restricao climatica |
-| manejo | str | Manejo especifico |
-| portaria | str | Numero da portaria MAPA |
+| manejo | str | Manejo específico |
+| portaria | str | Número da portaria MAPA |
 | dec1-dec36 | int | Risco por decendio (0/20/30/40/50) |
 
 ### Exemplos
@@ -78,18 +78,18 @@ culturas = agrobr.zarc.culturas()
 # ['abacaxi', 'acai', 'acai_implantacao', 'algodao', 'alho_nobre', ...]
 ```
 
-Funcao sincrona (sem await).
+Função síncrona (sem await).
 
 ## safras_disponiveis
 
-Safras disponiveis no portal CKAN (faz discovery online).
+Safras disponíveis no portal CKAN (faz discovery online).
 
 ```python
 safras = await agrobr.zarc.safras_disponiveis()
 # ['2016/2017', '2017/2018', ..., '2025/2026', 'perene']
 ```
 
-## Uso sincrono
+## Uso síncrono
 
 ```python
 from agrobr import sync
@@ -103,8 +103,8 @@ safras = sync.zarc.safras_disponiveis()
 
 - **Provedor:** MAPA / Embrapa
 - **Portal:** [dados.agricultura.gov.br](https://dados.agricultura.gov.br/dataset/tabua-de-risco-zoneamento-agricola-de-risco-climatico)
-- **Licenca:** CC-BY (dados publicos governo federal)
-- **Atualizacao:** semanal no catálogo CKAN; PDF declara diária, sem comprovar a cadência efetiva
+- **Licença:** CC-BY (dados publicos governo federal)
+- **Atualização:** semanal no catálogo CKAN; PDF declara diária, sem comprovar a cadência efetiva
 
 ## Culturas legadas e identidade dos registros
 

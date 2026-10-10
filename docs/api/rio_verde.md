@@ -1,8 +1,8 @@
 # API Rio Verde
 
-O modulo rio_verde fornece resultados de ensaios de cultivares de soja da Fundacao Rio Verde (Lucas do Rio Verde, MT).
+O módulo rio_verde fornece resultados de ensaios de cultivares de soja da Fundação Rio Verde (Lucas do Rio Verde, MT).
 
-## Funcoes
+## Funções
 
 ### `ensaio_soja`
 
@@ -19,11 +19,11 @@ async def ensaio_soja(
 ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]
 ```
 
-**Parametros:**
+**Parâmetros:**
 
-| Parametro | Tipo | Descricao |
+| Parâmetro | Tipo | Descrição |
 |-----------|------|-----------|
-| `safra` | `str` | Safra (ex: "2025/2026"). **Obrigatorio** |
+| `safra` | `str` | Safra (ex: "2025/2026"). **Obrigatório** |
 | `cultivar` | `str \| None` | Filtro por cultivar (contains, case-insensitive) |
 | `empresa` | `str \| None` | Filtro por empresa obtentora |
 | `as_polars` | `bool` | Retorna polars DataFrame |
@@ -56,7 +56,7 @@ Lista as safras com dados disponíveis.
 async def safras_disponiveis() -> list[str]
 ```
 
-**Retorno:** Lista de strings com as safras disponiveis (ex: `["2024/2025", "2025/2026"]`)
+**Retorno:** Lista de strings com as safras disponíveis (ex: `["2024/2025", "2025/2026"]`)
 
 **Exemplo:**
 
@@ -66,7 +66,7 @@ from agrobr import rio_verde
 safras = await rio_verde.safras_disponiveis()
 ```
 
-## Versao Sincrona
+## Versão Síncrona
 
 ```python
 from agrobr.sync import rio_verde
@@ -77,8 +77,8 @@ safras = rio_verde.safras_disponiveis()
 
 ## Notas
 
-- Fonte: [Fundacao Rio Verde](https://fundacaorioverde.com.br) — licenca `zona_cinza`
+- Fonte: [Fundação Rio Verde](https://fundacaorioverde.com.br) — licença `zona_cinza`
 - Requer `pip install agrobr[pdf]` (pdfplumber)
-- 76 a 107 linhas por safra (2023/24: 76; 2024/25: 94; 2025/26: 107), ate 4 epocas de semeio; a mesma cultivar pode repetir
+- 76 a 107 linhas por safra (2023/24: 76; 2024/25: 94; 2025/26: 107), até 4 epocas de semeio; a mesma cultivar pode repetir
 - Produtividade em sacas/hectare (sc/ha)
-- PDF text-based (nao requer OCR)
+- PDF text-based (não requer OCR)

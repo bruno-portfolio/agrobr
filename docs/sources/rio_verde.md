@@ -1,23 +1,23 @@
-# Fundacao Rio Verde — Ensaios de Cultivares de Soja
+# Fundação Rio Verde — Ensaios de Cultivares de Soja
 
-> **Licenca:** Sem termos publicos.
-> Classificacao: `zona_cinza`
+> **Licença:** Sem termos publicos.
+> Classificação: `zona_cinza`
 
-Resultados de ensaios de cultivares de soja conduzidos pela Fundacao Rio Verde
+Resultados de ensaios de cultivares de soja conduzidos pela Fundação Rio Verde
 em Lucas do Rio Verde, MT.
 
 ## Visao Geral
 
 | Campo | Valor |
 |-------|-------|
-| **Operador** | Fundacao Rio Verde (Lucas do Rio Verde, MT) |
+| **Operador** | Fundação Rio Verde (Lucas do Rio Verde, MT) |
 | **Website** | [fundacaorioverde.com.br](https://fundacaorioverde.com.br) |
-| **Licenca** | `zona_cinza` — Sem termos publicos |
+| **Licença** | `zona_cinza` — Sem termos publicos |
 | **Formato** | PDF text-based |
-| **Atualizacao** | Anual (por safra) |
+| **Atualização** | Anual (por safra) |
 | **Cobertura** | Safras 2023/24 (76 linhas), 2024/25 (94) e 2025/26 (107); até 4 épocas de semeio |
 
-## Dados Disponiveis
+## Dados Disponíveis
 
 ### Ensaio de Soja
 
@@ -59,10 +59,10 @@ asyncio.run(main())
 ## Notas Tecnicas
 
 - Requer `pip install agrobr[pdf]` (pdfplumber)
-- PDF text-based (nao requer OCR)
+- PDF text-based (não requer OCR)
 - Parser extrai tabelas de produtividade por epoca de semeio
 - Produtividade em sacas/hectare (sc/ha)
-- Safras disponiveis dependem dos PDFs publicados pela fundacao: 2023/2024, 2024/2025 e 2025/2026. A fundação também publica a
+- Safras disponíveis dependem dos PDFs publicados pela fundação: 2023/2024, 2024/2025 e 2025/2026. A fundação também publica a
   safra 2022/23 num layout que o agrobr não lê (3 épocas de semeio e sem produtividade média); `ensaio_soja("2022/2023")`
   levanta `InvalidParameterError` dizendo isso, antes da rede. O agrobr não calcula média que a fonte não publica.
 - A lista de safras é fixa em cada versão do agrobr: a safra nova que a fundação publicar pede uma versão nova, e até lá `ensaio_soja` a recusa com `InvalidParameterError`
@@ -75,7 +75,7 @@ asyncio.run(main())
 
 - URL: `https://fundacaorioverde.com.br`
 - Formato: PDF
-- Atualizacao: anual (por safra)
-- Licenca: `zona_cinza` — Sem termos publicos (verificar com a fundacao)
+- Atualização: anual (por safra)
+- Licença: `zona_cinza` — Sem termos publicos (verificar com a fundação)
 
 O parser extrai células da tabela-resumo, preservando empresa e cultivar compostas. As safras 2024/25 e 2025/26 têm layouts diferentes, respectivamente sem e com G.M. estimado; `grupo_maturacao` preserva o G.M. declarado. Épocas sem medição ficam nulas. O número de linhas representa observações, não cultivares únicas: uma cultivar pode aparecer mais de uma vez no relatório.

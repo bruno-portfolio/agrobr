@@ -14,20 +14,20 @@ import agrobr
 df = await agrobr.alt.sicar.imoveis("DF")
 ```
 
-### Parametros
+### Parâmetros
 
-| Parametro | Tipo | Obrigatorio | Descricao |
+| Parâmetro | Tipo | Obrigatório | Descrição |
 |-----------|------|-------------|-----------|
 | uf | str | Sim | Sigla da UF (ex: "MT", "DF", "BA") |
-| municipio | int \| str | Nao | Código IBGE de 7 dígitos (int ou str) ou nome inteiro do município, sem diferenciar caixa e acento (`normalize.resolver_municipio`); precisa ser da UF. Nome ambíguo, inexistente ou pedaço de nome (`"Santa Rita"` não casa com `"Santa Rita do Sapucaí"`) gera `InvalidParameterError` com os candidatos. Filtra pelo código na camada |
-| status | str | Nao | AT, PE, SU, CA ou RE |
-| tipo | str | Nao | IRU, AST ou PCT |
-| area_min | float | Nao | Area minima em hectares |
-| area_max | float | Nao | Area maxima em hectares |
-| criado_apos | str | Nao | Data válida `YYYY-MM-DD`; criação maior ou igual ao corte (`>=`) |
-| atualizado_apos | str | Nao | Atualização estritamente posterior (`>`), em data/datetime ISO, com fração e `Z`/offset opcionais; sem fuso, interpreta UTC. O campo é solicitado onde existe. Indisponível em PE, PI, PR, RJ, RN, RO, RR, RS, SC, SE, SP e TO |
-| as_polars | bool | Nao | Se True, retorna polars.DataFrame |
-| return_meta | bool | Nao | Se True, retorna (DataFrame, MetaInfo) |
+| municipio | int \| str | Não | Código IBGE de 7 dígitos (int ou str) ou nome inteiro do município, sem diferenciar caixa e acento (`normalize.resolver_municipio`); precisa ser da UF. Nome ambíguo, inexistente ou pedaço de nome (`"Santa Rita"` não casa com `"Santa Rita do Sapucaí"`) gera `InvalidParameterError` com os candidatos. Filtra pelo código na camada |
+| status | str | Não | AT, PE, SU, CA ou RE |
+| tipo | str | Não | IRU, AST ou PCT |
+| area_min | float | Não | Area mínima em hectares |
+| area_max | float | Não | Area máxima em hectares |
+| criado_apos | str | Não | Data válida `YYYY-MM-DD`; criação maior ou igual ao corte (`>=`) |
+| atualizado_apos | str | Não | Atualização estritamente posterior (`>`), em data/datetime ISO, com fração e `Z`/offset opcionais; sem fuso, interpreta UTC. O campo é solicitado onde existe. Indisponível em PE, PI, PR, RJ, RN, RO, RR, RS, SC, SE, SP e TO |
+| as_polars | bool | Não | Se True, retorna polars.DataFrame |
+| return_meta | bool | Não | Se True, retorna (DataFrame, MetaInfo) |
 
 Datas impossíveis, áreas negativas/não finitas, intervalos invertidos e tipos inválidos são rejeitados antes da rede. O código municipal é conferido no cadastro de municípios do IBGE antes da rede: código inexistente ou de outra UF gera `InvalidParameterError`.
 
@@ -42,18 +42,18 @@ Veja a [regra completa](../contracts/cadastro_rural.md#ocorrencias-do-mesmo-imov
 
 ### Colunas de retorno
 
-| Coluna | Tipo | Descricao |
+| Coluna | Tipo | Descrição |
 |--------|------|-----------|
-| cod_imovel | str | Codigo unico do imovel |
+| cod_imovel | str | Código único do imovel |
 | status | str | AT/PE/SU/CA/RE |
 | data_criacao | datetime64[ns, UTC] | Instante UTC de criação (nullable) |
 | data_atualizacao | datetime64[ns, UTC] | Instante UTC de atualização (nullable) |
 | area_ha | float | Area em hectares |
-| condicao | str | Condicao do cadastro (nullable) |
+| condicao | str | Condição do cadastro (nullable) |
 | uf | str | Sigla UF |
-| municipio | str | Nome do municipio |
-| cod_municipio_ibge | int | Codigo IBGE |
-| modulos_fiscais | float | Modulos fiscais |
+| municipio | str | Nome do município |
+| cod_municipio_ibge | int | Código IBGE |
+| modulos_fiscais | float | Módulos fiscais |
 | tipo | str | IRU/AST/PCT |
 | cod_municipio | int | Código IBGE de 7 dígitos (igual a `cod_municipio_ibge`); anulável |
 
@@ -88,26 +88,26 @@ print(meta.records_count, meta.fetch_duration_ms)
 
 ## resumo
 
-Estatisticas agregadas por UF ou municipio.
+Estatísticas agregadas por UF ou município.
 
 ```python
 df = await agrobr.alt.sicar.resumo("MT")
 ```
 
-### Parametros
+### Parâmetros
 
-| Parametro | Tipo | Obrigatorio | Descricao |
+| Parâmetro | Tipo | Obrigatório | Descrição |
 |-----------|------|-------------|-----------|
 | uf | str | Sim | Sigla da UF |
-| municipio | int \| str | Nao | Código IBGE de 7 dígitos (int ou str) ou nome inteiro do município, sem diferenciar caixa e acento (`normalize.resolver_municipio`); precisa ser da UF. Nome ambíguo, inexistente ou pedaço de nome (`"Santa Rita"` não casa com `"Santa Rita do Sapucaí"`) gera `InvalidParameterError` com os candidatos. Filtra pelo código na camada |
-| as_polars | bool | Nao | Se True, retorna polars.DataFrame |
-| return_meta | bool | Nao | Se True, retorna (DataFrame, MetaInfo) |
+| municipio | int \| str | Não | Código IBGE de 7 dígitos (int ou str) ou nome inteiro do município, sem diferenciar caixa e acento (`normalize.resolver_municipio`); precisa ser da UF. Nome ambíguo, inexistente ou pedaço de nome (`"Santa Rita"` não casa com `"Santa Rita do Sapucaí"`) gera `InvalidParameterError` com os candidatos. Filtra pelo código na camada |
+| as_polars | bool | Não | Se True, retorna polars.DataFrame |
+| return_meta | bool | Não | Se True, retorna (DataFrame, MetaInfo) |
 
-### Retorno sem municipio (UF-level)
+### Retorno sem município (UF-level)
 
 Usa `resultType=hits` (cinco consultas: total e quatro status, sem download de registros). A contagem é de **feições publicadas**: versões do mesmo `cod_imovel` em vigor na camada contam separado, então o total pode passar do número de imóveis e da soma dos resumos por município, que contam uma versão por `cod_imovel`. A saída diz isso em `MetaInfo.source_details["sicar"]["unidade"] = "feicoes_publicadas"` e num aviso em `MetaInfo.validation_warnings` (com `return_meta=True`):
 
-| Coluna | Tipo | Descricao |
+| Coluna | Tipo | Descrição |
 |--------|------|-----------|
 | total | int | Feições publicadas; conta todos os status, e os que estão fora das quatro colunas abaixo (como `RE`) entram só aqui |
 | ativos | int | Feições com status AT |
@@ -115,11 +115,11 @@ Usa `resultType=hits` (cinco consultas: total e quatro status, sem download de r
 | suspensos | int | Feições com status SU |
 | cancelados | int | Feições com status CA |
 
-### Retorno com municipio
+### Retorno com município
 
 Busca dados, aplica a seleção de ocorrências de `imoveis()` e agrega client-side; os avisos e detalhes da seleção acompanham `return_meta=True`:
 
-| Coluna | Tipo | Descricao |
+| Coluna | Tipo | Descrição |
 |--------|------|-----------|
 | total | int | Total de imoveis; conta todos os status, e os que estão fora das quatro colunas abaixo (como `RE`) entram só aqui |
 | ativos | int | Imoveis com status AT |
@@ -128,7 +128,7 @@ Busca dados, aplica a seleção de ocorrências de `imoveis()` e agrega client-s
 | cancelados | int | Imoveis com status CA |
 | area_total_ha | float | Soma das areas |
 | area_media_ha | float | Media das areas |
-| modulos_fiscais_medio | float | Media de modulos fiscais |
+| modulos_fiscais_medio | float | Media de módulos fiscais |
 | por_tipo_IRU | int | Imoveis rurais |
 | por_tipo_AST | int | Assentamentos |
 | por_tipo_PCT | int | Imoveis com `tipo` = `PCT` |
@@ -153,35 +153,35 @@ import agrobr
 gdf = await agrobr.alt.sicar.imoveis_geo("DF")
 ```
 
-### Parametros
+### Parâmetros
 
-| Parametro | Tipo | Obrigatorio | Descricao |
+| Parâmetro | Tipo | Obrigatório | Descrição |
 |-----------|------|-------------|-----------|
 | uf | str | Sim | Sigla da UF (ex: "MT", "DF", "BA") |
-| municipio | int \| str | Nao | Código IBGE de 7 dígitos (int ou str) ou nome inteiro do município, sem diferenciar caixa e acento (`normalize.resolver_municipio`); precisa ser da UF. Nome ambíguo, inexistente ou pedaço de nome (`"Santa Rita"` não casa com `"Santa Rita do Sapucaí"`) gera `InvalidParameterError` com os candidatos. Filtra pelo código na camada |
-| status | str | Nao | AT, PE, SU, CA ou RE |
-| tipo | str | Nao | IRU, AST ou PCT |
-| area_min | float | Nao | Area minima em hectares |
-| area_max | float | Nao | Area maxima em hectares |
-| criado_apos | str | Nao | Data minima de criacao (ISO, ex: "2020-01-01") |
-| atualizado_apos | str | Nao | Atualização estritamente posterior (`>`), em data/datetime ISO, com fração e `Z`/offset opcionais; sem fuso, interpreta UTC. O campo é solicitado onde existe. Indisponível em PE, PI, PR, RJ, RN, RO, RR, RS, SC, SE, SP e TO |
-| max_registros | int \| None | Nao | Limite de feições retornadas. Default: 5000. `None` desativa o limite |
-| return_meta | bool | Nao | Se True, retorna (GeoDataFrame, MetaInfo) |
+| municipio | int \| str | Não | Código IBGE de 7 dígitos (int ou str) ou nome inteiro do município, sem diferenciar caixa e acento (`normalize.resolver_municipio`); precisa ser da UF. Nome ambíguo, inexistente ou pedaço de nome (`"Santa Rita"` não casa com `"Santa Rita do Sapucaí"`) gera `InvalidParameterError` com os candidatos. Filtra pelo código na camada |
+| status | str | Não | AT, PE, SU, CA ou RE |
+| tipo | str | Não | IRU, AST ou PCT |
+| area_min | float | Não | Area mínima em hectares |
+| area_max | float | Não | Area máxima em hectares |
+| criado_apos | str | Não | Data mínima de criacao (ISO, ex: "2020-01-01") |
+| atualizado_apos | str | Não | Atualização estritamente posterior (`>`), em data/datetime ISO, com fração e `Z`/offset opcionais; sem fuso, interpreta UTC. O campo é solicitado onde existe. Indisponível em PE, PI, PR, RJ, RN, RO, RR, RS, SC, SE, SP e TO |
+| max_registros | int \| None | Não | Limite de feições retornadas. Default: 5000. `None` desativa o limite |
+| return_meta | bool | Não | Se True, retorna (GeoDataFrame, MetaInfo) |
 
 ### Colunas de retorno
 
-| Coluna | Tipo | Descricao |
+| Coluna | Tipo | Descrição |
 |--------|------|-----------|
-| cod_imovel | str | Codigo unico do imovel |
+| cod_imovel | str | Código único do imovel |
 | status | str | AT/PE/SU/CA/RE |
 | data_criacao | datetime | Data de criacao |
-| data_atualizacao | datetime | Ultima atualizacao (nullable) |
+| data_atualizacao | datetime | Última atualização (nullable) |
 | area_ha | float | Area em hectares |
-| condicao | str | Condicao do cadastro (nullable) |
+| condicao | str | Condição do cadastro (nullable) |
 | uf | str | Sigla UF |
-| municipio | str | Nome do municipio |
-| cod_municipio_ibge | int | Codigo IBGE |
-| modulos_fiscais | float | Modulos fiscais |
+| municipio | str | Nome do município |
+| cod_municipio_ibge | int | Código IBGE |
+| modulos_fiscais | float | Módulos fiscais |
 | tipo | str | IRU/AST/PCT |
 | cod_municipio | int | Código IBGE de 7 dígitos (igual a `cod_municipio_ibge`); anulável |
 | geometry | MultiPolygon | Poligono do imovel (EPSG:4326) |
@@ -226,18 +226,18 @@ async for gdf in agrobr.alt.sicar.imoveis_geo_stream("MT"):
     print(len(gdf))
 ```
 
-### Parametros
+### Parâmetros
 
-| Parametro | Tipo | Obrigatorio | Descricao |
+| Parâmetro | Tipo | Obrigatório | Descrição |
 |-----------|------|-------------|-----------|
 | uf | str | Sim | Sigla da UF (ex: "MT", "DF", "BA") |
-| municipio | int \| str | Nao | Código IBGE de 7 dígitos (int ou str) ou nome inteiro do município, sem diferenciar caixa e acento (`normalize.resolver_municipio`); precisa ser da UF. Nome ambíguo, inexistente ou pedaço de nome (`"Santa Rita"` não casa com `"Santa Rita do Sapucaí"`) gera `InvalidParameterError` com os candidatos. Filtra pelo código na camada |
-| status | str | Nao | AT, PE, SU, CA ou RE |
-| tipo | str | Nao | IRU, AST ou PCT |
-| area_min | float | Nao | Area minima em hectares |
-| area_max | float | Nao | Area maxima em hectares |
-| criado_apos | str | Nao | Data minima de criacao (ISO, ex: "2020-01-01") |
-| atualizado_apos | str | Nao | Atualização estritamente posterior (`>`), em data/datetime ISO, com fração e `Z`/offset opcionais; sem fuso, interpreta UTC. O campo é solicitado onde existe. Indisponível em PE, PI, PR, RJ, RN, RO, RR, RS, SC, SE, SP e TO |
+| municipio | int \| str | Não | Código IBGE de 7 dígitos (int ou str) ou nome inteiro do município, sem diferenciar caixa e acento (`normalize.resolver_municipio`); precisa ser da UF. Nome ambíguo, inexistente ou pedaço de nome (`"Santa Rita"` não casa com `"Santa Rita do Sapucaí"`) gera `InvalidParameterError` com os candidatos. Filtra pelo código na camada |
+| status | str | Não | AT, PE, SU, CA ou RE |
+| tipo | str | Não | IRU, AST ou PCT |
+| area_min | float | Não | Area mínima em hectares |
+| area_max | float | Não | Area máxima em hectares |
+| criado_apos | str | Não | Data mínima de criacao (ISO, ex: "2020-01-01") |
+| atualizado_apos | str | Não | Atualização estritamente posterior (`>`), em data/datetime ISO, com fração e `Z`/offset opcionais; sem fuso, interpreta UTC. O campo é solicitado onde existe. Indisponível em PE, PI, PR, RJ, RN, RO, RR, RS, SC, SE, SP e TO |
 
 Cada item gerado e um `GeoDataFrame` com as mesmas colunas de [`imoveis_geo`](#imoveis_geo).
 
@@ -253,13 +253,13 @@ print(total)
 
 ### Notas
 
-- Sem limite de `max_registros`: pagina ate esgotar todos os registros da UF
-- Cada yield corresponde a uma pagina WFS (ate 10.000 features), baixadas sequencialmente com throttle. As ocorrências do último `cod_imovel` de cada página passam para o lote seguinte, porque as páginas vêm ordenadas por `cod_imovel` e uma versão repetida pode cair na página seguinte; o último lote traz só esse código
+- Sem limite de `max_registros`: pagina até esgotar todos os registros da UF
+- Cada yield corresponde a uma página WFS (até 10.000 features), baixadas sequencialmente com throttle. As ocorrências do último `cod_imovel` de cada página passam para o lote seguinte, porque as páginas vêm ordenadas por `cod_imovel` e uma versão repetida pode cair na página seguinte; o último lote traz só esse código
 - Uma ocorrência por `cod_imovel`, pela regra de [`imoveis()`](#imoveis); id de feature repetido entre páginas gera `ParseError`
 - CRS: EPSG:4326 (WGS84), com a mesma conferência de [`imoveis_geo`](#imoveis_geo)
-- Async-only: `agrobr.sync` nao suporta async generators
+- Async-only: `agrobr.sync` não suporta async generators
 
-## Uso sincrono
+## Uso síncrono
 
 ```python
 from agrobr import sync
@@ -276,7 +276,7 @@ Para guardar as páginas originais do WFS, com todas as versões de cada imóvel
 
 ## Fonte de dados
 
-- **Provedor:** Servico Florestal Brasileiro (SFB) / SICAR
+- **Provedor:** Serviço Florestal Brasileiro (SFB) / SICAR
 - **API:** WFS 2.0.0 (OGC GeoServer)
 - **Licença:** `livre` pela base federal de dados públicos; CC BY da base não comprovada. Preservar fonte e proveniência; veja [Licenças](../licenses.md#sicar).
-- **Atualizacao:** continua (cadastros em tempo real)
+- **Atualização:** continua (cadastros em tempo real)

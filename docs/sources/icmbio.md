@@ -8,13 +8,13 @@
 | Dados | Limites de UCs federais |
 | Acesso | WFS OGC (INDE GeoServer) |
 | Formato | CSV (tabular) / GeoJSON (geo) |
-| Autenticacao | Nenhuma |
-| Licenca | Dados publicos governo federal |
+| Autenticação | Nenhuma |
+| Licença | Dados publicos governo federal |
 | Features | 347 UCs na captura de 18/09/2026 (contagem variável) |
 
 ## Acesso via WFS
 
-| Parametro | Valor |
+| Parâmetro | Valor |
 |-----------|-------|
 | Endpoint | `geoservicos.inde.gov.br/geoserver/ICMBio/ows` |
 | WFS Version | 1.1.0 |
@@ -48,12 +48,12 @@ asyncio.run(main())
 
 ## Colunas
 
-| Coluna | Tipo | Descricao |
+| Coluna | Tipo | Descrição |
 |--------|------|-----------|
 | codigo | str | CNUC publicado; repetições são preservadas |
 | nome | str | Nome da UC |
 | categoria | str | Sigla da categoria (PARNA, ESEC, FLONA, etc) |
-| grupo | str | PI (protecao integral) ou US (uso sustentavel) |
+| grupo | str | PI (proteção integral) ou US (uso sustentavel) |
 | uf | str | UF(s) abrangidas (separadas por /) |
 | bioma | str | Texto publicado pelo ICMBio, em caixa alta (ex.: `CERRADO E MATA ATLÂNTICA (LEI 11.428)`) |
 | area_ha | float | Area em hectares |
@@ -62,7 +62,7 @@ asyncio.run(main())
 
 ## Limitacoes
 
-- Apenas UCs federais, sem RPPN; a contagem corrente varia. Estaduais, municipais e RPPNs nao estao neste WFS: para o CNUC completo, use [`cnuc.ucs`](cnuc.md).
+- Apenas UCs federais, sem RPPN; a contagem corrente varia. Estaduais, municipais e RPPNs não estao neste WFS: para o CNUC completo, use [`cnuc.ucs`](cnuc.md).
 - Campo `uf` pode conter multiplas UFs (ex: "MT/PA")
 - `area_ha` é a área da UC inteira, não a parte dentro da UF: `uf="SP"` devolve 22 UCs, 7 delas com outra UF e a área toda (a APA das Ilhas e Várzeas do Rio Paraná, SP/PR/MS, sai com 1.005.181 ha). Somar `area_ha` por UF conta essas UCs mais de uma vez.
 - Dados refletem o estado atual do GeoServer INDE/ICMBio

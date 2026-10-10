@@ -1,12 +1,12 @@
 # API DERAL
 
-O modulo DERAL fornece dados de condicao de lavouras, progresso de plantio e colheita do Departamento de Economia Rural do Parana.
+O módulo DERAL fornece dados de condição de lavouras, progresso de plantio e colheita do Departamento de Economia Rural do Parana.
 
-## Funcoes
+## Funções
 
 ### `condicao_lavouras`
 
-Condicao semanal das lavouras paranaenses.
+Condição semanal das lavouras paranaenses.
 
 ```python
 async def condicao_lavouras(
@@ -17,9 +17,9 @@ async def condicao_lavouras(
 ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]
 ```
 
-**Parametros:**
+**Parâmetros:**
 
-| Parametro | Tipo | Descricao |
+| Parâmetro | Tipo | Descrição |
 |-----------|------|-----------|
 | `produto` | `str \| None` | Filtrar por produto: `"cafe"`, `"cevada"`, `"feijao"`, `"feijao_1"`, `"feijao_2"`, `"milho"`, `"milho_1"`, `"milho_2"`, `"soja"` ou `"trigo"`, com os sinônimos do agrobr. None retorna todos; outro nome levanta `InvalidParameterError` antes da rede |
 | `as_polars` | `bool` | Retorna polars DataFrame |
@@ -44,7 +44,7 @@ df = await deral.condicao_lavouras("soja")
 df, meta = await deral.condicao_lavouras("milho", return_meta=True)
 ```
 
-## Versao Sincrona
+## Versão Síncrona
 
 ```python
 from agrobr.sync import deral
@@ -54,7 +54,7 @@ df = deral.condicao_lavouras("soja")
 
 ## Notas
 
-- Fonte: [DERAL/SEAB-PR](https://www.agricultura.pr.gov.br) — licenca livre
+- Fonte: [DERAL/SEAB-PR](https://www.agricultura.pr.gov.br) — licença livre
 - Dados exclusivos do Parana
 - Publicado em Excel (PC.xls) — layout pode variar entre safras
 

@@ -1,18 +1,18 @@
 # MAPA PSR — Seguro Rural
 
-> **Licenca:** CC-BY (dados publicos governo federal).
-> Classificacao: `livre`
+> **Licença:** CC-BY (dados publicos governo federal).
+> Classificação: `livre`
 
-Dados abertos do SISSER/MAPA — Sistema de Subvencao Economica ao Premio do
+Dados abertos do SISSER/MAPA — Sistema de Subvencao Econômica ao Premio do
 Seguro Rural. Apolices e sinistros (indenizacoes) do seguro rural brasileiro
 com subvencao federal, publicados pelo Ministerio da Agricultura.
 
 As indenizações são associadas ao ano de contratação da apólice. Esta saída
 não informa o trimestre do evento ou do pagamento.
 
-## Instalacao
+## Instalação
 
-Nao requer dependencias opcionais. Usa apenas httpx + pandas (core).
+Não requer dependencias opcionais. Usa apenas httpx + pandas (core).
 
 ## API
 
@@ -48,13 +48,13 @@ df = alt.mapa_psr.sinistros(produto="SOJA")
 df = alt.mapa_psr.apolices(uf="MT")
 ```
 
-## Parametros — `sinistros`
+## Parâmetros — `sinistros`
 
-| Parametro | Tipo | Default | Descricao |
+| Parâmetro | Tipo | Default | Descrição |
 |---|---|---|---|
 | `produto` | str \| None | None | Filtro por cultura (busca parcial, accent-insensitive, ex: "cafe" matcha "CAFE ARABICA") |
 | `uf` | str \| None | None | Filtro por UF (sigla, ex: "MT") |
-| `ano` | int \| None | None | Filtro de ano unico (ex: 2023) |
+| `ano` | int \| None | None | Filtro de ano único (ex: 2023) |
 | `ano_inicio` | int \| None | None | Ano inicial do range (inclusive) |
 | `ano_fim` | int \| None | None | Ano final do range (inclusive) |
 | `municipio` | int \| str \| None | None | Código IBGE de 7 dígitos ou nome inteiro do município; ver "Município e código IBGE" |
@@ -68,18 +68,18 @@ depois da descarga.
 
 ## Colunas — `sinistros`
 
-| Coluna | Tipo | Nullable | Descricao |
+| Coluna | Tipo | Nullable | Descrição |
 |---|---|---|---|
-| `nr_apolice` | str | Nao | Numero da apolice |
-| `ano_apolice` | int | Nao | Ano da apolice |
-| `uf` | str | Nao | Sigla UF da propriedade |
-| `municipio` | str | Sim | Nome do municipio |
+| `nr_apolice` | str | Não | Número da apolice |
+| `ano_apolice` | int | Não | Ano da apolice |
+| `uf` | str | Não | Sigla UF da propriedade |
+| `municipio` | str | Sim | Nome do município |
 | `cd_ibge` | str | Sim | Código IBGE do município; nulo quando o MAPA publica "-" no lugar do geocódigo (1.516 apólices entre 2006 e 2025), e `municipio` segue com o nome publicado |
-| `cultura` | str | Nao | Cultura segurada (uppercase) |
-| `classificacao` | str | Sim | Classificacao do produto (AGRICOLA, PECUARIO, etc.) |
-| `evento` | str | Nao | Evento preponderante (lowercase) |
+| `cultura` | str | Não | Cultura segurada (uppercase) |
+| `classificacao` | str | Sim | Classificação do produto (AGRICOLA, PECUARIO, etc.) |
+| `evento` | str | Não | Evento preponderante (lowercase) |
 | `area_total` | float | Sim | Area total segurada (ha) |
-| `valor_indenizacao` | float | Nao | Valor da indenizacao (R$) — sempre > 0 |
+| `valor_indenizacao` | float | Não | Valor da indenizacao (R$) — sempre > 0 |
 | `valor_premio` | float | Sim | Premio liquido (R$) |
 | `valor_subvencao` | float | Sim | Subvencao federal (R$) |
 | `valor_limite_garantia` | float | Sim | Limite de garantia (R$) |
@@ -92,13 +92,13 @@ depois da descarga.
 | `fim_vigencia` | datetime | Sim | Fim da vigência (`DT_FIM_VIGENCIA`); nulo junto com `inicio_vigencia` quando início e fim publicados são iguais; data ilegível ou com ano fora de 1900–2099 anula só esta coluna |
 | `data_apolice` | datetime | Sim | Data da apólice (`DT_APOLICE`); o ano é o `ano_apolice` |
 
-## Parametros — `apolices`
+## Parâmetros — `apolices`
 
-| Parametro | Tipo | Default | Descricao |
+| Parâmetro | Tipo | Default | Descrição |
 |---|---|---|---|
 | `produto` | str \| None | None | Filtro por cultura (busca parcial, accent-insensitive) |
 | `uf` | str \| None | None | Filtro por UF |
-| `ano` | int \| None | None | Filtro de ano unico |
+| `ano` | int \| None | None | Filtro de ano único |
 | `ano_inicio` | int \| None | None | Ano inicial do range |
 | `ano_fim` | int \| None | None | Ano final do range |
 | `municipio` | int \| str \| None | None | Código IBGE de 7 dígitos ou nome inteiro do município; ver "Município e código IBGE" |
@@ -111,7 +111,7 @@ Mesmas colunas de `sinistros`, mais `taxa`. Em `apolices`, `valor_indenizacao` �
 
 Nas apólices, `valor_premio` sai como publicado pelo MAPA, inclusive quando negativo, com `UserWarning` e `meta.validation_warnings`. Nos sinistros, o contrato mantém `valor_premio` ≥ 0.
 
-| Coluna | Tipo | Nullable | Descricao |
+| Coluna | Tipo | Nullable | Descrição |
 |---|---|---|---|
 | `taxa` | float | Sim | Taxa do prêmio em fração (0,1369 = 13,69%): prêmio líquido ÷ limite de garantia, como o MAPA publica |
 
@@ -175,10 +175,10 @@ não é garantida; use uma ordenação explícita por suas colunas de interesse.
 ## Fonte
 
 - URL: `https://dados.agricultura.gov.br/dataset/sisser3`
-- Formato: CSV (3 arquivos por periodo)
-- Atualizacao: anual
+- Formato: CSV (3 arquivos por período)
+- Atualização: anual
 - Historico: 2006+
-- Licenca: `livre` (CC-BY, dados publicos governo federal)
+- Licença: `livre` (CC-BY, dados publicos governo federal)
 
 ## Integridade e período das apólices
 

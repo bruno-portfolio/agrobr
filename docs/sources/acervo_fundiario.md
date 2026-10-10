@@ -4,11 +4,11 @@
     Os dados públicos SIGEF, SNCI e assentamentos do Acervo Fundiário/INCRA são classificados como livre pela LAI, pelo Decreto 8.777/2016 e pela política institucional do INCRA, após busca sem restrição comercial específica localizada. A alegação anterior de veto comercial não tinha cláusula comprovada. A indicação histórica de CC BY não foi recapturada e não sustenta versão numérica. Citar INCRA, família, UF/abrangência, arquivo, edição e transformações, preservando direitos de terceiros expressos. O PDA 2021–2023 prova política e origem, não atualidade de todo serviço em 2026.
 
 !!! note "Nao acessivel de fora do Brasil nos ambientes testados"
-    O host `certificacao.incra.gov.br` respondeu normalmente do Brasil, mas nao respondeu
+    O host `certificacao.incra.gov.br` respondeu normalmente do Brasil, mas não respondeu
     (connection timeout) a partir dos runners do GitHub Actions nem de nenhum dos 8 nos
     internacionais testados em 31/08/2026 (Austria, Chipre, Finlandia, Ira, Servia, Ucrania).
-    Se voce roda o agrobr fora do Brasil e recebe nesta fonte `SourceUnavailableError`
-    com `ConnectTimeout` na mensagem, a causa provavel e essa restricao de rede — nao um bug da biblioteca.
+    Se você roda o agrobr fora do Brasil e recebe nesta fonte `SourceUnavailableError`
+    com `ConnectTimeout` na mensagem, a causa provavel e essa restricao de rede — não um bug da biblioteca.
     Por isso os testes live desta fonte usam o marker `integration_br` e ficam fora do CI.
 
 !!! info "Dependência geoespacial"

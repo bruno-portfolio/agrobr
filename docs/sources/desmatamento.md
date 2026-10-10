@@ -5,20 +5,20 @@
 | Campo | Valor |
 |-------|-------|
 | **Provedor** | INPE — Instituto Nacional de Pesquisas Espaciais |
-| **Programas** | PRODES (anual) e DETER (alertas diarios) |
+| **Programas** | PRODES (anual) e DETER (alertas diários) |
 | **Acesso** | API WFS publica (TerraBrasilis GeoServer) |
 | **Formato** | GeoJSON do WFS 2.0 (`application/json`) nos dois modos |
-| **Autenticacao** | Nenhuma |
-| **Licenca** | CC BY-SA 4.0 (INPE), com atribuição e CompartilhaIgual nas adaptações |
-| **Serie Historica** | PRODES: 2000+, DETER: 2016+ (Amazonia), 2020+ (Cerrado) |
+| **Autenticação** | Nenhuma |
+| **Licença** | CC BY-SA 4.0 (INPE), com atribuição e CompartilhaIgual nas adaptações |
+| **Serie Histórica** | PRODES: 2000+, DETER: 2016+ (Amazonia), 2020+ (Cerrado) |
 
 ## Origem dos Dados
 
 O INPE opera dois sistemas complementares de monitoramento do desmatamento:
 
-- **PRODES**: Mapeamento anual consolidado do desmatamento por corte raso. Usa imagens Landsat (30m) para gerar poligonos de desmatamento com area minima de 6.25 hectares. Resultado oficial usado pelo governo federal.
+- **PRODES**: Mapeamento anual consolidado do desmatamento por corte raso. Usa imagens Landsat (30m) para gerar poligonos de desmatamento com area mínima de 6.25 hectares. Resultado oficial usado pelo governo federal.
 
-- **DETER**: Sistema de alertas diarios para acoes de fiscalizacao. Usa imagens de sensores como CBERS-4, AMAZONIA-1 e Landsat com resolucao variavel. Detecta desmatamento, degradacao, mineracao e cicatrizes de queimada.
+- **DETER**: Sistema de alertas diários para acoes de fiscalizacao. Usa imagens de sensores como CBERS-4, AMAZONIA-1 e Landsat com resolução variável. Detecta desmatamento, degradacao, mineracao e cicatrizes de queimada.
 
 ## Acesso via TerraBrasilis
 
@@ -44,7 +44,7 @@ Os dados são acessados via GeoServer WFS 2.0.0 do TerraBrasilis em JSON (`outpu
 
 ## Geometria (prodes_geo)
 
-A funcao `prodes_geo()` retorna desmatamento PRODES consolidado com poligonos de geometria como GeoDataFrame.
+A função `prodes_geo()` retorna desmatamento PRODES consolidado com poligonos de geometria como GeoDataFrame.
 
 | Campo | Valor |
 |-------|-------|
@@ -55,7 +55,7 @@ A funcao `prodes_geo()` retorna desmatamento PRODES consolidado com poligonos de
 
 ## Geometria (deter_geo)
 
-A funcao `deter_geo()` retorna alertas DETER com poligonos de geometria como GeoDataFrame.
+A função `deter_geo()` retorna alertas DETER com poligonos de geometria como GeoDataFrame.
 
 | Campo | Valor |
 |-------|-------|
@@ -66,13 +66,13 @@ A funcao `deter_geo()` retorna alertas DETER com poligonos de geometria como Geo
 | **max_registros (padrão)** | 10.000 (tabular: 50.000) |
 | **outputFormat** | `application/json` (GeoJSON) |
 
-A coluna de geometria e bioma-especifica no GeoServer. O parser normaliza ambas para `geometry` no GeoDataFrame de saida.
+A coluna de geometria e bioma-especifica no GeoServer. O parser normaliza ambas para `geometry` no GeoDataFrame de saída.
 
 **Geometria inválida.** A geometria sai como o GeoServer publica, sem reparo. Quando há geometria não nula inválida (autointerseção, anel com poucos pontos), `prodes_geo()` e `deter_geo()` avisam (`UserWarning` e `meta.validation_warnings`): "PRODES: 3 de 6 geometrias inválidas como publicadas pela fonte; use make_valid antes de operações espaciais.", com a contagem em `meta.source_details` (`geometrias_invalidas`, `geometrias`). Num recorte do PRODES no Pará (bbox -55,5, -4,5, -55,0, -4,0; 2020–2025), 292 de 1.728 polígonos eram inválidos. Sem inválidas, nada muda. Para área ou interseção, aplique `make_valid` (shapely/geopandas) antes.
 
 ## Normalizacao de Bioma
 
-O parametro `bioma` aceita variantes com/sem acento e case insensitive:
+O parâmetro `bioma` aceita variantes com/sem acento e case insensitive:
 
 - `"amazonia"` ou `"amazônia"` → `"Amazônia"`
 - `"cerrado"` → `"Cerrado"`
@@ -124,16 +124,16 @@ gdf = await agrobr.desmatamento.deter_geo(
 
 ## Limitacoes
 
-- DETER so disponivel para Amazonia e Cerrado
+- DETER so disponível para Amazonia e Cerrado
 - Na Amazônia, o PRODES do agrobr é o recorte do bioma (`yearly_deforestation_biome`), não o da Amazônia Legal, onde o INPE publica a taxa de destaque. Em 2024, a nota técnica do INPE dá cerca de 6.288 km² para a Amazônia Legal, e a soma das UFs do bioma no agrobr dá 6.068,9 km²
 - O agrobr pagina o WFS: `tamanho_pagina` feições por página (500; 100 nas `_geo`; até 2.000 e 500), com 2 s entre as requisições, até `max_registros` (50.000; 10.000 nas `_geo`). Além do limite, sai o prefixo em ordem de `fid` (PRODES) ou `gid` (DETER), com `UserWarning`. Filtre por `ano`, `uf` ou datas, que vão ao servidor, ou use `max_registros=None` ([guia de migração, §84](../guides/migracao-2.md#84-desmatamento-paginacao-corte-e-custo-da-chamada-padrao))
 - Source API (`agrobr.desmatamento.*`) retorna poligonos individuais (granularidade fina); o dataset `datasets.desmatamento` entrega agregados conforme o contrato: anual por uf/classe/bioma no PRODES e diário por uf/município/classe/bioma no DETER
 - Pos-migracao BiomasBR (03/2026), os layers PRODES de Amazonia, Pantanal, Caatinga e Mata Atlantica estao temporariamente quebrados no GeoServer do INPE (ServiceException para qualquer cliente); Cerrado e Pampa operacionais
-- DETER e sistema de alerta, nao de consolidacao — pode haver sobreposicao
+- DETER e sistema de alerta, não de consolidacao — pode haver sobreposicao
 - No DETER Cerrado, `municipio_id` é sempre nulo porque a camada da fonte não fornece esse identificador. O dataset `datasets.desmatamento(tipo="deter")` preenche `cod_municipio` pelo nome inteiro de `municipio` na UF (`normalize.resolver_municipio`, uma vez por par município/UF); par fora do cadastro deixa `cod_municipio` nulo, com um aviso por consulta (`UserWarning` e `meta.validation_warnings`) que conta as linhas e lista os pares, e a contagem em `source_details["aggregation"]["cod_municipio_pelo_nome"]`. `municipio_id` e a chave não mudam. A fonte (`desmatamento.deter`) não publica `cod_municipio`.
 - `prodes_geo()` e `deter_geo()` retornam geometria (~10x mais volume que tabular) — usar filtros para reduzir dados
 
-## Cache e Atualizacao
+## Cache e Atualização
 
 - Não há cache local: cada chamada baixa os dados do TerraBrasilis.
 - O PRODES publica dados consolidados anuais, atualizados aproximadamente uma vez por ano.

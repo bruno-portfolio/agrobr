@@ -31,28 +31,28 @@
 
 O bezerro traz também `valor_usd` (coluna Valor US$) e `peso_medio_kg` (tabela Peso Médio da página); os demais produtos preenchem `valor_usd` quando o CEPEA publica o dólar.
 
-| Produto | Praca Principal | Unidade | Frequencia |
+| Produto | Praca Principal | Unidade | Frequência |
 |---------|-----------------|---------|------------|
 | Soja | Paranagua/PR | BRL/sc60kg | Diaria |
 | Soja Parana | Parana | BRL/sc60kg | Diaria |
 | Milho | Campinas/SP | BRL/sc60kg | Diaria |
 | Bezerro | Mato Grosso do Sul | BRL/cabeca | Diária |
-| Boi Gordo | Sao Paulo/SP | BRL/@ | Diaria |
-| Cafe Arabica | Sao Paulo/SP | BRL/sc60kg | Diaria |
+| Boi Gordo | São Paulo/SP | BRL/@ | Diaria |
+| Cafe Arabica | São Paulo/SP | BRL/sc60kg | Diaria |
 | Cafe Robusta | Espirito Santo | BRL/sc60kg | Diaria |
 | Trigo | Parana + RS | BRL/ton | Diaria |
-| Algodao | Sao Paulo/SP | cBRL/lb | Diaria |
+| Algodao | São Paulo/SP | cBRL/lb | Diaria |
 | Arroz em casca | Rio Grande do Sul | BRL/sc50kg | Diaria |
-| Acucar cristal | Sao Paulo/SP | BRL/sc50kg | Diaria |
+| Acucar cristal | São Paulo/SP | BRL/sc50kg | Diaria |
 | Açúcar refinado | São Paulo/SP | BRL/kg | Diária |
-| Etanol hidratado | Sao Paulo/SP | BRL/L | Semanal |
-| Etanol anidro | Sao Paulo/SP | BRL/L | Semanal |
-| Frango congelado | Sao Paulo/SP | BRL/kg | Diaria |
-| Frango resfriado | Sao Paulo/SP | BRL/kg | Diaria |
+| Etanol hidratado | São Paulo/SP | BRL/L | Semanal |
+| Etanol anidro | São Paulo/SP | BRL/L | Semanal |
+| Frango congelado | São Paulo/SP | BRL/kg | Diaria |
+| Frango resfriado | São Paulo/SP | BRL/kg | Diaria |
 | Suíno vivo | MG, PR, RS, SC e SP (condição da praça preservada) | BRL/kg | Diária |
 | Leite | UF e BRASIL, ao produtor | BRL/L | Mensal |
-| Laranja industria | Sao Paulo/SP | BRL/cx40.8kg | Diaria |
-| Laranja in natura | Sao Paulo/SP | BRL/cx40.8kg | Diaria |
+| Laranja industria | São Paulo/SP | BRL/cx40.8kg | Diaria |
+| Laranja in natura | São Paulo/SP | BRL/cx40.8kg | Diaria |
 
 ## Metodologia CEPEA
 
@@ -60,22 +60,22 @@ O CEPEA calcula indicadores baseado em:
 
 - Pesquisa diaria com agentes de mercado
 - Media ponderada por volume negociado
-- Ajuste para qualidade padrao
+- Ajuste para qualidade padrão
 
 Fonte: [Metodologia CEPEA](https://www.cepea.esalq.usp.br/br/metodologia.aspx)
 
-## Atualizacao e Defasagem
+## Atualização e Defasagem
 
 | Aspecto | Valor |
 |---------|-------|
-| **Horario de atualizacao** | ~17:00 - 18:00 (dias uteis) |
+| **Horario de atualização** | ~17:00 - 18:00 (dias uteis) |
 | **Defasagem tipica** | D+0 (mesmo dia) |
-| **Dias sem publicacao** | Fins de semana, feriados nacionais |
+| **Dias sem publicação** | Fins de semana, feriados nacionais |
 | **Cache agrobr** | Vale até a próxima virada das 18:00 BRT em dia útil, contada da última coleta do produto (Smart TTL) |
 
 ## Uso
 
-### Basico
+### Básico
 
 ```python
 import asyncio
@@ -108,15 +108,15 @@ print(meta.from_cache)  # True/False
 
 ## Schema dos Dados
 
-| Coluna | Tipo | Nullable | Descricao |
+| Coluna | Tipo | Nullable | Descrição |
 |--------|------|----------|-----------|
-| `data` | date | Nao | Data do indicador |
-| `produto` | str | Nao | Nome do produto |
+| `data` | date | Não | Data do indicador |
+| `produto` | str | Não | Nome do produto |
 | `praca` | str | Sim | Praca de referencia |
-| `valor` | float | Nao | Preço na unidade da linha; algodão em centavos de real por libra |
-| `unidade` | str | Nao | Unidade (BRL/sc60kg, etc) |
-| `fonte` | str | Nao | Fonte dos dados |
-| `metodologia` | str | Sim | Descricao da metodologia |
+| `valor` | float | Não | Preço na unidade da linha; algodão em centavos de real por libra |
+| `unidade` | str | Não | Unidade (BRL/sc60kg, etc) |
+| `fonte` | str | Não | Fonte dos dados |
+| `metodologia` | str | Sim | Descrição da metodologia |
 | `anomalies` | str | Sim | Marcas da linha como texto JSON (ex.: `["valor_mantido"]`); nulo sem marca |
 | `valor_usd` | float | Sim | Preço em dólar publicado na mesma linha; nulo quando o CEPEA não divulga, nas linhas do fallback Notícias Agrícolas e no cache anterior à migração 10 |
 | `peso_medio_kg` | float | Sim | Peso médio do bezerro (kg); nulo nos demais produtos |
@@ -136,7 +136,7 @@ Coleta depois das 18:00, no sábado ou no domingo vale até as 18:00 do próximo
 
 `boi` e `boi_gordo`, e `cafe` e `cafe_arabica`, são o mesmo indicador do CEPEA, e o cache guarda cada série uma vez, pelo nome que o `datasets.preco_diario` usa (`boi` e `cafe`). Pedir pelo outro nome lê as mesmas linhas, sem baixar de novo a página nem a série, e a coluna `produto` sai com o nome pedido. Linhas que versões anteriores gravaram sob o outro nome continuam valendo, sem migração do banco; com as 2 no mesmo dia e praça, vale a regra de precedência de sempre (a coleta mais recente da mesma fonte).
 
-## Funcoes Auxiliares
+## Funções Auxiliares
 
 ```python
 # Lista produtos disponiveis

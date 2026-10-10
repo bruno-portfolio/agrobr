@@ -1,7 +1,7 @@
 # Política de Versionamento (Semver)
 
 O agrobr segue [Semantic Versioning 2.0.0](https://semver.org/) com granularidade
-por dataset. Cada dataset tem `schema_version` proprio (independente da versão da biblioteca, `agrobr_version` no `MetaInfo`).
+por dataset. Cada dataset tem `schema_version` próprio (independente da versão da biblioteca, `agrobr_version` no `MetaInfo`).
 
 ## Regras
 
@@ -13,17 +13,17 @@ muda de forma ampla, mesmo quando nem todo contrato de dataset muda. A garantia 
 |---|---|---|
 | Campo removido ou renomeado | **Major** | Renomear `preco` > `price` |
 | Tipo de dado alterado (narrowing) | **Major** | `price: float64` > `price: str` |
-| Coluna obrigatoria vira opcional | **Major** | `uf: required` > `uf: nullable` |
+| Coluna obrigatória vira opcional | **Major** | `uf: required` > `uf: nullable` |
 | Chave primária altera a identidade da observação | **Major** | `estimativa_safra` 3.0 distingue fonte e mês LSPA |
 | Nova coluna opcional adicionada | Minor | Adiciona `latitude` |
 | Constraint adicionada | Minor | Adiciona `price_min: 0` |
 | Nova fonte de fallback | Patch | Adiciona ABIOVE como backup |
-| Fix de parsing (mesmas colunas) | Patch | Corrige encoding de municipio |
+| Fix de parsing (mesmas colunas) | Patch | Corrige encoding de município |
 | Tipo de dado alargado | Patch | `int` > `float` (compativel) |
-| Nova fonte de dados (modulo) | Minor | `agrobr.bcb` |
+| Nova fonte de dados (módulo) | Minor | `agrobr.bcb` |
 
 **Principio:** `schema_version` do dataset so incrementa major quando a mudanca
-pode quebrar codigo downstream que depende do schema atual.
+pode quebrar código downstream que depende do schema atual.
 
 ## Garantias por Dataset
 

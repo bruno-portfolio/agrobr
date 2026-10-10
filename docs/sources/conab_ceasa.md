@@ -5,16 +5,16 @@
 | Campo | Valor |
 |-------|-------|
 | **Provedor** | CONAB — Companhia Nacional de Abastecimento |
-| **Dados** | Precos diarios de atacado hortifruti em CEASAs |
+| **Dados** | Precos diários de atacado hortifruti em CEASAs |
 | **Acesso** | Pentaho CDA REST API (JSON) |
 | **Formato** | JSON (doQuery endpoint) |
-| **Autenticacao** | Credenciais publicas embutidas no frontend |
-| **Licenca** | zona_cinza |
-| **Frequencia** | Diaria |
+| **Autenticação** | Credenciais publicas embutidas no frontend |
+| **Licença** | zona_cinza |
+| **Frequência** | Diaria |
 
 ## Origem dos Dados
 
-O sistema PROHORT (Programa Brasileiro de Modernizacao do Mercado Hortigranjeiro) da CONAB coleta precos diarios de atacado de hortifruti em 43 CEASAs (Centrais de Abastecimento) do Brasil. Os dados alimentam o dashboard publico do Portal de Informacoes da CONAB.
+O sistema PROHORT (Programa Brasileiro de Modernizacao do Mercado Hortigranjeiro) da CONAB coleta precos diários de atacado de hortifruti em 43 CEASAs (Centrais de Abastecimento) do Brasil. Os dados alimentam o dashboard publico do Portal de Informações da CONAB.
 
 O agrobr acessa os dados via Pentaho BA Server (backend do portal), usando a API CDA doQuery para obter a matriz de precos (48 produtos x 43 CEASAs) em formato JSON.
 
@@ -45,7 +45,7 @@ Frutas e hortaliças seguem os grupos do painel oficial "Hortaliças e Frutas" d
 
 A API retorna uma matriz pivot (48 linhas x 44 colunas):
 - Coluna 0: nome do produto com unidade (ex: "TOMATE (KG)")
-- Colunas 1-43: preco por CEASA (null = nao comercializado)
+- Colunas 1-43: preco por CEASA (null = não comercializado)
 - Headers das colunas contem data por CEASA (ex: "CEAGESP \rSAO PAULO\r(13/02/2026)/Preco (R$)")
 
 O parser unpivota a matriz para formato long-form com 7 colunas.
@@ -54,14 +54,14 @@ O parser unpivota a matriz para formato long-form com 7 colunas.
 
 - Cada `colIndex` deve ser um inteiro igual à posição da coluna em `metadata`, inclusive a coluna do produto; índices ausentes, repetidos ou fora de ordem levantam `ParseError`.
 
-- A CEASA de cada coluna de precos vem do cabecalho da propria coluna (`colName`), no formato `<instituicao> \r<cidade>\r(dd/mm/aaaa)/Preco (R$)`, com instituicao e cidade nao vazias, data valida e sem CEASA duplicada; fora disso, levanta `ParseError` em vez de atribuir o preco a outra praca. O catalogo `MDXceasa` deixou de listar todas as CEASAs com preco e nao e mais consultado. Resposta de precos sem a lista `resultset` tambem levanta `ParseError`; so `resultset` vazio vira tabela vazia.
+- A CEASA de cada coluna de precos vem do cabecalho da própria coluna (`colName`), no formato `<instituicao> \r<cidade>\r(dd/mm/aaaa)/Preco (R$)`, com instituicao e cidade não vazias, data valida e sem CEASA duplicada; fora disso, levanta `ParseError` em vez de atribuir o preco a outra praca. O catálogo `MDXceasa` deixou de listar todas as CEASAs com preco e não e mais consultado. Resposta de precos sem a lista `resultset` também levanta `ParseError`; so `resultset` vazio vira tabela vazia.
 
-- Apenas precos mais recentes (snapshot diario, sem serie temporal nesta versao)
+- Apenas precos mais recentes (snapshot diário, sem serie temporal nesta versão)
 - Datas variam por CEASA (algumas inativas desde 2023)
-- Credenciais Pentaho embutidas no frontend publico, mas API nao documentada oficialmente
+- Credenciais Pentaho embutidas no frontend publico, mas API não documentada oficialmente
 - Corrupcao textual ocasional nos headers (ex: "ARACAT UBA" -> "ARACATUBA")
 
-## Cache e Atualizacao
+## Cache e Atualização
 
 - Não há cache local: cada chamada baixa os preços da CONAB.
 - A fonte atualiza os preços diariamente; recomenda-se uma chamada por dia para obter o snapshot.
@@ -72,5 +72,5 @@ O parser unpivota a matriz para formato long-form com 7 colunas.
 
 ## Links
 
-- [Portal de Informacoes CONAB](https://portaldeinformacoes.conab.gov.br/mercado-atacadista-hortigranjeiro.html)
+- [Portal de Informações CONAB](https://portaldeinformacoes.conab.gov.br/mercado-atacadista-hortigranjeiro.html)
 - [CONAB](https://www.gov.br/conab/pt-br)

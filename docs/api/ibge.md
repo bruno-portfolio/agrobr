@@ -813,7 +813,7 @@ async def silvicultura(
 
 `carvao`, `carvao_eucalipto`, `carvao_pinus`, `carvao_outras`, `lenha`, `lenha_eucalipto`, `lenha_pinus`, `lenha_outras`, `madeira_tora`, `madeira_celulose`, `madeira_outras_finalidades`, `acacia_negra`, `eucalipto_folha`, `resina`
 
-**Espécies de área (tab 5930, classificação c734) — variavel='area':**
+**Espécies de área (tab 5930, classificação c734) — variável='area':**
 
 `eucalipto`, `pinus`, `outras`
 

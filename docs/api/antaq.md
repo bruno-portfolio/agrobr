@@ -2,19 +2,19 @@
 
 !!! warning "Fonte indisponivel desde 23/06/2026"
     A ANTAQ tirou o Estatistico Aquaviario do ar ([aviso oficial](https://www.gov.br/antaq/pt-br/central-de-conteudos/publicacoes-da-antaq/publicacoes-off/painel-estatistico-aquaviario-indisponivel)).
-    O host `estatistica.antaq.gov.br` nao serve mais os arquivos: responde `403` (Cloudflare
+    O host `estatistica.antaq.gov.br` não serve mais os arquivos: responde `403` (Cloudflare
     challenge) ou redireciona para o aviso de indisponibilidade, conforme o cliente.
-    Chamadas a `antaq.movimentacao()` levantam `SourceUnavailableError`. Nao ha fonte
+    Chamadas a `antaq.movimentacao()` levantam `SourceUnavailableError`. Não ha fonte
     alternativa com cobertura equivalente — a Base dos Dados cobre apenas 2014-2020.
-    Ultima verificacao: 31/08/2026.
+    Última verificacao: 31/08/2026.
 
-O modulo ANTAQ fornece dados de movimentacao portuaria de carga do Estatistico Aquaviario, publicados pela Agencia Nacional de Transportes Aquaviarios.
+O módulo ANTAQ fornece dados de movimentacao portuária de carga do Estatistico Aquaviario, publicados pela Agencia Nacional de Transportes Aquaviarios.
 
-## Funcoes
+## Funções
 
 ### `movimentacao`
 
-Movimentacao portuaria de carga de um ano.
+Movimentacao portuária de carga de um ano.
 
 ```python
 async def movimentacao(
@@ -31,9 +31,9 @@ async def movimentacao(
 ) -> DataFrameResult
 ```
 
-**Parametros:**
+**Parâmetros:**
 
-| Parametro | Tipo | Descricao |
+| Parâmetro | Tipo | Descrição |
 |-----------|------|-----------|
 | `ano` | `int` | Ano dos dados, de 2010 ao último ano publicado |
 | `tipo_navegacao` | `str \| None` | longo_curso, cabotagem, interior, apoio_maritimo, apoio_portuario |
@@ -74,7 +74,7 @@ df = await antaq.movimentacao(
 df = await antaq.movimentacao(2024, mercadoria="soja")
 ```
 
-## Versao Sincrona
+## Versão Síncrona
 
 ```python
 from agrobr.sync import antaq
@@ -84,7 +84,7 @@ df = antaq.movimentacao(2024)
 
 ## Notas
 
-- Fonte: ANTAQ Estatistico Aquaviario (`estatistica.antaq.gov.br`) — licenca `livre`. [Fora do ar desde 23/06/2026](https://www.gov.br/antaq/pt-br/central-de-conteudos/publicacoes-da-antaq/publicacoes-off/painel-estatistico-aquaviario-indisponivel)
+- Fonte: ANTAQ Estatistico Aquaviario (`estatistica.antaq.gov.br`) — licença `livre`. [Fora do ar desde 23/06/2026](https://www.gov.br/antaq/pt-br/central-de-conteudos/publicacoes-da-antaq/publicacoes-off/painel-estatistico-aquaviario-indisponivel)
 - Dados: ZIP bulk (TXT com `;`, encoding UTF-8-sig)
 - Historico: 2010+
 - ZIPs anuais (~80MB) — download pode levar alguns segundos

@@ -1,4 +1,4 @@
-# NASA POWER - Dados Climaticos Globais
+# NASA POWER - Dados Climáticos Globais
 
 ## Visao Geral
 
@@ -6,7 +6,7 @@
 |-------|-------|
 | **Instituicao** | NASA / LaRC |
 | **Website** | [power.larc.nasa.gov](https://power.larc.nasa.gov) |
-| **Acesso agrobr** | REST API (JSON), sem autenticacao |
+| **Acesso agrobr** | REST API (JSON), sem autenticação |
 | **Substitui** | INMET (API fora do ar desde jan/2026) |
 
 ## Origem dos Dados
@@ -15,20 +15,20 @@
 
 - **URL**: `https://power.larc.nasa.gov/api/temporal/daily/point`
 - **Formato**: JSON
-- **Acesso**: Publico, sem restricoes de autenticacao
+- **Acesso**: Publico, sem restricoes de autenticação
 - **Cobertura**: Global, consulta por ponto, desde 1981
 - **Comunidade**: AG (Agroclimatology)
 
 ## Parâmetros padrão
 
-| Parametro NASA | Nome agrobr | Unidade | Descricao |
+| Parâmetro NASA | Nome agrobr | Unidade | Descrição |
 |----------------|-------------|---------|-----------|
 | `T2M` | `temp_media` | C | Temperatura media a 2m |
-| `T2M_MAX` | `temp_max` | C | Temperatura maxima a 2m |
-| `T2M_MIN` | `temp_min` | C | Temperatura minima a 2m |
-| `PRECTOTCORR` | `precip_mm` | mm/dia | Precipitacao corrigida |
+| `T2M_MAX` | `temp_max` | C | Temperatura máxima a 2m |
+| `T2M_MIN` | `temp_min` | C | Temperatura mínima a 2m |
+| `PRECTOTCORR` | `precip_mm` | mm/dia | Precipitação corrigida |
 | `RH2M` | `umidade_rel` | % | Umidade relativa a 2m |
-| `ALLSKY_SFC_SW_DWN` | `radiacao_mj` | MJ/m2/dia | Radiacao solar incidente |
+| `ALLSKY_SFC_SW_DWN` | `radiacao_mj` | MJ/m2/dia | Radiação solar incidente |
 | `WS2M` | `vento_ms` | m/s | Velocidade do vento a 2m |
 
 Também aceitos em `parameters=`: `PS` (`ps_kpa`, kPa), `WS10M` (`vento_10m_ms`, m/s), `T2MDEW` (`ponto_orvalho`, C), `GWETROOT` (`umidade_solo_raiz`, 1) e `GWETTOP` (`umidade_solo_superficie`, 1). A lista completa sai de `nasa_power.parametros()`.
@@ -83,50 +83,50 @@ df = await nasa_power.clima_uf("MT", ano=2024, agregacao="diario")
 df, meta = await nasa_power.clima_uf("MT", ano=2024, return_meta=True)
 ```
 
-## Schema - Diario
+## Schema - Diário
 
-| Coluna | Tipo | Descricao |
+| Coluna | Tipo | Descrição |
 |--------|------|-----------|
-| `data` | datetime | Data da observacao |
+| `data` | datetime | Data da observação |
 | `lat` | float | Latitude do ponto |
 | `lon` | float | Longitude do ponto |
 | `uf` | str | Sigla da UF em `clima_uf`; em `clima_ponto`, texto vazio (`""`) |
 | `temp_media` | float | Temperatura media (C) |
-| `temp_max` | float | Temperatura maxima (C) |
-| `temp_min` | float | Temperatura minima (C) |
-| `precip_mm` | float | Precipitacao (mm/dia) |
+| `temp_max` | float | Temperatura máxima (C) |
+| `temp_min` | float | Temperatura mínima (C) |
+| `precip_mm` | float | Precipitação (mm/dia) |
 | `umidade_rel` | float | Umidade relativa (%) |
-| `radiacao_mj` | float | Radiacao solar (MJ/m2/dia) |
+| `radiacao_mj` | float | Radiação solar (MJ/m2/dia) |
 | `vento_ms` | float | Velocidade do vento (m/s) |
 
 ## Schema - Mensal
 
-| Coluna | Tipo | Descricao |
+| Coluna | Tipo | Descrição |
 |--------|------|-----------|
 | `mes` | datetime | Primeiro dia do mes |
 | `uf` | str | Sigla da UF (só em `clima_uf`; ausente no mensal de `clima_ponto`) |
-| `precip_acum_mm` | float | Precipitacao acumulada (mm) |
+| `precip_acum_mm` | float | Precipitação acumulada (mm) |
 | `temp_media` | float | Temperatura media (C) |
 | `temp_max_media` | float | Media das maximas (C) |
 | `temp_min_media` | float | Media das minimas (C) |
 | `umidade_media` | float | Umidade relativa media (%) |
-| `radiacao_media_mj` | float | Radiacao media (MJ/m2/dia) |
-| `vento_medio_ms` | float | Vento medio (m/s) |
+| `radiacao_media_mj` | float | Radiação media (MJ/m2/dia) |
+| `vento_medio_ms` | float | Vento médio (m/s) |
 | `dias` | int | Dias do mês com algum parâmetro válido |
 | `data_inicio` | datetime | Primeiro desses dias |
 | `data_fim` | datetime | Último desses dias |
 | `lat` | float | Latitude do ponto |
 | `lon` | float | Longitude do ponto |
 
-## UFs Disponiveis
+## UFs Disponíveis
 
 Todas as 27 UFs brasileiras têm um ponto representativo fixo configurado.
 Para analises precisas, usar `clima_ponto()` com coordenadas exatas.
 
-## Nota sobre Resolucao Espacial
+## Nota sobre Resolução Espacial
 
 NASA POWER combina produtos com características espaciais próprias; a consulta por ponto não estabelece uma resolução única para todas as variáveis. Para UFs grandes
-como MT ou PA, o ponto central pode nao representar bem toda a variabilidade
+como MT ou PA, o ponto central pode não representar bem toda a variabilidade
 climatica do estado. Para analises regionais detalhadas, consultar multiplos
 pontos com `clima_ponto()`.
 
@@ -134,13 +134,13 @@ pontos com `clima_ponto()`.
 
 Não há cache local: cada chamada baixa os dados da NASA POWER.
 
-## Atualizacao
+## Atualização
 
 | Aspecto | Valor |
 |---------|-------|
-| **Frequencia** | Dados com ~2 dias de lag |
+| **Frequência** | Dados com ~2 dias de lag |
 | **Historico** | Desde 1981 |
-| **Resolucao** | Diaria |
+| **Resolução** | Diaria |
 
 ## Agregação e ausência de medições
 

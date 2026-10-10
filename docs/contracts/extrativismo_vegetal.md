@@ -1,14 +1,14 @@
 # extrativismo_vegetal v1.1
 
-Producao extrativista vegetal (acai, castanha-do-para, erva-mate, palmito, etc) por UF ou municipio.
+Produção extrativista vegetal (acai, castanha-do-para, erva-mate, palmito, etc) por UF ou município.
 
 Na API 2.0, somente `produto`, `ano` aceitam posição; os demais filtros e flags são passados por nome. Retornos vazios preservam os dtypes do contrato: inteiros em `Int64`, medidas em `float64` e texto no padrão do pandas instalado.
 
 ## Fontes
 
-| Prioridade | Fonte | Descricao |
+| Prioridade | Fonte | Descrição |
 |------------|-------|-----------|
-| 1 | IBGE PEVS | Producao da Extracao Vegetal e da Silvicultura |
+| 1 | IBGE PEVS | Produção da Extração Vegetal e da Silvicultura |
 
 ## Produtos
 
@@ -16,11 +16,11 @@ Na API 2.0, somente `produto`, `ano` aceitam posição; os demais filtros e flag
 
 ## Schema
 
-| Coluna | Tipo | Nullable | Descricao |
+| Coluna | Tipo | Nullable | Descrição |
 |--------|------|----------|-----------|
 | `ano` | Int64 | ❌ | Ano de referencia |
-| `localidade` | str | ✅ | UF ou municipio |
-| `localidade_cod` | Int64 | ✅ | Codigo IBGE |
+| `localidade` | str | ✅ | UF ou município |
+| `localidade_cod` | Int64 | ✅ | Código IBGE |
 | `cod_municipio` | Int64 | ✅ | Código IBGE do município (7 dígitos), a chave comum dos datasets municipais; nulo fora da linha de município |
 | `produto` | str | ❌ | Nome do produto |
 | `valor` | float64 | ✅ | Quantidade produzida (toneladas ou metros cúbicos) ou, com `variavel="valor_producao"`, valor da produção em mil reais; a escala vem em `unidade` |
@@ -34,8 +34,8 @@ Na API 2.0, somente `produto`, `ano` aceitam posição; os demais filtros e flag
 ## Garantias
 
 - Dados consolidados anuais
-- Latencia tipica: Y+1 (dados disponiveis no ano seguinte)
-- Serie historica desde 1986
+- Latencia tipica: Y+1 (dados disponíveis no ano seguinte)
+- Serie histórica desde 1986
 
 ## Exemplo
 
@@ -57,7 +57,7 @@ df, meta = await datasets.extrativismo_vegetal("acai", ano=2023, return_meta=Tru
 
 ## Schema JSON
 
-Disponivel em `agrobr/schemas/extrativismo_vegetal.json`.
+Disponível em `agrobr/schemas/extrativismo_vegetal.json`.
 
 ```python
 from agrobr.contracts import get_contract
@@ -65,10 +65,10 @@ contract = get_contract("extrativismo_vegetal")
 print(contract.to_json())
 ```
 
-## Niveis Territoriais
+## Níveis Territoriais
 
-| Nivel | Descricao |
+| Nível | Descrição |
 |-------|-----------|
 | `brasil` | Total nacional |
 | `uf` | Por Unidade Federativa (default) |
-| `municipio` | Por municipio |
+| `municipio` | Por município |

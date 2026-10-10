@@ -1,8 +1,8 @@
 # API BCB/SICOR
 
-O modulo BCB fornece dados do Banco Central do Brasil: crédito rural (SICOR), séries temporais (SGS), cotação do dólar (PTAX) e expectativas de mercado (Focus).
+O módulo BCB fornece dados do Banco Central do Brasil: crédito rural (SICOR), séries temporais (SGS), cotação do dólar (PTAX) e expectativas de mercado (Focus).
 
-## Funcoes
+## Funções
 
 ### `credito_rural`
 
@@ -23,9 +23,9 @@ async def credito_rural(
 ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]
 ```
 
-**Parametros:**
+**Parâmetros:**
 
-| Parametro | Tipo | Descricao |
+| Parâmetro | Tipo | Descrição |
 |-----------|------|-----------|
 | `produto` | `str` | Chave do produto (soja, milho, arroz, feijao, trigo, algodao, cafe, cana, mandioca, sorgo) ou item de investimento do SICOR (ex.: "BOVINOS"); nas chaves, acento, caixa e espaços nas pontas não importam; em outro item, caixa e espaços nas pontas não importam, e o acento tem de ser o do SICOR |
 | `safra` | `str \| None` | Safra `"AAAA/AA"`, `"AAAA/AAAA"` (anos consecutivos) ou `"AAAA"` (ano final: `"2025"` = 2024/2025); outro formato levanta `InvalidParameterError` antes da rede. `None` (padrão) não filtra safra |
@@ -41,7 +41,7 @@ async def credito_rural(
 
 DataFrame com colunas:
 
-| Coluna | Tipo | Descricao |
+| Coluna | Tipo | Descrição |
 |--------|------|-----------|
 | `safra` | str | Safra "2024/25" (AAAA/AA, de julho a junho), como nos outros datasets |
 | `produto` | str | Chave do produto pedido, sem acento e em minúsculas (ex.: `algodao`, `cana`), igual nas duas fontes; o filtro usa a grafia oficial do SICOR (`"ALGODÃO"`, `"CANA-DE-AÇUCAR"`) |
@@ -111,9 +111,9 @@ async def credito_rural_total(
 ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]
 ```
 
-**Parametros:**
+**Parâmetros:**
 
-| Parametro | Tipo | Descricao |
+| Parâmetro | Tipo | Descrição |
 |-----------|------|-----------|
 | `safra` | `str \| None` | Mesmos formatos do `credito_rural`; a safra vai de julho a junho. `None` (padrão) não filtra safra e lê a série inteira, desde jan/2013 |
 | `finalidade` | `str \| None` | `"custeio"`, `"investimento"`, `"comercializacao"` ou `"industrializacao"`; `None` (padrão) traz as quatro. Outro valor levanta `InvalidParameterError` antes da rede |
@@ -345,7 +345,7 @@ Veja [contrato e identidade](../contracts/bcb_focus.md), [fonte e licença](../s
 
 ---
 
-## Versao Sincrona
+## Versão Síncrona
 
 ```python
 from agrobr.sync import bcb
@@ -362,8 +362,8 @@ Quando a API OData do SICOR falha, o agrobr usa automaticamente BigQuery (Base d
 
 ## Notas
 
-- Fonte: [BCB/SICOR](https://olinda.bcb.gov.br) — licenca livre
-- Dados disponiveis a partir de 2013
+- Fonte: [BCB/SICOR](https://olinda.bcb.gov.br) — licença livre
+- Dados disponíveis a partir de 2013
 - Contrato v2.0 — saída alinhada às agregações reais do SICOR
 
 `inicio` e `fim` substituem os antigos nomes de período, sem aliases. Aceitam ISO, DD/MM/AAAA, `date` e `datetime`; a hora é descartada e `01/02/2024` é 1º de fevereiro. O Focus usa apenas `inicio`; a PTAX mantém `data` para um dia. `as_polars` e `return_meta` exigem nome. Periodicidade Focus e boletim PTAX normalizam caixa; o boletim também aceita acento. No SICOR, envelope sem `value` ou com tipo incorreto levanta `ParseError`; `value=[]` continua sendo um resultado vazio tipado.

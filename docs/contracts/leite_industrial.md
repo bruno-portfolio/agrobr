@@ -1,6 +1,6 @@
 # leite_industrial v1.0
 
-Aquisicao e industrializacao trimestral de leite por UF.
+Aquisição e industrializacao trimestral de leite por UF.
 
 Na API 2.0, somente `trimestre` aceita posição; os demais filtros e flags são passados por nome. Retornos vazios preservam os dtypes do contrato: inteiros em `Int64`, medidas em `float64` e texto no padrão do pandas instalado.
 
@@ -8,7 +8,7 @@ O parâmetro `produto="leite"` é opcional e somente por nome.
 
 ## Fontes
 
-| Prioridade | Fonte | Descricao |
+| Prioridade | Fonte | Descrição |
 |------------|-------|-----------|
 | 1 | IBGE Leite | Pesquisa Trimestral do Leite |
 
@@ -18,14 +18,14 @@ O parâmetro `produto="leite"` é opcional e somente por nome.
 
 ## Schema
 
-| Coluna | Tipo | Nullable | Descricao |
+| Coluna | Tipo | Nullable | Descrição |
 |--------|------|----------|-----------|
 | `trimestre` | str | ❌ | Trimestre YYYYQQ |
 | `localidade` | str | ✅ | UF |
-| `localidade_cod` | Int64 | ✅ | Codigo IBGE |
+| `localidade_cod` | Int64 | ✅ | Código IBGE |
 | `leite_adquirido` | float64 | ✅ | Leite cru adquirido (mil litros) |
 | `leite_industrializado` | float64 | ✅ | Leite cru industrializado (mil litros) |
-| `preco_medio` | float64 | ✅ | Preco medio pago ao produtor (R$/litro) |
+| `preco_medio` | float64 | ✅ | Preco médio pago ao produtor (R$/litro) |
 | `fonte` | str | ❌ | Origem dos dados |
 
 ## Primary Key
@@ -34,9 +34,9 @@ O parâmetro `produto="leite"` é opcional e somente por nome.
 
 ## Garantias
 
-- Dados trimestrais com 3 variaveis em formato wide
+- Dados trimestrais com 3 variáveis em formato wide
 - Latencia tipica: T+2 meses
-- Serie historica desde 1997
+- Serie histórica desde 1997
 
 ## Notas
 
@@ -62,7 +62,7 @@ df, meta = await datasets.leite_industrial(trimestre="202303", return_meta=True)
 
 ## Schema JSON
 
-Disponivel em `agrobr/schemas/leite_industrial.json`.
+Disponível em `agrobr/schemas/leite_industrial.json`.
 
 ```python
 from agrobr.contracts import get_contract

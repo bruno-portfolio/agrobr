@@ -1,28 +1,28 @@
-# API Noticias Agricolas
+# API Noticias Agrícolas
 
-O modulo Noticias Agricolas republica indicadores CEPEA/ESALQ e serve como fallback automatico quando o acesso direto ao CEPEA falha (Cloudflare).
+O módulo Noticias Agrícolas republica indicadores CEPEA/ESALQ e serve como fallback automático quando o acesso direto ao CEPEA falha (Cloudflare).
 
 !!! warning "zona_cinza"
     Notícias Agrícolas é classificado como `zona_cinza` porque não foi localizada licença própria de reutilização das cotações. A reserva genérica de direitos não comprova uma proibição específica de reutilizar todo fato numérico, nem concede permissão sobre relatórios ou bases protegidas. Dados de origem CEPEA conservam a CC BY-NC 4.0: exigem atribuição, e o uso comercial requer autorização do titular. O fallback automático permanece e emite o aviso do publicador, além do aviso da origem. Quando CEPEA e Notícias Agrícolas constam em `MetaInfo.data_sources`, prevalece `nc` em `MetaInfo.license`.
 
 !!! note "Uso interno"
-    Este modulo **nao e chamado diretamente pelo usuario**. E invocado automaticamente pelo modulo CEPEA como fallback. Documentado aqui para referencia tecnica.
+    Este módulo **não e chamado diretamente pelo usuário**. E invocado automaticamente pelo módulo CEPEA como fallback. Documentado aqui para referencia tecnica.
 
-## Funcoes
+## Funções
 
 ### `fetch_indicador_page`
 
-Busca pagina HTML com indicadores de um produto.
+Busca página HTML com indicadores de um produto.
 
 ```python
 async def fetch_indicador_page(produto: str) -> str
 ```
 
-| Parametro | Tipo | Descricao |
+| Parâmetro | Tipo | Descrição |
 |-----------|------|-----------|
 | `produto` | `str` | Produto (soja, milho, boi, cafe, algodao, trigo, etc.) |
 
-**Retorno:** HTML da pagina como string.
+**Retorno:** HTML da página como string.
 
 ---
 
@@ -34,9 +34,9 @@ Extrai indicadores do HTML.
 def parse_indicador(html: str, produto: str) -> list[Indicador]
 ```
 
-| Parametro | Tipo | Descricao |
+| Parâmetro | Tipo | Descrição |
 |-----------|------|-----------|
-| `html` | `str` | Conteudo HTML da pagina |
+| `html` | `str` | Conteúdo HTML da página |
 | `produto` | `str` | Nome do produto |
 
 **Retorno:** Lista de objetos `Indicador`.
@@ -44,7 +44,7 @@ def parse_indicador(html: str, produto: str) -> list[Indicador]
 ## Notas
 
 - Fonte: Notícias Agrícolas — `zona_cinza`; origem CEPEA `nc`.
-- Fallback automatico do CEPEA — usuario nao precisa chamar diretamente
+- Fallback automático do CEPEA — usuário não precisa chamar diretamente
 - Warning emitido no primeiro uso
 - Fallback ativo enquanto CEPEA estiver protegido por Cloudflare
 

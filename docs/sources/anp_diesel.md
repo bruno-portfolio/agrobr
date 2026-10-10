@@ -1,15 +1,15 @@
 # ANP Diesel — Precos e Volumes
 
-> **Licenca:** Dados publicos do governo federal (Decreto 8.777/2016).
-> Classificacao: `livre`
+> **Licença:** Dados publicos do governo federal (Decreto 8.777/2016).
+> Classificação: `livre`
 
 Agencia Nacional do Petroleo, Gas Natural e Biocombustiveis. Dados de precos
 de revenda e volumes de venda de diesel no Brasil. Proxy de atividade
-mecanizada agricola.
+mecanizada agrícola.
 
 O CSV oficial de vendas pode trazer cabeçalhos acentuados; filtros por UF reconhecem a grafia publicada. Zeros e valores negativos publicados são preservados: o CSV de setembro/2026 traz −70 m³ de diesel marítimo em Sergipe, dezembro/2025, sem explicação no CSV. Não trate esses registros automaticamente como volume físico válido nem os converta silenciosamente para zero.
 
-## Instalacao
+## Instalação
 
 Não requer dependências opcionais. Usa httpx + pandas + calamine, com openpyxl como fallback.
 
@@ -46,9 +46,9 @@ df = alt.anp_diesel.precos_diesel(uf="MT")
 df = alt.anp_diesel.vendas_diesel()
 ```
 
-## Parametros — `precos_diesel`
+## Parâmetros — `precos_diesel`
 
-| Parametro | Tipo | Default | Descricao |
+| Parâmetro | Tipo | Default | Descrição |
 |---|---|---|---|
 | `uf` | str \| None | None | Filtro por UF (ex: SP, MT, PR) |
 | `municipio` | int \| str \| None | None | Município pelo código IBGE de 7 dígitos ou pelo nome inteiro, resolvido por `normalize.resolver_municipio` antes da rede e comparado com o nome da planilha sem caixa, acento e pontuação (`"Sant'Ana do Livramento"` casa com `SANTANA DO LIVRAMENTO`); pedaço de nome gera `InvalidParameterError` com os candidatos |
@@ -64,9 +64,9 @@ df = alt.anp_diesel.vendas_diesel()
 
 O contrato de fonte `anp_diesel_precos` 2.0 tem 15 colunas; o dataset `precos_diesel` mantém contrato próprio 1.0 com as mesmas colunas. `data` é o início publicado da semana ou a referência mensal; não é o instante da aquisição. Intervalo semanal, nível geográfico, unidade e cobertura da agregação são explícitos. Veja o [contrato do dataset](../contracts/precos_diesel.md) e a [semântica dos períodos](../api/anp_diesel.md).
 
-## Parametros — `vendas_diesel`
+## Parâmetros — `vendas_diesel`
 
-| Parametro | Tipo | Default | Descricao |
+| Parâmetro | Tipo | Default | Descrição |
 |---|---|---|---|
 | `uf` | str \| None | None | Filtro por UF (ex: SP, MT, PR) |
 | `inicio` | str \| date \| None | None | Data inicial |
@@ -76,9 +76,9 @@ O contrato de fonte `anp_diesel_precos` 2.0 tem 15 colunas; o dataset `precos_di
 
 ## Colunas — `vendas_diesel`
 
-| Coluna | Tipo | Nullable | Descricao |
+| Coluna | Tipo | Nullable | Descrição |
 |---|---|---|---|
-| `data` | datetime | Nao | Primeiro dia do mes |
+| `data` | datetime | Não | Primeiro dia do mes |
 | `uf` | str | Sim | Sigla UF |
 | `regiao` | str | Sim | Região, com o nome canônico (`Norte`, `Nordeste`, `Centro-Oeste`, `Sudeste`, `Sul`) |
 | `produto` | str | Sim | Tipo diesel |
@@ -87,18 +87,18 @@ O contrato de fonte `anp_diesel_precos` 2.0 tem 15 colunas; o dataset `precos_di
 ## Pipeline de dados
 
 ### Precos
-1. Download XLSX bulk do portal gov.br (arquivos por periodo: 2022-2023, 2024-2025, 2026)
+1. Download XLSX bulk do portal gov.br (arquivos por período: 2022-2023, 2024-2025, 2026)
 2. Parse com calamine (fallback openpyxl), filtro de produtos diesel (DIESEL, DIESEL S10, OLEO DIESEL, OLEO DIESEL S10); linha com rótulo de agregado ("TOTAL", "SUBTOTAL") na coluna de município sai, com aviso em `validation_warnings` e `UserWarning`
 3. Normalizacao: prefixo "OLEO"/"ÓLEO" removido, nomes de estado convertidos para sigla UF
-4. Calculo de margem (preco_venda - preco_compra)
-5. Agregacao semanal ou mensal conforme parametro
+4. Cálculo de margem (preco_venda - preco_compra)
+5. Agregação semanal ou mensal conforme parâmetro
 
 ### Volumes
 1. Download CSV de vendas de diesel por tipo (dados abertos ANP)
 2. Parse CSV semicolon-delimited (ANO, MES, GRANDE REGIAO, UNIDADE DA FEDERACAO, PRODUTO, VENDAS)
 3. Filtro de diesel (OLEO DIESEL e variantes)
 4. Normalizacao: prefixo "OLEO"/"ÓLEO" removido do produto e `DIESEL S-10` escrito `DIESEL S10`, como nos preços; os outros combustíveis (`DIESEL S-500`, `DIESEL S-1800`, `DIESEL MARÍTIMO`, `DIESEL (OUTROS )`) ficam como publicados; `REGIÃO CENTRO-OESTE` vira `Centro-Oeste`; nomes de estado convertidos para sigla UF
-5. Conversao para formato padrao (data, uf, regiao, produto, volume_m3)
+5. Conversão para formato padrão (data, uf, região, produto, volume_m3)
 
 ## MetaInfo
 
@@ -112,7 +112,7 @@ print(meta.records_count)    # varia por filtro
 
 ## Nota de desempenho
 
-Os XLSX da ANP podem ser grandes (50-100MB para precos por municipio).
+Os XLSX da ANP podem ser grandes (50-100MB para precos por município).
 Os períodos necessários são baixados concorrentemente e processados com
 calamine. Não há cache persistente; os filtros são aplicados após o download.
 
@@ -121,9 +121,9 @@ calamine. Não há cache persistente; os filtros são aplicados após o download
 - URL precos: `https://www.gov.br/anp/pt-br/assuntos/precos-e-defesa-da-concorrencia/precos/precos-revenda-e-de-distribuicao-combustiveis/shlp/`
 - URL volumes: `https://www.gov.br/anp/pt-br/centrais-de-conteudo/dados-abertos/arquivos/vdpb/vct/vendas-oleo-diesel-tipo-m3-2013-2025.csv`
 - Formato: XLSX (precos 2013+), CSV (volumes 2013+)
-- Atualizacao: semanal (precos), mensal (volumes)
+- Atualização: semanal (precos), mensal (volumes)
 - Historico: 2013+ (precos e volumes)
-- Licenca: `livre` (dados publicos governo federal, Decreto 8.777/2016)
+- Licença: `livre` (dados publicos governo federal, Decreto 8.777/2016)
 
 ## Preço de venda por nível
 

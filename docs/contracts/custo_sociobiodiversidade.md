@@ -71,7 +71,7 @@ açaí, os layouts antigos e novos têm duas colunas monetárias; nenhum publica
 | `unidade_produtividade` | str | Sim | Unidade literal publicada da produtividade, sem enum ou conversão. |
 | `secao` | str | Sim | Cabeçalho publicado da seção, romano ou gestão da propriedade familiar; o primeiro total após o cabeçalho fecha a seção e a mantém; os totais seguintes (CUSTO ...), que somam várias seções, saem nulos. |
 | `item` | str | Não | Rótulo publicado da linha, preservando espaços e sinais. |
-| `tipo_linha` | str | Não | item, total ou secao; somar linhas indiscriminadamente duplica componentes. |
+| `tipo_linha` | str | Não | item, total ou seção; somar linhas indiscriminadamente duplica componentes. |
 | `linha` | int | Não | Número físico da linha na aba, base 1. |
 | `valor` | float | Sim | Valor da primeira coluna monetária na base publicada; sem conversão. |
 | `unidade_valor` | str | Não | Cabeçalho literal da primeira coluna monetária, com espaços colapsados; consumidor filtra por esta coluna. |
@@ -211,9 +211,9 @@ O cabeçalho publicado determina `local`, `uf` e `ano`; `aba` conserva o nome li
 | mangaba | `Barra dos Coqueiros-SE-2013` | Barra do Coqueiros / SE / 2013 |
 | mangaba | `Barra dos Coqueiros-SE-2014` | Barra do Coqueiros / SE / 2014 |
 | murumuru | `Carauari-AM-2018` | CARAUARI-AM (Comunidade do Roque) / AM / 2018 |
-| pequi | `Crato-CE-2008` | Crato - CE (Distrito Horizonte(Cacimba) - Municipio : Jardim / CE / 2008 |
-| pequi | `Crato-CE-2010` | Crato - CE (Distrito Horizonte(Cacimba) - Municipio : Jardim / CE / 2010 |
-| pequi | `Crato-CE-2011` | Crato - CE (Distrito Horizonte(Cacimba) - Municipio : Jardim / CE / 2011 |
+| pequi | `Crato-CE-2008` | Crato - CE (Distrito Horizonte(Cacimba) - Município : Jardim / CE / 2008 |
+| pequi | `Crato-CE-2010` | Crato - CE (Distrito Horizonte(Cacimba) - Município : Jardim / CE / 2010 |
+| pequi | `Crato-CE-2011` | Crato - CE (Distrito Horizonte(Cacimba) - Município : Jardim / CE / 2011 |
 | pequi | `Crato-CE-2012` | Jardim/Crato / CE / 2012 |
 | pequi | `Crato-CE-2013` | Jardim/Crato / CE / 2013 |
 | pequi | `Crato-CE-2014` | Jardim/Crato / CE / 2014 |

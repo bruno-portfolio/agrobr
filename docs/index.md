@@ -19,7 +19,7 @@ Infraestrutura Python para dados agrícolas brasileiros com **camada semântica*
 
 - **CEPEA/ESALQ**: 22 indicadores de preços (soja, milho, boi, café arábica, café robusta, algodão, trigo, arroz, açúcar, etanol, frango, suíno, leite, laranja)
 - **CONAB**: Safras, balanço oferta/demanda, custos de produção, série histórica, progresso semanal de plantio/colheita e preços atacado hortifruti (CEASA/PROHORT)
-- **IBGE/SIDRA**: PAM (anual), LSPA (mensal), PPM, Abate, PEVS (silvicultura + extracao vegetal), Leite Trimestral, PIB Agro, Censo Agro
+- **IBGE/SIDRA**: PAM (anual), LSPA (mensal), PPM, Abate, PEVS (silvicultura + extração vegetal), Leite Trimestral, PIB Agro, Censo Agro
 - **NASA POWER**: Climatologia gridded diária (temperatura, precipitação, radiação, umidade, vento)
 - **BCB/SICOR**: Crédito rural por cultura e UF + séries temporais SGS (Selic, IPCA, PIB agro) + cotação PTAX + expectativas Focus
 - **ComexStat**: Exportações agrícolas por NCM
@@ -33,26 +33,26 @@ Infraestrutura Python para dados agrícolas brasileiros com **camada semântica*
 - **Queimadas/INPE**: Focos de calor por satélite (6 biomas, 13 satélites)
 - **Desmatamento PRODES/DETER**: Desmatamento consolidado + alertas em tempo real + geometria (GeoDataFrame)
 - **MapBiomas**: Cobertura e uso da terra por município (1985-presente)
-- **B3 Futuros Agro**: Ajustes diarios (settlement) + posicoes em aberto (open interest) de futuros e opcoes agro
-- **UN Comtrade**: Comercio bilateral + trade mirror (exportacoes vs importacoes por HS code, ~200 paises)
-- **ANTAQ**: Movimentacao portuaria de carga (granel solido/liquido, carga geral, conteiner, 2010+) — ⚠️ fonte fora do ar desde 23/06/2026
+- **B3 Futuros Agro**: Ajustes diários (settlement) + posicoes em aberto (open interest) de futuros e opcoes agro
+- **UN Comtrade**: Comércio bilateral + trade mirror (exportações vs importações por HS code, ~200 paises)
+- **ANTAQ**: Movimentacao portuária de carga (granel solido/liquido, carga geral, conteiner, 2010+) — ⚠️ fonte fora do ar desde 23/06/2026
 - **ANP Diesel**: Precos de revenda e volumes de venda de diesel por UF/municipio (proxy atividade mecanizada)
-- **ANTT Pedagio**: Fluxo de veiculos em pracas de pedagio rodoviario (ANTT Dados Abertos, CC-BY, 2010+)
+- **ANTT Pedagio**: Fluxo de veículos em pracas de pedagio rodoviário (ANTT Dados Abertos, CC-BY, 2010+)
 - **MAPA PSR**: Apolices e sinistros do seguro rural com subvencao federal (SISSER/MAPA, 2006+)
 - **SICAR**: Cadastro Ambiental Rural — registros de imoveis rurais por UF via WFS (7.4M+ imoveis, 27 UFs)
-- **ZARC**: Zoneamento Agricola de Risco Climatico — janelas de plantio por municipio/cultura/solo/ciclo (MAPA/Embrapa, CC-BY)
+- **ZARC**: Zoneamento Agrícola de Risco Climático — janelas de plantio por municipio/cultura/solo/ciclo (MAPA/Embrapa, CC-BY)
 - **Agrofit/MAPA (Defensivos)**: Agrotoxicos registrados no Brasil — produtos formulados, autorizações de uso, produtos técnicos e composição (Creative Commons Attribution, versão não indicada)
 - **FUNAI**: Terras indigenas via WFS (665 TIs, reprodução com citação)
 - **ICMBio**: Unidades de conservacao federais via WFS (347 UCs, sem RPPN)
-- **INCRA**: Territorios quilombolas via WFS (~426 territorios)
+- **INCRA**: Territórios quilombolas via WFS (~426 territórios)
 - **IBAMA**: Embargos ambientais do portal de dados abertos (~116 mil termos, atualização diária)
-- **MapBiomas Alerta**: Alertas de desmatamento via GraphQL (citacao obrigatoria)
+- **MapBiomas Alerta**: Alertas de desmatamento via GraphQL (citacao obrigatória)
 - **Lista Suja**: Cadastro corrente de empregadores do MTE, CSV no core e alternativa PDF; API de fonte e dataset semântico
-- **ANA/SNIRH**: Hidrografia, pivos de irrigacao, demanda e disponibilidade hidrica via ArcGIS REST
+- **ANA/SNIRH**: Hidrografia, pivos de irrigação, demanda e disponibilidade hidrica via ArcGIS REST
 - **SFB**: Florestas publicas, concessoes florestais e IFN via ArcGIS REST
 - **RNC/CultivarWeb**: Registro Nacional de Cultivares — ~37K registradas + ~5K protegidas (MAPA, dados publicos)
 - **EMBRAPA Solos**: Perfis de solo PronaSolos (34 mil horizontes de ~9 mil pontos) + mapa pedologico SiBCS (2.8K poligonos) via WFS (CC BY-NC 3.0 BR)
-- **Fundacao Rio Verde**: Ensaios de cultivares de soja — safras 2023/24 a 2025/26, até 4 épocas de semeio (PDF, pdfplumber)
+- **Fundação Rio Verde**: Ensaios de cultivares de soja — safras 2023/24 a 2025/26, até 4 épocas de semeio (PDF, pdfplumber)
 
 ## Datasets — Camada Semântica
 

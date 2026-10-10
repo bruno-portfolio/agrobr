@@ -13,34 +13,34 @@
 ### Fonte
 
 - **URL**: `https://dataserver-coids.inpe.br/queimadas/queimadas/focos/csv/`
-- **Formato**: CSV (latin-1 ou UTF-8), ZIP para dados historicos
-- **Acesso**: Publico, sem autenticacao
-- **Granularidade**: Diario (`focos_diario_br_YYYYMMDD.csv`) e mensal (fallback em cascata)
+- **Formato**: CSV (latin-1 ou UTF-8), ZIP para dados históricos
+- **Acesso**: Publico, sem autenticação
+- **Granularidade**: Diário (`focos_diario_br_YYYYMMDD.csv`) e mensal (fallback em cascata)
 
-## Dados Disponiveis
+## Dados Disponíveis
 
 ### Focos de Calor
 
-Deteccao por satelite de pontos de calor (hot spots) no territorio brasileiro:
+Deteccao por satelite de pontos de calor (hot spots) no território brasileiro:
 
 - Coordenadas geograficas (lat/lon)
 - Data e hora GMT da deteccao
 - Satelite detector (13 satelites)
-- Municipio e estado
+- Município e estado
 - Bioma (6 biomas brasileiros)
-- Indicadores: dias sem chuva, precipitacao, risco de fogo, FRP
+- Indicadores: dias sem chuva, precipitação, risco de fogo, FRP
 
 ### Cobertura
 
 - **Temporal**: Desde 2003 (dados anuais); mensal desde 2023; CSV direto desde 2024
-- **Espacial**: Todo o territorio brasileiro
-- **Frequencia**: Diaria (atualizacao varias vezes ao dia)
+- **Espacial**: Todo o território brasileiro
+- **Frequência**: Diaria (atualização varias vezes ao dia)
 
 ### Fallback em cascata (mensal)
 
-O servidor INPE mudou a organizacao dos dados historicos. O client tenta em ordem:
+O servidor INPE mudou a organizacao dos dados históricos. O client tenta em ordem:
 
-| Periodo | Formato | URL |
+| Período | Formato | URL |
 |---------|---------|-----|
 | 2024+ | `.csv` mensal | `mensal/Brasil/focos_mensal_br_YYYYMM.csv` |
 | 2023 | `.zip` mensal | `mensal/Brasil/focos_mensal_br_YYYYMM.zip` |
@@ -74,7 +74,7 @@ async def main():
 asyncio.run(main())
 ```
 
-### Focos Diarios
+### Focos Diários
 
 ```python
 from datetime import date, timedelta
@@ -98,21 +98,21 @@ df = await queimadas.focos(
 
 ## Schema
 
-| Coluna | Tipo | Descricao |
+| Coluna | Tipo | Descrição |
 |--------|------|-----------|
 | `data` | date | Data da deteccao |
 | `hora_gmt` | str | Horario GMT (HH:MM) |
 | `lat` | float | Latitude (-35 a 6) |
 | `lon` | float | Longitude (-74 a -30) |
 | `satelite` | str | Nome do satelite |
-| `municipio` | str | Nome do municipio |
-| `municipio_id` | Int64 | Codigo IBGE |
+| `municipio` | str | Nome do município |
+| `municipio_id` | Int64 | Código IBGE |
 | `estado` | str | Nome do estado |
 | `uf` | str | Sigla UF (2 caracteres) |
 | `bioma` | str | Bioma brasileiro |
-| `numero_dias_sem_chuva` | float | Dias sem precipitacao |
-| `precipitacao` | float | Precipitacao (mm) |
-| `risco_fogo` | float | Indice de risco (0-1) |
+| `numero_dias_sem_chuva` | float | Dias sem precipitação |
+| `precipitacao` | float | Precipitação (mm) |
+| `risco_fogo` | float | Índice de risco (0-1) |
 | `frp` | float | Fire Radiative Power (MW) |
 | `cod_municipio` | Int64 | Código IBGE de 7 dígitos, do `municipio_id`; nulo fora de município |
 
@@ -124,7 +124,7 @@ aviso e a contagem. Os 7 meses de 2023–2025 em que isso acontecia e as regras 
 ## Satelites
 
 O INPE monitora focos de calor com 13 satelites. O satelite de referencia e o
-AQUA_M-T (MODIS), utilizado nas estatisticas oficiais por ter serie temporal
+AQUA_M-T (MODIS), utilizado nas estatísticas oficiais por ter serie temporal
 mais longa e consistente.
 
 Sem `satelite=`, `focos()` devolve os focos de todos os satélites, e a contagem soma as detecções de cada um: em agosto de
@@ -135,11 +135,11 @@ referência; para comparar com elas, passe `satelite="AQUA_M-T"`.
 
 Não há cache local: cada chamada baixa os dados do INPE.
 
-## Atualizacao
+## Atualização
 
 | Aspecto | Valor |
 |---------|-------|
-| **Frequencia** | Diaria |
+| **Frequência** | Diaria |
 | **Satelite referencia** | AQUA_M-T, com passagens por volta das 13h30 e da 01h30, hora local nominal; `hora_gmt` vem em GMT |
 
 O arquivo mensal do mês corrente e o diário do dia corrente são parciais e mudam durante o período: `focos()` avisa e diz no

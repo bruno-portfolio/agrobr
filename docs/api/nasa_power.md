@@ -1,12 +1,12 @@
 # API NASA POWER
 
-O modulo NASA POWER fornece dados climatologicos gridded globais da NASA — temperatura, precipitacao, radiacao, umidade e vento. Alternativa ao INMET que nao requer token.
+O módulo NASA POWER fornece dados climatologicos gridded globais da NASA — temperatura, precipitação, radiação, umidade e vento. Alternativa ao INMET que não requer token.
 
-## Funcoes
+## Funções
 
 ### `clima_ponto`
 
-Dados climatologicos para um ponto geografico (latitude/longitude).
+Dados climatologicos para um ponto geográfico (latitude/longitude).
 
 ```python
 async def clima_ponto(
@@ -22,9 +22,9 @@ async def clima_ponto(
 ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]
 ```
 
-**Parametros:**
+**Parâmetros:**
 
-| Parametro | Tipo | Descricao |
+| Parâmetro | Tipo | Descrição |
 |-----------|------|-----------|
 | `lat` | `float` | Latitude (-90 a 90) |
 | `lon` | `float` | Longitude (-180 a 180) |
@@ -37,9 +37,9 @@ async def clima_ponto(
 
 **Retorno:**
 
-DataFrame com colunas (diario): `data`, `lat`, `lon`, `uf` (vazia em `clima_ponto`), `temp_media`, `temp_max`, `temp_min`, `precip_mm`, `umidade_rel`, `radiacao_mj`, `vento_ms`
+DataFrame com colunas (diário): `data`, `lat`, `lon`, `uf` (vazia em `clima_ponto`), `temp_media`, `temp_max`, `temp_min`, `precip_mm`, `umidade_rel`, `radiacao_mj`, `vento_ms`
 
-Com `agregacao="mensal"`, as colunas agregadas sao renomeadas: `mes` (timestamp), `precip_acum_mm`, `temp_media`, `temp_max_media`, `temp_min_media`, `umidade_media`, `radiacao_media_mj`, `vento_medio_ms` (mais `lat`/`lon`). `dias`, `data_inicio` e `data_fim` dão os dias do mês com algum parâmetro válido. O mês cortado pelo período pedido sai parcial e não é extrapolado: de 15/01 a 05/02/2025, fevereiro sai com `dias=5` e 17,81 mm, contra 28 dias e 52,33 mm do mês inteiro (schema 1.2).
+Com `agregacao="mensal"`, as colunas agregadas são renomeadas: `mes` (timestamp), `precip_acum_mm`, `temp_media`, `temp_max_media`, `temp_min_media`, `umidade_media`, `radiacao_media_mj`, `vento_medio_ms` (mais `lat`/`lon`). `dias`, `data_inicio` e `data_fim` dão os dias do mês com algum parâmetro válido. O mês cortado pelo período pedido sai parcial e não é extrapolado: de 15/01 a 05/02/2025, fevereiro sai com `dias=5` e 17,81 mm, contra 28 dias e 52,33 mm do mês inteiro (schema 1.2).
 
 **Exemplo:**
 
@@ -119,7 +119,7 @@ nasa_power.parametros()[["codigo", "coluna", "unidade"]]
 df = await nasa_power.clima_ponto(-12.55, -55.72, "2024-01-01", "2024-01-31", parameters=["T2M", "PRECTOTCORR"])
 ```
 
-## Versao Sincrona
+## Versão Síncrona
 
 ```python
 from agrobr.sync import nasa_power
@@ -130,9 +130,9 @@ df = nasa_power.clima_uf("MT", 2024)
 
 ## Notas
 
-- Dados da [NASA POWER](https://power.larc.nasa.gov/) — licenca livre
+- Dados da [NASA POWER](https://power.larc.nasa.gov/) — licença livre
 - Usa coordenadas representativas fixas para `clima_uf()` — para analises precisas, use `clima_ponto()` com coordenadas especificas
-- Alternativa ao INMET para quem nao tem token
+- Alternativa ao INMET para quem não tem token
 
 ## Agregação e ausência de medições
 

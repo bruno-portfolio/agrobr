@@ -1,4 +1,4 @@
-# IBGE - Instituto Brasileiro de Geografia e Estatistica
+# IBGE - Instituto Brasileiro de Geografia e Estatística
 
 ## Visao Geral
 
@@ -15,20 +15,20 @@
 
 - **API**: `https://sidra.ibge.gov.br/`
 - **Formato**: JSON
-- **Acesso**: Publico, sem autenticacao
+- **Acesso**: Publico, sem autenticação
 
 ### Canal de acesso e fallback
 
-Todas as consultas tabulares (PAM, LSPA, PPM, abate, PEVS, leite, PIB agropecuario e censos) passam por
+Todas as consultas tabulares (PAM, LSPA, PPM, abate, PEVS, leite, PIB agropecuário e censos) passam por
 `agrobr.ibge.client.fetch_sidra`. A API SIDRA (`apisidra.ibge.gov.br`) e o canal principal; desde setembro
 de 2026 ela responde 403 com desafio Cloudflare a clientes programaticos. Quando a SIDRA falha (403, HTML,
 5xx; falha de rede ou timeout não aciona a troca), a mesma tabela e consultada na API de agregados do IBGE
 (`servicodados.ibge.gov.br/api/v3/agregados`), com os mesmos seletores traduzidos
 (`t/p/v/n/c` → `agregados/{tabela}/periodos/{p}/variaveis/{v}?localidades=N{n}[...]&classificacao=c[...]`)
 e a resposta convertida para o mesmo formato de colunas da SIDRA (`NC`, `NN`, `MC`, `MN`, `V`, `D1C`…), de
-modo que parsers e contratos nao mudam. Diferencas conhecidas do canal de fallback: `MC` (codigo da unidade)
-vem vazio, porque a API de agregados publica apenas o nome da unidade; `allxp` vira `all`; o nome do periodo
-(`D2N`) vem do endpoint `/periodos` da propria tabela. O canal usado fica em
+modo que parsers e contratos não mudam. Diferenças conhecidas do canal de fallback: `MC` (código da unidade)
+vem vazio, porque a API de agregados publica apenas o nome da unidade; `allxp` vira `all`; o nome do período
+(`D2N`) vem do endpoint `/periodos` da própria tabela. O canal usado fica em
 `MetaInfo.source_details["canal"]` (`sidra`, `servicodados` ou `misto`), `source_details["consultas"]` lista canal e URL
 de cada consulta, `attempted_sources` ganha `ibge_servicodados` e `selected_source` passa a ser `ibge_servicodados`
 quando o fallback foi usado (o dataset herda essa proveniencia); `source_url` aponta para a URL consultada;
@@ -52,19 +52,19 @@ Domínios fechados normalizam caixa e acentos; parâmetros inválidos levantam `
 
 Cada consulta SIDRA vazia emite um aviso e registra o mesmo texto em `MetaInfo.validation_warnings`, inclusive quando outra consulta da mesma tabela e período já veio vazia. Colunas e dtypes são preservados no vazio: anos/códigos em `Int64`, medidas em `float64`, rótulos de trimestre em texto e texto no padrão do pandas instalado. `animais_abatidos` usa `Int64` desde o contrato 2.0 (vigente: 2.1, que acrescenta `categoria` à saída e à chave); quantidade fracionária gera `ParseError`. A PAM preserva suas 14 colunas de saída, com medidas não solicitadas nulas.
 
-## Pesquisas Disponiveis
+## Pesquisas Disponíveis
 
-### PAM - Producao Agricola Municipal
+### PAM - Produção Agrícola Municipal
 
 - **Tabela SIDRA**: 5457 (serie desde 1974)
-- **Cobertura**: Todos os municipios
-- **Frequencia**: Anual
+- **Cobertura**: Todos os municípios
+- **Frequência**: Anual
 
-### LSPA - Levantamento Sistematico da Producao Agricola
+### LSPA - Levantamento Sistematico da Produção Agrícola
 
 - **Tabela SIDRA**: 6588
 - **Cobertura**: Nacional/UF
-- **Frequencia**: Mensal
+- **Frequência**: Mensal
 - **Contrato**: [LSPA 2.0](../contracts/lspa.md), uma linha por ano/mês/localidade/produto/variável, com unidade explícita; sem `mes`, preserva os meses disponíveis do ano
 
 `ibge.lspa("soja", ano=2025, mes="01", uf="MT")` aceita mês inteiro ou string inteira de 1 a 12. `uf=None` consulta o agregado Brasil. Um período não publicado pode retornar DataFrame vazio; HTTP 200 não comprova disponibilidade de observações.
@@ -75,43 +75,43 @@ O dataset agrega os componentes esperados de milho e feijão, converte hectares/
 
 ### PPM - Pesquisa da Pecuaria Municipal
 
-- **Tabelas SIDRA**: 3939 (rebanhos), 74 (producao de origem animal)
-- **Cobertura**: Todos os municipios
-- **Frequencia**: Anual
+- **Tabelas SIDRA**: 3939 (rebanhos), 74 (produção de origem animal)
+- **Cobertura**: Todos os municípios
+- **Frequência**: Anual
 - **Serie**: 1974-presente (51 anos)
 
 ### Abate - Pesquisa Trimestral do Abate de Animais
 
-- **Tabelas SIDRA**: 1092 (bovinos), 1093 (suinos), 1094 (frangos)
+- **Tabelas SIDRA**: 1092 (bovinos), 1093 (suínos), 1094 (frangos)
 - **Cobertura**: 27 UFs (sem linha Brasil; para o total nacional, use a tabela da espécie no SIDRA, no nível Brasil)
-- **Frequencia**: Trimestral
+- **Frequência**: Trimestral
 - **Serie**: 1997-presente
-- **Especies**: bovino, suino, frango
-- **Variaveis**: animais abatidos (cabecas), peso das carcacas (kg)
+- **Espécies**: bovino, suino, frango
+- **Variáveis**: animais abatidos (cabecas), peso das carcacas (kg)
 
-### Censo Agropecuario 1995/2006/2017
+### Censo Agropecuário 1995/2006/2017
 
-- **Tabelas SIDRA 2017**: 6907 (efetivo rebanho), 6881 (uso terra), 6957 (lavoura temporaria), 6956 (lavoura permanente), 6855 (preparo solo), 6848 (adubacao), 6849 (calagem), 6851 (agrotoxicos), 8561 (praticas agricolas), 6857 (irrigacao), 6899 (despesa com adubos)
-- **Tabelas SIDRA 2006**: 791 (preparo solo), 1249 (adubacao), 1245 (calagem), 1459 (agrotoxicos), 837 (praticas agricolas), 855 (irrigacao)
-- **Tabelas SIDRA 1995**: 323 (efetivo rebanho), 316/311 (uso terra), 497/492/503 (lavoura temporaria), 509/504/510 (lavoura permanente)
-- **Cobertura**: Brasil + UF + municipio
-- **Frequencia**: Decenial
-- **Periodos**: 1995, 2006 e 2017 (conforme tema)
-- **Temas**: efetivo_rebanho, uso_terra, lavoura_temporaria, lavoura_permanente, preparo_solo, adubacao, calagem, agrotoxicos, praticas_agricolas, irrigacao, despesa_adubos
+- **Tabelas SIDRA 2017**: 6907 (efetivo rebanho), 6881 (uso terra), 6957 (lavoura temporária), 6956 (lavoura permanente), 6855 (preparo solo), 6848 (adubacao), 6849 (calagem), 6851 (agrotoxicos), 8561 (praticas agrícolas), 6857 (irrigação), 6899 (despesa com adubos)
+- **Tabelas SIDRA 2006**: 791 (preparo solo), 1249 (adubacao), 1245 (calagem), 1459 (agrotoxicos), 837 (praticas agrícolas), 855 (irrigação)
+- **Tabelas SIDRA 1995**: 323 (efetivo rebanho), 316/311 (uso terra), 497/492/503 (lavoura temporária), 509/504/510 (lavoura permanente)
+- **Cobertura**: Brasil + UF + município
+- **Frequência**: Decenial
+- **Períodos**: 1995, 2006 e 2017 (conforme tema)
+- **Temas**: efetivo_rebanho, uso_terra, lavoura_temporaria, lavoura_permanente, preparo_solo, adubacao, calagem, agrotoxicos, praticas_agricolas, irrigação, despesa_adubos
 - **Formato**: Long format (variavel/valor por linha)
 - **Linha Total**: publicada como a fonte (`categoria = "Total"`), sem se somar às demais; `estabelecimentos`
   não soma entre categorias
 
-### Censo Agropecuario — Serie Historica (1920-2006)
+### Censo Agropecuário — Serie Histórica (1920-2006)
 
-- **Tabelas SIDRA**: 263 (estabelecimentos/area), 264 (uso terra), 265 (pessoal/tratores), 280 (condicao produtor), 281 (efetivo animais), 282 (producao animal), 283 (producao vegetal), 1730 (lavoura permanente), 1731 (lavoura temporaria)
-- **Cobertura**: Brasil + Regiao + UF (municipal NAO disponivel no SIDRA)
-- **Frequencia**: Censos decenais (1920-2006, conforme tabela)
-- **Periodos**: ate 10 censos por tema (1920, 1940, 1950, 1960, 1970, 1975, 1980, 1985, 1995, 2006)
-- **Temas**: 9 temas com serie historica longa
+- **Tabelas SIDRA**: 263 (estabelecimentos/area), 264 (uso terra), 265 (pessoal/tratores), 280 (condição produtor), 281 (efetivo animais), 282 (produção animal), 283 (produção vegetal), 1730 (lavoura permanente), 1731 (lavoura temporária)
+- **Cobertura**: Brasil + Região + UF (municipal NAO disponível no SIDRA)
+- **Frequência**: Censos decenais (1920-2006, conforme tabela)
+- **Períodos**: até 10 censos por tema (1920, 1940, 1950, 1960, 1970, 1975, 1980, 1985, 1995, 2006)
+- **Temas**: 9 temas com serie histórica longa
 - **Quirks**: Aves em mil cabecas (tab 281), unidades mistas por categoria (tabs 282/283/1730/1731), classificacoes sem Total (tabs 281/282/283/1730/1731)
 
-### Censo Agropecuario 1985 — Dados Municipais (PDFs do IBGE)
+### Censo Agropecuário 1985 — Dados Municipais (PDFs do IBGE)
 
 - **Fonte**: os 28 PDFs estaduais da Biblioteca do IBGE (27 UFs; Minas Gerais em 2 volumes). MA, PI, CE e RN usam a versão que o
   IBGE republicou em 03/09/2018, com camada de texto.
@@ -119,22 +119,22 @@ O dataset agrega os componentes esperados de milho e feijão, converte hectares/
   de texto, com o RapidOCR como 2ª leitura; o manifesto guarda o SHA-256 de cada PDF.
 - **Cobertura**: 27 UFs, até município (mesorregião, microrregião, município); 85,8 % das células lidas têm coluna
   identificada (a lista por volume está no contrato).
-- **Frequencia**: Unica (Censo 1985)
+- **Frequência**: Unica (Censo 1985)
 - **Temas**: 53 temas, 1 por tabela (67 a 119), pelo título impresso
 - **Confiança**: `valor` só na casa confirmada pelas somas impressas (0 erro na precisão medida); `valor_lido` e o `status` para o
   resto, com a precisão medida no [contrato](../contracts/censo_agropecuario_municipal_1985.md)
 - **Acesso**: local, sem rede
-- **URL catalogo**: https://biblioteca.ibge.gov.br/index.php/biblioteca-catalogo?view=detalhes&id=747
+- **URL catálogo**: https://biblioteca.ibge.gov.br/index.php/biblioteca-catalogo?view=detalhes&id=747
 
-### Censo Agropecuario 1995/96 — Temas Legados (FTP)
+### Censo Agropecuário 1995/96 — Temas Legados (FTP)
 
 - **Fonte**: FTP IBGE (`ftp.ibge.gov.br`)
 - **Formato**: ZIPs com XLS legado (BIFF5/BIFF8) ou HTML
 - **Cobertura**: Brasil, totais estaduais e municípios; `uf` distingue municípios homônimos
 - **Contrato**: [Censo legado 2.1](../contracts/censo_agropecuario_legado.md), com categorias, variáveis e unidades dos cabeçalhos oficiais
-- **Frequencia**: Unica (Censo 1995/96)
+- **Frequência**: Unica (Censo 1995/96)
 - **Temas**: tecnologia, pessoal_ocupado, maquinas, producao_animal, valor_producao, financeiro
-- **Acesso**: Publico, sem autenticacao
+- **Acesso**: Publico, sem autenticação
 
 Dos seis temas nas 27 UFs, 161 combinações têm dados e uma, máquinas no PA, é recusada: o arquivo
 [Pará/Tab_7Mn.zip](https://ftp.ibge.gov.br/Censo_Agropecuario/Censo_Agropecuario_1995_96/Para/Tab_7Mn.zip)
@@ -150,47 +150,47 @@ valores estaduais não são reconstruídos pela soma dos municípios.
 
 ### PEVS — Silvicultura
 
-- **Tabelas SIDRA**: 291 (producao, classificacao c194) + 5930 (area plantada, classificacao c734)
-- **Cobertura**: Todos os municipios
-- **Frequencia**: Anual
+- **Tabelas SIDRA**: 291 (produção, classificação c194) + 5930 (area plantada, classificação c734)
+- **Cobertura**: Todos os municípios
+- **Frequência**: Anual
 - **Serie**: 1986-presente
 - **Produtos**: carvao, lenha, madeira_tora, madeira_celulose, acacia_negra, eucalipto_folha, resina (14 total)
-- **Especies area**: eucalipto, pinus, outras
-- **Variaveis**: quantidade_produzida (var 142), valor_producao (var 143), area (var 6549)
+- **Espécies area**: eucalipto, pinus, outras
+- **Variáveis**: quantidade_produzida (var 142), valor_producao (var 143), area (var 6549)
 - **Unidades**: campo `MN` da resposta SIDRA, conforme variável e período; produção física em toneladas ou metros cúbicos, área em hectares e valor da produção em moeda (por exemplo, `Mil Reais` em 2023)
 
-### PEVS — Extracao Vegetal
+### PEVS — Extração Vegetal
 
-- **Tabela SIDRA**: 289 (classificacao c193)
-- **Cobertura**: Todos os municipios
-- **Frequencia**: Anual
+- **Tabela SIDRA**: 289 (classificação c193)
+- **Cobertura**: Todos os municípios
+- **Frequência**: Anual
 - **Serie**: 1986-presente
 - **Produtos**: acai, castanha_caju, castanha_para, erva_mate, mangaba, palmito, pequi_fruto, pinhao, umbu, hevea_coagulado, hevea_liquido, carnauba_cera, carnauba_po, piacava, carvao, lenha, madeira_tora, babacu, copaiba, cumaru, pequi_amendoa (21 total)
-- **Variaveis**: quantidade_produzida (var 144), valor_producao (var 145)
+- **Variáveis**: quantidade_produzida (var 144), valor_producao (var 145)
 - **Unidades**: campo `MN` da resposta SIDRA; quantidade em toneladas ou metros cúbicos e valor da produção em moeda (por exemplo, `Mil Reais` em 2023)
 
 ### Leite Trimestral — Pesquisa Trimestral do Leite
 
 - **Tabela SIDRA**: 1086
 - **Cobertura**: 27 UFs (sem linha Brasil; para o total nacional, use a tabela 1086 do SIDRA no nível Brasil)
-- **Frequencia**: Trimestral
+- **Frequência**: Trimestral
 - **Serie**: 1997-presente
-- **Variaveis**: leite adquirido (var 282, mil litros), leite industrializado (var 283, mil litros), preco medio (var 2522, R$/litro)
-- **Output**: Formato wide (3 variaveis como colunas)
+- **Variáveis**: leite adquirido (var 282, mil litros), leite industrializado (var 283, mil litros), preco médio (var 2522, R$/litro)
+- **Output**: Formato wide (3 variáveis como colunas)
 
-### PIB Agropecuario — Contas Nacionais Trimestrais
+### PIB Agropecuário — Contas Nacionais Trimestrais
 
 - **Tabelas SIDRA**: 1846 (precos correntes, var 585) + 6612 (precos reais base 1995, var 9318)
-- **Cobertura**: Brasil (nivel nacional)
-- **Frequencia**: Trimestral
+- **Cobertura**: Brasil (nível nacional)
+- **Frequência**: Trimestral
 - **Serie**: 1996-presente
-- **Setores**: agropecuaria (90687), industria (90691), servicos (90696), pib_total (90707)
-- **Classificacao**: c11255
+- **Setores**: agropecuária (90687), industria (90691), serviços (90696), pib_total (90707)
+- **Classificação**: c11255
 - **Unidade**: Milhoes de Reais
 
-## Variaveis
+## Variáveis
 
-| Codigo | Nome | Unidade |
+| Código | Nome | Unidade |
 |--------|------|---------|
 | 214 | Quantidade produzida | toneladas |
 | 215 | Valor da produção | mil R$ |
@@ -200,7 +200,7 @@ valores estaduais não são reconstruídos pela soma dos municípios.
 
 ## Uso - PAM
 
-### Basico
+### Básico
 
 ```python
 import asyncio
@@ -225,17 +225,17 @@ async def main():
 asyncio.run(main())
 ```
 
-### Niveis Territoriais
+### Níveis Territoriais
 
-| Nivel | Descricao |
+| Nível | Descrição |
 |-------|-----------|
 | `brasil` | Total nacional |
 | `uf` | Por Unidade Federativa |
-| `municipio` | Por municipio |
+| `municipio` | Por município |
 
 ## Uso - LSPA
 
-### Basico
+### Básico
 
 ```python
 # Estimativas do ano
@@ -253,7 +253,7 @@ df, meta = await ibge.lspa('soja', ano=2024, return_meta=True)
 
 ## Schema - PAM
 
-| Coluna | Tipo | Descricao |
+| Coluna | Tipo | Descrição |
 |--------|------|-----------|
 | `ano` | int | Ano de referencia |
 | `localidade` | str | Nome da localidade |
@@ -272,15 +272,15 @@ df, meta = await ibge.lspa('soja', ano=2024, return_meta=True)
 
 ## Schema - LSPA
 
-| Coluna | Tipo | Descricao |
+| Coluna | Tipo | Descrição |
 |--------|------|-----------|
 | `ano` | int | Ano de referencia |
 | `mes` | int | Mes de referencia |
 | `localidade` | str | Nome da localidade |
 | `localidade_cod` | int | Código IBGE da localidade (D1C do SIDRA) |
-| `variavel` | str | Nome da variavel |
+| `variavel` | str | Nome da variável |
 | `variavel_cod` | int | Código SIDRA da variável |
-| `valor` | float | Valor da variavel |
+| `valor` | float | Valor da variável |
 | `unidade` | str | Unidade publicada pelo SIDRA |
 | `produto` | str | Nome do produto |
 | `fonte` | str | "ibge_lspa" |
@@ -301,7 +301,7 @@ produtos = await ibge.produtos_lspa()
 
 Nota: No LSPA, `milho_1` e `milho_2` referem-se à primeira e segunda safras de milho do mesmo ano civil. O alias `milho` da API de fonte devolve os componentes separados; sua agregação ocorre no dataset.
 
-## UFs Disponiveis
+## UFs Disponíveis
 
 ```python
 ufs = await ibge.ufs()
@@ -310,7 +310,7 @@ ufs = await ibge.ufs()
 
 ## Uso - PPM
 
-### Basico
+### Básico
 
 ```python
 import asyncio
@@ -340,11 +340,11 @@ asyncio.run(main())
 
 ## Schema - PPM
 
-| Coluna | Tipo | Descricao |
+| Coluna | Tipo | Descrição |
 |--------|------|-----------|
 | `ano` | int | Ano de referencia |
 | `localidade` | str | Nome da localidade |
-| `localidade_cod` | int | Codigo IBGE da localidade |
+| `localidade_cod` | int | Código IBGE da localidade |
 | `especie` | str | Nome da especie/produto |
 | `valor` | float | Valor (cabecas, mil litros, etc) |
 | `unidade` | str | Unidade de medida |
@@ -354,7 +354,7 @@ asyncio.run(main())
 
 ### Rebanhos (tabela 3939)
 
-| Codigo | Especie | Unidade |
+| Código | Espécie | Unidade |
 |--------|---------|---------|
 | `bovino` | Bovino | cabecas |
 | `bubalino` | Bubalino | cabecas |
@@ -369,9 +369,9 @@ asyncio.run(main())
 
 `galinhas_poedeiras`: alias depreciado de `galinhas` (`FutureWarning`).
 
-### Producao de origem animal (tabela 74)
+### Produção de origem animal (tabela 74)
 
-| Codigo | Produto | Unidade |
+| Código | Produto | Unidade |
 |--------|---------|---------|
 | `leite` | Leite | mil litros |
 | `ovos_galinha` | Ovos de galinha | mil duzias |
@@ -387,7 +387,7 @@ especies = await ibge.especies_ppm()
 
 ## Uso - Abate Trimestral
 
-### Basico
+### Básico
 
 ```python
 import asyncio
@@ -411,20 +411,20 @@ asyncio.run(main())
 
 ## Schema - Abate Trimestral
 
-| Coluna | Tipo | Descricao |
+| Coluna | Tipo | Descrição |
 |--------|------|-----------|
 | `trimestre` | str | Trimestre no formato YYYYQQ |
 | `localidade` | str | UF |
-| `localidade_cod` | int | Codigo IBGE da localidade |
+| `localidade_cod` | int | Código IBGE da localidade |
 | `especie` | str | bovino, suino ou frango |
 | `categoria` | str | Tipo de rebanho no bovino: `total` (padrão), `bois`, `vacas`, `novilhos`, `novilhas` ou `vitelos`; `total` no suíno e no frango |
 | `animais_abatidos` | Int64 | Quantidade abatida (cabecas) |
 | `peso_carcacas` | float | Peso total das carcacas (kg) |
 | `fonte` | str | "ibge_abate" |
 
-## Especies Abate
+## Espécies Abate
 
-| Codigo | Especie | Tabela SIDRA |
+| Código | Espécie | Tabela SIDRA |
 |--------|---------|--------------|
 | `bovino` | Bovino | 1092 |
 | `suino` | Suino | 1093 |
@@ -435,9 +435,9 @@ especies = await ibge.especies_abate()
 # ['bovino', 'suino', 'frango']
 ```
 
-## Uso - Censo Agropecuario
+## Uso - Censo Agropecuário
 
-### Basico
+### Básico
 
 ```python
 import asyncio
@@ -462,34 +462,34 @@ async def main():
 asyncio.run(main())
 ```
 
-## Schema - Censo Agropecuario
+## Schema - Censo Agropecuário
 
-| Coluna | Tipo | Descricao |
+| Coluna | Tipo | Descrição |
 |--------|------|-----------|
 | `ano` | int | Ano de referencia (1995, 2006 ou 2017) |
 | `localidade` | str | Nome da localidade |
-| `localidade_cod` | int | Codigo IBGE da localidade |
+| `localidade_cod` | int | Código IBGE da localidade |
 | `tema` | str | Tema do censo |
 | `categoria` | str | Categoria dentro do tema |
-| `variavel` | str | Nome da variavel |
-| `valor` | float | Valor da variavel |
+| `variavel` | str | Nome da variável |
+| `valor` | float | Valor da variável |
 | `unidade` | str | Unidade de medida |
 | `fonte` | str | "ibge_censo_agro" |
 
-## Temas Censo Agropecuario
+## Temas Censo Agropecuário
 
-| Codigo | Tema | Tabela SIDRA 1995 | Tabela SIDRA 2006 | Tabela SIDRA 2017 |
+| Código | Tema | Tabela SIDRA 1995 | Tabela SIDRA 2006 | Tabela SIDRA 2017 |
 |--------|------|-------------------|-------------------|-------------------|
 | `efetivo_rebanho` | Efetivo de rebanho | 323 | — | 6907 |
 | `uso_terra` | Uso da terra | 316/311 | — | 6881 |
-| `lavoura_temporaria` | Lavoura temporaria | 497/492/503 | — | 6957 |
+| `lavoura_temporaria` | Lavoura temporária | 497/492/503 | — | 6957 |
 | `lavoura_permanente` | Lavoura permanente | 509/504/510 | — | 6956 |
 | `preparo_solo` | Preparo do solo | — | 791 | 6855 |
 | `adubacao` | Adubacao | — | 1249 | 6848 |
 | `calagem` | Calagem | — | 1245 | 6849 |
 | `agrotoxicos` | Uso de agrotoxicos | — | 1459 | 6851 |
-| `praticas_agricolas` | Praticas agricolas | — | 837 | 8561 |
-| `irrigacao` | Irrigacao | — | 855 | 6857 |
+| `praticas_agricolas` | Praticas agrícolas | — | 837 | 8561 |
+| `irrigacao` | Irrigação | — | 855 | 6857 |
 | `despesa_adubos` | Despesa com adubos | — | — | 6899 |
 
 ```python
@@ -503,9 +503,9 @@ temas = await ibge.temas_censo_agro()
 
 Não há cache local: cada chamada consulta o IBGE, e o `MetaInfo` sai com `from_cache=False` e `cache_expires_at` nulo.
 
-## Atualizacao
+## Atualização
 
-| Pesquisa | Frequencia |
+| Pesquisa | Frequência |
 |----------|------------|
 | PAM | Anual (agosto-setembro) |
 | LSPA | Mensal |
@@ -513,13 +513,13 @@ Não há cache local: cada chamada consulta o IBGE, e o `MetaInfo` sai com `from
 | Abate | Trimestral (T+2 meses) |
 | Censo Agro | Decenial (ultimo: 2017) |
 | Silvicultura (PEVS) | Anual (agosto-setembro) |
-| Extracao Vegetal (PEVS) | Anual (agosto-setembro) |
+| Extração Vegetal (PEVS) | Anual (agosto-setembro) |
 | Leite Trimestral | Trimestral (T+2 meses) |
 | PIB Agro | Trimestral (T+2 meses) |
 
 ## Uso - Silvicultura (PEVS)
 
-### Basico
+### Básico
 
 ```python
 import asyncio
@@ -543,19 +543,19 @@ asyncio.run(main())
 
 ## Schema - Silvicultura
 
-| Coluna | Tipo | Descricao |
+| Coluna | Tipo | Descrição |
 |--------|------|-----------|
 | `ano` | int | Ano de referencia |
 | `localidade` | str | Nome da localidade |
-| `localidade_cod` | int | Codigo IBGE da localidade |
+| `localidade_cod` | int | Código IBGE da localidade |
 | `produto` | str | Nome do produto |
 | `valor` | float | Valor (Toneladas, Metros cubicos ou Hectares) |
 | `unidade` | str | Unidade de medida |
 | `fonte` | str | "ibge_silvicultura" |
 
-## Uso - Extracao Vegetal (PEVS)
+## Uso - Extração Vegetal (PEVS)
 
-### Basico
+### Básico
 
 ```python
 import asyncio
@@ -577,13 +577,13 @@ async def main():
 asyncio.run(main())
 ```
 
-## Schema - Extracao Vegetal
+## Schema - Extração Vegetal
 
-| Coluna | Tipo | Descricao |
+| Coluna | Tipo | Descrição |
 |--------|------|-----------|
 | `ano` | int | Ano de referencia |
 | `localidade` | str | Nome da localidade |
-| `localidade_cod` | int | Codigo IBGE da localidade |
+| `localidade_cod` | int | Código IBGE da localidade |
 | `produto` | str | Nome do produto |
 | `valor` | float | Valor (Toneladas ou Metros cubicos) |
 | `unidade` | str | Unidade de medida |
@@ -591,7 +591,7 @@ asyncio.run(main())
 
 ## Uso - Leite Trimestral
 
-### Basico
+### Básico
 
 ```python
 import asyncio
@@ -615,19 +615,19 @@ asyncio.run(main())
 
 ## Schema - Leite Trimestral
 
-| Coluna | Tipo | Descricao |
+| Coluna | Tipo | Descrição |
 |--------|------|-----------|
 | `trimestre` | str | Trimestre YYYYQQ |
 | `localidade` | str | UF |
-| `localidade_cod` | int | Codigo IBGE da localidade |
+| `localidade_cod` | int | Código IBGE da localidade |
 | `leite_adquirido` | float | Leite cru adquirido (mil litros) |
 | `leite_industrializado` | float | Leite cru industrializado (mil litros) |
-| `preco_medio` | float | Preco medio pago ao produtor (R$/litro) |
+| `preco_medio` | float | Preco médio pago ao produtor (R$/litro) |
 | `fonte` | str | "ibge_leite_trimestral" |
 
-## Uso - PIB Agropecuario
+## Uso - PIB Agropecuário
 
-### Basico
+### Básico
 
 ```python
 import asyncio
@@ -649,14 +649,14 @@ async def main():
 asyncio.run(main())
 ```
 
-## Schema - PIB Agropecuario
+## Schema - PIB Agropecuário
 
-| Coluna | Tipo | Descricao |
+| Coluna | Tipo | Descrição |
 |--------|------|-----------|
 | `trimestre` | str | Trimestre YYYYQQ |
 | `valor` | float | Valor (Milhoes de Reais) |
 | `unidade` | str | Unidade de medida |
-| `setor` | str | Setor economico |
+| `setor` | str | Setor econômico |
 | `fonte` | str | "ibge_pib" |
 
 ## Malha municipal e áreas urbanizadas (geoserviços)
@@ -688,10 +688,10 @@ Rajadas de consultas ao SIDRA podem provocar uma verificação antibot do Cloudf
 
 ## Notas
 
-- PEVS Silvicultura: 14 produtos, dados anuais desde 1986. Area plantada (tab 5930) com 3 especies
-- PEVS Extracao Vegetal: 21 produtos, dados anuais desde 1986. Unidades mistas (Toneladas vs Metros cubicos)
-- Leite Trimestral: tabela 1086, 3 variaveis pivotadas em colunas wide. Serie desde 1997
-- PIB Agropecuario: tabs 1846/6612, 4 setores, nivel Brasil. Serie desde 1996. Contrato `pib_agro` 1.0 (dataset `datasets.pib_agro`)
+- PEVS Silvicultura: 14 produtos, dados anuais desde 1986. Area plantada (tab 5930) com 3 espécies
+- PEVS Extração Vegetal: 21 produtos, dados anuais desde 1986. Unidades mistas (Toneladas vs Metros cubicos)
+- Leite Trimestral: tabela 1086, 3 variáveis pivotadas em colunas wide. Serie desde 1997
+- PIB Agropecuário: tabs 1846/6612, 4 setores, nível Brasil. Serie desde 1996. Contrato `pib_agro` 1.0 (dataset `datasets.pib_agro`)
 
 ## Períodos e cobertura histórica
 

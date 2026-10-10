@@ -6,7 +6,7 @@ Na API 2.0, somente `tema` aceita posição; os demais filtros e flags são pass
 
 ## Fontes
 
-| Prioridade | Fonte | Descricao |
+| Prioridade | Fonte | Descrição |
 |------------|-------|-----------|
 | 1 | IBGE FTP | Censo Agropecuário 1995/96, tabelas nacionais e estaduais |
 
@@ -22,7 +22,7 @@ O tema `maquinas` não tem o Pará: o IBGE publicou a Tabela 6 (pessoal ocupado)
 
 ## Schema
 
-| Coluna | Tipo | Nullable | Descricao |
+| Coluna | Tipo | Nullable | Descrição |
 |--------|------|----------|-----------|
 | `ano` | Int64 | N | Sempre 1995 |
 | `localidade` | str | S | Brasil, nome da UF ou nome histórico do município |
@@ -31,8 +31,8 @@ O tema `maquinas` não tem o Pará: o IBGE publicou a Tabela 6 (pessoal ocupado)
 | `uf` | str | S | Sigla do diretório/cabeçalho oficial; nula para Brasil |
 | `tema` | str | N | Tema do censo |
 | `categoria` | str | N | Categoria dentro do tema |
-| `variavel` | str | N | Nome da variavel |
-| `valor` | float64 | S | Valor da variavel |
+| `variavel` | str | N | Nome da variável |
+| `valor` | float64 | S | Valor da variável |
 | `unidade` | str | N | Unidade de medida |
 | `fonte` | str | N | Sempre 'ibge_censo_agro_legado' |
 
@@ -45,7 +45,7 @@ A UF distingue municípios homônimos sem alterar seus nomes ou atribuir código
 ## Garantias
 
 - Ano sempre 1995 (Censo 1995/96)
-- Valores numericos sempre >= 0
+- Valores numéricos sempre >= 0
 - Fonte sempre 'ibge_censo_agro_legado'
 - Dados estaticos (update_frequency = never)
 
@@ -79,9 +79,9 @@ from agrobr import datasets
 df, meta = await datasets.censo_agropecuario_legado("pessoal_ocupado", uf="SP", return_meta=True)
 ```
 
-## Niveis Territoriais
+## Níveis Territoriais
 
-| Nivel | Descricao |
+| Nível | Descrição |
 |-------|-----------|
 | `brasil` | Tabelas nacionais, incluindo as categorias de atividade; incompatível com filtro `uf` |
 | `uf` | Totais estaduais reais (padrão); sem `uf`, consulta os 27 diretórios estaduais |

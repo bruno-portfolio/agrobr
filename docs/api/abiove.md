@@ -1,11 +1,11 @@
 # API ABIOVE
 
-O modulo ABIOVE fornece dados de exportacao do complexo soja — grao, farelo, oleo e milho — publicados pela Associacao Brasileira das Industrias de Oleos Vegetais.
+O módulo ABIOVE fornece dados de exportacao do complexo soja — grao, farelo, oleo e milho — publicados pela Associacao Brasileira das Industrias de Oleos Vegetais.
 
 !!! warning "Licença zona_cinza"
     Fonte privada sem licença de reutilização das estatísticas localizada. Atribuição não substitui eventual permissão necessária.
 
-## Funcoes
+## Funções
 
 ### `exportacao`
 
@@ -24,9 +24,9 @@ async def exportacao(
 ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]
 ```
 
-**Parametros:**
+**Parâmetros:**
 
-| Parametro | Tipo | Descricao |
+| Parâmetro | Tipo | Descrição |
 |-----------|------|-----------|
 | `ano` | `int` | Ano de referência, de 2010 ao corrente |
 | `mes` | `int \| None` | Mês dos dados (1-12). None retorna todos os meses publicados |
@@ -66,7 +66,7 @@ A ABIOVE publica uma planilha por edição mensal (`exp_AAAAMM.xlsx`), com o ano
 - `mes` só filtra o mês dos dados: mês ainda não publicado devolve DataFrame vazio, e `ano` que não é inteiro de 2010 ao corrente ou `mes` fora de 1-12 levantam `InvalidParameterError` antes da rede, como `edicao` em outro formato ou de outro ano, `produto` fora da lista e `agregacao` diferente de `"detalhado"` e `"mensal"`.
 - Falha na edição mais recente (timeout, HTTP 5xx) levanta `SourceUnavailableError`; o agrobr só passa para a edição anterior quando a mais recente não existe (HTTP 404).
 
-## Versao Sincrona
+## Versão Síncrona
 
 ```python
 from agrobr.sync import abiove
@@ -76,5 +76,5 @@ df = abiove.exportacao(2024)
 
 ## Notas
 
-- Fonte: [ABIOVE](https://abiove.org.br) — licenca `zona_cinza`
+- Fonte: [ABIOVE](https://abiove.org.br) — licença `zona_cinza`
 - Dados em Excel com formato multi-secao

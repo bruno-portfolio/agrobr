@@ -1,6 +1,6 @@
 # API ANDA
 
-O modulo ANDA fornece as entregas mensais de fertilizantes ao mercado brasileiro (total nacional), publicadas pela Associacao Nacional para Difusao de Adubos.
+O módulo ANDA fornece as entregas mensais de fertilizantes ao mercado brasileiro (total nacional), publicadas pela Associacao Nacional para Difusao de Adubos.
 
 !!! warning "Licença zona_cinza"
     Fonte privada sem licença de reutilização das estatísticas localizada. Atribuição não substitui eventual permissão necessária.
@@ -13,7 +13,7 @@ Requer `pdfplumber`:
 pip install agrobr[pdf]
 ```
 
-## Funcoes
+## Funções
 
 ### `entregas`
 
@@ -30,9 +30,9 @@ async def entregas(
 ) -> DataFrameResult
 ```
 
-**Parametros:**
+**Parâmetros:**
 
-| Parametro | Tipo | Descricao |
+| Parâmetro | Tipo | Descrição |
 |-----------|------|-----------|
 | `ano` | `int` | Ano de referencia. Ano indisponivel no site levanta `InvalidParameterError` listando os anos disponíveis |
 | `produto` | `str` | Mantido por compatibilidade. O único valor disponível é `"total"`; outros valores levantam `ValueError` antes do download |
@@ -63,7 +63,7 @@ df = await anda.entregas(2024, produto="total")
 df = await anda.entregas(2024, agregacao="mensal")
 ```
 
-## Versao Sincrona
+## Versão Síncrona
 
 ```python
 from agrobr.sync import anda
@@ -73,7 +73,7 @@ df = anda.entregas(2024)
 
 ## Notas
 
-- Fonte: [ANDA](https://anda.org.br) — licenca `zona_cinza`
+- Fonte: [ANDA](https://anda.org.br) — licença `zona_cinza`
 - Dados extraidos de PDF via `pdfplumber`
 - Catálogo público: PDFs de 2016 a 2026
 

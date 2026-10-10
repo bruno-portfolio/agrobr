@@ -4,21 +4,21 @@
 
 | Item | Detalhe |
 |------|---------|
-| Provedor | ANA (Agencia Nacional de Aguas e Saneamento Basico) |
-| Dados | Hidrografia, pivos de irrigacao, demanda de irrigacao, disponibilidade hidrica, massas d'água |
+| Provedor | ANA (Agencia Nacional de Aguas e Saneamento Básico) |
+| Dados | Hidrografia, pivos de irrigação, demanda de irrigação, disponibilidade hidrica, massas d'água |
 | Acesso | ArcGIS REST MapServer API |
 | Formato | JSON (tabular) / GeoJSON (geo) |
-| Autenticacao | Nenhuma |
-| Licenca | Dados publicos |
+| Autenticação | Nenhuma |
+| Licença | Dados publicos |
 
 ## Layers
 
-| Layer | Features | Geometria | bbox obrigatorio |
+| Layer | Features | Geometria | bbox obrigatório |
 |-------|----------|-----------|------------------|
 | `hidrografia` | ~620K polylines | Polyline | Sim |
-| `pivos_irrigacao` | ~19.9K polygons | Polygon | Nao |
+| `pivos_irrigacao` | ~19.9K polygons | Polygon | Não |
 | `demanda_irrigacao` | ~265K polygons | Polygon | Sim |
-| `disponibilidade_hidrica` | ~42K polylines | Polyline | Nao |
+| `disponibilidade_hidrica` | ~42K polylines | Polyline | Não |
 | `massas_dagua` | ~241K polygons | Polygon | `uf` ou `bbox` |
 
 ## Epoca e referencia dos dados
@@ -29,31 +29,31 @@ produzido pela ANA em parceria com a Embrapa Milho e Sorgo, conforme os
 
 Nas camadas de demanda e disponibilidade, `versao` preserva o campo oficial
 `DSVERSAO`. O valor observado `BHO 2013 versao 1.3 de 22/07/2014` identifica a
-versao da base hidrografica; ele, sozinho, nao determina o ano das estimativas
+versão da base hidrografica; ele, sozinho, não determina o ano das estimativas
 de demanda. As datas de consulta em `MetaInfo`, como `fetched_at`, indicam quando
-os dados foram obtidos, nao quando o levantamento foi realizado. Essas camadas
-nao representam medicoes hidrologicas em tempo real.
+os dados foram obtidos, não quando o levantamento foi realizado. Essas camadas
+não representam medicoes hidrologicas em tempo real.
 
 ## Acesso via ArcGIS REST
 
-| Parametro | Valor |
+| Parâmetro | Valor |
 |-----------|-------|
 | Base URL | `https://portal1.snirh.gov.br/server/rest/services/dados_abertos` |
-| Servico | `MapServer/0` |
-| Paginacao | Por chave: `orderByFields=OBJECTID` e `OBJECTID > ultimo` (ate 1K features/pagina) |
-| Throttle | Pausa de 2s apos a sexta pagina e as seguintes |
+| Serviço | `MapServer/0` |
+| Paginação | Por chave: `orderByFields=OBJECTID` e `OBJECTID > ultimo` (até 1K features/pagina) |
+| Throttle | Pausa de 2s após a sexta página e as seguintes |
 | Timeout de leitura | 180s |
 
-A coleta exige `OBJECTID` em ordem crescente estrita dentro de cada pagina e
-acima da ultima chave da pagina anterior. Chaves repetidas, sobrepostas ou
+A coleta exige `OBJECTID` em ordem crescente estrita dentro de cada página e
+acima da última chave da página anterior. Chaves repetidas, sobrepostas ou
 fora de ordem geram `SourceUnavailableError`.
 
-As funcoes tabulares solicitam JSON com `returnGeometry=false`; as variantes
+As funções tabulares solicitam JSON com `returnGeometry=false`; as variantes
 `_geo` solicitam GeoJSON e mantem a geometria em EPSG:4326. O filtro espacial
 `bbox` e aplicado em ambas as modalidades.
 As duas modalidades exigem todos os atributos pedidos em cada feicao. Um
 atributo ausente gera `ParseError`, mesmo que esteja presente em outra
-feicao da mesma pagina; um valor nulo declarado continua permitido.
+feicao da mesma página; um valor nulo declarado continua permitido.
 
 ## Exemplo de Uso
 
@@ -101,48 +101,48 @@ asyncio.run(main())
 
 ### hidrografia
 
-| Coluna | Tipo | Descricao |
+| Coluna | Tipo | Descrição |
 |--------|------|-----------|
 | OBJECTID | int | ID do registro |
-| codigo_curso | str | Codigo do curso d'agua |
-| codigo_bacia | str | Codigo da bacia |
+| codigo_curso | str | Código do curso d'agua |
+| codigo_bacia | str | Código da bacia |
 | nome_rio | str | Nome do rio |
-| dominio | str | Dominio |
+| dominio | str | Domínio |
 
 ### pivos_irrigacao
 
-| Coluna | Tipo | Descricao |
+| Coluna | Tipo | Descrição |
 |--------|------|-----------|
 | OBJECTID | int | ID do registro |
-| codigo_municipio | str | Codigo do municipio |
-| municipio | str | Municipio |
+| codigo_municipio | str | Código do município |
+| municipio | str | Município |
 | estado | str | Estado |
-| regiao_hidro | str | Regiao hidrografica |
+| regiao_hidro | str | Região hidrografica |
 | area_ha | float | Area em hectares |
 
 ### demanda_irrigacao
 
-| Coluna | Tipo | Descricao |
+| Coluna | Tipo | Descrição |
 |--------|------|-----------|
 | OBJECTID | int | ID do registro |
 | ID | int | ID |
-| codigo_bacia | str | Codigo da bacia |
+| codigo_bacia | str | Código da bacia |
 | versao | str | Identificador original DSVERSAO da base hidrografica |
-| vazao_max_mensal | float | Vazao de retirada maxima mensal (m3/s) |
+| vazao_max_mensal | float | Vazao de retirada máxima mensal (m3/s) |
 | vazao_mes_seco | float | Vazao de retirada no mes seco (m3/s) |
-| vazao_mes_irrigacao | float | Vazao de retirada no mes de irrigacao (m3/s) |
+| vazao_mes_irrigacao | float | Vazao de retirada no mes de irrigação (m3/s) |
 | vazao_media_anual | float | Vazao de retirada media anual (m3/s) |
 
 ### disponibilidade_hidrica
 
-| Coluna | Tipo | Descricao |
+| Coluna | Tipo | Descrição |
 |--------|------|-----------|
 | OBJECTID | int | ID do registro |
 | ID | int | ID |
 | area_montante_km2 | float | Area de montante em km2 |
 | disponibilidade_m3_s | float | Disponibilidade em m3/segundo |
 | nome_rio | str | Nome do rio |
-| dominio | str | Dominio |
+| dominio | str | Domínio |
 | versao | str | Identificador original DSVERSAO da base hidrografica |
 
 ## Massas d'água
@@ -199,8 +199,8 @@ licença: "O acesso ao dado é livre."). A `hidrografia` é outra camada: só as
 
 ## Particularidades
 
-- **bbox obrigatorio**: `hidrografia` e `demanda_irrigacao` requerem bbox (datasets grandes)
-- **Paginacao por chave**: cada pagina pede ate 1K features ordenadas por `OBJECTID` e a seguinte continua do ultimo `OBJECTID` recebido, ate completar a contagem oficial. O servidor da Hidrografia devolve uma feicao a menos que o pedido em cada pagina; com paginacao por offset, a feicao da fronteira se perdia (1.046 de 1.047 no recorte de teste). Se a paginacao parar antes da contagem oficial, ou se uma pagina nao avancar o `OBJECTID`, a consulta levanta `SourceUnavailableError` dizendo quantas feicoes faltam, em vez de devolver resultado parcial. Pagina ilegivel (JSON cortado, HTML de proxy) ou sem `OBJECTID` levanta `ParseError`
+- **bbox obrigatório**: `hidrografia` e `demanda_irrigacao` requerem bbox (datasets grandes)
+- **Paginação por chave**: cada página pede até 1K features ordenadas por `OBJECTID` e a seguinte continua do ultimo `OBJECTID` recebido, até completar a contagem oficial. O servidor da Hidrografia devolve uma feicao a menos que o pedido em cada página; com paginação por offset, a feicao da fronteira se perdia (1.046 de 1.047 no recorte de teste). Se a paginação parar antes da contagem oficial, ou se uma página não avancar o `OBJECTID`, a consulta levanta `SourceUnavailableError` dizendo quantas feicoes faltam, em vez de devolver resultado parcial. Página ilegivel (JSON cortado, HTML de proxy) ou sem `OBJECTID` levanta `ParseError`
 - **max_registros**: inteiro positivo que limita as feições retornadas, ou `None` para não limitar. Zero, negativos, booleanos e valores não inteiros levantam `InvalidParameterError` antes da coleta. O argumento anterior `max_features` não é mais aceito. Quando a camada tem mais feições que o limite, a consulta emite `UserWarning` (`"ANA hidrografia: retornadas 5 de 63 feições por limite local; restrinja filtros ou use max_registros=None."`), põe a mesma frase em `MetaInfo.validation_warnings` e publica `source_details["coverage"]` com `expected_rows` (total da camada), `returned_rows`, `local_limit` e `truncated=True`. O total é a contagem que a consulta já faz antes de baixar as páginas, a mesma que decide a coleta; não há contagem extra. Sem corte, o resultado e o `MetaInfo` não mudam
 - **Campos obrigatórios**: todo campo pedido ao serviço (`outFields`) tem de vir em cada feição de cada página no tabular e em cada página nas variantes `_geo`. O serviço manda todos, nulos inclusive, então campo ausente é mudança de layout e levanta `ParseError` com o nome do campo, em vez de devolver a coluna a menos
 
@@ -212,21 +212,21 @@ licença: "O acesso ao dado é livre."). A `hidrografia` é outra camada: só as
 | `disponibilidade_hidrica` | `OBJECTID`, `ID`, `NUAREAMONT`, `DISPQ95`, `NMRIO`, `DEDOMINIAL`, `DSVERSAO` |
 | `massas_dagua` | `FID` e os 18 campos da tabela de colunas das massas d'água (o `FID` não sai) |
 
-Contagem oficial zero devolve um resultado vazio valido, com as colunas publicadas;
-nas variantes `_geo`, o resultado vazio tambem sai em EPSG:4326. A presenca
-de um campo com valor nulo e diferente da ausencia desse campo; valores nulos e
-zeros sao preservados.
+Contagem oficial zero devolve um resultado vazio válido, com as colunas publicadas;
+nas variantes `_geo`, o resultado vazio também sai em EPSG:4326. A presença
+de um campo com valor nulo e diferente da ausência desse campo; valores nulos e
+zeros são preservados.
 
 `OBJECTID` e `ID` mantêm os nomes da fonte e usam `Int64` anulável. Medidas usam `float64`; códigos textuais preservam o texto publicado. O texto usa o dtype nativo do pandas (`str` no pandas 3, `object` no pandas 2), e os resultados vazios têm os mesmos dtypes dos resultados com registros.
 
 ## Limitacoes
 
-- Hidrografia e demanda de irrigacao exigem bbox (sem filtro retornaria centenas de milhares de features)
+- Hidrografia e demanda de irrigação exigem bbox (sem filtro retornaria centenas de milhares de features)
 - Apenas pivos e massas d'água oferecem filtro por UF; todas as camadas aceitam bbox e max_registros
-- Nao ha filtro de ano ou intervalo de datas; a consulta usa a edicao de cada camada configurada
-- A consulta conta os registros antes de baixar as paginas; mesmo um max_registros pequeno pode exigir aguardar essa contagem
-- As paginas sao acumuladas em memoria antes de construir o resultado; nao ha streaming nem cache persistente ANA
-- Pausa de 2s apos a sexta pagina e as seguintes para nao sobrecarregar o servidor
+- Não ha filtro de ano ou intervalo de datas; a consulta usa a edição de cada camada configurada
+- A consulta conta os registros antes de baixar as páginas; mesmo um max_registros pequeno pode exigir aguardar essa contagem
+- As páginas são acumuladas em memoria antes de construir o resultado; não ha streaming nem cache persistente ANA
+- Pausa de 2s após a sexta página e as seguintes para não sobrecarregar o servidor
 
 ## Coleta bruta
 

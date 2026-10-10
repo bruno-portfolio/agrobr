@@ -1,6 +1,6 @@
 # abate_trimestral v2.1
 
-Abate de animais por especie, trimestre e UF (bovino, suino, frango).
+Abate de animais por espécie, trimestre e UF (bovino, suino, frango).
 
 Na API 2.0, somente `produto`, `trimestre` aceitam posição; os demais filtros e flags são passados por nome. Retornos vazios preservam os dtypes do contrato: inteiros em `Int64`, medidas em `float64` e texto no padrão do pandas instalado.
 
@@ -10,21 +10,21 @@ A versão 2.1 acrescenta `categoria` (tipo de rebanho do bovino) à saída e à 
 
 ## Fontes
 
-| Prioridade | Fonte | Descricao |
+| Prioridade | Fonte | Descrição |
 |------------|-------|-----------|
 | 1 | IBGE Abate | Pesquisa Trimestral do Abate de Animais |
 
-## Especies
+## Espécies
 
 `bovino`, `suino`, `frango`
 
 ## Schema
 
-| Coluna | Tipo | Nullable | Descricao |
+| Coluna | Tipo | Nullable | Descrição |
 |--------|------|----------|-----------|
 | `trimestre` | str | ❌ | Trimestre no formato YYYYQQ |
 | `localidade` | str | ✅ | UF |
-| `localidade_cod` | Int64 | ✅ | Codigo IBGE |
+| `localidade_cod` | Int64 | ✅ | Código IBGE |
 | `especie` | str | ❌ | bovino, suino ou frango |
 | `categoria` | str | ❌ | Tipo de rebanho do bovino: total, bois, vacas, novilhos, novilhas ou vitelos; `total` no suíno e no frango |
 | `animais_abatidos` | Int64 | ✅ | Quantidade de animais abatidos (cabecas) |
@@ -41,7 +41,7 @@ O dataset entrega as UFs e não tem linha do Brasil. O IBGE omite por sigilo (c�
 
 - Dados trimestrais consolidados
 - Latencia tipica: T+2 meses
-- Serie historica desde 1997
+- Serie histórica desde 1997
 
 ## Exemplo
 
@@ -65,7 +65,7 @@ femeas = (cabecas["vacas"] + cabecas["novilhas"]) / cabecas["total"]
 
 ## Schema JSON
 
-Disponivel em `agrobr/schemas/abate_trimestral.json`.
+Disponível em `agrobr/schemas/abate_trimestral.json`.
 
 ```python
 from agrobr.contracts import get_contract

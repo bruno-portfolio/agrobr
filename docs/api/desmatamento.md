@@ -12,24 +12,24 @@ import agrobr
 df = await agrobr.desmatamento.prodes(bioma="Cerrado", ano=2022, uf="MT")
 ```
 
-### Parametros
+### Parâmetros
 
-| Parametro | Tipo | Obrigatorio | Descricao |
+| Parâmetro | Tipo | Obrigatório | Descrição |
 |-----------|------|-------------|-----------|
-| `bioma` | `str` | Nao | Bioma: "Amazonia", "Cerrado", "Caatinga", "Mata Atlantica", "Pantanal", "Pampa". Default: "Cerrado" |
-| `ano` | `int` | Nao | Ano (ex: 2022). Se None, todos os anos, até o teto de `max_registros` |
-| `uf` | `str` | Nao | Filtrar por UF (ex: "MT") |
-| `max_registros` | `int \| None` | Nao | Teto de feições lidas; padrão 50.000. `None` lê a seleção inteira. Se o teto cortar a seleção, sai `UserWarning` com o total do WFS e o número retornado |
-| `tamanho_pagina` | `int \| None` | Nao | Feições por página do WFS; padrão 500, máximo 2.000 |
-| `as_polars` | `bool` | Nao | Retornar como polars.DataFrame |
-| `return_meta` | `bool` | Nao | Se True, retorna `(DataFrame, MetaInfo)` |
+| `bioma` | `str` | Não | Bioma: "Amazonia", "Cerrado", "Caatinga", "Mata Atlantica", "Pantanal", "Pampa". Default: "Cerrado" |
+| `ano` | `int` | Não | Ano (ex: 2022). Se None, todos os anos, até o teto de `max_registros` |
+| `uf` | `str` | Não | Filtrar por UF (ex: "MT") |
+| `max_registros` | `int \| None` | Não | Teto de feições lidas; padrão 50.000. `None` lê a seleção inteira. Se o teto cortar a seleção, sai `UserWarning` com o total do WFS e o número retornado |
+| `tamanho_pagina` | `int \| None` | Não | Feições por página do WFS; padrão 500, máximo 2.000 |
+| `as_polars` | `bool` | Não | Retornar como polars.DataFrame |
+| `return_meta` | `bool` | Não | Se True, retorna `(DataFrame, MetaInfo)` |
 
 ### Colunas de Retorno
 
-| Coluna | Tipo | Descricao |
+| Coluna | Tipo | Descrição |
 |--------|------|-----------|
 | `ano` | int | Ano do desmatamento |
-| `uf` | str | Codigo UF (ex: "MT") |
+| `uf` | str | Código UF (ex: "MT") |
 | `classe` | str | Classe de cobertura (ex: "desmatamento") |
 | `area_km2` | float | Area desmatada em km2 |
 | `satelite` | str | Satelite utilizado |
@@ -38,9 +38,9 @@ df = await agrobr.desmatamento.prodes(bioma="Cerrado", ano=2022, uf="MT")
 
 Cada linha é uma feição publicada. Além dessas, saem `feature_id`, `uuid`, `fid`, `estado_original`, `path_row`, `class_name`, `def_cloud`, `julian_day`, `image_date`, `scene_id`, `publish_year`, `source` e `pub_date` (20 colunas, contrato `desmatamento_prodes_feicoes` 2.0). `uf` sai nulo quando o estado publicado não é reconhecido; o texto original fica em `estado_original`.
 
-### Biomas Disponiveis (PRODES)
+### Biomas Disponíveis (PRODES)
 
-| Bioma | Workspace GeoServer | Layer | Serie Historica |
+| Bioma | Workspace GeoServer | Layer | Serie Histórica |
 |-------|--------------------|----|---|
 | Amazonia | prodes-amazon-nb | yearly_deforestation_biome | 2000+ |
 | Cerrado | prodes-cerrado-nb | yearly_deforestation | 2000+ |
@@ -108,7 +108,7 @@ Cada linha é uma feição publicada, com as mesmas 20 colunas de `prodes()` mai
 
 ## `desmatamento.deter()`
 
-Alertas diarios de desmatamento em tempo real.
+Alertas diários de desmatamento em tempo real.
 
 ```python
 import agrobr
@@ -121,28 +121,28 @@ df = await agrobr.desmatamento.deter(
 )
 ```
 
-### Parametros
+### Parâmetros
 
-| Parametro | Tipo | Obrigatorio | Descricao |
+| Parâmetro | Tipo | Obrigatório | Descrição |
 |-----------|------|-------------|-----------|
-| `bioma` | `str` | Nao | Bioma: "Amazonia", "Cerrado". Default: "Amazonia" |
-| `uf` | `str` | Nao | Filtrar por UF (ex: "PA") |
-| `inicio` | `str`, `date` ou `datetime` | Nao | Data inicial: `date`, `datetime` (a hora é descartada) ou texto `AAAA-MM-DD` ou `DD/MM/AAAA` |
-| `fim` | `str`, `date` ou `datetime` | Nao | Data final, nos mesmos formatos; anterior ao `inicio` levanta `InvalidParameterError` |
-| `classe` | `str` | Nao | Filtrar por classe de alerta |
-| `max_registros` | `int \| None` | Nao | Teto de feições lidas; padrão 50.000. `None` lê a seleção inteira. Se o teto cortar a seleção, sai `UserWarning` com o total do WFS e o número retornado |
-| `tamanho_pagina` | `int \| None` | Nao | Feições por página do WFS; padrão 500, máximo 2.000 |
-| `as_polars` | `bool` | Nao | Retornar como polars.DataFrame |
-| `return_meta` | `bool` | Nao | Se True, retorna `(DataFrame, MetaInfo)` |
+| `bioma` | `str` | Não | Bioma: "Amazonia", "Cerrado". Default: "Amazonia" |
+| `uf` | `str` | Não | Filtrar por UF (ex: "PA") |
+| `inicio` | `str`, `date` ou `datetime` | Não | Data inicial: `date`, `datetime` (a hora é descartada) ou texto `AAAA-MM-DD` ou `DD/MM/AAAA` |
+| `fim` | `str`, `date` ou `datetime` | Não | Data final, nos mesmos formatos; anterior ao `inicio` levanta `InvalidParameterError` |
+| `classe` | `str` | Não | Filtrar por classe de alerta |
+| `max_registros` | `int \| None` | Não | Teto de feições lidas; padrão 50.000. `None` lê a seleção inteira. Se o teto cortar a seleção, sai `UserWarning` com o total do WFS e o número retornado |
+| `tamanho_pagina` | `int \| None` | Não | Feições por página do WFS; padrão 500, máximo 2.000 |
+| `as_polars` | `bool` | Não | Retornar como polars.DataFrame |
+| `return_meta` | `bool` | Não | Se True, retorna `(DataFrame, MetaInfo)` |
 
 ### Colunas de Retorno
 
-| Coluna | Tipo | Descricao |
+| Coluna | Tipo | Descrição |
 |--------|------|-----------|
 | `data` | date | Data do alerta |
 | `classe` | str | Tipo de alerta (DESMATAMENTO_CR, DEGRADACAO, MINERACAO, etc.) |
-| `uf` | str | Codigo UF |
-| `municipio` | str | Nome do municipio |
+| `uf` | str | Código UF |
+| `municipio` | str | Nome do município |
 | `municipio_id` | str | Código IBGE do município como publicado (texto; nulo no DETER Cerrado) |
 | `area_km2` | float | Area em km2 |
 | `satelite` | str | Satelite utilizado |
@@ -153,7 +153,7 @@ Cada linha é uma feição publicada. Além dessas, saem `feature_id`, `gid`, `u
 
 ### Classes DETER
 
-| Classe | Descricao |
+| Classe | Descrição |
 |--------|-----------|
 | `DESMATAMENTO_CR` | Desmatamento com corte raso |
 | `DESMATAMENTO_VEG` | Desmatamento com vegetacao secundaria |
@@ -228,7 +228,7 @@ Cada linha é uma feição publicada, com as mesmas 19 colunas de `deter()` mais
 
 ---
 
-## Uso Sincrono
+## Uso Síncrono
 
 ```python
 from agrobr import sync
@@ -245,4 +245,4 @@ gdf = sync.desmatamento.deter_geo(bioma="Amazônia", uf="PA", inicio="2024-01-01
 - **DETER**: Sistema de Deteccao de Desmatamento em Tempo Real
 - **Provedor**: INPE — Instituto Nacional de Pesquisas Espaciais
 - **API**: TerraBrasilis GeoServer (WFS)
-- **Licenca**: CC BY-SA 4.0 (INPE), classificação `livre`: uso comercial permitido com atribuição ao INPE; adaptações compartilhadas seguem CompartilhaIgual. Veja [Licenças](../licenses.md)
+- **Licença**: CC BY-SA 4.0 (INPE), classificação `livre`: uso comercial permitido com atribuição ao INPE; adaptações compartilhadas seguem CompartilhaIgual. Veja [Licenças](../licenses.md)

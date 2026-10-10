@@ -1,15 +1,15 @@
-# SFB — Servico Florestal Brasileiro
+# SFB — Serviço Florestal Brasileiro
 
 ## Visao Geral
 
 | Item | Detalhe |
 |------|---------|
-| Provedor | SFB (Servico Florestal Brasileiro) |
+| Provedor | SFB (Serviço Florestal Brasileiro) |
 | Dados | Florestas publicas (CNFP), concessoes florestais, Inventario Florestal Nacional (IFN) |
 | Acesso | ArcGIS REST API |
 | Formato | JSON sem geometria (tabular) / GeoJSON (geo) |
-| Autenticacao | Nenhuma |
-| Licenca | Dados publicos |
+| Autenticação | Nenhuma |
+| Licença | Dados publicos |
 
 ## Layers
 
@@ -21,14 +21,14 @@
 
 ## Acesso via ArcGIS REST
 
-| Parametro | Valor |
+| Parâmetro | Valor |
 |-----------|-------|
 | Base URL | `https://mapas.florestal.gov.br/server/rest/services` |
 | CNFP Service | `Hosted/CNFP_v19_03_retificado_17072025/FeatureServer/9` |
 | Concessoes Service | `Hosted/unidades_concessoes_florestais/FeatureServer/0` |
 | IFN Service | `DadosAbertos-IFN/dataset_ifn_tb_pontos_lote/FeatureServer/0` |
 | Paginação | Por chave no CNFP e nas concessões (`fid > último`, `orderByFields=fid`), 2.000 feições por página; IFN por `co_pontos_lote` e cadastro auxiliar por `co_lote` |
-| Throttle | 2s delay apos 5 paginas |
+| Throttle | 2s delay após 5 páginas |
 
 ## Exemplo de Uso
 
@@ -71,7 +71,7 @@ asyncio.run(main())
 
 ### cnfp
 
-| Coluna | Tipo | Descricao |
+| Coluna | Tipo | Descrição |
 |--------|------|-----------|
 | fid | int | ID do registro |
 | nome | str | Nome da floresta publica |
@@ -84,11 +84,11 @@ asyncio.run(main())
 | area_ha | float | Area em hectares |
 | ano_criacao | Int64 | Ano de criação extraído da data publicada (ver Particularidades) |
 | ano_criacao_texto | str | Texto publicado em `anocriacao`, como veio da fonte (nulo quando a fonte publica o campo vazio; feição sem o campo `anocriacao` levanta `ParseError`) |
-| municipio | str | Municipio |
+| municipio | str | Município |
 
 ### concessoes
 
-| Coluna | Tipo | Descricao |
+| Coluna | Tipo | Descrição |
 |--------|------|-----------|
 | fid | int | ID do registro |
 | nome | str | Nome da unidade |
@@ -101,14 +101,14 @@ asyncio.run(main())
 
 ### ifn_conglomerados
 
-| Coluna | Tipo | Descricao |
+| Coluna | Tipo | Descrição |
 |--------|------|-----------|
 | id | int | ID do registro |
-| codigo_lote | int | Codigo do lote |
+| codigo_lote | int | Código do lote |
 | lote | str, anulável | Nome publicado no cadastro auxiliar, por junção em `co_lote` |
 | conglomerado | str | Conglomerado |
 | uf | str | UF (sigla) |
-| municipio | str | Municipio |
+| municipio | str | Município |
 | bioma | str | Bioma |
 | ciclo | str, anulável | Texto de `nu_ciclo_execucao` publicado pela fonte |
 
@@ -127,7 +127,7 @@ asyncio.run(main())
 - **Unidades e CRS**: área em hectares como publicada (`area_ha` no CNFP, `hectares` nas concessões), sem recálculo pela geometria. A geometria é pedida em EPSG:4326 (`outSR=4326`) e reprojetada pelo servidor (o CNFP é guardado em 3857 e as concessões em 4674)
 - **Geometria inválida**: a geometria sai como o servidor publica, sem reparo; havendo geometria não nula inválida, `cnfp_geo`, `concessoes_geo` e `ifn_conglomerados_geo` avisam (`UserWarning` e `meta.validation_warnings`: "SFB cnfp: N de M geometrias inválidas como publicadas pela fonte; use make_valid antes de operações espaciais.") e põem a contagem em `meta.source_details` (`geometrias_invalidas`, `geometrias`). Sem inválidas, nada muda
 - **Parâmetros**: argumento desconhecido levanta `TypeError` antes da rede; `uf`, `bioma` e `categoria` inválidos levantam `InvalidParameterError`; `bbox` inválido levanta `ValueError`
-- **Filtros compostos**: CNFP e IFN aceitam filtro por bioma alem de uf e bbox
+- **Filtros compostos**: CNFP e IFN aceitam filtro por bioma além de uf e bbox
 
 Identificadores, códigos e anos usam `Int64` anulável; áreas usam `float64`. O texto usa o dtype nativo do pandas (`str` no pandas 3, `object` no pandas 2), inclusive nos resultados vazios.
 
@@ -137,7 +137,7 @@ Identificadores, códigos e anos usam `Int64` anulável; áreas usam `float64`. 
 - Pontos e lotes são publicações correntes consultadas separadamente; a junção não promete um snapshot transacional entre as duas camadas.
 - Dados refletem o estado atual do ArcGIS Server do SFB
 - Concessoes florestais tem poucos registros (~8 poligonos)
-- Throttle de 2s apos 5 paginas para nao sobrecarregar o servidor
+- Throttle de 2s após 5 páginas para não sobrecarregar o servidor
 
 ## Coleta bruta
 

@@ -5,26 +5,26 @@
 | Campo | Valor |
 |-------|-------|
 | **Provedor** | Projeto MapBiomas — Rede multi-institucional |
-| **Dados** | Cobertura e uso da terra, transicoes entre classes |
+| **Dados** | Cobertura e uso da terra, transições entre classes |
 | **Acesso** | Download XLSX público nos repositórios oficiais do MapBiomas |
 | **Formato** | XLSX direto ou dentro de ZIP; cobertura municipal lida em fluxo com openpyxl |
-| **Autenticacao** | Nenhuma |
-| **Licenca** | CC BY 4.0, com atribuição ao MapBiomas; classificação `livre` |
+| **Autenticação** | Nenhuma |
+| **Licença** | CC BY 4.0, com atribuição ao MapBiomas; classificação `livre` |
 | **Série histórica** | 1985-2025 (coleção 11); 1985-2024 (coleção 10) |
 
 ## Origem dos Dados
 
-O MapBiomas e um projeto colaborativo multi-institucional que produz mapas anuais de cobertura e uso da terra do Brasil a partir de imagens de satelite Landsat (30m de resolucao). Os dados sao gerados via classificacao automatica usando Google Earth Engine.
+O MapBiomas e um projeto colaborativo multi-institucional que produz mapas anuais de cobertura e uso da terra do Brasil a partir de imagens de satelite Landsat (30m de resolução). Os dados são gerados via classificação automática usando Google Earth Engine.
 
 O agrobr acessa as **estatísticas tabulares** de áreas em hectares por classe, bioma, estado e cruzamento municipal, disponibilizadas como planilhas XLSX. O `READ_ME` da publicação municipal define o cruzamento bioma × estado × município, de 1985 a 2025 na Coleção 11. Os rasters não são retornados por estas APIs. [Publicação oficial de cobertura](https://brasil.mapbiomas.org/iniciativas-e-produtos/cobertura-e-uso-da-terra/cobertura-30m/cobertura/).
 
 O uso exige referência à fonte, coleção, data de acesso e link, conforme o formato de citação do projeto. A FAQ oficial declara CC BY 4.0. [Acesso, licença e citação](https://brasil.mapbiomas.org/faq/?tema=dados).
 
-## Colecoes
+## Coleções
 
-O MapBiomas publica colecoes anuais com melhorias metodologicas:
+O MapBiomas publica coleções anuais com melhorias metodologicas:
 
-| Colecao | Data | Periodo |
+| Coleção | Data | Período |
 |---------|------|---------|
 | 11 (atual) | Agosto 2026 | 1985-2025 |
 | 10 | Agosto 2025 | 1985-2024 |
@@ -39,7 +39,7 @@ As duas APIs (`cobertura` e `transicao`) e o dataset `datasets.uso_do_solo` pres
 
 Dados em formato wide: uma coluna por ano com área em hectares para cada combinação bioma x estado x classe. A série começa em 1985 e termina em 2025 na coleção 11 ou em 2024 na coleção 10.
 
-Apos parsing, o agrobr converte para formato long: uma linha por combinacao bioma x estado x classe x ano.
+Após parsing, o agrobr converte para formato long: uma linha por combinacao bioma x estado x classe x ano.
 
 ### Cobertura municipal e identidade territorial
 
@@ -97,7 +97,7 @@ print(meta.records_count, meta.fetch_duration_ms)
 
 ## Limitacoes
 
-- Apenas dados tabulares (estatisticas). Dados geoespaciais (rasters/GEE) ficam para versao futura
+- Apenas dados tabulares (estatísticas). Dados geoespaciais (rasters/GEE) ficam para versão futura
 - O XLSX selecionado é baixado inteiro em cada chamada. Os filtros reduzem o DataFrame retornado, sem reduzir o download.
 - `nivel` aceita `"estado"` (padrão), `"uf"` (sinônimo de `"estado"`, mesmo resultado) e `"municipio"`.
 - Nível municipal disponível via `cobertura(nivel="municipio")`, com arquivo significativamente maior que o estadual. Sem cache local integrado.
@@ -110,7 +110,7 @@ print(meta.records_count, meta.fetch_duration_ms)
 
 O restante de `source_details` inclui coleção, aba, fingerprint de layout, contagens da população e saída, estatísticas por ano e cruzamentos de geocódigos em múltiplas UFs. Consulte o [contrato municipal de uso_do_solo](../contracts/uso_do_solo.md#nivel-municipal) para a identidade de cada linha.
 
-## Cache e Atualizacao
+## Cache e Atualização
 
 - Não há cache local: cada chamada baixa a planilha correspondente da fonte.
 - O MapBiomas publica uma nova coleção por ano, com dados retroativos recalculados.
@@ -119,6 +119,6 @@ O restante de `source_details` inclui coleção, aba, fingerprint de layout, con
 ## Links
 
 - [MapBiomas Brasil](https://brasil.mapbiomas.org)
-- [Estatisticas](https://brasil.mapbiomas.org/estatisticas/)
+- [Estatísticas](https://brasil.mapbiomas.org/estatisticas/)
 - [Legenda](https://brasil.mapbiomas.org/codigos-de-legenda/)
 - [Citacao (FAQ)](https://brasil.mapbiomas.org/faq/?tema=dados)

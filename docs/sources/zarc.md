@@ -1,37 +1,37 @@
-# ZARC (Zoneamento Agricola de Risco Climatico)
+# ZARC (Zoneamento Agrícola de Risco Climático)
 
 ## Sobre
 
 O **ZARC** e o sistema oficial do MAPA (Ministerio da Agricultura) e Embrapa
-que define janelas de plantio recomendadas por municipio, cultura, tipo de solo
-e ciclo do cultivar. Publicado como Portaria no Diario Oficial da Uniao,
-o ZARC e requisito para acesso ao credito rural subsidiado (Proagro, PSR).
+que define janelas de plantio recomendadas por município, cultura, tipo de solo
+e ciclo do cultivar. Publicado como Portaria no Diário Oficial da Uniao,
+o ZARC e requisito para acesso ao crédito rural subsidiado (Proagro, PSR).
 
 Dados publicados como CSV no portal [dados.agricultura.gov.br](https://dados.agricultura.gov.br)
-(CKAN), licenca CC-BY, periodicidade semanal no catálogo ativo (o PDF declara diária; veja o conflito abaixo).
+(CKAN), licença CC-BY, periodicidade semanal no catálogo ativo (o PDF declara diária; veja o conflito abaixo).
 
-## Dados disponiveis
+## Dados disponíveis
 
 - **Tabua de Risco:** janelas de plantio (36 decendios) por municipio/cultura/solo/ciclo
 - **Culturas:** 107 culturas no catálogo de aliases, uma por rótulo publicado nas 12 tábuas oficiais, incluindo nomes legados; disponibilidade variável por safra; frutas e café usam `safra="perene"`
 - **Safras:** 2016/2017 a atual + perene (cafe, cana, banana, etc.)
-- **Solos:** 3 tipos classicos (arenoso/medio/argiloso) + 6 niveis AD (agua disponivel)
+- **Solos:** 3 tipos classicos (arenoso/medio/argiloso) + 6 níveis AD (agua disponível)
 - **Cobertura:** municípios presentes em cada publicação; total nacional completo não afirmado
 
 ## Campos retornados
 
-| Campo | Tipo | Descricao |
+| Campo | Tipo | Descrição |
 |-------|------|-----------|
 | cultura | string | Nome canonico da cultura (ex: "soja", "milho_1", "trigo") |
 | safra | string | Ano-safra (`"2025/2026"`); na tábua de `safra="perene"`, `"perene"`, `"olericola"` ou `"sem_safra"` |
-| geocodigo | string | Codigo IBGE do municipio (7 digitos) |
+| geocodigo | string | Código IBGE do município (7 digitos) |
 | uf | string | Sigla da UF |
-| municipio | string | Nome do municipio |
+| municipio | string | Nome do município |
 | solo_codigo | int | Tipo de solo (1-3 classico, 11-16 AD) |
 | ciclo_codigo | int | Ciclo do cultivar (13, 19, 20, 21, 22, 24, 25, 26) |
 | clima | string | Restricao climatica (ex: "Sem restricao") |
-| manejo | string | Manejo especifico (ex: "Sem restricao", "Irrigado") |
-| portaria | string | Numero da portaria MAPA |
+| manejo | string | Manejo específico (ex: "Sem restricao", "Irrigado") |
+| portaria | string | Número da portaria MAPA |
 | dec1-dec36 | Int64, nullable | Risco publicado por decendio (0/20/30/40/50); vazio é nulo |
 
 ## Decendios
@@ -48,12 +48,12 @@ Valores publicados: 0, 20, 30, 40 e 50. Célula vazia é nula, distinta de zero.
 ## Notas
 
 - **CSV grande:** arquivos de aproximadamente 224 MB por safra anual e 535 MB na tábua perene. A primeira consulta de cada revisão baixa e parseia a tábua inteira (cerca de 3 minutos, quase todo na validação de cada registro). As seguintes consultam os dados validados no cache local DuckDB, inclusive em outro processo Python: TTL de 24 horas desde a aquisição e até três revisões. O arquivo ZARC é separado do cache CEPEA. O catálogo usa cache em memória por uma hora. `use_cache=False` ignora leitura e gravação de ambos; falhas no cache local geram log de aviso e seguem por download e parse. Metadados preservam SHA, aquisição original e culturas observadas na tábua inteira. O download é conferido contra o tamanho que o servidor publica (o `Content-Range` do portal do MAPA, ou o `Content-Length`): corpo menor levanta `SourceUnavailableError` e não vai para o cache. Sem o tamanho publicado, o resultado avisa em `validation_warnings` ("tamanho do arquivo não conferido") e não é gravado; entrada do cache sem tamanho conferido ou sem registros é baixada de novo. Onde fica e como limpar: [O que o agrobr grava no disco](../advanced/disco.md).
-- **CKAN discovery:** URLs mudam a cada publicacao; o client faz discovery via API CKAN
+- **CKAN discovery:** URLs mudam a cada publicação; o client faz discovery via API CKAN
 - **User-Agent:** portal requer headers browser-like (retorna 403 com bot UA)
 - **Encoding:** UTF-8 com BOM, separador `;`
 - **Produtividade:** publicada como texto em `produtividade_texto` (quase sempre vazia; decimal com vírgula preservado; unidade não inferida)
 
-## Licenca
+## Licença
 
 Dados publicos do governo federal brasileiro (CC-BY). Uso livre com citacao da fonte.
 

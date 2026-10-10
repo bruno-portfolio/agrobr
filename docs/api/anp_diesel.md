@@ -1,12 +1,12 @@
 # API ANP Diesel
 
-O modulo ANP Diesel fornece dados de precos de revenda e volumes de venda de diesel no Brasil, publicados pela Agencia Nacional do Petroleo. Namespace: `agrobr.alt.anp_diesel`.
+O módulo ANP Diesel fornece dados de precos de revenda e volumes de venda de diesel no Brasil, publicados pela Agencia Nacional do Petroleo. Namespace: `agrobr.alt.anp_diesel`.
 
-## Funcoes
+## Funções
 
 ### `precos_diesel`
 
-Precos de revenda de diesel por municipio, UF ou nivel Brasil.
+Precos de revenda de diesel por município, UF ou nível Brasil.
 
 ```python
 async def precos_diesel(
@@ -23,9 +23,9 @@ async def precos_diesel(
 ) -> pd.DataFrame | pl.DataFrame | tuple[pd.DataFrame | pl.DataFrame, MetaInfo]
 ```
 
-**Parametros:**
+**Parâmetros:**
 
-| Parametro | Tipo | Descricao |
+| Parâmetro | Tipo | Descrição |
 |-----------|------|-----------|
 | `uf` | `str \| None` | Filtro por UF (ex: SP, MT, PR) |
 | `municipio` | `int \| str \| None` | Município pelo código IBGE de 7 dígitos ou pelo nome inteiro, resolvido por `normalize.resolver_municipio` antes da rede e comparado com o nome da planilha sem caixa, acento e pontuação (`"Sant'Ana do Livramento"` casa com `SANTANA DO LIVRAMENTO`); pedaço de nome gera `InvalidParameterError` com os candidatos |
@@ -75,9 +75,9 @@ async def vendas_diesel(
 ) -> pd.DataFrame | pl.DataFrame | tuple[pd.DataFrame | pl.DataFrame, MetaInfo]
 ```
 
-**Parametros:**
+**Parâmetros:**
 
-| Parametro | Tipo | Descricao |
+| Parâmetro | Tipo | Descrição |
 |-----------|------|-----------|
 | `uf` | `str \| None` | Filtro por UF (ex: SP, MT, PR) |
 | `inicio` | `str \| date \| None` | Data inicial |
@@ -101,7 +101,7 @@ df = await anp_diesel.vendas_diesel()
 df = await anp_diesel.vendas_diesel(uf="MT")
 ```
 
-## Versao Sincrona
+## Versão Síncrona
 
 ```python
 from agrobr.sync import alt
@@ -112,7 +112,7 @@ df = alt.anp_diesel.vendas_diesel()
 
 ## Notas
 
-- Fonte: [ANP Gov.br](https://www.gov.br/anp/) — licenca `livre` (Decreto 8.777/2016)
+- Fonte: [ANP Gov.br](https://www.gov.br/anp/) — licença `livre` (Decreto 8.777/2016)
 - Dados: XLSX bulk (preços municipais desde 2022; por UF e Brasil desde 2013), CSV (volumes). No nível municipal, `inicio` ou `fim` fora de 2022 até o ano corrente levanta `InvalidParameterError` antes da rede
 - Planilhas municipais grandes são baixadas integralmente; não há cache persistente.
 

@@ -1,8 +1,8 @@
 # API MAPA PSR
 
-O modulo MAPA PSR fornece dados de apolices e sinistros do seguro rural brasileiro com subvencao federal, publicados pelo SISSER/MAPA. Namespace: `agrobr.alt.mapa_psr`.
+O módulo MAPA PSR fornece dados de apolices e sinistros do seguro rural brasileiro com subvencao federal, publicados pelo SISSER/MAPA. Namespace: `agrobr.alt.mapa_psr`.
 
-## Funcoes
+## Funções
 
 ### `sinistros`
 
@@ -23,13 +23,13 @@ async def sinistros(
 ) -> DataFrameResult
 ```
 
-**Parametros:**
+**Parâmetros:**
 
-| Parametro | Tipo | Descricao |
+| Parâmetro | Tipo | Descrição |
 |-----------|------|-----------|
 | `produto` | `str \| None` | Filtro por cultura (busca parcial, accent-insensitive, ex: "cafe" matcha "CAFE ARABICA") |
 | `uf` | `str \| None` | Filtro por UF (sigla, ex: "MT") |
-| `ano` | `int \| None` | Filtro de ano unico (ex: 2023) |
+| `ano` | `int \| None` | Filtro de ano único (ex: 2023) |
 | `ano_inicio` | `int \| None` | Ano inicial do range (inclusive) |
 | `ano_fim` | `int \| None` | Ano final do range (inclusive) |
 | `municipio` | `int \| str \| None` | Município pelo código IBGE de 7 dígitos (`int` ou `str`) ou pelo nome inteiro, sem caixa e acento (ex.: `4305108` ou `"Caxias do Sul"`); pedaço de nome, nome de outra UF ou nome repetido sem `uf` geram `InvalidParameterError` com os candidatos |
@@ -81,13 +81,13 @@ async def apolices(
 ) -> DataFrameResult
 ```
 
-**Parametros:**
+**Parâmetros:**
 
-| Parametro | Tipo | Descricao |
+| Parâmetro | Tipo | Descrição |
 |-----------|------|-----------|
 | `produto` | `str \| None` | Filtro por cultura (busca parcial, accent-insensitive, ex: "cafe" matcha "CAFE ARABICA") |
 | `uf` | `str \| None` | Filtro por UF (sigla, ex: "MT") |
-| `ano` | `int \| None` | Filtro de ano unico (ex: 2023) |
+| `ano` | `int \| None` | Filtro de ano único (ex: 2023) |
 | `ano_inicio` | `int \| None` | Ano inicial do range (inclusive) |
 | `ano_fim` | `int \| None` | Ano final do range (inclusive) |
 | `municipio` | `int \| str \| None` | Município pelo código IBGE de 7 dígitos (`int` ou `str`) ou pelo nome inteiro, sem caixa e acento (ex.: `4305108` ou `"Caxias do Sul"`); pedaço de nome, nome de outra UF ou nome repetido sem `uf` geram `InvalidParameterError` com os candidatos |
@@ -117,7 +117,7 @@ df = await mapa_psr.apolices(produto="MILHO", uf="PR")
 df = await mapa_psr.apolices(ano=2023)
 ```
 
-## Versao Sincrona
+## Versão Síncrona
 
 ```python
 from agrobr.sync import alt
@@ -128,7 +128,7 @@ df = alt.mapa_psr.apolices(ano=2023)
 
 ## Notas
 
-- Fonte: [SISSER/MAPA](https://dados.agricultura.gov.br/dataset/sisser3) — licenca `livre` (CC-BY)
+- Fonte: [SISSER/MAPA](https://dados.agricultura.gov.br/dataset/sisser3) — licença `livre` (CC-BY)
 - Dados: CSV bulk (3 arquivos: 2006-2015, 2016-2024, 2025)
 - PII removido automaticamente (NM_SEGURADO, NR_DOCUMENTO_SEGURADO)
 - Geolocalizacao removida (LATITUDE, LONGITUDE, graus/min/seg)

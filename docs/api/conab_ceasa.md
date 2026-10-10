@@ -1,6 +1,6 @@
 # CONAB CEASA/PROHORT
 
-Precos diarios de atacado de hortifruti em 43 CEASAs do Brasil (48 produtos).
+Precos diários de atacado de hortifruti em 43 CEASAs do Brasil (48 produtos).
 
 ## `conab.ceasa_precos()`
 
@@ -12,18 +12,18 @@ import agrobr
 df = await agrobr.conab.ceasa_precos(produto="tomate")
 ```
 
-### Parametros
+### Parâmetros
 
-| Parametro | Tipo | Obrigatorio | Descricao |
+| Parâmetro | Tipo | Obrigatório | Descrição |
 |-----------|------|-------------|-----------|
-| `produto` | `str` | Nao | Filtrar por produto (ex: "tomate", "ABACAXI"). Case-insensitive. Produto fora do publicado levanta `InvalidParameterError` com a lista; valor que não é texto, antes do pedido |
-| `ceasa` | `str` | Nao | Filtrar por CEASA (ex: "CEAGESP - SAO PAULO", "SAO PAULO"). Case-insensitive, busca parcial; precisa casar ao menos 1 CEASA publicada |
-| `as_polars` | `bool` | Nao | Se True, retorna `polars.DataFrame` |
-| `return_meta` | `bool` | Nao | Se True, retorna `(DataFrame, MetaInfo)` |
+| `produto` | `str` | Não | Filtrar por produto (ex: "tomate", "ABACAXI"). Case-insensitive. Produto fora do publicado levanta `InvalidParameterError` com a lista; valor que não é texto, antes do pedido |
+| `ceasa` | `str` | Não | Filtrar por CEASA (ex: "CEAGESP - SAO PAULO", "SAO PAULO"). Case-insensitive, busca parcial; precisa casar ao menos 1 CEASA publicada |
+| `as_polars` | `bool` | Não | Se True, retorna `polars.DataFrame` |
+| `return_meta` | `bool` | Não | Se True, retorna `(DataFrame, MetaInfo)` |
 
 ### Colunas de Retorno
 
-| Coluna | Tipo | Descricao |
+| Coluna | Tipo | Descrição |
 |--------|------|-----------|
 | `data` | datetime | Data do preco (por CEASA, extraida do header) |
 | `produto` | str | Nome do produto (ex: TOMATE, ABACAXI) |
@@ -83,7 +83,7 @@ print(f"Hortalicas: {len(cats['HORTALICAS'])}")
 
 ---
 
-## Uso Sincrono
+## Uso Síncrono
 
 ```python
 from agrobr import sync
@@ -127,8 +127,8 @@ print(df[["ceasa", "ceasa_uf", "preco"]].sort_values("preco"))
 
 - **Provedor:** CONAB — Companhia Nacional de Abastecimento
 - **Sistema:** PROHORT (Programa Brasileiro de Modernizacao do Mercado Hortigranjeiro)
-- **Frequencia:** Diaria (precos de atacado)
+- **Frequência:** Diaria (precos de atacado)
 - **Cobertura:** 48 produtos (21 frutas, 26 hortaliças e ovos), 43 CEASAs, 20 UFs
 - **Formato:** JSON (Pentaho CDA REST API)
-- **Licenca:** zona_cinza (credenciais publicas embutidas, API nao documentada oficialmente)
-- **Portal:** [Portal de Informacoes CONAB](https://portaldeinformacoes.conab.gov.br/mercado-atacadista-hortigranjeiro.html)
+- **Licença:** zona_cinza (credenciais publicas embutidas, API não documentada oficialmente)
+- **Portal:** [Portal de Informações CONAB](https://portaldeinformacoes.conab.gov.br/mercado-atacadista-hortigranjeiro.html)

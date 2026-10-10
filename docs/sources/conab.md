@@ -18,8 +18,8 @@
 
 ## Requisito de Navegador
 
-As funcoes `safras`, `balanco`, `brasil_total` e `levantamentos` tentam HTTP
-primeiro. Se a pagina ou planilha estiver indisponivel ou invalida por HTTP,
+As funções `safras`, `balanco`, `brasil_total` e `levantamentos` tentam HTTP
+primeiro. Se a página ou planilha estiver indisponivel ou invalida por HTTP,
 usam Playwright com Chromium como fallback:
 
 ```bash
@@ -27,9 +27,9 @@ pip install agrobr[browser]
 python -m playwright install chromium
 ```
 
-Quando esse fallback e necessario, a ausencia do navegador causa
+Quando esse fallback e necessário, a ausência do navegador causa
 `SourceUnavailableError`. O dataset
-`estimativa_safra` pode tentar IBGE LSPA quando não há fonte ou referência explícita; com `fonte="conab"` ou `levantamento`, não troca de origem. `balanco` nao possui fallback.
+`estimativa_safra` pode tentar IBGE LSPA quando não há fonte ou referência explícita; com `fonte="conab"` ou `levantamento`, não troca de origem. `balanco` não possui fallback.
 
 Nos metadados, `source_method` identifica o transporte da planilha: `httpx` ou
 `playwright`, independentemente do transporte usado para descobrir seu link.
@@ -53,7 +53,7 @@ A CONAB publica levantamentos mensais de safra:
 | Agosto | 11o Levantamento |
 | Setembro | 12o Levantamento |
 
-## Dados Disponiveis
+## Dados Disponíveis
 
 ### Seleção de edição no dataset
 
@@ -77,12 +77,12 @@ De out/2019 a jan/2022, as abas desses seis cereais levam o ano no nome ("Trigo 
 - Area plantada (mil hectares)
 - Area colhida nula: o levantamento publica uma única área
 - Produtividade (kg/ha)
-- Producao (mil toneladas)
+- Produção (mil toneladas)
 
 ### Balanco de Oferta e Demanda
 
 - Estoque inicial
-- Producao
+- Produção
 - Importacao
 - Consumo
 - Exportacao
@@ -135,7 +135,7 @@ As flags `as_polars` e `return_meta` são somente nomeadas. As saídas vazias de
 
 ## Schema - Safras
 
-| Coluna | Tipo | Descricao |
+| Coluna | Tipo | Descrição |
 |--------|------|-----------|
 | `fonte` | str | "conab" |
 | `produto` | str | Nome do produto |
@@ -145,24 +145,24 @@ As flags `as_polars` e `return_meta` são somente nomeadas. As saídas vazias de
 | `area_colhida` | float64 | Nula: não publicada separadamente no levantamento |
 | `produtividade` | float64 | kg/ha |
 | `producao` | float64 | Mil toneladas |
-| `levantamento` | int | Numero do levantamento (1-12) |
-| `data_publicacao` | date | Data de publicacao |
+| `levantamento` | int | Número do levantamento (1-12) |
+| `data_publicacao` | date | Data de publicação |
 
-## Produtos Disponiveis
+## Produtos Disponíveis
 
 ```python
 produtos = await conab.produtos()
 # ['soja', 'milho', 'milho_1', 'milho_2', 'milho_3', 'arroz', ...]
 ```
 
-## UFs Disponiveis
+## UFs Disponíveis
 
 ```python
 ufs = await conab.ufs()
 # ['AC', 'AL', 'AM', 'AP', 'BA', 'CE', 'DF', 'ES', 'GO', ...]
 ```
 
-## Levantamentos Disponiveis
+## Levantamentos Disponíveis
 
 ```python
 levs = await conab.levantamentos()
@@ -189,9 +189,9 @@ Não há chave primária definida. Repetições e rótulos literais de itens sã
 
 Veja o [contrato de 25 colunas](../contracts/custo_producao.md) para unidades, nulabilidade, bases CV/CT e proveniência. `custo_producao_total` informa totais publicados selecionados, sem reconstruí-los pela soma de todas as linhas.
 
-## Serie Historica (v0.8.0)
+## Serie Histórica (v0.8.0)
 
-Dados historicos de safras desde ~1976, disponibilizados em planilhas Excel (.xls legacy).
+Dados históricos de safras desde ~1976, disponibilizados em planilhas Excel (.xls legacy).
 O parser detecta automaticamente o formato (OLE2/BIFF → xlrd, OOXML → openpyxl com fallback calamine).
 
 ```python
@@ -206,7 +206,7 @@ df = await conab.serie_historica("soja", ano_inicio=2020, uf="MT")
 
 ### Schema - serie_historica
 
-| Coluna | Tipo | Descricao |
+| Coluna | Tipo | Descrição |
 |--------|------|-----------|
 | `safra` | str | Safra (ex: "2024/25") |
 | `produto` | str | Nome do produto |
@@ -257,7 +257,7 @@ df = await conab.cana_industria(ano_inicio=2020, ano_fim=2025, uf="MT")
 etanol_cana = df["etanol_anidro_cana_mil_l"] + df["etanol_hidratado_cana_mil_l"]
 ```
 
-| Coluna | Tipo | Descricao |
+| Coluna | Tipo | Descrição |
 |--------|------|-----------|
 | `safra` | str | Safra (ex: "2024/25") |
 | `regiao` | str | Região da UF |
@@ -277,12 +277,12 @@ A aba "Etanol Total (cana e milho)" inclui o etanol de milho, publicado a partir
 As consultas da CONAB não guardam cópia local: cada chamada baixa a publicação. `meta.cache_expires_at` sai nulo; em `conab.safras`, o
 `meta.cache_key` identifica a consulta (produto, safra, publicação, levantamento e UF), e nas demais funções sai nulo.
 
-## Atualizacao
+## Atualização
 
 | Aspecto | Valor |
 |---------|-------|
-| **Frequencia** | Mensal |
-| **Publicacao** | Geralmente entre dias 10-15 |
+| **Frequência** | Mensal |
+| **Publicação** | Geralmente entre dias 10-15 |
 
 ## Datasets
 

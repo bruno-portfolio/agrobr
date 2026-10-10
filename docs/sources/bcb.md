@@ -1,6 +1,6 @@
-# BCB/SICOR — Credito Rural
+# BCB/SICOR — Crédito Rural
 
-Dados de credito rural do Sistema de Operacoes do Credito Rural (SICOR),
+Dados de crédito rural do Sistema de Operações do Crédito Rural (SICOR),
 disponibilizados via API OData do Banco Central.
 
 ## API
@@ -32,37 +32,37 @@ df = await bcb.credito_rural(produto="soja", safra="2024/25", uf="MT", agregacao
 
 ## Colunas — `credito_rural`
 
-| Coluna | Tipo | Descricao |
+| Coluna | Tipo | Descrição |
 |---|---|---|
 | `safra` | str | Safra no formato "2024/25" (AAAA/AA) |
 | `produto` | str | Chave do produto pedido, sem acento e em minúsculas (ex.: `algodao`, `cana`), igual nas duas fontes |
 | `uf` | str | UF |
 | `finalidade` | str | Finalidade pedida, em minúsculas nas duas fontes (custeio, investimento, comercializacao) |
-| `agregacao` | str | Nivel da saida: `uf` ou `programa` |
-| `programa` | str | Programa SICOR pela tabela oficial (PRONAMP, PRONAF, RenovAgro etc.); nulo na agregacao por UF e quando o codigo vem nulo |
-| `cd_programa` | str | Codigo do programa; nulo na agregacao por UF |
+| `agregacao` | str | Nível da saída: `uf` ou `programa` |
+| `programa` | str | Programa SICOR pela tabela oficial (PRONAMP, PRONAF, RenovAgro etc.); nulo na agregação por UF e quando o código vem nulo |
+| `cd_programa` | str | Código do programa; nulo na agregação por UF |
 | `qtd_contratos` | int | Quantidade de contratos |
 | `valor` | float | Valor financiado (R$) |
 | `area_financiada` | float | Área financiada (ha); nula quando nenhum registro do grupo publica área, o que no OData vale sempre (custeio publica `AreaCusteio` vazio; investimento e comercialização não trazem área); só o fallback BigQuery a preenche |
 | `fonte` | str | `bcb_odata` ou `bcb_bigquery` |
 
-Sao as 11 colunas do contrato 2.0 (`docs/contracts/credito_rural.md`), nas agregacoes `uf` e `programa`: nelas o tipo
-de seguro serve so ao filtro `tipo_seguro`, e ano e mes de emissao, a safra. Com `agregacao="registro"`, a saida e
+São as 11 colunas do contrato 2.0 (`docs/contracts/credito_rural.md`), nas agregacoes `uf` e `programa`: nelas o tipo
+de seguro serve so ao filtro `tipo_seguro`, e ano e mes de emissao, a safra. Com `agregacao="registro"`, a saída e
 registro a registro, sem agregar, com 23 colunas: as 11 e mais `ano_emissao`, `mes_emissao`, `regiao`, `cd_sub_programa`,
 `cd_fonte_recurso`, `fonte_recurso`, `cd_tipo_seguro`, `tipo_seguro`, `cd_modalidade`, `modalidade`, `cd_atividade` e
 `atividade`, no contrato [bcb.credito_rural_registro](../contracts/bcb_credito_rural_registro.md) 1.0.
 
 ## Dimensoes SICOR
 
-A API retorna codigos de dimensao (`cdPrograma`, `cdTipoSeguro`, etc.). O nome do programa e o do tipo de seguro
-seguem as tabelas de dominio oficiais do BCB (`https://www.bcb.gov.br/htms/sicor/Programa.csv` e
-`TipoGarantiaEmpreendimento.csv`): o programa publicado e o trecho da descricao oficial
-antes do primeiro " - " (a descricao inteira quando nao ha esse separador; aspas soltas da fonte removidas); o tipo
-de seguro e a descricao oficial. O filtro por nome nao diferencia maiusculas de minusculas (`programa="pronamp"`).
-Codigos desconhecidos geram `"Desconhecido ({code})"` com log warning; codigo nulo fica com nome nulo, sem aviso.
-A descricao oficial do `0152` registra que ele era o Moderinfra ate 30/06/2021; o nome publicado e o atual.
+A API retorna códigos de dimensao (`cdPrograma`, `cdTipoSeguro`, etc.). O nome do programa e o do tipo de seguro
+seguem as tabelas de domínio oficiais do BCB (`https://www.bcb.gov.br/htms/sicor/Programa.csv` e
+`TipoGarantiaEmpreendimento.csv`): o programa publicado e o trecho da descrição oficial
+antes do primeiro " - " (a descrição inteira quando não ha esse separador; aspas soltas da fonte removidas); o tipo
+de seguro e a descrição oficial. O filtro por nome não diferencia maiusculas de minusculas (`programa="pronamp"`).
+Códigos desconhecidos geram `"Desconhecido ({code})"` com log warning; código nulo fica com nome nulo, sem aviso.
+A descrição oficial do `0152` registra que ele era o Moderinfra até 30/06/2021; o nome publicado e o atual.
 
-| Codigo | Programa publicado | Descricao oficial | Vigencia oficial |
+| Código | Programa publicado | Descrição oficial | Vigência oficial |
 |---|---|---|---|
 | `0001` | PRONAF | PRONAF - PROGRAMA NACIONAL DE FORTALECIMENTO DA AGRICULTURA FAMILIAR | 01/11/2011 a 31/12/2099 |
 | `0050` | PRONAMP | PRONAMP - PROGRAMA NACIONAL DE APOIO AO MÉDIO PRODUTOR RURAL | 01/11/2011 a 31/12/2099 |
@@ -97,7 +97,7 @@ A descricao oficial do `0152` registra que ele era o Moderinfra ate 30/06/2021; 
 | `0777` | Linha Crédito Rural inst Res. 4.147/2012 e 4.260/2013 (Demais Agricultores) ENCERRADO | Linha Crédito Rural inst Res. 4.147/2012 e 4.260/2013 (Demais Agricultores) ENCERRADO | 26/10/2012 a 31/12/2015 |
 | `0779` | Linha de Crédito Rural instituida pela Res. 4.161/2012 (Produtores de Arroz) ENCERRADO | Linha de Crédito Rural instituida pela Res. 4.161/2012 (Produtores de Arroz) ENCERRADO | 01/01/2013 a 31/12/2013 |
 | `0783` | Linha Crédito Rural inst pelas Res 4.189 e 4.212/2013-PRONAF (Estiagem Area Sudene) ENCERRADO | Linha Crédito Rural inst pelas Res 4.189 e 4.212/2013-PRONAF (Estiagem Area Sudene) ENCERRADO | 01/01/2013 a 31/12/2014 |
-| `0784` | Linha Credito Rural inst Res. 4.188 e 4.211/2013-Demais Produtores (Estiagem Area Sudene) ENCERRADO | Linha Credito Rural inst Res. 4.188 e 4.211/2013-Demais Produtores (Estiagem Area Sudene) ENCERRADO | 01/01/2013 a 31/12/2014 |
+| `0784` | Linha Crédito Rural inst Res. 4.188 e 4.211/2013-Demais Produtores (Estiagem Area Sudene) ENCERRADO | Linha Crédito Rural inst Res. 4.188 e 4.211/2013-Demais Produtores (Estiagem Area Sudene) ENCERRADO | 01/01/2013 a 31/12/2014 |
 | `0785` | Linha Crédito Rural inst  Res. 4.220/2013 (Recursos BNDES-Estiagem Área da Sudene) ENCERRADO | Linha Crédito Rural inst  Res. 4.220/2013 (Recursos BNDES-Estiagem Área da Sudene) ENCERRADO | 02/05/2013 a 30/06/2014 |
 | `0786` | Linha de Crédito Rural Instituída pela Res. 4.289/2013 (Renegociação Café Arábica) ENCERRADO | Linha de Crédito Rural Instituída pela Res. 4.289/2013 (Renegociação Café Arábica) ENCERRADO | 25/11/2013 a 31/07/2014 |
 | `0790` | Linha de Crédito Rural inst Res 5.120/2024 (Linha emergencial Custeio Pecuário) | Linha de Crédito Rural inst Res 5.120/2024 (Linha emergencial Custeio Pecuário) | 07/02/2024 a 30/06/2024 |
@@ -105,7 +105,7 @@ A descricao oficial do `0152` registra que ele era o Moderinfra ate 30/06/2021; 
 | `0901` | Eco Invest Brasil | Eco Invest Brasil - RES CMN Nº 5.130/2024 | 24/03/2026 a 01/01/2099 |
 | `0999` | FINANCIAMENTO SEM VÍNCULO A PROGRAMA ESPECÍFICO | FINANCIAMENTO SEM VÍNCULO A PROGRAMA ESPECÍFICO | 02/07/2012 a 31/12/2099 |
 
-| Codigo | Tipo de seguro publicado (descricao oficial) |
+| Código | Tipo de seguro publicado (descrição oficial) |
 |---|---|
 | `0` | Não se aplica |
 | `1` | Proagro tradicional |
@@ -113,16 +113,16 @@ A descricao oficial do `0152` registra que ele era o Moderinfra ate 30/06/2021; 
 | `3` | Outro seguro |
 | `9` | Sem adesão a seguro |
 
-No `agregacao="registro"`, a fonte de recursos, a modalidade e a atividade saem com a descricao oficial inteira de
-`FonteRecursos.csv` (37 codigos), `Modalidade.csv` (64) e `Atividade.csv` (2). Na fonte de
-recursos, o trecho antes do " - " juntaria codigos distintos (4 fontes virariam "POUPANÇA RURAL"). Codigo fora da
+No `agregacao="registro"`, a fonte de recursos, a modalidade e a atividade saem com a descrição oficial inteira de
+`FonteRecursos.csv` (37 códigos), `Modalidade.csv` (64) e `Atividade.csv` (2). Na fonte de
+recursos, o trecho antes do " - " juntaria códigos distintos (4 fontes virariam "POUPANÇA RURAL"). Código fora da
 tabela fica com nome nulo, sem palpite e sem aviso. `cd_modalidade` sai como a fonte publica (`"01"`), e o nome e
-resolvido pelo numero da tabela (`"1"` = LAVOURA). O subprograma sai so com o codigo, como na 1.1.0.
+resolvido pelo número da tabela (`"1"` = LAVOURA). O subprograma sai so com o código, como na 1.1.0.
 
 ## Finalidades
 
-- `custeio` — financiamento da producao
-- `investimento` — aquisicao de maquinas, infraestrutura
+- `custeio` — financiamento da produção
+- `investimento` — aquisição de maquinas, infraestrutura
 - `comercializacao` — financiamento da comercializacao
 - `industrializacao` — financiamento da industrializacao, que o SICOR publica só no total por UF, sem produto
 
@@ -141,7 +141,7 @@ print(meta.source)          # "bcb_credito"
 print(meta.schema_version)  # "2.0"
 ```
 
-Com `agregacao="registro"`, `schema_version` e `contract_version` sao `"1.0"`, e `source_details["contract"]` e
+Com `agregacao="registro"`, `schema_version` e `contract_version` são `"1.0"`, e `source_details["contract"]` e
 `"bcb.credito_rural_registro"`.
 
 O `source_url` é a consulta OData pedida, com `$filter` e `$select` e sem `$top`. O `raw_content_hash` é o SHA-256 do
@@ -183,9 +183,9 @@ programa e tipo de seguro permanecem client-side.
 
 Retry com backoff exponencial (6 tentativas, timeout read 120s).
 A API retorna HTTP 500 de forma intermitente. Desde v0.8.0, o agrobr
-utiliza Base dos Dados (BigQuery) como fallback automatico quando a API
+utiliza Base dos Dados (BigQuery) como fallback automático quando a API
 OData falha. Instale com `pip install agrobr[bigquery]`. O fallback vale so para
-`agregacao="uf"` sem `programa` nem `tipo_seguro`: a tabela agrega por municipio e nao traz
+`agregacao="uf"` sem `programa` nem `tipo_seguro`: a tabela agrega por município e não traz
 programa, fonte de recursos, tipo de seguro, modalidade nem atividade. Nos outros casos, o OData
 fora levanta `SourceUnavailableError`, com o motivo na mensagem.
 
@@ -274,8 +274,8 @@ O catálogo e os recursos [mensal](https://dadosabertos.bcb.gov.br/dataset/expec
 - API SGS: `https://api.bcb.gov.br/dados/serie/bcdata.sgs.{codigo}/dados`
 - API PTAX: `https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/`
 - API Focus: `https://olinda.bcb.gov.br/olinda/servico/Expectativas/versao/v1/odata/`
-- Atualizacao: mensal (SICOR), várias vezes ao dia (PTAX), variável por série (SGS); Focus: cálculo diário e publicação semanal
-- Historico: 2013+ (SICOR), variavel (SGS)
+- Atualização: mensal (SICOR), várias vezes ao dia (PTAX), variável por série (SGS); Focus: cálculo diário e publicação semanal
+- Historico: 2013+ (SICOR), variável (SGS)
 - Contratos: SGS 3.0; Focus, PTAX cotações e crédito rural 2.0; PTAX moedas 1.0; consulte cada API
 
 ## Produtos e respostas vazias

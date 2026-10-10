@@ -1,14 +1,14 @@
 # censo_agropecuario v1.2
 
-Dados do Censo Agropecuario 1995/2006/2017 por tema, UF e nivel territorial.
+Dados do Censo Agropecuário 1995/2006/2017 por tema, UF e nível territorial.
 
 Na API 2.0, somente `tema` aceita posição; os demais filtros e flags são passados por nome. Retornos vazios preservam os dtypes do contrato: inteiros em `Int64`, medidas em `float64` e texto no padrão do pandas instalado.
 
 ## Fontes
 
-| Prioridade | Fonte | Descricao |
+| Prioridade | Fonte | Descrição |
 |------------|-------|-----------|
-| 1 | IBGE Censo Agro | Censo Agropecuario 1995, 2006 e 2017 |
+| 1 | IBGE Censo Agro | Censo Agropecuário 1995, 2006 e 2017 |
 
 ## Temas
 
@@ -32,16 +32,16 @@ Na API 2.0, somente `tema` aceita posição; os demais filtros e flags são pass
 
 ## Schema
 
-| Coluna | Tipo | Nullable | Descricao |
+| Coluna | Tipo | Nullable | Descrição |
 |--------|------|----------|-----------|
 | `ano` | Int64 | ❌ | Ano de referencia (1995, 2006 ou 2017) |
-| `localidade` | str | ✅ | UF ou municipio |
-| `localidade_cod` | Int64 | ✅ | Codigo IBGE |
+| `localidade` | str | ✅ | UF ou município |
+| `localidade_cod` | Int64 | ✅ | Código IBGE |
 | `cod_municipio` | Int64 | ✅ | Código IBGE do município (7 dígitos), a chave comum dos datasets municipais; nulo fora da linha de município |
 | `tema` | str | ❌ | Tema do censo |
 | `categoria` | str | ❌ | Categoria dentro do tema |
-| `variavel` | str | ❌ | Nome da variavel |
-| `valor` | float64 | ✅ | Valor da variavel |
+| `variavel` | str | ❌ | Nome da variável |
+| `valor` | float64 | ✅ | Valor da variável |
 | `unidade` | str | ❌ | Unidade de medida |
 | `fonte` | str | ❌ | Origem dos dados |
 
@@ -53,9 +53,9 @@ Na API 2.0, somente `tema` aceita posição; os demais filtros e flags são pass
 
 Long format: cada linha tem um par variavel/valor.
 
-### Variaveis por tema (temas originais)
+### Variáveis por tema (temas originais)
 
-| Tema | Variavel | Unidade |
+| Tema | Variável | Unidade |
 |------|----------|---------|
 | `efetivo_rebanho` | `estabelecimentos` (só 2017) | unidades |
 | `efetivo_rebanho` | `cabecas` | cabecas |
@@ -76,19 +76,19 @@ temporária" (10084) e, na permanente, "com 50 pés e mais existentes" (9504).
 
 | Tema | Categorias (exemplos) |
 |------|----------------------|
-| `preparo_solo` | Cultivo convencional, Cultivo minimo, Plantio direto na palha |
+| `preparo_solo` | Cultivo convencional, Cultivo mínimo, Plantio direto na palha |
 | `adubacao` | Quimica, Organica, Adubacao verde (2006); Fez adubacao, Quimica, Organica (2017) |
-| `calagem` | Fez aplicacao, Nao fez aplicacao |
-| `agrotoxicos` | Utilizou, Nao utilizou |
-| `praticas_agricolas` | Plantio em nivel, Rotacao de culturas, Pousio |
+| `calagem` | Fez aplicação, Não fez aplicação |
+| `agrotoxicos` | Utilizou, Não utilizou |
+| `praticas_agricolas` | Plantio em nível, Rotacao de culturas, Pousio |
 | `irrigacao` | Gotejamento, Pivo central, Inundacao, Aspersao |
 
 ## Garantias
 
-- Dados decenais consolidados (Censo Agropecuario 1995, 2006 e 2017)
-- Periodo de referencia 2017: outubro/2016 a setembro/2017
+- Dados decenais consolidados (Censo Agropecuário 1995, 2006 e 2017)
+- Período de referencia 2017: outubro/2016 a setembro/2017
 - Sem cache: cada chamada consulta o IBGE
-- Parametro `ano` filtra por ano censal; `ano=None` retorna todos os anos disponiveis
+- Parâmetro `ano` filtra por ano censal; `ano=None` retorna todos os anos disponíveis
 - `categoria = "Total"` é a linha que a fonte publica como total da classificação do tema (ex.: todos os métodos de
   irrigação, todas as espécies do efetivo). Ela não se soma às demais categorias.
 - `estabelecimentos` não soma entre categorias: um estabelecimento pode entrar em mais de uma. Irrigação, Brasília 2017:
@@ -134,7 +134,7 @@ df, meta = await datasets.censo_agropecuario("efetivo_rebanho", uf="MT", return_
 
 ## Schema JSON
 
-Disponivel em `agrobr/schemas/censo_agropecuario.json`.
+Disponível em `agrobr/schemas/censo_agropecuario.json`.
 
 ```python
 from agrobr.contracts import get_contract
@@ -142,13 +142,13 @@ contract = get_contract("censo_agropecuario")
 print(contract.to_json())
 ```
 
-## Niveis Territoriais
+## Níveis Territoriais
 
-| Nivel | Descricao |
+| Nível | Descrição |
 |-------|-----------|
 | `brasil` | Total nacional |
 | `uf` | Por Unidade Federativa (default) |
-| `municipio` | Por municipio |
+| `municipio` | Por município |
 
 ## Temas Legados (FTP)
 

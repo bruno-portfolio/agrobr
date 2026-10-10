@@ -79,8 +79,8 @@ Os dois [datasets de cultivares](../api/cultivares.md) reutilizam os novos contr
 | [embarques_mensais_anec](./embarques_mensais_anec.md) | Volumes mensais, estimativas e faixas por edição | ANEC |
 | [comparacao_anual_anec](./comparacao_anual_anec.md) | Comparação mensal entre anos por edição | ANEC |
 | [destinos_anec](./destinos_anec.md) | Participação dos destinos no período acumulado | ANEC |
-| [silvicultura](./silvicultura.md) | Producao silvicultural (IBGE PEVS) | IBGE PEVS |
-| [extrativismo_vegetal](./extrativismo_vegetal.md) | Producao extrativista vegetal (IBGE PEVS) | IBGE PEVS |
+| [silvicultura](./silvicultura.md) | Produção silvicultural (IBGE PEVS) | IBGE PEVS |
+| [extrativismo_vegetal](./extrativismo_vegetal.md) | Produção extrativista vegetal (IBGE PEVS) | IBGE PEVS |
 | [leite_industrial](./leite_industrial.md) | Leite trimestral (aquisicao/industrializacao) | IBGE Leite |
 | [lspa](./lspa.md) | Estimativas mensais de produção agrícola | IBGE LSPA |
 | [oferta_demanda_global](./oferta_demanda_global.md) | Oferta/demanda global (USDA PSD) | USDA |

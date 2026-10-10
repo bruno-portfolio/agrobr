@@ -91,9 +91,9 @@ df = await antt_pedagio.pracas_pedagio(uf="SP")
 df = await antt_pedagio.pracas_pedagio(rodovia="BR-163")
 ```
 
-### Parametros
+### Parâmetros
 
-| Parametro | Tipo | Default | Descricao |
+| Parâmetro | Tipo | Default | Descrição |
 |-----------|------|---------|-----------|
 | `uf` | `str \| None` | `None` | Filtro de UF |
 | `rodovia` | `str \| None` | `None` | Filtro de rodovia |
@@ -101,7 +101,7 @@ df = await antt_pedagio.pracas_pedagio(rodovia="BR-163")
 | `as_polars` | `bool` | `False` | Retorna polars.DataFrame |
 | `return_meta` | `bool` | `False` | Retorna MetaInfo |
 
-## Uso sincrono
+## Uso síncrono
 
 ```python
 from agrobr import sync

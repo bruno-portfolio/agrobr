@@ -12,20 +12,20 @@ import agrobr
 df = await agrobr.conab.progresso_safra(produto="Soja", uf="MT")
 ```
 
-### Parametros
+### Parâmetros
 
-| Parametro | Tipo | Obrigatorio | Descricao |
+| Parâmetro | Tipo | Obrigatório | Descrição |
 |-----------|------|-------------|-----------|
-| `produto` | `str` | Nao | Cultura publicada, sem diferenciar caixa e acento: "Soja", "Milho 1a", "Milho 2a", "Arroz", "Algodao", "Feijao 1a", "Trigo". Também aceita os nomes do dataset (`milho_1`, `milho_2`, `feijao_1`), `feijao` para a 1ª safra e `milho` para a 1ª e a 2ª. Outro valor, inclusive um pedaço do nome, levanta `InvalidParameterError` com as culturas publicadas, antes do pedido. Se None, todas |
-| `uf` | `str` | Nao | Sigla da UF (ex: "MT", "GO", "PR"), ou "MEDIA_ESTADOS" para a média da CONAB dos estados monitorados, que não é a média simples das UFs ([contrato](../contracts/progresso_safra.md)). Nome por extenso ou sigla inexistente levanta `InvalidParameterError` antes do pedido. "BR" é recusado com `InvalidParameterError`, porque a CONAB não publica Brasil. Se None, todos |
-| `operacao` | `str` | Nao | "Semeadura" ou "Colheita" (outro valor levanta `InvalidParameterError` antes do pedido). Se None, ambas |
-| `semana_url` | `str` | Nao | URL de uma semana especifica, em `https://www.gov.br/conab/` (outra URL levanta `InvalidParameterError` antes do pedido). Se None, busca a mais recente |
-| `as_polars` | `bool` | Nao | Se True, retorna `polars.DataFrame` |
-| `return_meta` | `bool` | Nao | Se True, retorna `(DataFrame, MetaInfo)` |
+| `produto` | `str` | Não | Cultura publicada, sem diferenciar caixa e acento: "Soja", "Milho 1a", "Milho 2a", "Arroz", "Algodao", "Feijao 1a", "Trigo". Também aceita os nomes do dataset (`milho_1`, `milho_2`, `feijao_1`), `feijao` para a 1ª safra e `milho` para a 1ª e a 2ª. Outro valor, inclusive um pedaço do nome, levanta `InvalidParameterError` com as culturas publicadas, antes do pedido. Se None, todas |
+| `uf` | `str` | Não | Sigla da UF (ex: "MT", "GO", "PR"), ou "MEDIA_ESTADOS" para a média da CONAB dos estados monitorados, que não é a média simples das UFs ([contrato](../contracts/progresso_safra.md)). Nome por extenso ou sigla inexistente levanta `InvalidParameterError` antes do pedido. "BR" é recusado com `InvalidParameterError`, porque a CONAB não publica Brasil. Se None, todos |
+| `operacao` | `str` | Não | "Semeadura" ou "Colheita" (outro valor levanta `InvalidParameterError` antes do pedido). Se None, ambas |
+| `semana_url` | `str` | Não | URL de uma semana específica, em `https://www.gov.br/conab/` (outra URL levanta `InvalidParameterError` antes do pedido). Se None, busca a mais recente |
+| `as_polars` | `bool` | Não | Se True, retorna `polars.DataFrame` |
+| `return_meta` | `bool` | Não | Se True, retorna `(DataFrame, MetaInfo)` |
 
 ### Colunas de Retorno
 
-| Coluna | Tipo | Descricao |
+| Coluna | Tipo | Descrição |
 |--------|------|-----------|
 | `cultura` | str | Nome da cultura como publicado (ex: "Soja", "Milho 2ª") |
 | `safra` | str | Safra como publicada: "YYYY/YY" (ex: "2025/26"), ou ano civil "YYYY" no trigo (ex: "2026") |
@@ -35,7 +35,7 @@ df = await agrobr.conab.progresso_safra(produto="Soja", uf="MT")
 | `pct_ano_anterior` | float | % mesma semana do ano anterior (0.0-1.0) |
 | `pct_semana_anterior` | float | % semana anterior (0.0-1.0) |
 | `pct_semana_atual` | float | % semana atual (0.0-1.0) |
-| `pct_media_5_anos` | float | % media dos ultimos 5 anos (0.0-1.0) |
+| `pct_media_5_anos` | float | % media dos últimos 5 anos (0.0-1.0) |
 | `revisado` | bool | Algum percentual da linha veio com a marca de revisão `*` da CONAB; nulo sem percentual numérico |
 | `n_estados` | int | Estados da média ("7 estados"), lido da planilha; nulo nas UFs |
 | `cobertura_area_pct` | float | Fração da área cultivada coberta por esses estados, lida da nota "(Esses N estados correspondem a X% da área cultivada)" (0,98 = 98%), sem recálculo; nulo nas UFs |
@@ -48,9 +48,9 @@ Os percentuais por UF são compilados pela CONAB a partir dos levantamentos esta
 CONAB. No Paraná, o valor repete o levantamento do DERAL da segunda-feira anterior (no boletim de 18/09/2026, o DERAL de 14/09):
 para a data do levantamento, use `deral.condicao_lavouras`.
 
-### Culturas Disponiveis
+### Culturas Disponíveis
 
-| Cultura | Estados | Operacoes |
+| Cultura | Estados | Operações |
 |---------|---------|-----------|
 | Soja | 12 estados (96% da área) | Semeadura, Colheita |
 | Milho 1ª | 9 estados (92% da área) | Semeadura, Colheita |
@@ -89,7 +89,7 @@ Lista de dicts com `descricao` e `url` para cada semana disponivel.
 
 ---
 
-## Uso Sincrono
+## Uso Síncrono
 
 ```python
 from agrobr import sync
@@ -113,7 +113,7 @@ df = await agrobr.conab.progresso_safra(
 print(f"Colheita soja MT: {df.iloc[0]['pct_semana_atual']:.1%}")
 ```
 
-### Buscar semana especifica
+### Buscar semana específica
 
 ```python
 import agrobr
@@ -142,9 +142,9 @@ print(pivot.to_string(index=False))
 ## Fonte dos Dados
 
 - **Provedor:** CONAB — Companhia Nacional de Abastecimento
-- **Frequencia:** Semanal (publicado as sextas-feiras)
+- **Frequência:** Semanal (publicado as sextas-feiras)
 - **Dados:** % plantio e colheita por cultura x estado
 - **Formato:** XLSX
 - **Serie:** Safra atual + comparativo ano anterior + media 5 anos
-- **Licenca:** CC BY-ND 3.0 (rodapé da ficha da planilha), classificação `livre`: reprodução comercial com atribuição à CONAB, sem distribuir adaptações protegidas. Veja [Licenças](../licenses.md)
+- **Licença:** CC BY-ND 3.0 (rodapé da ficha da planilha), classificação `livre`: reprodução comercial com atribuição à CONAB, sem distribuir adaptações protegidas. Veja [Licenças](../licenses.md)
 - **Portal:** [Progresso de Safra](https://www.gov.br/conab/pt-br/atuacao/informacoes-agropecuarias/safras/progresso-de-safra)

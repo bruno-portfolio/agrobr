@@ -1,12 +1,12 @@
 # pecuaria_municipal v1.1
 
-Efetivo de rebanhos e producao de origem animal por UF ou municipio.
+Efetivo de rebanhos e produção de origem animal por UF ou município.
 
 Na API 2.0, somente `produto`, `ano` aceitam posição; os demais filtros e flags são passados por nome. Retornos vazios preservam os dtypes do contrato: inteiros em `Int64`, medidas em `float64` e texto no padrão do pandas instalado.
 
 ## Fontes
 
-| Prioridade | Fonte | Descricao |
+| Prioridade | Fonte | Descrição |
 |------------|-------|-----------|
 | 1 | IBGE PPM | Pesquisa da Pecuaria Municipal |
 
@@ -20,20 +20,20 @@ O `bovino` da PPM não é o rebanho do USDA (`usda.psd`, código `0011000`): a P
 
 `galinhas` é a categoria do IBGE "Galináceos - galinhas", que inclui poedeiras e matrizeiras. `galinhas_poedeiras` continua aceito como alias depreciado (`FutureWarning`) e devolve `especie="galinhas"`.
 
-### Producao de origem animal
+### Produção de origem animal
 
 `leite`, `ovos_galinha`, `ovos_codorna`, `mel`, `casulos`, `la`
 
 ## Schema
 
-| Coluna | Tipo | Nullable | Descricao |
+| Coluna | Tipo | Nullable | Descrição |
 |--------|------|----------|-----------|
 | `ano` | Int64 | ❌ | Ano de referencia |
-| `localidade` | str | ✅ | UF ou municipio |
-| `localidade_cod` | Int64 | ✅ | Codigo IBGE |
+| `localidade` | str | ✅ | UF ou município |
+| `localidade_cod` | Int64 | ✅ | Código IBGE |
 | `cod_municipio` | Int64 | ✅ | Código IBGE do município (7 dígitos), a chave comum dos datasets municipais; nulo fora da linha de município |
 | `especie` | str | ❌ | Nome da especie/produto |
-| `valor` | float64 | ✅ | Valor (unidade varia por especie) |
+| `valor` | float64 | ✅ | Valor (unidade varia por espécie) |
 | `unidade` | str | ❌ | Unidade de medida |
 | `fonte` | str | ❌ | Origem dos dados |
 
@@ -44,8 +44,8 @@ O `bovino` da PPM não é o rebanho do USDA (`usda.psd`, código `0011000`): a P
 ## Garantias
 
 - Dados consolidados do ano civil (referencia 31/dez)
-- Latencia tipica: Y+1 (dados disponiveis no ano seguinte)
-- Serie historica desde 1974
+- Latencia tipica: Y+1 (dados disponíveis no ano seguinte)
+- Serie histórica desde 1974
 
 ## Exemplo
 
@@ -67,7 +67,7 @@ df, meta = await datasets.pecuaria_municipal("bovino", ano=2023, return_meta=Tru
 
 ## Schema JSON
 
-Disponivel em `agrobr/schemas/pecuaria_municipal.json`.
+Disponível em `agrobr/schemas/pecuaria_municipal.json`.
 
 ```python
 from agrobr.contracts import get_contract
@@ -75,10 +75,10 @@ contract = get_contract("pecuaria_municipal")
 print(contract.to_json())
 ```
 
-## Niveis Territoriais
+## Níveis Territoriais
 
-| Nivel | Descricao |
+| Nível | Descrição |
 |-------|-----------|
 | `brasil` | Total nacional |
 | `uf` | Por Unidade Federativa (default) |
-| `municipio` | Por municipio |
+| `municipio` | Por município |

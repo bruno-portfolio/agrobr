@@ -53,7 +53,7 @@ o client levanta `InvalidParameterError` e informa os anos disponíveis no site.
 No link selecionado, o ano real é extraído do texto do link ou do nome do arquivo
 e repassado ao parser.
 
-No agrobr-insights, dados ANDA sao tratados com peso dinamico: quando
+No agrobr-insights, dados ANDA são tratados com peso dinamico: quando
 parecem distorcidos, o peso no SCI e reduzido automaticamente.
 
 ## MetaInfo
@@ -75,7 +75,7 @@ seção de entregas (diz até que mês o PDF vai). `raw_content_hash` é o SHA-2
 
 - URL: `https://anda.org.br/recursos/`
 - Formato: PDF/Excel
-- Atualizacao: mensal
+- Atualização: mensal
 - Catálogo público: 2016–2026
 - Licença: `zona_cinza` — licença de reutilização não localizada.
 

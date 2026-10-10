@@ -977,12 +977,12 @@ descrição oficial antes do primeiro " - "; tipo de seguro = descrição oficia
 | programa `0152` | RenovAgro | PROIRRIGA — RenovAgro é `0222` |
 | programa `0156` | Moderagro/Moderfrota | ABC + Programa para a Adaptação à Mudança do Clima e Baixa Emissão de Carbono |
 | programa `0200` | Proirriga | PROCERA |
-| programa `0999` | Sem programa especifico | FINANCIAMENTO SEM VÍNCULO A PROGRAMA ESPECÍFICO |
+| programa `0999` | Sem programa específico | FINANCIAMENTO SEM VÍNCULO A PROGRAMA ESPECÍFICO |
 | programa `0153`, `0162`, `0222` e demais oficiais | Desconhecido (código) | nome da tabela oficial (MODERAGRO, INOVAGRO, RenovAgro…) |
 | tipo de seguro `1` | Proagro | Proagro tradicional |
 | tipo de seguro `2` | Sem seguro | Proagro mais |
 | tipo de seguro `3` | Seguro privado | Outro seguro |
-| tipo de seguro `9` | Nao se aplica | Sem adesão a seguro |
+| tipo de seguro `9` | Não se aplica | Sem adesão a seguro |
 | tipo de seguro `0` | Desconhecido (0) | Não se aplica |
 
 Os códigos `0002`, `0102`, `0104`, `0106`, `0108`, `0112`, `0114` e `0150` não existem na tabela oficial e saíram do

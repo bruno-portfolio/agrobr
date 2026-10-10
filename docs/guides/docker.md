@@ -52,7 +52,7 @@ docker run --rm -v "$(pwd)":/work agrobr python /work/meu_script.py
 
 ## Extras
 
-A imagem default ja inclui os extras `browser` (Playwright + Chromium) e `pdf` (pdfplumber), necessarios para CONAB e para ANDA, ANEC, UNICA, Lista Suja (rota PDF), Rio Verde e o andamento do INCRA, respectivamente.
+A imagem default já inclui os extras `browser` (Playwright + Chromium) e `pdf` (pdfplumber), necessarios para CONAB e para ANDA, ANEC, UNICA, Lista Suja (rota PDF), Rio Verde e o andamento do INCRA, respectivamente.
 
 O `--build-arg EXTRAS` **substitui** o default, e o `browser` tem de ficar na lista: o build roda `playwright install chromium` sempre. Para adicionar extras, inclua os defaults:
 
@@ -64,27 +64,27 @@ docker build --build-arg EXTRAS="browser,pdf,polars" -t agrobr:extras .
 
 | Extra | Docker | Notas |
 |---|---|---|
-| `browser` | sim (default) | Playwright + Chromium. Necessario para CONAB |
-| `pdf` | sim (default) | pdfplumber, puro Python. Necessario para ANDA, ANEC, UNICA, Lista Suja (rota PDF), Rio Verde e o andamento do INCRA |
+| `browser` | sim (default) | Playwright + Chromium. Necessário para CONAB |
+| `pdf` | sim (default) | pdfplumber, puro Python. Necessário para ANDA, ANEC, UNICA, Lista Suja (rota PDF), Rio Verde e o andamento do INCRA |
 | `polars` | sim | Wheels manylinux pre-built |
 | `bigquery` | sim | Google Cloud client |
-| `geo` | **incerto** | geopandas/pyogrio pode funcionar (GDAL bundled no wheel). Nao verificado |
-| `dev` | nao usar | Ferramentas de dev (pytest, ruff, mypy) |
-| `docs` | nao usar | mkdocs |
+| `geo` | **incerto** | geopandas/pyogrio pode funcionar (GDAL bundled no wheel). Não verificado |
+| `dev` | não usar | Ferramentas de dev (pytest, ruff, mypy) |
+| `docs` | não usar | mkdocs |
 
 ## Python version
 
-A imagem default usa Python 3.11. Para outras versoes:
+A imagem default usa Python 3.11. Para outras versões:
 
 ```bash
 docker build --build-arg PYTHON_VERSION=3.12 -t agrobr:py312 .
 ```
 
-Versoes suportadas: 3.11, 3.12, 3.13.
+Versões suportadas: 3.11, 3.12, 3.13.
 
 ## Variáveis de ambiente
 
-Todas as configuracoes sao customizaveis via env vars:
+Todas as configuracoes são customizaveis via env vars:
 
 ```bash
 docker run -it --rm \
@@ -95,7 +95,7 @@ docker run -it --rm \
   agrobr
 ```
 
-| Prefixo | Configuracao |
+| Prefixo | Configuração |
 |---|---|
 | `AGROBR_CACHE_` | Diretorio de cache, nome do banco DuckDB |
 | `AGROBR_HTTP_` | Timeouts, retries, rate limits por fonte |

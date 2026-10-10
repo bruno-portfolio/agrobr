@@ -2,42 +2,42 @@
 
 ## Sobre
 
-O **Sistema Nacional de Cadastro Ambiental Rural (SICAR)** e o registro eletronico
-obrigatorio de todos os imoveis rurais do Brasil, conforme a Lei 12.651/2012
-(Codigo Florestal). Administrado pelo Servico Florestal Brasileiro (SFB),
+O **Sistema Nacional de Cadastro Ambiental Rural (SICAR)** e o registro eletrônico
+obrigatório de todos os imoveis rurais do Brasil, conforme a Lei 12.651/2012
+(Código Florestal). Administrado pelo Serviço Florestal Brasileiro (SFB),
 o sistema contem mais de **7.4 milhoes de imoveis** cadastrados em 27 UFs.
 
-O CAR inclui informacoes sobre:
+O CAR inclui informações sobre:
 
 - Identificacao do imovel rural
 - Status do cadastro (Ativo, Pendente, Suspenso, Cancelado e RE, publicado pelo SICAR sem definição oficial localizada)
 - Area total em hectares
-- Modulos fiscais
+- Módulos fiscais
 - Tipo de imovel (IRU Rural, AST Assentamento, PCT conforme publicado pelo SICAR)
-- Municipio e codigo IBGE
+- Município e código IBGE
 
 ## Acesso via WFS
 
 O agrobr acessa o GeoServer WFS do SICAR diretamente, sem necessidade de
-CAPTCHA ou autenticacao. O protocolo OGC WFS permite consultas padronizadas
-com filtros server-side (CQL_FILTER) e paginacao transparente.
+CAPTCHA ou autenticação. O protocolo OGC WFS permite consultas padronizadas
+com filtros server-side (CQL_FILTER) e paginação transparente.
 
 **Endpoint:** `https://geoserver.car.gov.br/geoserver/sicar/wfs`
 
-## Campos disponiveis
+## Campos disponíveis
 
-| Campo | Tipo | Descricao |
+| Campo | Tipo | Descrição |
 |-------|------|-----------|
-| cod_imovel | string | Codigo unico do imovel (UF-IBGE-hash) |
+| cod_imovel | string | Código único do imovel (UF-IBGE-hash) |
 | status | string | AT (Ativo), PE (Pendente), SU (Suspenso), CA (Cancelado) e RE (publicado pelo SICAR, sem definição oficial localizada; sai como publicado) |
 | data_criacao | datetime UTC | Instante de criação do cadastro |
 | data_atualizacao | datetime UTC | Última atualização (nullable) |
 | area_ha | float | Area total em hectares |
-| condicao | string | Condicao do cadastro (nullable) |
+| condicao | string | Condição do cadastro (nullable) |
 | uf | string | Sigla da UF |
-| municipio | string | Nome do municipio |
-| cod_municipio_ibge | int | Codigo IBGE do municipio |
-| modulos_fiscais | float | Numero de modulos fiscais |
+| municipio | string | Nome do município |
+| cod_municipio_ibge | int | Código IBGE do município |
+| modulos_fiscais | float | Número de módulos fiscais |
 | tipo | string | IRU (Rural), AST (Assentamento), PCT (tipo publicado pelo SICAR) |
 | cod_municipio | int | Código IBGE de 7 dígitos (igual a `cod_municipio_ibge`); anulável |
 
@@ -48,7 +48,7 @@ com filtros server-side (CQL_FILTER) e paginacao transparente.
   tem os dtypes do cheio (texto em `str` no pandas 3 e `object` no 2), na tabela e no `_geo`. O CSV oficial
   mostrou horários sem fuso diferentes dos instantes UTC do JSON e dos limites CQL; não se
   aplica deslocamento fixo para converter capturas CSV antigas
-- **Atualizacao incremental:** `imoveis()`, `imoveis_geo()` e `imoveis_geo_stream()` aceitam
+- **Atualização incremental:** `imoveis()`, `imoveis_geo()` e `imoveis_geo_stream()` aceitam
   `atualizado_apos` (CQL `data_atualizacao>'...'`, ISO date ou datetime) para buscar apenas
   registros atualizados depois de uma data. A coluna é solicitada nas 15 camadas que a oferecem.
   O campo não existe em PE, PI, PR, RJ, RN, RO, RR, RS, SC, SE, SP e TO; nesses estados o filtro
@@ -57,7 +57,7 @@ com filtros server-side (CQL_FILTER) e paginacao transparente.
 - **Estado corrente:** criação (`>=`) e atualização (`>`) são filtros do cadastro disponível
   no momento da consulta. Não recuperam revisões anteriores nem exclusões. O dataset
   `cadastro_rural` também aceita município (nome ou código) e atualização, e rejeita `deterministic`
-- **Geometria disponivel:** `imoveis_geo()` retorna `GeoDataFrame` com poligonos MultiPolygon
+- **Geometria disponível:** `imoveis_geo()` retorna `GeoDataFrame` com poligonos MultiPolygon
   (EPSG:4326) via WFS GeoJSON. Requer `pip install agrobr[geo]`. Limite padrão de 5.000 features
   no resultado; `max_registros` maior que 10.000 ou `None` usa paginação. O corte avisa
   (`validation_warnings`, `UserWarning` e `source_details["sicar"]["truncado"]`). As 27 camadas declaram
@@ -93,12 +93,12 @@ com filtros server-side (CQL_FILTER) e paginacao transparente.
   "feicoes_publicadas"` e em `validation_warnings`; para contar imóveis, use o resumo por município
 - **Sem cache:** cada chamada consulta o GeoServer do CAR; repetir a consulta baixa tudo de novo
 - **Timeout estendido:** read timeout de 180s para UFs com muitos registros (BA, MG, MT)
-- **SSL:** o GeoServer do CAR usa cipher suite legado que rejeita handshake TLS padrao.
+- **SSL:** o GeoServer do CAR usa cipher suite legado que rejeita handshake TLS padrão.
   O client usa `SSLContext` com `@SECLEVEL=1`, mantendo verificação do certificado e do hostname.
   Falhas de confiança no certificado não ativam fallback com verificação desabilitada
 - **Relevancia EUDR:** dados essenciais para compliance com o EU Deforestation Regulation
 
-## Licenca
+## Licença
 
 A classificação do SICAR é `livre` pela base pública federal: LAI, Decreto 8.777/2016 e publicidade do CAR na Lei 12.651/2012. A consulta pública oferece visualização e download da base por UF sem termo específico de reutilização localizado. Campos `Fees` e `AccessConstraints` vazios no WFS não são uma concessão de licença. Não foi comprovada uma CC BY da base; o BY-ND do rodapé gov.br é do conteúdo do site. Preservar SFB/CAR, camada, UF, extração e transformações. [Geosserviços do CAR](https://consultapublica.car.gov.br/publico/geoservicos/index).
 

@@ -35,7 +35,7 @@ O parâmetro `produto` do dataset mapeia para o parâmetro `setor` da API IBGE.
 
 - Nomes de coluna nunca mudam (só adicionam)
 - `trimestre` sempre no formato YYYYQQ
-- `setor` é uma das chaves válidas: agropecuaria, industria, servicos, pib_total
+- `setor` é uma das chaves válidas: agropecuária, industria, serviços, pib_total
 - `precos` indica o tipo de deflator: corrente, real_1995
 
 ## Exemplo

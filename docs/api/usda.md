@@ -1,6 +1,6 @@
 # API USDA PSD
 
-O modulo USDA fornece dados do Production, Supply and Distribution (PSD) — estimativas internacionais de oferta e demanda agricola do Departamento de Agricultura dos EUA.
+O módulo USDA fornece dados do Production, Supply and Distribution (PSD) — estimativas internacionais de oferta e demanda agrícola do Departamento de Agricultura dos EUA.
 
 ## API Key
 
@@ -12,11 +12,11 @@ Requer chave gratuita do USDA:
 A chave vai só no cabeçalho `X-Api-Key` do gateway `https://api.fas.usda.gov/api/psd`. Sem chave, ou com chave
 recusada (HTTP 403 `API_KEY_INVALID`), sai `SourceUnavailableError`.
 
-## Funcoes
+## Funções
 
 ### `psd`
 
-Dados de producao, oferta e distribuicao por commodity e pais.
+Dados de produção, oferta e distribuição por commodity e pais.
 
 ```python
 async def psd(
@@ -32,9 +32,9 @@ async def psd(
 ) -> DataFrameResult
 ```
 
-**Parametros:**
+**Parâmetros:**
 
-| Parametro | Tipo | Descricao |
+| Parâmetro | Tipo | Descrição |
 |-----------|------|-----------|
 | `produto` | `str` | Commodity: `"soja"`, `"milho"`, `"trigo"`, `"cafe"`, `"arroz"`, `"algodao"`, `"acucar"`, `"farelo_soja"`, `"oleo_soja"` ou `commodityCode` do catálogo oficial do PSD |
 | `country` | `str` | Pais: `"BR"`, `"US"`, `"world"` (agregado), `"all"` (todos) ou `countryCode` do catálogo do PSD (não é ISO: `"CH"` é a China, `"E4"` a UE). Default: `"BR"` |
@@ -69,7 +69,7 @@ df = await usda.psd("soja", attributes=["Production", "Exports"])
 df = await usda.psd("soja", country="all", market_year=2024)
 ```
 
-## Versao Sincrona
+## Versão Síncrona
 
 ```python
 from agrobr.sync import usda
@@ -79,7 +79,7 @@ df = usda.psd("soja")
 
 ## Notas
 
-- Fonte: [USDA FAS](https://apps.fas.usda.gov/psdonline/) — licenca livre
+- Fonte: [USDA FAS](https://apps.fas.usda.gov/psdonline/) — licença livre
 - Dados globais de ~180 paises
 - Atualizado mensalmente (WASDE report)
 
