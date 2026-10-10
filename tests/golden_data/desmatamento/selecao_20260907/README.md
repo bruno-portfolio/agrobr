@@ -1,6 +1,6 @@
 # Sementes oficiais PRODES/DETER de 07/09/2026
 
-Oito corpos JSON HTTP originais, seis feições por layout, copiados byte a byte das sondagens21. O manifesto registra caminhos de origem, SHA-256 e tamanho. Os filtros de ID não nulo e ordenação de cada semente introduzem viés; não são populações completas nem evidência de PK.
+Oito corpos JSON HTTP originais, seis feições por layout, copiados byte a byte das capturas originais. O manifesto registra caminhos de origem, SHA-256 e tamanho. Os filtros de ID não nulo e ordenação de cada semente introduzem viés; não são populações completas nem evidência de PK.
 
 Pampa preserva o corpo cujo recebimento encerrou a captura original com erro: o servidor incluiu seis geometrias apesar da projeção tabular. Esse arquivo não é captura aprovada retroativamente. O parser produtivo2 aplica a decisão posterior explícita de validar e liberar geometria no tabular.
 

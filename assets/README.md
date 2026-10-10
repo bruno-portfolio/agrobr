@@ -28,6 +28,6 @@ python -m scripts.update_conab_explorer_data --input assets/explorer/conab.json 
 
 Remover `--check` grava as saídas por substituição atômica. O ticker aceita `--root` para testar uma cópia das duas páginas. O gerador Conab aceita `--year` e `--resume`; o padrão é o ano UTC corrente, e capturas retomadas precisam corresponder à consulta e ao hash registrado. Não usar `--resume` para buscar uma revisão nova da mesma safra.
 
-`explorer_data.yml` agenda a coleta Conab no dia 15, às 12h UTC; os dois bots compartilham o mesmo grupo de concorrência. O atlas e a malha têm atualização anual e preservam a edição explicitamente. `docs.yml` copia esta pasta para `site/assets`; o checkout não inclui os packs ignorados, protótipos `index2.html` ou `tmp_design_review/`.
+`explorer_data.yml` agenda a coleta Conab no dia 15, às 12h UTC; os dois bots compartilham o mesmo grupo de concorrência. O atlas e a malha têm atualização anual e preservam a edição explicitamente. `docs.yml` copia esta pasta para `site/assets`; o checkout não inclui os packs ignorados.
 
 Para conferir localmente, servir a raiz do repositório por HTTP e abrir `/` e `/en/`. Importmaps e `DecompressionStream` exigem navegadores modernos; falhas do 3D preservam a consulta no painel, e falhas dos arquivos exibem uma ação de tentar novamente. O fallback `noscript` informa as fontes e mantém o ticker e a prova visíveis.

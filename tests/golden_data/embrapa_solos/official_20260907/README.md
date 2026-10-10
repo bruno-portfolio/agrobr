@@ -1,6 +1,6 @@
 # Embrapa Solos: respostas oficiais de 07/09/2026
 
-Os quatro JSON são cópias byte a byte dos corpos HTTP decodificados da continuação documental e de paginação do incremento 22. O manifesto registra URL completa, horário observado com fuso, status, cabeçalhos públicos, SHA-256, tamanho e caminho do recibo original. Os testes usam somente estes arquivos locais; não dependem da pasta de relatórios nem consultam a rede.
+Os quatro JSON são cópias byte a byte dos corpos HTTP decodificados da continuação documental e de paginação. O manifesto registra URL completa, horário observado com fuso, status, cabeçalhos públicos, SHA-256, tamanho e caminho do recibo original. Os testes usam somente estes arquivos locais; não consultam a rede.
 
 - `perfis_reference.json`: seis ocorrências, IDs publicados de 1 a 6, 83 atributos solicitados, geometria projetada como null.
 - `mapa_reference.json`: seis ocorrências, IDs publicados de 1 a 6, 18 atributos solicitados, geometria projetada como null.
