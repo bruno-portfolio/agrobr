@@ -27,6 +27,34 @@ docker run -it --rm agrobr
 
 See the [Docker guide](guides/docker.md) for extras and advanced options.
 
+## Datasets — Semantic Layer
+
+The `datasets` layer organizes data by subject (daily price, annual production, crop estimate, supply and demand...),
+with output validated against each dataset's [versioned contract](contracts/index.md) and provenance in `MetaInfo`.
+Where a dataset has more than one source, it tries the next one when a source fails.
+
+```python
+import asyncio
+
+from agrobr import datasets
+
+async def main():
+    df = await datasets.preco_diario("soja")
+    df = await datasets.producao_anual("soja", ano=2023)
+    df = await datasets.estimativa_safra("soja", safra="2024/25")
+
+    # Provenance: source used, sources attempted and contract version
+    df, meta = await datasets.balanco("soja", return_meta=True)
+    print(meta.selected_source, meta.attempted_sources, meta.schema_version)
+
+asyncio.run(main())
+
+print(datasets.list_datasets())
+print(datasets.describe("preco_diario"))
+```
+
+The sections below show each source's API, with its own parameters.
+
 ## CEPEA - Price Indicators
 
 CEPEA (Center for Advanced Studies in Applied Economics) publishes daily agricultural price indicators.
@@ -468,9 +496,9 @@ os.environ["AGROBR_CACHE_DIR"] = "./my_cache"
 os.environ["AGROBR_HTTP_TIMEOUT_READ"] = "60"
 os.environ["AGROBR_HTTP_MAX_RETRIES"] = "5"
 
-from agrobr import cepea
+from agrobr.sync import cepea
 
-df = await cepea.indicador("soja", offline=True)
+df = cepea.indicador("soja", offline=True)
 ```
 
 ## Error Handling

@@ -27,6 +27,34 @@ docker run -it --rm agrobr
 
 Veja o [guia Docker](guides/docker.md) para extras e opções avançadas.
 
+## Datasets — Camada Semântica
+
+A camada `datasets` organiza os dados por assunto (preço diário, produção anual, estimativa de safra, balanço...),
+com saída validada pelo [contrato versionado](contracts/index.md) de cada dataset e proveniência no `MetaInfo`. Onde o
+dataset tem mais de uma fonte, ele tenta a próxima quando uma falha.
+
+```python
+import asyncio
+
+from agrobr import datasets
+
+async def main():
+    df = await datasets.preco_diario("soja")
+    df = await datasets.producao_anual("soja", ano=2023)
+    df = await datasets.estimativa_safra("soja", safra="2024/25")
+
+    # Proveniência: fonte usada, fontes tentadas e versão do contrato
+    df, meta = await datasets.balanco("soja", return_meta=True)
+    print(meta.selected_source, meta.attempted_sources, meta.schema_version)
+
+asyncio.run(main())
+
+print(datasets.list_datasets())
+print(datasets.describe("preco_diario"))
+```
+
+As seções seguintes mostram a API de cada fonte, com os parâmetros próprios dela.
+
 ## CEPEA - Indicadores de Preços
 
 O CEPEA (Centro de Estudos Avançados em Economia Aplicada) publica indicadores diários de preços agrícolas.
@@ -208,21 +236,21 @@ async def main():
 asyncio.run(main())
 ```
 
-### PEVS — Silvicultura e Extracao Vegetal
+### PEVS — Silvicultura e Extração Vegetal
 
-Dados anuais de producao silvicultural e extrativista vegetal.
+Dados anuais de produção silvicultural e extrativista vegetal.
 
 ```python
 from agrobr import ibge
 
 async def main():
-    # Silvicultura — producao de madeira
+    # Silvicultura — produção de madeira
     df = await ibge.silvicultura('madeira_tora', ano=2023)
 
-    # Extracao vegetal — producao de acai
+    # Extração vegetal — produção de açaí
     df = await ibge.extracao_vegetal('acai', ano=2023)
 
-    # Area plantada de eucalipto
+    # Área plantada de eucalipto
     df = await ibge.silvicultura('eucalipto', variavel='area')
 
 asyncio.run(main())
@@ -234,30 +262,30 @@ asyncio.run(main())
 from agrobr import ibge
 
 async def main():
-    # Leite — aquisicao + industrializacao + preco
+    # Leite — aquisição + industrialização + preço
     df = await ibge.leite_trimestral(trimestre='202303')
 
-    # PIB agropecuario trimestral
+    # PIB agropecuário trimestral
     df = await ibge.pib_agro(trimestre='202501')
 
 asyncio.run(main())
 ```
 
-## ComexStat - Exportacoes
+## ComexStat - Exportações
 
-Dados de comercio exterior do MDIC/SECEX por NCM, UF e pais.
+Dados de comércio exterior do MDIC/SECEX por NCM, UF e país.
 
 ```python
 from agrobr import comexstat
 
 async def main():
-    # Exportacoes mensais de soja
+    # Exportações mensais de soja
     df = await comexstat.exportacao("soja", ano=2024)
 
     # Por UF
     df = await comexstat.exportacao("soja", ano=2024, uf="MT")
 
-    # Algodao (prefix match captura todas subposicoes NCM)
+    # Algodão (prefix match captura todas as subposições NCM)
     df = await comexstat.exportacao("algodao", ano=2024)
 
 asyncio.run(main())
@@ -265,13 +293,13 @@ asyncio.run(main())
 
 ### Produtos ComexStat
 
-Soja, milho, cafe, algodao, trigo, arroz, acucar, etanol, carne bovina/frango/suina, e mais.
-Veja [docs/sources/comexstat.md](sources/comexstat.md) para tabela completa de NCMs.
+Soja, milho, café, algodão, trigo, arroz, açúcar, etanol, carne bovina/frango/suína, e mais.
+Veja [docs/sources/comexstat.md](sources/comexstat.md) para a tabela completa de NCMs.
 
-## NASA POWER - Dados Climaticos
+## NASA POWER - Dados Climáticos
 
-Dados climaticos globais da NASA (alternativa ao INMET, sem token).
-Cobertura global, grid 0.5 grau, desde 1981, sem autenticacao.
+Dados climáticos globais da NASA (alternativa ao INMET, sem token).
+Cobertura global, grid 0.5 grau, desde 1981, sem autenticação.
 
 ```python
 from agrobr import nasa_power
@@ -280,13 +308,13 @@ async def main():
     # Clima mensal de MT em 2024
     df = await nasa_power.clima_uf("MT", ano=2024)
 
-    # Dados diarios de um ponto
+    # Dados diários de um ponto
     df = await nasa_power.clima_ponto(
         lat=-12.6, lon=-56.1,
         inicio="2024-01-01", fim="2024-01-31"
     )
 
-    # Agregacao mensal de um ponto
+    # Agregação mensal de um ponto
     df = await nasa_power.clima_ponto(
         lat=-12.6, lon=-56.1,
         inicio="2024-01-01", fim="2024-12-31",
@@ -302,33 +330,33 @@ asyncio.run(main())
 > públicos, sem token; a rota observacional (`estacao`, `clima_uf`) exige `AGROBR_INMET_TOKEN`. Veja
 > [a fonte](sources/inmet.md).
 
-Dados climaticos de 600+ estacoes automaticas do INMET.
+Dados climáticos de 600+ estações automáticas do INMET.
 
 ```python
 from agrobr import inmet
 
 async def main():
-    # Estacoes automaticas de MT
+    # Estações automáticas de MT
     df = await inmet.estacoes(tipo="T", uf="MT")
 
     # Clima mensal agregado por UF
     df = await inmet.clima_uf("MT", ano=2024)
 
-    # Dados horarios de uma estacao
+    # Dados horários de uma estação
     df = await inmet.estacao("A001", inicio="2024-01-01", fim="2024-01-31")
 
 asyncio.run(main())
 ```
 
-## BCB - Credito Rural
+## BCB - Crédito Rural
 
-Dados de credito rural do SICOR (Sistema de Operacoes do Credito Rural).
+Dados de crédito rural do SICOR (Sistema de Operações do Crédito Rural).
 
 ```python
 from agrobr import bcb
 
 async def main():
-    # Credito de custeio para soja
+    # Crédito de custeio para soja
     df = await bcb.credito_rural("soja", safra="2024/25")
 
     # Filtrar por UF
@@ -351,7 +379,7 @@ async def main():
 asyncio.run(main())
 ```
 
-## CONAB - Custo de Producao
+## CONAB - Custo de Produção
 
 Custos detalhados por hectare, cultura e UF. O exemplo seleciona automaticamente
 a última planilha em ordem alfabética no catálogo e uma aba identificada de MT com o ano
@@ -468,9 +496,9 @@ os.environ["AGROBR_CACHE_DIR"] = "./meu_cache"
 os.environ["AGROBR_HTTP_TIMEOUT_READ"] = "60"
 os.environ["AGROBR_HTTP_MAX_RETRIES"] = "5"
 
-from agrobr import cepea
+from agrobr.sync import cepea
 
-df = await cepea.indicador("soja", offline=True)
+df = cepea.indicador("soja", offline=True)
 ```
 
 ## Tratamento de Erros
