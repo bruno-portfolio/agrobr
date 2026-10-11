@@ -70,8 +70,9 @@ jobs:
                           'category': r.category,
                           'latency_ms': round(r.latency_ms, 1),
                           'message': r.message,
+                          'failures_since_ok': prior + 1 if r.status.value == 'failed' else 0,
                       }
-                      for r in check_results
+                      for r, _, _, prior in results
                   ]
               }
 
@@ -136,7 +137,7 @@ jobs:
           path: health_report.json
           retention-days: 30
 
-      - name: Fail if any source is down
+      - name: Fail if a source is down for 3 runs in a row (or all are down)
         if: always() && steps.health.outputs.overall_status != 'healthy'
         run: |
           python -c "
@@ -144,8 +145,10 @@ jobs:
           report_path = pathlib.Path('health_report.json')
           if not report_path.exists():
               sys.exit('Health check did not produce a report')
-          report = json.loads(report_path.read_text())
-          failed = [c['source'] for c in report['checks'] if c['status'] == 'failed']
+          checks = json.loads(report_path.read_text())['checks']
+          failed = [c['source'] for c in checks if c['status'] == 'failed']
+          persistent = [c['source'] for c in checks if c.get('failures_since_ok', 0) >= 3]
           print('Sources failed:', ', '.join(failed) or 'none')
-          sys.exit(1 if failed else 0)
+          print('Down for 3+ runs in a row:', ', '.join(persistent) or 'none')
+          sys.exit(1 if persistent or len(failed) == len(checks) else 0)
           "

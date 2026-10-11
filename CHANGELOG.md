@@ -10,6 +10,7 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 ### Changed
 
 - **ci** — a suíte roda em paralelo no CI (`pytest -n auto`, com `pytest-xdist` no extra `dev`): os jobs `test` e `minimum-compatibility` usam todos os núcleos da máquina do GitHub, em vez de um só, e um run novo do mesmo PR ou da `main` cancela o anterior. Nos PRs rodam o Python 3.11 e o 3.14 com o Polars (este com a cobertura), um `core-package`, Windows, documentação e calculadora; a matriz completa, o `minimum-compatibility` e os outros `core-package` ficam no push da `main` e na Release.
+- **ci** — o health check diário fica vermelho só quando uma fonte cai em 3 execuções seguidas ou todas caem; queda pontual de uma fonte segue para o alerta no Discord, sem reprovar o run (e o badge da documentação).
 
 ## [2.0.0] - 2026-10-10
 
