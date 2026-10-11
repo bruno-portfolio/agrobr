@@ -17,12 +17,6 @@
 [![Code style: ruff](https://img.shields.io/badge/code%20style-ruff-000000.svg)](https://github.com/astral-sh/ruff)
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/bruno-portfolio/agrobr/blob/main/examples/agrobr_demo.ipynb)
 
-<p align="center">
-  <a href="https://htmlpreview.github.io/?https://github.com/bruno-portfolio/agrobr/blob/main/docs/canopy.html">
-    <img src="https://raw.githubusercontent.com/bruno-portfolio/agrobr/main/docs/canopy.svg" width="100%" />
-  </a>
-</p>
-
 Infraestrutura Python para dados agrícolas brasileiros com camada semântica sobre **41 fontes públicas** — preços de mercado, produção e safras, comércio exterior, crédito rural, clima, monitoramento ambiental, cadastros territoriais e regulatório.
 
 O Brasil é um dos maiores produtores agrícolas do mundo, mas os dados públicos estão espalhados por dezenas de portais do governo, cada um com seu formato, codificação e peculiaridades. O agrobr transforma tudo isso em DataFrames limpos e validados.

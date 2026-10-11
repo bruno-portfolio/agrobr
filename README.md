@@ -17,12 +17,6 @@
 [![Code style: ruff](https://img.shields.io/badge/code%20style-ruff-000000.svg)](https://github.com/astral-sh/ruff)
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/bruno-portfolio/agrobr/blob/main/examples/agrobr_demo.ipynb)
 
-<p align="center">
-  <a href="https://htmlpreview.github.io/?https://github.com/bruno-portfolio/agrobr/blob/main/docs/canopy.html">
-    <img src="https://raw.githubusercontent.com/bruno-portfolio/agrobr/main/docs/canopy.svg" width="100%" />
-  </a>
-</p>
-
 Python infrastructure for Brazilian agricultural data with a semantic layer over **41 public sources** — market prices, production and crop seasons, foreign trade, rural credit, climate, environmental monitoring, land registries and regulatory data.
 
 Brazil is one of the world's largest agricultural producers, but its public data is scattered across dozens of government portals, each with its own format, encoding and quirks. agrobr turns all of that into clean, validated DataFrames.
