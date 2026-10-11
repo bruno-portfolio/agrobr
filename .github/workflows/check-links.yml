@@ -38,6 +38,7 @@ jobs:
           args: >-
             --no-progress
             --format markdown
+            --root-dir "${{ github.workspace }}"
             README.md
             CHANGELOG.md
             index.html
