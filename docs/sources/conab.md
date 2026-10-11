@@ -5,7 +5,7 @@
 | Campo | Valor |
 |-------|-------|
 | **Instituicao** | Ministerio da Agricultura |
-| **Website** | [conab.gov.br](https://www.conab.gov.br) |
+| **Website** | [gov.br/conab](https://www.gov.br/conab/pt-br) |
 | **Acesso agrobr** | Direto (planilhas Excel públicas) |
 
 ## Origem dos Dados

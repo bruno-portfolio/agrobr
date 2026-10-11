@@ -5,7 +5,7 @@
 | Field | Value |
 |-------|-------|
 | **Institution** | Ministério da Agricultura |
-| **Website** | [conab.gov.br](https://www.conab.gov.br) |
+| **Website** | [gov.br/conab](https://www.gov.br/conab/pt-br) |
 | **agrobr access** | Direct (public Excel workbooks) |
 
 ## Data Origin
