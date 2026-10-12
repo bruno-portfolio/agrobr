@@ -11,7 +11,8 @@ import httpx
 
 from agrobr.exceptions import SourceUnavailableError
 
-_JSON_ERROR_KEY = re.compile(rb'"(?:e|\\u0065)(?:r|\\u0072){2}(?:o|\\u006[fF])(?:r|\\u0072)"\s*:')
+_JSON_ERROR = rb'"(?:e|\\u0065)(?:r|\\u0072){2}(?:o|\\u006[fF])(?:r|\\u0072)"'
+_JSON_ERROR_KEY = re.compile(_JSON_ERROR + rb"\s*:|" + rb'"status"\s*:\s*' + _JSON_ERROR)
 _SEGREDOS_NO_AMBIENTE = (
     "AGROBR_USDA_API_KEY",
     "AGROBR_INMET_TOKEN",
@@ -42,6 +43,10 @@ def redact_secrets(text: str, *secrets: str | None) -> str:
 
 
 def arcgis_error_message(data: object) -> str | None:
+    if isinstance(data, dict) and data.get("status") == "error":
+        messages = data.get("messages")
+        detail = " ".join(map(str, messages)) if isinstance(messages, list) else messages
+        return f"ArcGIS error: {str(detail or 'unknown error').strip()}"
     if not isinstance(data, dict) or "error" not in data:
         return None
     error = data["error"]

@@ -60,6 +60,27 @@ async def test_erro_arcgis_apos_prefixo_longo_ou_com_escape(key):
             )
 
 
+async def test_site_arcgis_fora_vira_indisponibilidade_na_contagem_e_nas_paginas(monkeypatch):
+    site_fora = (
+        b'{"status":"error","messages":["Could not access any server machines. '
+        b'Please contact your system administrator.  "]}'
+    )
+    original = httpx.AsyncClient
+    monkeypatch.setattr(
+        httpx,
+        "AsyncClient",
+        lambda *a, **k: original(
+            *a, transport=httpx.MockTransport(lambda _: httpx.Response(200, content=site_fora)), **k
+        ),
+    )
+    with pytest.raises(SourceUnavailableError, match="server machines"):
+        await geo.fetch_arcgis_count(
+            "https://example.test/FeatureServer/9", source="sfb", timeout=httpx.Timeout(1)
+        )
+    with pytest.raises(SourceUnavailableError, match="server machines"):
+        await geo.fetch_wfs("https://example.test/query", source="sfb", timeout=httpx.Timeout(1))
+
+
 @pytest.mark.parametrize("payload", [{}, [], {"features": None}, {"features": "invalid"}])
 def test_malformed_geojson_is_not_empty_success(payload):
     with pytest.raises(ParseError, match="GeoJSON inválido"):

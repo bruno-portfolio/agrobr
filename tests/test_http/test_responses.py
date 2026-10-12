@@ -82,6 +82,11 @@ def test_previa_mascara_a_credencial_do_argumento_e_ignora_vazio(monkeypatch):
         ({"error": {"code": 500, "message": "Offline"}}, "ArcGIS error 500: Offline"),
         ({"error": "fora do ar"}, "ArcGIS error unknown: fora do ar"),
         ({"error": {}}, "ArcGIS error unknown: unknown error"),
+        (
+            {"status": "error", "messages": ["Could not access any server machines.  "]},
+            "ArcGIS error: Could not access any server machines.",
+        ),
+        ({"status": "error"}, "ArcGIS error: unknown error"),
         ({"features": []}, None),
     ],
 )
