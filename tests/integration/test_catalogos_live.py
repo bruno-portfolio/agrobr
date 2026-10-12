@@ -8,6 +8,7 @@ from typing import Any
 import pytest
 
 from agrobr import cepea, conab, constants, datasets, deral, zarc
+from agrobr.cepea import client as cepea_client
 from agrobr.zarc import models as zarc_models
 
 pytestmark = [pytest.mark.integration, pytest.mark.timeout(300)]
@@ -137,7 +138,15 @@ async def test_preco_diario_produto_publicado(
     assert len(frame) > 0, f"Preço diário sem dados para {produto!r}"
 
 
-@pytest.mark.parametrize("produto", sorted(constants.CEPEA_PRODUTOS))
+@pytest.mark.parametrize(
+    "produto",
+    [
+        produto
+        if cepea_client.can_use_alternative_source(produto)
+        else pytest.param(produto, marks=pytest.mark.integration_br)
+        for produto in sorted(constants.CEPEA_PRODUTOS)
+    ],
+)
 async def test_cepea_indicador_publicado(produto: str, record_property: RecordProperty):
     frame = await cepea.indicador(produto, force_refresh=True)
     record_property("records_count", len(frame))
