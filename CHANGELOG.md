@@ -14,6 +14,7 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 - **ci** — o Canopy saiu do projeto: o workflow que regerava a visualização a cada push na `main` (e abria um PR a cada vez), o `canopy.yml` e a imagem `docs/canopy.svg`/`docs/canopy.html` do topo dos READMEs foram removidos.
 - **ci** — o teste semanal do indicador CEPEA de leite passa a ser `integration_br`: o CEPEA devolve HTTP 403 ao runner do GitHub, e o leite não tem a Notícias Agrícolas como alternativa (#120).
 - **ci** — na reconciliação semanal, o caso CEPEA do `preco_diario` sai como indisponível quando a página do CEPEA não responde ao runner; antes, o script comparava a página da Notícias Agrícolas, que o agrobr servia no lugar, com a estrutura do CEPEA e acusava mismatch (#121).
+- **ci** — na reconciliação semanal, o script da ANTT confere o status HTTP antes de ler o corpo: resposta de erro do CKAN sai como indisponível (5xx, 403, 429) ou erro do script (404), em vez de `JSONDecodeError`.
 
 ### Fixed
 

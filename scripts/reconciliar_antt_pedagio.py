@@ -32,6 +32,7 @@ def fetch(client: httpx.Client, url: str, path: Path) -> dict[str, Any]:
     digest = hashlib.sha256()
     size = 0
     with client.stream("GET", url) as response, path.open("wb") as handle:
+        response.raise_for_status()
         for chunk in response.iter_bytes(1 << 20):
             digest.update(chunk)
             size += len(chunk)
