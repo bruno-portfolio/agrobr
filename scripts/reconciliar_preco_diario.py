@@ -118,19 +118,30 @@ async def run(produtos: list[str], output: Path) -> int:
         "values": [],
     }
     for produto in produtos:
-        cepea_html = (await cepea_client.fetch_indicador_page(produto)).html
-        items = inventory_cepea(cepea_html)
-        report["structure"].append(
-            compare_cepea(cases[f"cepea_{produto}"], items) | {"inventory": items}
-        )
-        report["values"].append(
-            {
-                "source": "cepea",
-                "produto": produto,
-                "sha256": hashlib.sha256(cepea_html.encode("utf-8")).hexdigest(),
-                "newest": next((i["newest"] for i in items if i["newest"]), None),
-            }
-        )
+        cepea = await cepea_client.fetch_indicador_page(produto)
+        if cepea.source == "noticias_agricolas":
+            report["structure"].append(
+                {
+                    "case": f"cepea_{produto}",
+                    "status": "indisponivel",
+                    "problems": [
+                        "a página do CEPEA não respondeu; a do agrobr veio da Notícias Agrícolas"
+                    ],
+                }
+            )
+        else:
+            items = inventory_cepea(cepea.html)
+            report["structure"].append(
+                compare_cepea(cases[f"cepea_{produto}"], items) | {"inventory": items}
+            )
+            report["values"].append(
+                {
+                    "source": "cepea",
+                    "produto": produto,
+                    "sha256": hashlib.sha256(cepea.html.encode("utf-8")).hexdigest(),
+                    "newest": next((i["newest"] for i in items if i["newest"]), None),
+                }
+            )
         na_html = await na_client.fetch_indicador_page(produto)
         na_items = inventory_na(na_html)
         report["structure"].append(
@@ -146,11 +157,13 @@ async def run(produtos: list[str], output: Path) -> int:
         )
     output.parent.mkdir(parents=True, exist_ok=True)
     output.write_text(json.dumps(report, indent=1, ensure_ascii=False), encoding="utf-8")
-    mismatches = [entry for entry in report["structure"] if entry["status"] != "ok"]
+    mismatches = [entry for entry in report["structure"] if entry["status"] == "mismatch"]
+    unavailable = [entry for entry in report["structure"] if entry["status"] == "indisponivel"]
     for entry in report["structure"]:
         print(entry["status"], entry["case"], "; ".join(entry["problems"]))
     print(
-        f"{len(report['structure']) - len(mismatches)} ok / {len(mismatches)} mismatch -> {output}"
+        f"{len(report['structure']) - len(mismatches) - len(unavailable)} ok / "
+        f"{len(mismatches)} mismatch / {len(unavailable)} indisponível -> {output}"
     )
     return 1 if mismatches else 0
 

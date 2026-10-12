@@ -2,10 +2,12 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
+from unittest.mock import AsyncMock
 
 import pytest
 from bs4 import BeautifulSoup, Tag
 
+from agrobr.cepea import client as cepea_client
 from scripts import reconciliar_preco_diario as reconciliation
 
 GOLDEN = Path(__file__).parent / "golden_data" / "reconciliacao_precos_diarios_20260918"
@@ -36,6 +38,28 @@ def test_noticias_agricolas_inventory_matches_manifest_structure(case_id: str):
     case = CASES[case_id]
     result = reconciliation.compare_na(case, reconciliation.inventory_na(_html(case)))
     assert result == {"case": case_id, "status": "ok", "problems": []}
+
+
+async def test_cepea_bloqueado_e_indisponivel_e_nao_mismatch(monkeypatch, tmp_path):
+    na_html = _html(CASES["noticias_agricolas_soja"])
+    monkeypatch.setattr(
+        reconciliation.cepea_client,
+        "fetch_indicador_page",
+        AsyncMock(return_value=cepea_client.FetchResult(na_html, "noticias_agricolas")),
+    )
+    monkeypatch.setattr(
+        reconciliation.na_client, "fetch_indicador_page", AsyncMock(return_value=na_html)
+    )
+
+    codigo = await reconciliation.run(["soja"], tmp_path / "relatorio.json")
+
+    relatorio = json.loads((tmp_path / "relatorio.json").read_text(encoding="utf-8"))
+    assert codigo == 0
+    assert [(caso["case"], caso["status"]) for caso in relatorio["structure"]] == [
+        ("cepea_soja", "indisponivel"),
+        ("noticias_agricolas_soja", "ok"),
+    ]
+    assert [valor["source"] for valor in relatorio["values"]] == ["noticias_agricolas"]
 
 
 def test_cepea_new_table_without_decision_is_reported():
