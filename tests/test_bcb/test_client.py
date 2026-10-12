@@ -74,6 +74,31 @@ async def test_olinda_repete_falhas_transitorias_e_recusa_as_definitivas():
         await client._fetch_odata("CusteioRegiaoUFProduto")
 
 
+async def test_olinda_retry_nao_volta_ao_no_que_devolveu_500():
+    cookies_enviados: list[str | None] = []
+
+    def balanceador(request: httpx.Request) -> httpx.Response:
+        cookies_enviados.append(request.headers.get("cookie"))
+        if len(cookies_enviados) == 1 or request.headers.get("cookie"):
+            return httpx.Response(500, headers={"set-cookie": "no=ruim; Path=/"}, json={})
+        return httpx.Response(200, json={"value": [{"id": 1}]})
+
+    original = httpx.AsyncClient
+    with (
+        patch(
+            "agrobr.bcb.client.httpx.AsyncClient",
+            side_effect=lambda *a, **k: original(
+                *a, transport=httpx.MockTransport(balanceador), **k
+            ),
+        ),
+        patch(RETRY_SLEEP, new_callable=AsyncMock),
+    ):
+        payload = await client._fetch_odata("CusteioRegiaoUFProduto", top=1)
+
+    assert payload["value"] == [{"id": 1}]
+    assert cookies_enviados == [None, None]
+
+
 async def test_resposta_sem_registros_devolve_lista_vazia():
     mock_client = make_mock_async_client()
     mock_client.get = AsyncMock(return_value=make_mock_response(200, json_data={"value": []}))

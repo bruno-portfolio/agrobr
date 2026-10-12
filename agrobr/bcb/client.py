@@ -5,6 +5,7 @@ from collections.abc import Iterator
 from contextlib import contextmanager
 from contextvars import ContextVar
 from dataclasses import dataclass, field
+from http import cookiejar
 from typing import Any, cast
 from urllib.parse import quote
 
@@ -109,6 +110,15 @@ def _registrar_consulta(endpoint: str, filters: list[str], select: list[str] | N
         aquisicao.consulta = odata_url(endpoint, filters or None, select, top=None)
 
 
+def _jar_sem_afinidade() -> cookiejar.CookieJar:
+    """Jar que recusa todo cookie, para cada tentativa do retry cair num nó qualquer do Olinda.
+
+    O balanceador do Olinda prende a sessão a um nó pelo cookie; com um nó devolvendo HTTP 500,
+    guardar o cookie faria todas as tentativas repetirem o mesmo 500.
+    """
+    return cookiejar.CookieJar(cookiejar.DefaultCookiePolicy(allowed_domains=[]))
+
+
 async def _fetch_odata(
     endpoint: str,
     filters: list[str] | None = None,
@@ -118,7 +128,10 @@ async def _fetch_odata(
     url = odata_url(endpoint, filters, select, top)
 
     async with httpx.AsyncClient(
-        timeout=TIMEOUT, headers=UserAgentRotator.get_bot_headers(), follow_redirects=True
+        timeout=TIMEOUT,
+        headers=UserAgentRotator.get_bot_headers(),
+        follow_redirects=True,
+        cookies=_jar_sem_afinidade(),
     ) as client:
         logger.debug(
             "bcb_odata_request",
