@@ -14,6 +14,11 @@ from agrobr.zarc import models as zarc_models
 pytestmark = [pytest.mark.integration, pytest.mark.timeout(300)]
 
 SAFRA_REFERENCIA = "2025/2026"
+CONAB_INVERNO = frozenset(
+    produto
+    for _, grupo, produto, _ in constants.CONAB_BRASIL_TOTAL_SERIES
+    if grupo == constants.CONAB_INVERNO
+)
 RecordProperty = Callable[[str, Any], None]
 LivePolicy = Callable[[str, dict[str, Any]], None]
 
@@ -155,6 +160,12 @@ async def test_cepea_indicador_publicado(produto: str, record_property: RecordPr
 
 @pytest.mark.parametrize("produto", sorted(constants.CONAB_PRODUTOS))
 async def test_conab_safras_produto_publicado(produto: str, record_property: RecordProperty):
-    frame = await conab.safras(produto)
+    frame, meta = await conab.safras(produto, return_meta=True)
     record_property("records_count", len(frame))
+    publicacao = meta.source_details["publicacao"]
+    if frame.empty and produto in CONAB_INVERNO and publicacao["levantamento"] <= 4:
+        pytest.skip(
+            f"{publicacao['levantamento']}º levantamento de {publicacao['safra']}: a aba de "
+            f"{produto} ainda não traz o inverno da própria safra"
+        )
     assert len(frame) > 0, f"Safras CONAB sem dados para {produto!r}"
