@@ -152,21 +152,42 @@ def compare_workbook_identity(
     headers: dict[str, str], status: int, recorded: dict[str, Any]
 ) -> dict[str, Any]:
     problems: list[str] = []
+    fora = status >= 500 or status in (403, 429)
     if status != 200:
         problems.append(f"HEAD respondeu {status}")
     tamanho = headers.get("content-length")
     esperado = recorded.get("corpo_original_bytes")
     if tamanho is not None and esperado is not None and int(tamanho) != int(esperado):
         problems.append(f"content-length {tamanho} != {esperado} bytes da captura")
-    if tamanho is None:
+    if tamanho is None and not fora:
         problems.append("resposta sem content-length")
     return {
-        "status": "mismatch" if problems else "ok",
+        "status": "indisponivel" if fora else "mismatch" if problems else "ok",
         "problems": problems,
         "etag": headers.get("etag"),
         "last_modified": headers.get("last-modified"),
         "content_length": tamanho,
         "nota": "disponibilidade e identidade HTTP do workbook; não revalida abas nem células",
+    }
+
+
+async def workbook_identity(
+    http: httpx.AsyncClient, case: str, url: str, recorded: dict[str, Any]
+) -> dict[str, Any]:
+    try:
+        response = await http.head(url)
+    except httpx.TransportError as exc:
+        return {
+            "case": case,
+            "url": url,
+            "status": "indisponivel",
+            "problems": [type(exc).__name__],
+        }
+    return {
+        "case": case,
+        "http": response.status_code,
+        "url": url,
+        **compare_workbook_identity(dict(response.headers), response.status_code, recorded),
     }
 
 
@@ -228,24 +249,18 @@ async def run(output: Path) -> int:
             }
         )
         for case, (workbook_url, golden) in MAPBIOMAS_WORKBOOKS.items():
-            response = await http.head(workbook_url)
             report["structure"].append(
-                {
-                    "case": case,
-                    "http": response.status_code,
-                    "url": workbook_url,
-                    **compare_workbook_identity(
-                        dict(response.headers), response.status_code, recorded[golden]
-                    ),
-                }
+                await workbook_identity(http, case, workbook_url, recorded[golden])
             )
     output.parent.mkdir(parents=True, exist_ok=True)
     output.write_text(json.dumps(report, indent=1, ensure_ascii=False), encoding="utf-8")
-    mismatches = [entry for entry in report["structure"] if entry["status"] != "ok"]
+    mismatches = [entry for entry in report["structure"] if entry["status"] == "mismatch"]
+    unavailable = [entry for entry in report["structure"] if entry["status"] == "indisponivel"]
     for entry in report["structure"]:
         print(entry["status"], entry["case"], "; ".join(entry["problems"]))
     print(
-        f"{len(report['structure']) - len(mismatches)} ok / {len(mismatches)} mismatch -> {output}"
+        f"{len(report['structure']) - len(mismatches) - len(unavailable)} ok / "
+        f"{len(mismatches)} mismatch / {len(unavailable)} indisponível -> {output}"
     )
     return 1 if mismatches else 0
 

@@ -4,6 +4,7 @@ import json
 from pathlib import Path
 from typing import Any
 
+import httpx
 import pytest
 
 from agrobr.desmatamento import models as desmatamento_models
@@ -134,3 +135,31 @@ def test_compare_workbook_identity_usa_os_bytes_da_captura():
     assert reconciliation.compare_workbook_identity(trocado, 200, recorded)["status"] == "mismatch"
     assert reconciliation.compare_workbook_identity(headers, 404, recorded)["status"] == "mismatch"
     assert reconciliation.compare_workbook_identity({}, 200, recorded)["status"] == "mismatch"
+
+
+@pytest.mark.parametrize("status", [403, 429, 500, 502, 503])
+def test_compare_workbook_identity_fonte_fora_e_indisponivel(status: int):
+    recorded = next(
+        entry
+        for entry in MANIFEST["files"]
+        if entry["file"] == "mapbiomas/mapbiomas_col10_biome_state_recorte.xlsx"
+    )
+    result = reconciliation.compare_workbook_identity({}, status, recorded)
+    assert result["status"] == "indisponivel"
+    assert result["problems"] == [f"HEAD respondeu {status}"]
+
+
+async def test_workbook_identity_sem_resposta_e_indisponivel():
+    def sem_resposta(request: httpx.Request) -> httpx.Response:
+        raise httpx.ReadTimeout("sem resposta", request=request)
+
+    async with httpx.AsyncClient(transport=httpx.MockTransport(sem_resposta)) as http:
+        result = await reconciliation.workbook_identity(
+            http, "mapbiomas_colecao_10_estadual", "https://data.mapbiomas.org/x", {}
+        )
+    assert result == {
+        "case": "mapbiomas_colecao_10_estadual",
+        "url": "https://data.mapbiomas.org/x",
+        "status": "indisponivel",
+        "problems": ["ReadTimeout"],
+    }
