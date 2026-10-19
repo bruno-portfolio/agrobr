@@ -4,7 +4,7 @@ import json
 import os
 import subprocess
 import sys
-from datetime import date
+from datetime import date, timedelta
 from pathlib import Path
 from types import SimpleNamespace
 from unittest.mock import AsyncMock
@@ -254,17 +254,9 @@ async def test_censo_consulta_a_primeira_uf_da_cobertura(monkeypatch: pytest.Mon
     assert properties["live_matrix_status"] == "validated"
 
 
-@pytest.mark.parametrize(
-    "reference,expected",
-    [
-        (date(2026, 1, 1), "2025-12-01"),
-        (date(2024, 3, 31), "2024-02-01"),
-        (date(2025, 3, 31), "2025-02-01"),
-        (date(2026, 9, 16), "2026-08-01"),
-    ],
-)
-def test_janela_sicar_primeiro_dia_mes_anterior(reference: date, expected: str):
-    assert sicar_matrix._previous_month_start(reference) == expected
+def test_janela_sicar_cobre_os_ultimos_30_dias():
+    inicio = date.fromisoformat(sicar_matrix.CREATED_AFTER)
+    assert sicar_matrix.COLLECTION_DATE - inicio == timedelta(days=30)
 
 
 async def test_sicar_consulta_e_registra_janela_recente(monkeypatch: pytest.MonkeyPatch):

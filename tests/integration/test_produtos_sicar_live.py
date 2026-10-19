@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from collections.abc import Callable
-from datetime import UTC, date, datetime, timedelta
+from datetime import UTC, datetime, timedelta
 from typing import Any
 
 import pytest
@@ -14,18 +14,12 @@ pytestmark = [pytest.mark.integration, pytest.mark.timeout(300)]
 
 COLLECTION_DATE = datetime.now(UTC).date()
 ISO_WEEK = COLLECTION_DATE.isocalendar().week
+CREATED_AFTER = (COLLECTION_DATE - timedelta(days=30)).isoformat()
 PRODUCT_CASES = [
     ("cadastro_rural", product) for product in datasets.list_products("cadastro_rural")
 ]
 RecordProperty = Callable[[str, Any], None]
 LivePolicy = Callable[[str, dict[str, Any]], None]
-
-
-def _previous_month_start(reference: date) -> str:
-    return (reference.replace(day=1) - timedelta(days=1)).replace(day=1).isoformat()
-
-
-CREATED_AFTER = _previous_month_start(COLLECTION_DATE)
 
 
 @pytest.mark.parametrize(
