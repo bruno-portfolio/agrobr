@@ -7,6 +7,10 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 
 ## [Unreleased]
 
+### Improved
+
+- **CONAB, safra ausente da edição** — quando `conab.safras` sai vazio porque a edição não traz a safra pedida, o agrobr emite aviso em `MetaInfo.validation_warnings` (e `UserWarning`) que aponta a safra anterior; antes, o vazio só aparecia no log. Em out/2026, o 1º levantamento de 2026/27 ainda não traz o inverno da própria safra: `conab.safras('trigo')` sai vazio, e `conab.safras('trigo', safra='2025/26')` devolve a coluna "Safra 2026" dessa edição (#125).
+
 ### Changed
 
 - **ci** — a suíte roda em paralelo no CI (`pytest -n auto`, com `pytest-xdist` no extra `dev`): os jobs `test` e `minimum-compatibility` usam todos os núcleos da máquina do GitHub, em vez de um só, e um run novo do mesmo PR ou da `main` cancela o anterior. Nos PRs rodam o Python 3.11 e o 3.14 com o Polars (este com a cobertura), um `core-package`, Windows, documentação e calculadora; a matriz completa, o `minimum-compatibility` e os outros `core-package` ficam no push da `main` e na Release.
@@ -15,6 +19,10 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 - **ci** — o teste semanal do indicador CEPEA de leite passa a ser `integration_br`: o CEPEA devolve HTTP 403 ao runner do GitHub, e o leite não tem a Notícias Agrícolas como alternativa (#120).
 - **ci** — na reconciliação semanal, o caso CEPEA do `preco_diario` sai como indisponível quando a página do CEPEA não responde ao runner; antes, o script comparava a página da Notícias Agrícolas, que o agrobr servia no lugar, com a estrutura do CEPEA e acusava mismatch (#121).
 - **ci** — na reconciliação semanal, o script da ANTT confere o status HTTP antes de ler o corpo: resposta de erro do CKAN sai como indisponível (5xx, 403, 429) ou erro do script (404), em vez de `JSONDecodeError`.
+- **ci** — na reconciliação semanal da série histórica CONAB, a virada de safra deixa de acusar mismatch: para soja e algodão, que têm caso próprio no manifesto, o script exigia a lista de períodos idêntica à da captura, e a coluna nova de previsão (2026/27) com a consolidação da anterior (2025/26) contava como mudança de layout. Agora valem a mesma política de períodos dos demais produtos e os períodos já consolidados na captura, que seguem exigidos célula a célula (#123).
+- **ci** — na reconciliação semanal de uso do solo, o workbook do MapBiomas que responde 5xx, 403 ou 429 ao HEAD, ou que não responde, sai como indisponível, e não mismatch; sem resposta, o script caía inteiro e levava junto as outras 10 conferências (#124).
+- **ci** — o teste semanal do SICAR (`cadastro_rural` por UF) consulta os cadastros dos últimos 30 dias, e não desde o 1º dia do mês anterior: a janela ia de 28 a 61 dias conforme o dia do mês, e MG levou 214 s com 41 dias, perto do limite de 300 s (#125).
+- **ci** — o teste semanal de `conab.safras` aceita resultado vazio para aveia, canola, centeio, cevada, trigo e triticale do 1º ao 4º levantamento de cada safra, quando a aba de inverno ainda traz só a safra anterior, como documentado em `docs/api/conab.md` (#125).
 
 ### Fixed
 
