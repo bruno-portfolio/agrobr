@@ -21,7 +21,7 @@ from agrobr.contracts import conab as conab_contract
 from agrobr.exceptions import InvalidParameterError, SourceUnavailableError
 from agrobr.models import MetaInfo
 from agrobr.normalize import crops, regions
-from agrobr.normalize.dates import safra_para_anos
+from agrobr.normalize.dates import anos_para_safra, safra_para_anos
 from agrobr.utils import result as result_utils
 from agrobr.utils.result import build_source_meta, finalize_result
 from agrobr.utils.time import hoje
@@ -670,6 +670,14 @@ async def safras(
         if valor is not None
     }
     safra_list = [s for s in safra_list if s.uf is not None]
+    safra_pedida = safra or metadata["safra"]
+    anterior = anos_para_safra(safra_para_anos(safra_pedida)[0] - 1)
+    ausente = (
+        None
+        if safra_list
+        else f"CONAB: o {_edicao(metadata)} não traz {produto} na safra {safra_pedida}; "
+        f"para a safra anterior, use safra='{anterior}'"
+    )
 
     if uf:
         safra_list = [s for s in safra_list if s.uf == uf.upper()]
@@ -707,11 +715,14 @@ async def safras(
         raw_content_size=len(xlsx.getvalue()),
         source_details={"publicacao": _publicacao(metadata)},
     )
+    if ausente:
+        meta.validation_warnings.append(ausente)
+        warn_once(f"conab_safra_ausente:{source_url}:{produto}:{safra_pedida}", ausente)
     meta.cache_key = build_cache_key(
         "conab:safras",
         {
             "produto": produto.lower(),
-            "safra": safra or metadata["safra"],
+            "safra": safra_pedida,
             "publicacao": metadata["safra"],
             "levantamento": metadata.get("levantamento"),
             "uf": uf,

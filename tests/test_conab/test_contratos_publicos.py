@@ -3,6 +3,7 @@ from __future__ import annotations
 import importlib
 import inspect
 import json
+import re
 from io import BytesIO
 from pathlib import Path
 from types import ModuleType
@@ -145,6 +146,26 @@ async def test_vazios_preservam_colunas_tipos_e_metadados(endpoint, monkeypatch)
     if endpoint == "safras":
         assert frame["levantamento"].dtype == "Int64"
         assert str(frame["data_publicacao"].dtype) == "datetime64[ns]"
+
+
+async def test_safras_avisa_quando_a_edicao_nao_traz_a_safra(monkeypatch):
+    golden = Path(__file__).resolve().parents[1] / "golden_data/conab/safra_2025_26_agosto"
+    corpo = (golden / "response.xlsx").read_bytes()
+    publicacao = json.loads((golden / "provenance.json").read_text(encoding="utf-8"))
+    publicacao |= {"safra": "2026/27", "levantamento": 1}
+    monkeypatch.setattr(
+        api.client,
+        "fetch_safra_xlsx",
+        mock.AsyncMock(side_effect=lambda **_kwargs: (BytesIO(corpo), publicacao.copy())),
+    )
+    aviso = (
+        "CONAB: o 1º levantamento de 2026/27 não traz trigo na safra 2026/27; "
+        "para a safra anterior, use safra='2025/26'"
+    )
+    with pytest.warns(UserWarning, match=re.escape(aviso)):
+        frame, meta = await conab.safras("trigo", return_meta=True)
+    assert frame.empty
+    assert meta.validation_warnings == [aviso]
 
 
 async def test_safras_normaliza_acento_antes_de_consultar_e_filtrar(monkeypatch):
