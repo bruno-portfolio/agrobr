@@ -87,10 +87,11 @@ def _period_differences(
     if expected is None:
         return [f"period_reference_missing:{sheet['name']}"]
     actual = sheet["periods"]
+    equal = _period_policy(actual) == _period_policy(expected)
     if product == reference["product"]:
-        equal = actual == expected
-    else:
-        equal = _period_policy(actual) == _period_policy(expected)
+        equal = equal and all(
+            period in actual for period in expected if period["estado"] == "mapeada"
+        )
     return [] if equal else [f"period_mapping_differs:{sheet['name']}"]
 
 

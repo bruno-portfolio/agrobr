@@ -3,6 +3,7 @@ from __future__ import annotations
 import copy
 from io import BytesIO
 from pathlib import Path
+from typing import Any
 
 import pytest
 
@@ -72,6 +73,43 @@ def test_forecast_decision_drift_fails_reconciliation():
     result = reconciliation.reconcile_workbook(raw, "soja", reference)
     assert result["status"] == "mismatch"
     assert "period_mapping_differs:Área" in result["differences"]
+
+
+def _soja_reference_one_harvest_earlier() -> dict[str, Any]:
+    reference = copy.deepcopy(
+        next(
+            case
+            for case in helpers.load_serie_historica_manifest()["cases"]
+            if case["id"] == "soja"
+        )
+    )
+    for sheet, periods in reference["period_columns"].items():
+        *history, forecast = periods[:-1]
+        reference["period_columns"][sheet] = [
+            *history,
+            forecast
+            | {
+                "raw": f"{forecast['raw']} Previsão (¹)",
+                "estado": "ignorada",
+                "motivo": "previsao",
+            },
+        ]
+    return reference
+
+
+def test_harvest_rollover_keeps_reconciliation_ok():
+    raw = (helpers.SERIE_HISTORICA_GOLDEN / "soja.xls").read_bytes()
+    result = reconciliation.reconcile_workbook(raw, "soja", _soja_reference_one_harvest_earlier())
+    assert result["status"] == "ok"
+
+
+def test_rewritten_history_fails_reconciliation():
+    raw = (helpers.SERIE_HISTORICA_GOLDEN / "soja.xls").read_bytes()
+    reference = _soja_reference_one_harvest_earlier()
+    reference["period_columns"]["Área"][10]["raw"] = "1986/87 (*)"
+    result = reconciliation.reconcile_workbook(raw, "soja", reference)
+    assert result["status"] == "mismatch"
+    assert result["differences"] == ["period_mapping_differs:Área"]
 
 
 @pytest.mark.parametrize(
