@@ -132,8 +132,8 @@ def test_chave_do_pacote_e_unica():
     repetidas = duckdb.sql(
         f"SELECT count(*) FROM (SELECT volume, tabela, pagina_pdf, linha, coluna FROM read_parquet('{censo._PACOTE.as_posix()}') "
         "GROUP BY ALL HAVING count(*) > 1)"
-    ).fetchone()
-    assert repetidas == (0,)
+    ).fetchall()
+    assert repetidas == [(0,)]
 
 
 async def test_regressao_contra_os_oraculos_cegos():
