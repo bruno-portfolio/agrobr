@@ -14,7 +14,7 @@ pytestmark = [pytest.mark.integration, pytest.mark.timeout(300)]
 
 COLLECTION_DATE = datetime.now(UTC).date()
 ISO_WEEK = COLLECTION_DATE.isocalendar().week
-CREATED_AFTER = (COLLECTION_DATE - timedelta(days=30)).isoformat()
+CREATED_AFTER = (COLLECTION_DATE - timedelta(days=7)).isoformat()
 PRODUCT_CASES = [
     ("cadastro_rural", product) for product in datasets.list_products("cadastro_rural")
 ]

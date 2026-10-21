@@ -254,9 +254,9 @@ async def test_censo_consulta_a_primeira_uf_da_cobertura(monkeypatch: pytest.Mon
     assert properties["live_matrix_status"] == "validated"
 
 
-def test_janela_sicar_cobre_os_ultimos_30_dias():
+def test_janela_sicar_cobre_os_ultimos_7_dias():
     inicio = date.fromisoformat(sicar_matrix.CREATED_AFTER)
-    assert sicar_matrix.COLLECTION_DATE - inicio == timedelta(days=30)
+    assert sicar_matrix.COLLECTION_DATE - inicio == timedelta(days=7)
 
 
 async def test_sicar_consulta_e_registra_janela_recente(monkeypatch: pytest.MonkeyPatch):
