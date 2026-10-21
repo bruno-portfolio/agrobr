@@ -106,7 +106,7 @@ A classificação do SICAR é `livre` pela base pública federal: LAI, Decreto 8
 
 - [Portal CAR](https://www.car.gov.br)
 - [SICAR Consulta Publica](https://www.car.gov.br/publico/imoveis/index)
-- [Dados Abertos SFB](https://www.gov.br/agricultura/pt-br/assuntos/servico-florestal-brasileiro)
+- [Dados Abertos SFB](https://www.gov.br/florestal/pt-br/acesso-a-informacao/dados-abertos)
 
 ## Contagens e proveniência
 
