@@ -16,6 +16,7 @@ GOLDEN = reconciliacao.ROOT / "tests/golden_data/zarc/edicoes_20260923"
 MANIFEST = json.loads((GOLDEN / "manifest.json").read_bytes())
 ORACLE = json.loads((GOLDEN / "oracle.json").read_bytes())
 RESOURCES = {resource["family"].split(":", 1)[1]: resource for resource in MANIFEST["resources"]}
+ROTULOS_PUBLICADOS_DEPOIS_DOS_GOLDENS = {"Tomate industrial": "tomate_industrial"}
 
 
 def servir(monkeypatch: pytest.MonkeyPatch, resource: dict[str, Any]) -> dict[str, list[str]]:
@@ -61,12 +62,15 @@ def test_rotulos_das_tabuas_oficiais_formam_o_catalogo():
         **reconciliacao.MANIFEST["alias_decisions"],
         **MANIFEST["alias_decisions"],
         **MANIFEST["alias_decisions_perene_integral_reconciliacao"],
+        **ROTULOS_PUBLICADOS_DEPOIS_DOS_GOLDENS,
     }
-    observados = {
+    nos_goldens = {
         rotulo
         for recurso in [*reconciliacao.MANIFEST["resources"], *MANIFEST["resources"]]
         for rotulo in recurso["domains"]["Nome_cultura"]
     }
+    assert not nos_goldens & set(ROTULOS_PUBLICADOS_DEPOIS_DOS_GOLDENS)
+    observados = nos_goldens | set(ROTULOS_PUBLICADOS_DEPOIS_DOS_GOLDENS)
     assert set(decisoes) == observados == set(models.CULTURAS_ZARC)
     assert {rotulo: models.normalize_cultura(rotulo) for rotulo in sorted(observados)} == {
         rotulo: decisoes[rotulo] for rotulo in sorted(observados)

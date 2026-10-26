@@ -117,6 +117,7 @@ _CULTURAS_PERENES: dict[str, str] = {
     "Sisal": "sisal",
     "Tangerina Implantação": "tangerina_implantacao",
     "Tangerina Produção": "tangerina",
+    "Tomate industrial": "tomate_industrial",
     "Toranja Implantação": "toranja_implantacao",
     "Toranja Produção": "toranja",
     "Triticale": "triticale",

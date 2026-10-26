@@ -69,7 +69,7 @@ def test_cultura_fora_catalogo_sem_sugestoes(value):
         build_query(produto=value)
     message = str(error.value)
     assert repr(value) in message
-    assert "107 culturas" in message
+    assert "108 culturas" in message
     assert "não está no catálogo" in message
     assert "veja zarc.culturas()" in message
     assert "Semelhantes" not in message

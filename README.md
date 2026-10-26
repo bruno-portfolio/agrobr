@@ -316,7 +316,7 @@ df = await lista_suja.empregadores(uf='PA')
 
 # ZARC — agricultural climate risk zoning (planting windows)
 df = await zarc.zoneamento(produto='soja', uf='MT')
-print(zarc.culturas())   # 107 crops (annual, perennial and legacy labels)
+print(zarc.culturas())   # 108 crops (annual, perennial and legacy labels)
 ```
 
 ## Semantic layer — datasets

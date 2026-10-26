@@ -13,7 +13,7 @@ Dados publicados como CSV no portal [dados.agricultura.gov.br](https://dados.agr
 ## Dados disponíveis
 
 - **Tabua de Risco:** janelas de plantio (36 decendios) por municipio/cultura/solo/ciclo
-- **Culturas:** 107 culturas no catálogo de aliases, uma por rótulo publicado nas 12 tábuas oficiais, incluindo nomes legados; disponibilidade variável por safra; frutas e café usam `safra="perene"`
+- **Culturas:** 108 culturas no catálogo de aliases, uma por rótulo publicado nas 12 tábuas oficiais, incluindo nomes legados; disponibilidade variável por safra; frutas e café usam `safra="perene"`
 - **Safras:** 2016/2017 a atual + perene (cafe, cana, banana, etc.)
 - **Solos:** 3 tipos classicos (arenoso/medio/argiloso) + 6 níveis AD (agua disponível)
 - **Cobertura:** municípios presentes em cada publicação; total nacional completo não afirmado

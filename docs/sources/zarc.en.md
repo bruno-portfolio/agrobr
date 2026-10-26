@@ -13,7 +13,7 @@ Data published as CSV on the [dados.agricultura.gov.br](https://dados.agricultur
 ## Available data
 
 - **Risk Table:** planting windows (36 ten-day periods) by municipality/crop/soil/cycle
-- **Crops:** 107 crops in the alias catalogue, one per label published in the 12 official tables, including legacy names; availability varies by season; fruit and coffee crops use `safra="perene"`
+- **Crops:** 108 crops in the alias catalogue, one per label published in the 12 official tables, including legacy names; availability varies by season; fruit and coffee crops use `safra="perene"`
 - **Crop years:** 2016/2017 to current + perennial (coffee, sugarcane, banana, etc.)
 - **Soils:** 3 classic types (sandy/medium/clayey) + 6 AW levels (available water)
 - **Coverage:** municipalities present in each publication; complete national coverage is not asserted

@@ -32,7 +32,7 @@ O que tem garantia de SemVer em cada fonte está na [API pública](../api/index.
 | [ANTT Pedagio](antt_pedagio.md) | Fluxo de veículos em pracas de pedagio | Mensal | 200+ pracas, 2010+ |
 | [MAPA PSR](mapa_psr.md) | Apolices e sinistros seguro rural | Anual | 27 UFs, 2006+ |
 | [SICAR](sicar.md) | Cadastro Ambiental Rural | Continua | 27 UFs, 7.4M+ imoveis |
-| [ZARC](zarc.md) | Zoneamento Agrícola de Risco Climático | Semanal | 107 culturas no catálogo; municípios de cada publicação |
+| [ZARC](zarc.md) | Zoneamento Agrícola de Risco Climático | Semanal | 108 culturas no catálogo; municípios de cada publicação |
 | [Agrofit/MAPA](defensivos.md) | Agrotoxicos registrados | Continua | ~8K formulados, ~267K autorizacoes |
 | [FUNAI Terras Indigenas](funai.md) | Terras indigenas (WFS geo) | Continua | 665 TIs, todas as UFs |
 | [ICMBio UCs Federais](icmbio.md) | Unidades de conservacao federais (WFS geo) | Continua | 347 UCs federais, sem RPPN |

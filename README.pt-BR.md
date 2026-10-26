@@ -314,7 +314,7 @@ df = await lista_suja.empregadores(uf='PA')
 
 # ZARC — Zoneamento Agrícola de Risco Climático
 df = await zarc.zoneamento(produto='soja', uf='MT')
-print(zarc.culturas())   # 107 culturas (tábuas anual, perene e rótulos legados)
+print(zarc.culturas())   # 108 culturas (tábuas anual, perene e rótulos legados)
 ```
 
 ## Camada semântica — datasets

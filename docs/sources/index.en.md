@@ -32,7 +32,7 @@ What has a SemVer guarantee in each source is in the [public API](../api/index.m
 | [ANTT Pedagio](antt_pedagio.md) | Vehicle traffic at toll plazas | Monthly | 200+ plazas, 2010+ |
 | [MAPA PSR](mapa_psr.md) | Rural insurance policies and claims | Annual | 27 states, 2006+ |
 | [SICAR](sicar.md) | Rural Environmental Registry (CAR) | Continuous | 27 states, 7.4M+ properties |
-| [ZARC](zarc.md) | Agricultural Climate Risk Zoning | Weekly | 107 crops in the catalogue; municipalities of each publication |
+| [ZARC](zarc.md) | Agricultural Climate Risk Zoning | Weekly | 108 crops in the catalogue; municipalities of each publication |
 | [Agrofit/MAPA](defensivos.md) | Registered pesticides | Continuous | ~8K formulated products, ~267K authorizations |
 | [FUNAI Indigenous Lands](funai.md) | Indigenous lands (WFS geo) | Continuous | 665 territories, all states |
 | [ICMBio Federal Conservation Units](icmbio.md) | Federal conservation units (WFS geo) | Continuous | 347 federal units, without private reserves |
