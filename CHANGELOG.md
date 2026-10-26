@@ -7,6 +7,10 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 
 ## [Unreleased]
 
+### Added
+
+- **ZARC, tomate industrial** — `zarc.culturas()` passa a ter 108 culturas, com `tomate_industrial`, publicado pela Portaria 378, de 23/10/2026, na tábua perene, olerícola e sem safra (irrigado, 27 UFs). Antes, a cultura aparecia em `culturas_observadas`, mas ficava fora do catálogo (#132).
+
 ### Improved
 
 - **CONAB, safra ausente da edição** — quando `conab.safras` sai vazio porque a edição não traz a safra pedida, o agrobr emite aviso em `MetaInfo.validation_warnings` (e `UserWarning`) que aponta a safra anterior; antes, o vazio só aparecia no log. Em out/2026, o 1º levantamento de 2026/27 ainda não traz o inverno da própria safra: `conab.safras('trigo')` sai vazio, e `conab.safras('trigo', safra='2025/26')` devolve a coluna "Safra 2026" dessa edição (#125).
@@ -23,9 +27,12 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 - **ci** — na reconciliação semanal de uso do solo, o workbook do MapBiomas que responde 5xx, 403 ou 429 ao HEAD, ou que não responde, sai como indisponível, e não mismatch; sem resposta, o script caía inteiro e levava junto as outras 10 conferências (#124).
 - **ci** — o teste semanal do SICAR (`cadastro_rural` por UF) consulta os cadastros dos últimos 7 dias, e não desde o 1º dia do mês anterior. Com 30 dias, BA (16.762) e MG (13.767) passavam de uma página de 10.000: o BA recebe cadastros durante a consulta, e um cadastro novo antes do cursor desloca o `startIndex` e repete a última feição da página anterior, que o agrobr recusa como varredura inconsistente; o MG levava 212 s, perto do limite de 300 s. Com 7 dias, todas as UFs cabem numa página (máximo de 5.973, em MG, em 21/10/2026) (#125).
 - **ci** — o teste semanal de `conab.safras` aceita resultado vazio para aveia, canola, centeio, cevada, trigo e triticale do 1º ao 4º levantamento de cada safra, quando a aba de inverno ainda traz só a safra anterior, como documentado em `docs/api/conab.md` (#125).
+- **ci** — o teste semanal do `preco_atacado` por produto consulta todas as CEASAs, e não só a CEAGESP de São Paulo: a CEASA não cota todo produto toda semana, e a uva rubi, sem cotação na CEAGESP de São Paulo em 26/10/2026, aparecia em outras CEASAs (#132).
+- **ci** — na reconciliação semanal de uso do solo, a propriedade `update_at` (data), que o TerraBrasilis passou a publicar na camada do PRODES Cerrado, fica registrada como fora do layout, e não como mismatch: o agrobr pede só as propriedades do contrato, então a consulta não muda (em 26/10/2026, a propriedade vinha preenchida em 774 de 2.388.715 feições). Outra propriedade nova continua acusando mismatch (#133).
 
 ### Fixed
 
+- **ANEC, página da listagem com um só boletim** — a busca da ANEC redireciona (HTTP 302) para a página do artigo quando a página pedida tem um único resultado. Com 41 boletins em 2026, a página 5 caiu nesse caso, e `embarques_anec`, `embarques_mensais_anec`, `destinos_anec`, `comparacao_anual_anec` e as funções de `agrobr.anec` levantavam `ParseError` ("sem paginatedArticles.articles"). O agrobr passa a ler o artigo do redirect como a última página da listagem, desde que ele seja da categoria pedida (#132).
 - **BCB SICOR, retry preso no mesmo nó do Olinda** — em `bcb.credito_rural` e `datasets.credito_rural`, o cliente guardava o cookie de sessão do balanceador do Olinda, que prende cada sessão a um nó; com um nó devolvendo HTTP 500, as 6 tentativas repetiam o mesmo erro e a consulta falhava (#120). O cliente do SICOR passa a recusar cookies, e cada tentativa cai num nó qualquer.
 - **ArcGIS fora do ar como `ParseError`** — quando o servidor ArcGIS cai, ele responde HTTP 200 com `{"status": "error", "messages": [...]}`, e o agrobr só reconhecia o envelope `{"error": {...}}`: no `sfb`, a contagem levantava `ParseError` (layout mudou) em vez de `SourceUnavailableError` (fonte fora). Os dois envelopes agora viram `SourceUnavailableError`, na contagem e nas páginas das fontes ArcGIS.
 
