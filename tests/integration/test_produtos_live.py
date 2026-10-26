@@ -217,9 +217,13 @@ def _product_cases(week: int) -> list[tuple[str, str]]:
 
 
 def _product_query(dataset_name: str, product: str) -> tuple[tuple[Any, ...], dict[str, Any]]:
-    """Preserva período/agregação; desmatamento usa UF por bioma, demais usam Brasil."""
+    """Preserva período/agregação; desmatamento usa UF por bioma, demais usam Brasil.
+
+    No preco_atacado, todas as CEASAs: a CEASA da consulta de referência não cota todo produto
+    toda semana.
+    """
     args, original = test_datasets_live.LIVE_CASES[dataset_name]
-    kwargs = {key: value for key, value in original.items() if key not in {"uf", "estado"}}
+    kwargs = {key: value for key, value in original.items() if key not in {"uf", "estado", "ceasa"}}
     if dataset_name == "desmatamento":
         kwargs["uf"] = DESMATAMENTO_UFS[product]
     if dataset_name == "precos_diesel":

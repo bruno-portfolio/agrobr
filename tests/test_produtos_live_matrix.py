@@ -102,6 +102,10 @@ def test_consulta_preserva_recorte_e_troca_produto(name: str, product: str):
     assert original_kwargs == before
 
 
+def test_preco_atacado_consulta_todas_as_ceasas():
+    assert matrix._product_query("preco_atacado", "UVA RUBI") == (("UVA RUBI",), {})
+
+
 @pytest.mark.parametrize("name", ["comparacao_anual_anec", "embarques_mensais_anec"])
 async def test_matriz_usa_fetcher_dos_recortes(name: str, monkeypatch: pytest.MonkeyPatch):
     fetcher = AsyncMock(
