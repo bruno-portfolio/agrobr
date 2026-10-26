@@ -153,6 +153,27 @@ def _exigir_paginacao(payload: dict[str, Any]) -> None:
         )
 
 
+def _pagina_redirecionada(payload: dict[str, Any], cuid: str, lidos: int) -> dict[str, Any]:
+    """Converte o redirect da busca para um artigo em página de listagem com esse artigo.
+
+    A busca da ANEC responde 302 para ``/article/<slug>`` quando a página pedida tem um único
+    artigo (ex.: 41 boletins, página 5); esse artigo fecha a listagem da categoria.
+    """
+    artigo = payload.get("props", {}).get("pageProps", {}).get("article")
+    if not isinstance(artigo, dict):
+        return payload
+    categoria = artigo.get("category")
+    if not isinstance(categoria, dict) or categoria.get("cuid") != cuid:
+        raise ParseError(
+            source="anec",
+            parser_version=_HTML_PARSER_VERSION,
+            reason="Busca ANEC redirecionou para artigo de outra categoria",
+        )
+    return {
+        "props": {"pageProps": {"paginatedArticles": {"total": lidos + 1, "articles": [artigo]}}}
+    }
+
+
 def _articles_total(payload: dict[str, Any]) -> int:
     pp = payload.get("props", {}).get("pageProps", {})
     pa = pp.get("paginatedArticles") or {}
@@ -298,7 +319,7 @@ async def list_articles(year: int) -> list[ANECArticle]:
             url = f"{_SEARCH_URL}?category={cuid}&page={page}"
             logger.debug("anec_list_page", year=year, page=page, url=url)
             html = await _fetch_html(client, url)
-            payload = _extract_next_data(html)
+            payload = _pagina_redirecionada(_extract_next_data(html), cuid, len(all_articles))
             _exigir_paginacao(payload)
             articles = _parse_articles(payload)
             raw_count = _raw_article_count(payload)

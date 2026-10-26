@@ -410,6 +410,58 @@ class TestPaginaSemArtigos:
             assert await client.list_articles(2026) == []
 
 
+class TestBuscaRedirecionadaParaArtigo:
+    @staticmethod
+    def _pagina_de_artigo(artigo, cuid):
+        return {"props": {"pageProps": {"article": {**artigo, "category": {"cuid": cuid}}}}}
+
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize("na_listagem", [0, 9])
+    async def test_artigo_unico_da_ultima_pagina_fecha_a_listagem(
+        self, category_2026_p1_payload, html_factory, na_listagem
+    ):
+        artigos = category_2026_p1_payload["props"]["pageProps"]["paginatedArticles"]["articles"]
+        cuid = client.CATEGORIES_BY_YEAR[2026]
+        listagem = {
+            "props": {
+                "pageProps": {
+                    "paginatedArticles": {
+                        "total": na_listagem + 1,
+                        "articles": artigos[:na_listagem],
+                    }
+                }
+            }
+        }
+        paginas = [listagem] if na_listagem else []
+        paginas.append(self._pagina_de_artigo(artigos[na_listagem], cuid))
+        mock_client = make_mock_async_client()
+        mock_client.get = AsyncMock(
+            side_effect=[make_mock_response(200, text=html_factory(p)) for p in paginas]
+        )
+
+        with patch("agrobr.anec.client.httpx.AsyncClient", return_value=mock_client):
+            lidos = await client.list_articles(2026)
+
+        assert [a.cuid for a in lidos] == [a["cuid"] for a in artigos[: na_listagem + 1]]
+        assert mock_client.get.call_count == len(paginas)
+
+    @pytest.mark.asyncio
+    async def test_artigo_de_outra_categoria_e_layout(self, category_2026_p1_payload, html_factory):
+        artigo = category_2026_p1_payload["props"]["pageProps"]["paginatedArticles"]["articles"][0]
+        mock_client = make_mock_async_client()
+        mock_client.get = AsyncMock(
+            return_value=make_mock_response(
+                200, text=html_factory(self._pagina_de_artigo(artigo, "outra-categoria"))
+            )
+        )
+
+        with (
+            patch("agrobr.anec.client.httpx.AsyncClient", return_value=mock_client),
+            pytest.raises(ParseError, match="artigo de outra categoria"),
+        ):
+            await client.list_articles(2026)
+
+
 class TestAnoDeBrasilia:
     def test_virada_do_ano_segue_brasilia(self, monkeypatch):
         from agrobr.anec import models
