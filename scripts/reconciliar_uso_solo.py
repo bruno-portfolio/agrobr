@@ -71,6 +71,9 @@ TIPOS_PUBLICADOS: dict[str, dict[str, frozenset[str]]] = {
         "areatotalkm": frozenset({"number"}),
     },
 }
+PROPRIEDADES_FORA_DO_LAYOUT: dict[tuple[str, str], frozenset[str]] = {
+    ("PRODES", "Cerrado"): frozenset({"update_at"}),
+}
 
 
 def describe_url(workspace: str, layer: str) -> str:
@@ -113,7 +116,8 @@ def compare_wfs_layer(
         atributos = set(published) - {geometry}
         for name in sorted(set(declared) - atributos):
             problems.append(f"propriedade declarada ausente na fonte: {name}")
-        for name in sorted(atributos - set(declared)):
+        fora_do_layout = PROPRIEDADES_FORA_DO_LAYOUT.get((product, biome), frozenset())
+        for name in sorted(atributos - set(declared) - fora_do_layout):
             problems.append(f"propriedade nova sem decisão: {name}={published[name]!r}")
         for name in sorted(atributos & set(declared)):
             aceitos = TIPOS_PUBLICADOS[product].get(name, frozenset())

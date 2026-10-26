@@ -93,6 +93,22 @@ def test_compare_wfs_layer_recusa_deriva_de_layout(mutacao: str):
     assert result["problems"]
 
 
+@pytest.mark.parametrize(
+    ("biome", "layer", "status"),
+    [
+        ("Cerrado", "yearly_deforestation", "ok"),
+        ("Amazônia", "yearly_deforestation_biome", "mismatch"),
+    ],
+)
+def test_compare_wfs_layer_update_at_fica_fora_do_layout_so_no_cerrado(
+    biome: str, layer: str, status: str
+):
+    payload = described("PRODES", biome, layer)
+    payload["featureTypes"][0]["properties"].append({"name": "update_at", "localType": "date"})
+    result = reconciliation.compare_wfs_layer("PRODES", biome, layer, payload, 200)
+    assert result["status"] == status
+
+
 def test_compare_wfs_layer_recusa_resposta_sem_descricao():
     assert (
         reconciliation.compare_wfs_layer("DETER", "Cerrado", "deter_cerrado", None, 503)["status"]
