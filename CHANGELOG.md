@@ -29,6 +29,7 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 - **ci** — o teste semanal de `conab.safras` aceita resultado vazio para aveia, canola, centeio, cevada, trigo e triticale do 1º ao 4º levantamento de cada safra, quando a aba de inverno ainda traz só a safra anterior, como documentado em `docs/api/conab.md` (#125).
 - **ci** — o teste semanal do `preco_atacado` por produto consulta todas as CEASAs, e não só a CEAGESP de São Paulo: a CEASA não cota todo produto toda semana, e a uva rubi, sem cotação na CEAGESP de São Paulo em 26/10/2026, aparecia em outras CEASAs (#132).
 - **ci** — na reconciliação semanal de uso do solo, a propriedade `update_at` (data), que o TerraBrasilis passou a publicar na camada do PRODES Cerrado, fica registrada como fora do layout, e não como mismatch: o agrobr pede só as propriedades do contrato, então a consulta não muda (em 26/10/2026, a propriedade vinha preenchida em 774 de 2.388.715 feições). Outra propriedade nova continua acusando mismatch (#133).
+- **ci** — o extra `dev` e o hook do mypy no pre-commit fixam `pandas-stubs<3.1`: o `pandas-stubs` 3.1.0.261029, de 29/10/2026, tipa o escalar de `.iloc`/`.iat` com tipos que o próprio `pd.isna` dele recusa ([pandas-dev/pandas-stubs#2063](https://github.com/pandas-dev/pandas-stubs/issues/2063)), e o mypy reprovava 14 linhas sem bug em `abiove`, `conab`, `deral` e `alt/sicar`.
 
 ### Fixed
 
