@@ -72,7 +72,7 @@ fenológica e comercialização, as linhas de batata e de soja de segunda safra
 ficam fora do contrato atual. Uma aba que informa feriado sem observações não
 produz registros ou zeros. O nome `18-12-2017` contém referência publicada de
 08/01/2018; a data vem da célula, conforme a publicação. Quando o nome de uma aba
-datada (`dd-mm-aa` ou `dd-mm-aaaa`) difere da data da célula, como nesse caso e em
+datada (`dd-mm-aa` ou `dd-mm-aaaa`, com dia e mês de um ou dois dígitos) difere da data da célula, como nesse caso e em
 `19-09-2021`, com 20/09/2021, a leitura segue a célula e avisa em `validation_warnings`
 e em `UserWarning`.
 

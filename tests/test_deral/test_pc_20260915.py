@@ -36,6 +36,7 @@ def expected() -> dict[str, Any]:
         ("14-09-2026", "14/09/2026"),
         ("15-09-25", "15/09/2025"),
         ("01-01-99", "01/01/2099"),
+        ("6/11/2017", "06/11/2017"),
     ],
 )
 def test_data_fora_primeiras_dez_linhas_e_colunas(published, normalized):

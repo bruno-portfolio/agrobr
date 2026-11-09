@@ -208,7 +208,7 @@ def _find_data_referencia(df: pd.DataFrame, sheet_name: str) -> str:
                 return cell.strftime("%d/%m/%Y")
             if not isinstance(cell, str):
                 continue
-            match = re.search(r"(?<!\d)(\d{2})([/-])(\d{2})\2(\d{4}|\d{2})(?!\d)", cell)
+            match = re.search(r"(?<!\d)(\d{1,2})([/-])(\d{1,2})\2(\d{4}|\d{2})(?!\d)", cell)
             if not match:
                 continue
             year = int(match.group(4))
@@ -227,11 +227,12 @@ def _find_data_referencia(df: pd.DataFrame, sheet_name: str) -> str:
 
 
 def _aviso_de_aba_divergente(sheet_name: str, data_ref: str) -> str | None:
-    match = re.fullmatch(r"(\d{2})-(\d{2})-(\d{4}|\d{2})", sheet_name.strip())
+    match = re.fullmatch(r"(\d{1,2})-(\d{1,2})-(\d{4}|\d{2})", sheet_name.strip())
     if match is None:
         return None
     dia, mes, ano = match.groups()
-    if data_ref in (f"{dia}/{mes}/{ano}", f"{dia}/{mes}/20{ano}"):
+    ano_completo = ano if len(ano) == 4 else f"20{ano}"
+    if data_ref == f"{int(dia):02d}/{int(mes):02d}/{ano_completo}":
         return None
     return (
         f"deral: a aba {sheet_name!r} publica a data {data_ref} na planilha; "

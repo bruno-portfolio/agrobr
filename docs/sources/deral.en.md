@@ -32,7 +32,8 @@ df = await deral.condicao_lavouras("trigo")
 
 `data` comes from the sheet's reference-date cell, including cells outside the
 header, and is returned as `datetime64[ns]`. Excel dates, `dd/mm/yyyy`,
-`dd-mm-yyyy` and `dd-mm-yy` are recognized; two-digit years use 2000+.
+`dd-mm-yyyy` and `dd-mm-yy` are recognized, with a one- or two-digit day and month; two-digit
+years use 2000+.
 A sheet name never replaces a missing date: the parser raises `ParseError`
 identifying the sheet.
 An unreadable sheet stops parsing with `ParseError`; no partial result is returned.
@@ -93,7 +94,7 @@ columns, potato rows and second-season soybean rows are outside the current
 contract. A sheet reporting a holiday without observations produces no records
 or zeros. The sheet named `18-12-2017` publishes 08/01/2018 as its reference;
 the date comes from the cell, as published. When a dated sheet name (`dd-mm-yy` or
-`dd-mm-yyyy`) differs from the cell date, as here and in `19-09-2021`, with 20/09/2021,
+`dd-mm-yyyy`, with a one- or two-digit day and month) differs from the cell date, as here and in `19-09-2021`, with 20/09/2021,
 parsing follows the cell and warns in `validation_warnings` and `UserWarning`.
 
 Parser 2 requires the Ruim, Média, Boa, Plantada and Colhida headers in tables

@@ -47,6 +47,14 @@ def test_aba_com_nome_diferente_da_data_avisa():
 
 
 @pytest.mark.parametrize(
+    ("aba", "data_ref", "avisa"),
+    [("6-11-2017", "06/11/2017", False), ("4-11-2015", "04/11/2020", True)],
+)
+def test_aba_com_dia_de_um_digito(aba, data_ref, avisa):
+    assert (parser._aviso_de_aba_divergente(aba, data_ref) is not None) is avisa
+
+
+@pytest.mark.parametrize(
     "consulta",
     [
         lambda: api.condicao_lavouras("soja", return_meta=True),
