@@ -11,6 +11,7 @@ import math
 import os
 import re
 import socket
+import ssl
 import time
 from collections.abc import AsyncIterator, Callable, Coroutine, Iterator
 from contextlib import (
@@ -29,6 +30,7 @@ from unittest.mock import AsyncMock, MagicMock
 from urllib.parse import parse_qsl, unquote, urlsplit
 
 import duckdb
+import httpcore
 import httpx
 import openpyxl
 import pandas as pd
@@ -47,6 +49,7 @@ from agrobr.conab._custo_producao import models as custos_models
 from agrobr.conab._serie_historica import client as serie_historica_client
 from agrobr.conab.progresso import client as progresso_client
 from agrobr.contracts import desmatamento as desmatamento_contracts
+from agrobr.exceptions import SourceUnavailableError
 from agrobr.http import wfs_transport
 from agrobr.http.rate_limiter import RateLimiter
 from agrobr.mapbiomas import resources as mapbiomas_resources
@@ -1334,6 +1337,20 @@ async def assert_live_product_result(
     record_property("attempted_sources", ",".join(meta.attempted_sources))
     assert len(frame) > 0, f"{dataset_name}/{product}: consulta de referência sem registros"
     record_property("live_matrix_status", "validated")
+
+
+def certificate_outage(source: str, verify_code: int, host: str) -> SourceUnavailableError:
+    """Reproduz a cadeia do httpx: ConnectError do httpcore na causa e o erro de TLS no contexto."""
+    tls = ssl.SSLCertVerificationError(1, "certificate verify failed")
+    tls.verify_code = verify_code
+    tls.verify_message = f"Hostname mismatch, certificate is not valid for '{host}'."
+    transport = httpcore.ConnectError(tls)
+    transport.__context__ = tls
+    connect = httpx.ConnectError(str(tls))
+    connect.__cause__ = transport
+    outage = SourceUnavailableError(source, last_error=f"ConnectError: {connect}")
+    outage.__cause__ = connect
+    return outage
 
 
 def sicar_feature_collection(

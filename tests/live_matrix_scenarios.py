@@ -14,7 +14,12 @@ import requests
 
 from agrobr import datasets
 from agrobr.antaq import client as antaq_client
+from agrobr.conab.ceasa import client as ceasa_client
 from agrobr.exceptions import ParseError, SourceUnavailableError
+from tests import helpers
+from tests.integration import live_policy
+
+CEASA_VERIFY_CODES = {"ceasa_outro_host": 62, "ceasa_vencido": 10}
 
 
 @pytest.hookimpl(trylast=True)
@@ -64,6 +69,8 @@ def synthetic_live_sources(monkeypatch: pytest.MonkeyPatch) -> Iterator[None]:
             "antaq_parse",
         }:
             return original_dataset(name)
+        if name == "preco_atacado" and scenario in CEASA_VERIFY_CODES:
+            return original_dataset(name)
         return SimpleNamespace(fetch=synthetic_fetch)
 
     def response(url: str, **_kwargs: Any) -> requests.Response:
@@ -85,6 +92,11 @@ def synthetic_live_sources(monkeypatch: pytest.MonkeyPatch) -> Iterator[None]:
             "fetch_ano_zip",
             AsyncMock(side_effect=ParseError("antaq", 1, "Synthetic layout error 522")),
         )
+    if scenario in CEASA_VERIFY_CODES:
+        outage = helpers.certificate_outage(
+            "conab_ceasa", CEASA_VERIFY_CODES[scenario], live_policy.CONAB_CEASA_HOST
+        )
+        monkeypatch.setattr(ceasa_client, "fetch_precos", AsyncMock(side_effect=outage))
     yield
     if scenario == "teardown_error":
         raise RuntimeError("Synthetic teardown bug")

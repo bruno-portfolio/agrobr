@@ -11,6 +11,7 @@ from typing import Any
 import pytest
 
 from agrobr.antaq import client as antaq_client
+from agrobr.conab.ceasa import client as ceasa_client
 from agrobr.exceptions import SourceUnavailableError
 from tests.integration import live_policy
 
@@ -176,6 +177,18 @@ def apply_live_policy(
     def apply(dataset_name: str, kwargs: dict[str, Any]) -> None:
         if live_policy.missing_usda_key(dataset_name, kwargs):
             skip_known(live_policy.USDA_MISSING_KEY, "not_verified")
+        if dataset_name == "preco_atacado":
+            original_precos = ceasa_client.fetch_precos
+
+            async def observed_precos() -> tuple[dict[str, Any], str]:
+                try:
+                    return await original_precos()
+                except SourceUnavailableError as exc:
+                    if live_policy.known_conab_ceasa_outage(exc):
+                        skip_known(live_policy.CONAB_CEASA_OUTRO_HOST)
+                    raise
+
+            monkeypatch.setattr(ceasa_client, "fetch_precos", observed_precos)
         if dataset_name != "movimentacao_portuaria" or kwargs.get("ano") != 2024:
             return
         original = antaq_client.fetch_ano_zip

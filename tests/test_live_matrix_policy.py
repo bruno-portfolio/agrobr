@@ -2,17 +2,25 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
+from unittest.mock import AsyncMock
 
+import httpx
 import pytest
 import requests
 
 from agrobr import datasets
 from agrobr.antaq import client as antaq_client
+from agrobr.conab.ceasa import client as ceasa_client
 from agrobr.exceptions import SourceUnavailableError
+from tests import helpers
 from tests.integration import live_policy
 
 pytest_plugins = ["pytester"]
 DATASET_COUNT = len(datasets.list_datasets())
+KNOWN_REASONS = {
+    "movimentacao_portuaria": live_policy.ANTAQ_2024_522,
+    "preco_atacado": live_policy.CONAB_CEASA_OUTRO_HOST,
+}
 
 
 @pytest.mark.parametrize("year,known", [(2024, True), (2023, False)])
@@ -29,6 +37,38 @@ async def test_redirect_oficial_antaq_reconhecido_pela_politica(monkeypatch, yea
         await antaq_client.fetch_ano_zip(year)
     assert live_policy.known_antaq_2024_outage(caught.value, year) is known
     assert caught.value.notice_url == response.url
+
+
+async def test_certificado_de_outro_host_no_pentaho_reconhecido_pela_politica(monkeypatch):
+    outage = helpers.certificate_outage("conab_ceasa", 62, live_policy.CONAB_CEASA_HOST)
+    monkeypatch.setattr(httpx.AsyncClient, "get", AsyncMock(side_effect=outage.__cause__))
+    monkeypatch.setattr(helpers.RETRY_SLEEP, AsyncMock())
+    with pytest.raises(SourceUnavailableError) as caught:
+        await ceasa_client.fetch_precos()
+    assert live_policy.known_conab_ceasa_outage(caught.value)
+
+
+@pytest.mark.parametrize(
+    ("source", "verify_code", "host", "known"),
+    [
+        ("conab_ceasa", 62, live_policy.CONAB_CEASA_HOST, True),
+        ("conab_ceasa", 10, live_policy.CONAB_CEASA_HOST, False),
+        ("conab_ceasa", 62, "www.conab.gov.br", False),
+        ("conab", 62, live_policy.CONAB_CEASA_HOST, False),
+    ],
+)
+def test_conab_ceasa_skip_requires_hostname_mismatch_on_pentaho_host(
+    source, verify_code, host, known
+):
+    error = helpers.certificate_outage(source, verify_code, host)
+    assert live_policy.known_conab_ceasa_outage(error) is known
+
+
+@pytest.mark.parametrize("cause", [None, httpx.ConnectTimeout("timed out")])
+def test_conab_ceasa_skip_requires_certificate_error(cause):
+    error = SourceUnavailableError("conab_ceasa", last_error="HTTP 503 after 3 attempts")
+    error.__cause__ = cause
+    assert not live_policy.known_conab_ceasa_outage(error)
 
 
 @pytest.mark.parametrize(
@@ -110,6 +150,8 @@ def test_antaq_skip_requires_exact_request_and_typed_status(source, url, year, c
         ("antaq_503", "movimentacao_portuaria", 1, 1, 0, 0, 0, 1, 0),
         ("antaq_parse", "movimentacao_portuaria", 1, 1, 0, 0, 0, 1, 0),
         ("antaq_aggregated_text", "movimentacao_portuaria", 1, 1, 0, 0, 0, 1, 0),
+        ("ceasa_outro_host", "preco_atacado", 1, 1, 0, 1, 0, 0, 0),
+        ("ceasa_vencido", "preco_atacado", 1, 1, 0, 0, 0, 1, 0),
         ("fixture_error", "producao_anual", 1, 1, 0, 0, 0, 0, 1),
         ("fixture_skip", "producao_anual", 1, 1, 0, 0, 0, 0, 0),
         ("bad_metadata", "producao_anual", 1, 1, 0, 0, 0, 1, 0),
@@ -182,7 +224,7 @@ def test_live_matrix_pytest_exit_and_coverage(
     assert len(report["deselected"]) == DATASET_COUNT - selected
     for case in report["cases"]:
         if case["status"] == "known_unavailable":
-            assert case["live_matrix_reason"] == live_policy.ANTAQ_2024_522
+            assert case["live_matrix_reason"] == KNOWN_REASONS[case["dataset"]]
         if case["status"] == "not_verified":
             assert case["live_matrix_reason"] == live_policy.USDA_MISSING_KEY
         if case["status"] == "validated":
