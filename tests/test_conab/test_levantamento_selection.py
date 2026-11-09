@@ -209,6 +209,37 @@ async def test_catalog_broken_second_page_is_not_reported_as_complete():
         await client.list_levantamentos()
 
 
+_PDF_ONLY_PAGE = _table(
+    "7o-levantamento-safra-2018-19/6zlevantamentozsafraz2018z19_mar_2019.pdf",
+    "Boletim da Safra de Grãos",
+)
+
+
+async def test_catalog_last_page_with_only_pdf_bulletins_is_accepted():
+    html = (
+        _table(_JANUARY_PATH)
+        + f'<a class="proximo" href="{_CATALOG_URL}?b_start:int=90">Próximo</a>'
+    )
+    with (
+        patch.object(client, "fetch_boletim_page", new_callable=AsyncMock, return_value=html),
+        patch.object(
+            client, "_fetch_http", new_callable=AsyncMock, return_value=_PDF_ONLY_PAGE.encode()
+        ),
+    ):
+        found = await client.list_levantamentos()
+    assert [item["url"] for item in found] == [f"{_CATALOG_URL}/{_JANUARY_PATH}"]
+
+
+async def test_catalog_first_page_with_only_pdf_bulletins_fails():
+    with (
+        patch.object(
+            client, "fetch_boletim_page", new_callable=AsyncMock, return_value=_PDF_ONLY_PAGE
+        ),
+        pytest.raises(ParseError, match="sem tabelas"),
+    ):
+        await client.list_levantamentos()
+
+
 async def test_catalog_and_download_accept_official_legacy_xls():
     path = "7o-levantamento-safra-2021-22/previsao-de-safra-por-produto-abr-2022-site.xls"
     found = await client.list_levantamentos(html=_table(path))

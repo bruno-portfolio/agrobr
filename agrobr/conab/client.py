@@ -32,6 +32,7 @@ except ImportError:  # pragma: no cover
     async_playwright = None  # type: ignore[assignment,misc]
 
 logger = _log.get_logger(__name__)
+_LEVANTAMENTO_PATH = re.compile(r"/(\d+)o-levantamento-safra-(\d{4})-(\d{4}|\d{2})/", re.I)
 
 
 class SafraNaoPublicadaError(SourceUnavailableError):
@@ -180,7 +181,7 @@ async def _fetch_catalog() -> list[dict[str, Any]]:
     found: dict[str, dict[str, Any]] = {}
     while True:
         entries = _parse_levantamentos(html)
-        if not entries:
+        if not entries and not (found and _lists_levantamentos(html)):
             raise ParseError(
                 source="conab", parser_version=1, reason=f"Página de catálogo sem tabelas: {url}"
             )
@@ -217,17 +218,21 @@ def _next_catalog_url(html: str, current_url: str) -> str | None:
     return url
 
 
+def _lists_levantamentos(html: str) -> bool:
+    soup = bs4.BeautifulSoup(html, "lxml")
+    return any(_LEVANTAMENTO_PATH.search(str(a["href"])) for a in soup.select("a[href]"))
+
+
 def _parse_levantamentos(html: str) -> list[dict[str, Any]]:
     base_url = constants.URLS[constants.Fonte.CONAB]["boletim_graos"] + "/"
     soup = bs4.BeautifulSoup(html, "lxml")
-    pattern = re.compile(r"/(\d+)o-levantamento-safra-(\d{4})-(\d{4}|\d{2})/", re.I)
     found: dict[str, dict[str, Any]] = {}
     for anchor in soup.select("a[href]"):
         if not re.match(r"^Tabela\b", anchor.get_text(" ", strip=True), re.I):
             continue
         url = urldefrag(urljoin(base_url, str(anchor["href"])))[0]
         parsed = urlsplit(url)
-        match = pattern.search(parsed.path)
+        match = _LEVANTAMENTO_PATH.search(parsed.path)
         sem_porta_nem_credencial = not {":", "@"} & set(parsed.netloc)
         if parsed.scheme != "https" or not sem_porta_nem_credencial or match is None:
             continue
