@@ -14,7 +14,7 @@ classificação do dado chega ao `MetaInfo.license`.
 | **CEPEA/ESALQ** | CC BY-NC 4.0 | Requer autorização do titular | `nc` | [Termos/fundamento](#cepeaesalq) |
 | **CONAB** | Estatísticas públicas; LAI e busca sem restrição específica | Sim, nas condições descritas | `livre` | [Termos/fundamento](https://www.gov.br/conab/pt-br/acesso-a-informacao/dados-abertos) |
 | **IBGE/SIDRA** | Dados abertos: LAI, Decreto 8.777/2016 e PDA IBGE; sem CC nominal geral | Sim, com fonte e proveniência | `livre` | [Termos/base](https://www.ibge.gov.br/np_download/novoportal/documentos_institucionais/Plano_de_Dados_Abertos_IBGE_2024_2025.pdf) |
-| **NASA POWER** | Declaração específica de domínio público do POWER | Sim, nas condições descritas | `livre` | [Termos/fundamento](https://forum.earthdata.nasa.gov/viewtopic.php?p=635) |
+| **NASA POWER** | Declaração específica de domínio público do POWER | Sim, nas condições descritas | `livre` | [Termos/fundamento](https://web.archive.org/web/20241212054548/https://forum.earthdata.nasa.gov/viewtopic.php?p=635) |
 | **BCB/SICOR** | ODbL 1.0 — Matriz de Dados do Crédito Rural | Sim, nas condições descritas | `livre` | [Termos/fundamento](https://dadosabertos.bcb.gov.br/api/3/action/package_show?id=matrizdadoscreditorural) |
 | **ComexStat** | Dados públicos federais; sem CC nominal comprovada | Sim, nas condições descritas | `livre` | [Termos/fundamento](https://www.gov.br/mdic/pt-br/assuntos/comercio-exterior/estatisticas/base-de-dados-bruta) |
 | **ANDA** | Fonte privada; licença de reutilização não localizada | Não comprovado por licença | `zona_cinza` | [Termos/fundamento](https://anda.org.br/recursos/) |

@@ -14,7 +14,7 @@ the data's classification reaches `MetaInfo.license`.
 | **CEPEA/ESALQ** | CC BY-NC 4.0 | Requires the holder's authorization | `nc` | [Terms/basis](#cepeaesalq) |
 | **CONAB** | Public statistics; access law and no specific restriction found | Yes, under the stated conditions | `livre` | [Terms/basis](https://www.gov.br/conab/pt-br/acesso-a-informacao/dados-abertos) |
 | **IBGE/SIDRA** | Open data: access law, Decree 8,777/2016 and IBGE plan; no general named CC license | Yes, preserving source and provenance | `livre` | [Terms/basis](https://www.ibge.gov.br/np_download/novoportal/documentos_institucionais/Plano_de_Dados_Abertos_IBGE_2024_2025.pdf) |
-| **NASA POWER** | POWER-specific public-domain statement | Yes, under the stated conditions | `livre` | [Terms/basis](https://forum.earthdata.nasa.gov/viewtopic.php?p=635) |
+| **NASA POWER** | POWER-specific public-domain statement | Yes, under the stated conditions | `livre` | [Terms/basis](https://web.archive.org/web/20241212054548/https://forum.earthdata.nasa.gov/viewtopic.php?p=635) |
 | **BCB/SICOR** | ODbL 1.0 — Rural Credit Data Matrix | Yes, under the stated conditions | `livre` | [Terms/basis](https://dadosabertos.bcb.gov.br/api/3/action/package_show?id=matrizdadoscreditorural) |
 | **ComexStat** | Federal public data; no named CC license verified | Yes, under the stated conditions | `livre` | [Terms/basis](https://www.gov.br/mdic/pt-br/assuntos/comercio-exterior/estatisticas/base-de-dados-bruta) |
 | **ANDA** | Private source; no reuse license located | Not established by a license | `zona_cinza` | [Terms/basis](https://anda.org.br/recursos/) |
