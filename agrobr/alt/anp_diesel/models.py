@@ -74,9 +74,8 @@ def _resolve_periodo_municipio(
             inicio, fim = int(partes[0]), int(partes[1])
             if inicio <= ano <= fim:
                 return periodo
-        elif len(partes) == 1:
-            if ano == int(partes[0]):
-                return periodo
+        elif len(partes) == 1 and ano == int(partes[0]):
+            return periodo
     return None
 
 
