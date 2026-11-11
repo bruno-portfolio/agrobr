@@ -32,7 +32,8 @@ from the table's own `/periodos` endpoint. The channel used is recorded in
 `MetaInfo.source_details["canal"]` (`sidra`, `servicodados` or `misto`), `source_details["consultas"]` lists channel
 and URL per query, `attempted_sources` gains `ibge_servicodados` and `selected_source` becomes `ibge_servicodados`
 when the fallback was used (datasets inherit that provenance); `source_url` points to the URL actually queried; the channel switch emits `SourceFallbackWarning` (details below). Both channels
-return the same values for the July 2026 LSPA (soybeans). The IBGE health probe queries the aggregates API.
+return the same values for the July 2026 LSPA (soybeans). The IBGE health probe queries SIDRA, the primary channel; the
+403 from the Cloudflare challenge is reported as a block warning, not as a source outage.
 
 When a SIDRA response requires switching to the aggregates API, each acquisition emits `SourceFallbackWarning` with the reason. With `return_meta=True`, the message also appears in `meta.validation_warnings`, and `selected_source="ibge_servicodados"` identifies the selected channel. Successive calls keep emitting the warning; an empty response preserves both the channel-switch warning and the missing-observations warning. Datasets retain these metadata. Network failures and timeouts retain their existing handling and do not trigger this switch.
 
@@ -40,7 +41,15 @@ Each query also requests `/agregados/{tabela}/periodos` and records the modifica
 tells which edition the number came from: `source_details["periodos_modificacao"]` comes as `{table: {period: ISO date}}`
 (PAM 2024 was revised on 2026-09-17), and each `consultas` item has `tabela` and `periodos_modificacao`. The `01/01/0001`
 IBGE publishes for a period without a date comes out null. If the metadata request fails, the query goes on, and the reason
-is in `periodos_modificacao_erro`.
+is in `periodos_modificacao_erro`. The request makes a single attempt, with a 10 s deadline; after a network failure it is
+suspended for 5 min, and the following queries come out without the date, with no further wait.
+
+!!! note "Aggregates API not reachable from outside Brazil in the environments tested"
+    On 2026-11-11, connections to `servicodados.ibge.gov.br` timed out from 16 of 16 international nodes tested (and
+    from GitHub Actions runners since 2026-10-23), while it answered from Brazil; SIDRA answered in both cases. On
+    those networks, queries go through SIDRA without `periodos_modificacao`, the channel switch has nowhere to go, and
+    a request that exceeds the SIDRA limit and has to be split by locality (the locality list comes from the
+    aggregates API) raises `SourceUnavailableError`.
 
 A response without observations (`[]`, for example a period not yet published), on either channel, returns an
 empty DataFrame with the same columns as a response with data and emits a warning (`warnings.warn`, on every query, also recorded in `MetaInfo.validation_warnings`).

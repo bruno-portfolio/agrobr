@@ -33,7 +33,8 @@ vem vazio, porque a API de agregados publica apenas o nome da unidade; `allxp` v
 de cada consulta, `attempted_sources` ganha `ibge_servicodados` e `selected_source` passa a ser `ibge_servicodados`
 quando o fallback foi usado (o dataset herda essa proveniencia); `source_url` aponta para a URL consultada;
 a troca de canal emite `SourceFallbackWarning` (detalhe abaixo). No LSPA de julho/2026 (soja), os dois canais
-dao os mesmos valores. O probe de saude do IBGE consulta a API de agregados.
+dao os mesmos valores. O probe de saúde do IBGE consulta a SIDRA, o canal principal; o 403 do desafio Cloudflare
+sai como aviso de bloqueio, e não como fonte fora.
 
 Quando uma resposta da SIDRA exige a troca para a API de agregados, cada aquisição emite `SourceFallbackWarning` com o motivo. Com `return_meta=True`, a mensagem também aparece em `meta.validation_warnings`, e `selected_source="ibge_servicodados"` identifica o canal usado. Consultas sucessivas continuam avisando; uma resposta vazia preserva tanto o aviso de troca de canal quanto o de ausência de observações. Os datasets preservam esses metadados. Falhas de rede ou timeout mantêm o tratamento anterior e não acionam essa troca de canal.
 
@@ -41,7 +42,15 @@ Cada consulta também pede `/agregados/{tabela}/periodos` e registra a data de m
 diz de qual edição veio o número: `source_details["periodos_modificacao"]` sai como `{tabela: {período: data ISO}}` (a
 PAM 2024 foi revista em 17/09/2026), e cada item de `consultas` traz `tabela` e `periodos_modificacao`. O `01/01/0001` que
 o IBGE publica para período sem data sai nulo. Se o pedido de metadado falhar, a consulta segue, e o motivo vai em
-`periodos_modificacao_erro`.
+`periodos_modificacao_erro`. O pedido faz uma tentativa só, com prazo de 10 s; depois de uma falha de rede, fica suspenso
+por 5 min, e as consultas seguintes saem sem a data, sem esperar de novo.
+
+!!! note "API de agregados não acessível de fora do Brasil nos ambientes testados"
+    Em 11/11/2026, a conexão com `servicodados.ibge.gov.br` expirava em 16 de 16 nós internacionais testados (e
+    nos runners do GitHub Actions desde 23/10/2026), enquanto respondia do Brasil; a SIDRA respondia nos dois casos.
+    Nessas redes, a consulta sai pela SIDRA sem `periodos_modificacao`, a troca de canal não tem para onde ir, e o
+    pedido que passa do limite da SIDRA e precisa ser dividido por localidade (a lista de localidades vem da API de
+    agregados) levanta `SourceUnavailableError`.
 
 Resposta sem observações (`[]`, por exemplo período ainda não publicado), em qualquer um dos dois canais, devolve
 DataFrame vazio com as mesmas colunas de uma resposta com dados e emite um aviso (`warnings.warn`, a cada consulta, também registrado em `MetaInfo.validation_warnings`).
