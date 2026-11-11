@@ -8,7 +8,7 @@ from urllib.parse import unquote
 import httpx
 import pytest
 
-from agrobr.exceptions import InvalidParameterError, ParseError
+from agrobr.exceptions import InvalidParameterError, ParseError, SourceUnavailableError
 from agrobr.ibge import _helpers, agregados, client
 from agrobr.models import MetaInfo
 from tests.helpers import levanta_exatamente, sem_excecao
@@ -178,6 +178,31 @@ async def test_lista_de_localidades_fora_do_formato_e_erro_de_layout(monkeypatch
     monkeypatch.setattr(httpx.AsyncClient, "send", send)
     with levanta_exatamente(ParseError, "sem a lista de localidades"):
         await agregados.fetch_localidades(TABELA, "6")
+
+
+async def test_lista_de_localidades_inalcancavel_sai_como_fonte_indisponivel(monkeypatch):
+    pedidos = _instalar(monkeypatch, por_localidade=150)
+    sidra_simulada = httpx.AsyncClient.send
+
+    async def send(
+        cliente: httpx.AsyncClient, request: httpx.Request, **kwargs: Any
+    ) -> httpx.Response:
+        if request.url.host != "apisidra.ibge.gov.br":
+            pedidos.append(unquote(str(request.url)))
+            raise httpx.ConnectTimeout("", request=request)
+        return await sidra_simulada(cliente, request, **kwargs)
+
+    monkeypatch.setattr(httpx.AsyncClient, "send", send)
+    with levanta_exatamente(
+        SourceUnavailableError, f"lista de localidades da tabela {TABELA}.*ConnectTimeout"
+    ) as erro:
+        await client.fetch_sidra(TABELA, "6", "all", "10084", "all", {"226": "all"})
+
+    assert isinstance(erro.value.__cause__, httpx.ConnectTimeout)
+    assert len(_sidra(pedidos)) == 1
+    assert [url for url in pedidos if "servicodados" in url] == [
+        f"{agregados.BASE_URL}/{TABELA}/localidades/N6"
+    ] * 3
 
 
 async def test_parte_por_localidade_cabe_no_teto_da_url(monkeypatch):

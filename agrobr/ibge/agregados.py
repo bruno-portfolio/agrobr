@@ -3,6 +3,7 @@ from __future__ import annotations
 import asyncio
 import contextlib
 import re
+import time
 from datetime import datetime
 from typing import Any
 
@@ -27,9 +28,12 @@ logger = _log.get_logger(__name__)
 
 BASE_URL = constants.URLS[constants.Fonte.IBGE]["agregados"]
 FETCH_TIMEOUT = 120.0
+PERIODOS_TIMEOUT = 10.0
+PERIODOS_PAUSA = 300.0
 _LAST_N = re.compile(r"^last(?:\s+(\d+))?$")
 _IN_LEVEL = re.compile(r"^in\s+N(\d+)\s+(\S+)$", re.IGNORECASE)
 _periodos_cache: dict[str, dict[str, str]] = {}
+_periodos_suspenso_ate = 0.0
 PARSER_VERSION = 1
 
 
@@ -187,7 +191,12 @@ def to_sidra_frame(
     return pd.DataFrame(rows, columns=columns)
 
 
-async def _get_json(http: httpx.AsyncClient, url: str, timeout: float = FETCH_TIMEOUT) -> Any:
+async def _get_json(
+    http: httpx.AsyncClient,
+    url: str,
+    timeout: float = FETCH_TIMEOUT,
+    max_attempts: int | None = None,
+) -> Any:
     async def _do_fetch() -> Any:
         async with RateLimiter.acquire(constants.Fonte.IBGE):
             async with asyncio.timeout(timeout):
@@ -199,7 +208,11 @@ async def _get_json(http: httpx.AsyncClient, url: str, timeout: float = FETCH_TI
         responses.raise_for_status(response, source="ibge")
         return responses.parse_json_response(response, source="ibge", url=url)
 
-    return await retry_async(_do_fetch, retriable_exceptions=(*RETRIABLE_EXCEPTIONS, TimeoutError))
+    return await retry_async(
+        _do_fetch,
+        max_attempts=max_attempts,
+        retriable_exceptions=(*RETRIABLE_EXCEPTIONS, TimeoutError),
+    )
 
 
 async def fetch_period_names(http: httpx.AsyncClient, table_code: str) -> dict[str, str]:
@@ -229,13 +242,33 @@ async def fetch_periodos_modificacao(table_code: str) -> dict[str, str | None]:
     """Data de modificação (ISO) de cada período da tabela, de `/agregados/{tabela}/periodos`.
 
     O `01/01/0001` que o IBGE publica para período sem data sai nulo.
+
+    É metadado de toda consulta à SIDRA, e a API de agregados não responde a toda rede (em
+    11/11/2026, a conexão expirava em 16 de 16 nós fora do Brasil). Por isso o pedido faz uma
+    tentativa só, com prazo de ``PERIODOS_TIMEOUT``; depois de uma falha de rede, fica suspenso por
+    ``PERIODOS_PAUSA`` segundos e levanta ``SourceUnavailableError`` sem ir à rede.
     """
+    global _periodos_suspenso_ate
+    url = f"{BASE_URL}/{table_code}/periodos"
+    if time.monotonic() < _periodos_suspenso_ate:
+        raise SourceUnavailableError(
+            source="ibge",
+            url=url,
+            last_error=(
+                "API de agregados sem resposta na última tentativa; pedido de metadado "
+                f"suspenso por até {PERIODOS_PAUSA:.0f} s"
+            ),
+        )
     async with httpx.AsyncClient(
-        timeout=get_timeout(read=FETCH_TIMEOUT),
+        timeout=get_timeout(read=PERIODOS_TIMEOUT),
         headers=UserAgentRotator.get_bot_headers(),
         follow_redirects=True,
     ) as http:
-        payload = await _get_json(http, f"{BASE_URL}/{table_code}/periodos")
+        try:
+            payload = await _get_json(http, url, PERIODOS_TIMEOUT, max_attempts=1)
+        except (httpx.TimeoutException, httpx.NetworkError, TimeoutError):
+            _periodos_suspenso_ate = time.monotonic() + PERIODOS_PAUSA
+            raise
     if not isinstance(payload, list):
         raise ParseError(
             source="ibge",
@@ -251,12 +284,23 @@ async def fetch_periodos_modificacao(table_code: str) -> dict[str, str | None]:
 
 async def fetch_localidades(table_code: str, territorial_level: str) -> list[str]:
     """Códigos das localidades que a tabela publica no nível, de `/agregados/{tabela}/localidades`."""
+    url = f"{BASE_URL}/{table_code}/localidades/N{territorial_level}"
     async with httpx.AsyncClient(
         timeout=get_timeout(read=FETCH_TIMEOUT),
         headers=UserAgentRotator.get_bot_headers(),
         follow_redirects=True,
     ) as http:
-        payload = await _get_json(http, f"{BASE_URL}/{table_code}/localidades/N{territorial_level}")
+        try:
+            payload = await _get_json(http, url)
+        except (httpx.HTTPError, TimeoutError) as exc:
+            raise SourceUnavailableError(
+                source="ibge",
+                url=url,
+                last_error=(
+                    f"API de agregados (lista de localidades da tabela {table_code}): "
+                    f"{type(exc).__name__}: {exc}"
+                ),
+            ) from exc
     if not isinstance(payload, list):
         raise ParseError(
             source="ibge",

@@ -93,9 +93,11 @@ def _reset_global_state():
 
     from agrobr.config import reset_config
     from agrobr.http.rate_limiter import RateLimiter
+    from agrobr.ibge import agregados
 
     reset_config()
     RateLimiter.reset()
+    agregados._periodos_suspenso_ate = 0.0
 
     from agrobr.utils.warnings import warn_once_reset
 

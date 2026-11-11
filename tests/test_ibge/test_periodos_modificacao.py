@@ -5,6 +5,7 @@ import json
 from pathlib import Path
 from typing import Any
 
+import httpx
 import pytest
 
 from agrobr import datasets, ibge
@@ -174,3 +175,48 @@ async def test_corpo_ruim_do_periodos_nao_derruba_a_consulta(
     else:
         assert consulta.get("periodos_modificacao") == esperado
         assert meta.source_details.get("periodos_modificacao") == {"5457": esperado}
+
+
+async def _erro_do_metadado_na_pam() -> str:
+    variaveis = ["area_plantada", "area_colhida", "producao", "rendimento", "valor_producao"]
+    with sem_excecao():
+        frame, meta = await ibge.pam(
+            "soja", ano=2024, uf="DF", nivel="municipio", variaveis=variaveis, return_meta=True
+        )
+    assert len(frame) > 0
+    [consulta] = meta.source_details["consultas"]
+    assert "periodos_modificacao" not in meta.source_details
+    return consulta["periodos_modificacao_erro"]
+
+
+async def test_agregados_inalcancavel_custa_uma_tentativa_e_suspende_o_metadado(
+    monkeypatch, tmp_path
+):
+    _servir(monkeypatch, tmp_path, "DF", CINCO)
+    tentativas: list[str] = []
+
+    class SemAgregados(httpx.AsyncClient):
+        async def get(self, url, **kwargs):
+            if str(url).startswith(agregados.BASE_URL):
+                tentativas.append(str(url))
+                raise httpx.ConnectTimeout("")
+            return await super().get(url, **kwargs)
+
+    monkeypatch.setattr(httpx, "AsyncClient", SemAgregados)
+
+    primeira = await _erro_do_metadado_na_pam()
+    segunda = await _erro_do_metadado_na_pam()
+    assert tentativas == [URL_PERIODOS]
+    assert primeira.startswith("ConnectTimeout")
+    assert segunda.startswith("SourceUnavailableError: ") and "suspenso" in segunda
+
+    agregados._periodos_suspenso_ate = 0.0
+    await _erro_do_metadado_na_pam()
+    assert tentativas == [URL_PERIODOS, URL_PERIODOS]
+
+
+async def test_erro_http_do_metadado_nao_suspende_o_pedido(monkeypatch, tmp_path):
+    visto = _servir(monkeypatch, tmp_path, "DF", CINCO, status_periodos=404)
+    erros = [await _erro_do_metadado_na_pam(), await _erro_do_metadado_na_pam()]
+    assert visto["served"].count(URL_PERIODOS) == 2
+    assert all("404" in erro and "suspenso" not in erro for erro in erros)
