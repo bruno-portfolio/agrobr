@@ -52,6 +52,24 @@ def test_sfb_consulta_pontos_ifn_ativos_no_df():
     }
 
 
+async def test_sonda_do_ibge_consulta_a_sidra_e_o_403_sai_como_bloqueio(monkeypatch):
+    hosts = []
+    original = httpx.AsyncClient
+
+    def responder(request):
+        hosts.append(request.url.host)
+        return httpx.Response(403)
+
+    def fabrica(**kwargs):
+        return original(transport=httpx.MockTransport(responder), **kwargs)
+
+    monkeypatch.setattr(httpx, "AsyncClient", fabrica)
+    resultado = await checker._check_http(HEALTH_REGISTRY[Fonte.IBGE])
+
+    assert hosts == ["apisidra.ibge.gov.br"]
+    assert (resultado.status, resultado.category) == (checker.CheckStatus.WARNING, "soft_block")
+
+
 async def test_sonda_da_funai_completa_a_cadeia_com_o_intermediario_fixado(monkeypatch):
     recebidos = []
     original = httpx.AsyncClient

@@ -81,10 +81,8 @@ def _build_registry() -> dict[Fonte, SourceHealthConfig]:
             ),
         },
         Fonte.IBGE: {
-            "url": (
-                f"{URLS[Fonte.IBGE]['agregados']}/5457/periodos/-1/variaveis/all"
-                "?localidades=N1[all]&classificacao=782[40124]"
-            ),
+            "url": f"{URLS[Fonte.IBGE]['api']}/values/t/5457/n1/all/v/214/p/last%201/c782/40124",
+            "soft_block_codes": (403,),
         },
         Fonte.BCB: {
             "url": (f"{URLS[Fonte.BCB]['base']}/CusteioRegiaoUFProduto?$format=json&$top=1"),
