@@ -159,23 +159,31 @@ class TestDownloadZip:
         assert "application/zip" in message
 
     @pytest.mark.asyncio
-    async def test_outage_notice_redirect_is_named(self):
+    @pytest.mark.parametrize(
+        ("status", "pasta"),
+        [
+            (200, "publicacoes-off"),
+            (404, "base-da-pagina-inicial/pagina-inicial-1"),
+            (503, "base-da-pagina-inicial/pagina-inicial-1"),
+        ],
+        ids=["aviso_no_ar", "aviso_404", "aviso_503"],
+    )
+    async def test_outage_notice_redirect_is_named(self, status, pasta):
         html = b"<!DOCTYPE html>\n" + b"x" * 600
-        resp = _make_requests_response(
-            200,
-            html,
-            content_type="text/html",
-            url=(
-                "https://www.gov.br/antaq/pt-br/central-de-conteudos/publicacoes-da-antaq"
-                "/publicacoes-off/painel-estatistico-aquaviario-indisponivel"
-            ),
+        aviso = (
+            "https://www.gov.br/antaq/pt-br/central-de-conteudos/publicacoes-da-antaq"
+            f"/{pasta}/painel-estatistico-aquaviario-indisponivel"
         )
+        resp = _make_requests_response(status, html, content_type="text/html", url=aviso)
 
         with (
-            patch("agrobr.antaq.client.requests.get", return_value=resp),
-            pytest.raises(SourceUnavailableError, match="official outage notice"),
+            patch("agrobr.antaq.client.requests.get", return_value=resp) as get,
+            pytest.raises(client.OfficialOutageError, match="official outage notice") as exc,
         ):
             await client._download_zip(_ANTAQ_URL)
+
+        assert (exc.value.url, exc.value.notice_url) == (_ANTAQ_URL, aviso)
+        assert get.call_count == 1
 
 
 class TestExtractTxtFromZip:

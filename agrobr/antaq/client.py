@@ -56,14 +56,30 @@ def _timeout_requests() -> tuple[float | None, float | None]:
     return timeout.connect, timeout.read
 
 
+def _is_outage_notice(url: str) -> bool:
+    final = parse.urlsplit(url)
+    return (
+        final.scheme == "https"
+        and final.hostname == "www.gov.br"
+        and final.path.startswith("/antaq/")
+        and final.path.rstrip("/").endswith("/" + OUTAGE_NOTICE_SLUG)
+    )
+
+
 def _get_sync(url: str) -> _Download:
-    """Baixa via requests: o WAF da ANTAQ rejeita o fingerprint do httpx (HTTP 403)."""
+    """Baixa via requests: o WAF da ANTAQ rejeita o fingerprint do httpx (HTTP 403).
+
+    O redirecionamento para o aviso de indisponibilidade no gov.br vale como indisponibilidade oficial
+    com qualquer status: em 11/11/2026, a página do aviso passou a responder 404.
+    """
     response = requests.get(
         url,
         timeout=_timeout_requests(),
         headers=UserAgentRotator.get_headers(source="antaq"),
         allow_redirects=True,
     )
+    if _is_outage_notice(response.url):
+        raise OfficialOutageError(url, response.url)
     if should_retry_status(response.status_code):
         raise _RetriableHTTPError(f"Retriable status: {response.status_code}", response=response)
     response.raise_for_status()
@@ -113,14 +129,6 @@ async def _download_zip(url: str) -> bytes:
         ) from e
 
     content = download.content
-    final = parse.urlsplit(download.final_url)
-    if (
-        final.scheme == "https"
-        and final.hostname == "www.gov.br"
-        and final.path.startswith("/antaq/")
-        and final.path.rstrip("/").endswith("/" + OUTAGE_NOTICE_SLUG)
-    ):
-        raise OfficialOutageError(url, download.final_url)
 
     if not content.startswith(b"PK\x03\x04"):
         raise SourceUnavailableError(
