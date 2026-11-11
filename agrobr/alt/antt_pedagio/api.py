@@ -23,6 +23,9 @@ PRACAS_SCHEMA_VERSION = "2.0"
 _TEXTO = pd.Series([""]).dtype
 _NUMEROS_PRACAS = {"km_m": "float64", "ano_do_pnv_snv": "Int64"}
 _DATA_BR = r"[0-9]{2}/[0-9]{2}/[0-9]{4}"
+_DATA_ISO = (
+    r"^([0-9]{4})-([0-9]{2})-([0-9]{2})T[0-9]{2}:[0-9]{2}:[0-9]{2}(?:Z|[+-][0-9]{2}:[0-9]{2})?$"
+)
 
 
 def _output_guards(*, as_polars: bool, return_meta: bool) -> None:
@@ -195,14 +198,19 @@ def _pracas_saida(frame: pd.DataFrame) -> pd.DataFrame:
             )
     if "data_da_inativacao" in saida:
         texto = saida["data_da_inativacao"].astype("string").str.strip()
+        texto = texto.str.replace(_DATA_ISO, r"\3/\2/\1", regex=True)
         fora = texto.fillna("").ne("") & ~texto.str.fullmatch(_DATA_BR).fillna(False)
         if fora.any():
             raise ParseError(
                 source="antt_pedagio",
                 parser_version=parser.PARSER_VERSION,
-                reason=f"data_da_inativacao fora de DD/MM/AAAA: {texto[fora].iloc[0]!r}",
+                reason=(
+                    "data_da_inativacao fora de DD/MM/AAAA e de AAAA-MM-DDThh:mm:ss: "
+                    f"{texto[fora].iloc[0]!r}"
+                ),
                 errors=[("data_da_inativacao", "DD/MM/AAAA", str(int(fora.sum())))],
             )
+        saida["data_da_inativacao"] = texto
         dates.converter_coluna(
             saida, "data_da_inativacao", fonte="antt_pedagio", formato="%d/%m/%Y"
         )

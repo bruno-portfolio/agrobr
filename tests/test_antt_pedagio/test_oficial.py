@@ -300,6 +300,22 @@ async def test_data_de_inativacao_inexistente_vira_nat_e_texto_sem_data_e_layout
     assert erro.value.errors == [("data_da_inativacao", "DD/MM/AAAA", "1")]
 
 
+@pytest.mark.parametrize(
+    "publicada",
+    [b"2026-05-22T00:00:00-03:00", b"2026-05-22T00:00:00Z", b"2026-05-22T00:00:00", b"22/05/2026"],
+    ids=["iso_com_fuso", "iso_utc", "iso_sem_fuso", "dd_mm_aaaa"],
+)
+async def test_data_de_inativacao_em_iso_vale_a_data_civil_publicada(monkeypatch, publicada):
+    body = oficial.load("pracas.csv")
+    install_anttpedagio_source(
+        monkeypatch, {}, plazas=body.replace(b";Ativo;;", b";Ativo;" + publicada + b";", 1)
+    )
+    frame = await api.pracas_pedagio()
+    assert frame["data_da_inativacao"].dropna().tolist() == [pd.Timestamp("2026-05-22")]
+    assert str(frame.dtypes["data_da_inativacao"]) == "datetime64[ns]"
+    assert contracts.get_contract("antt_pedagio_pracas").validate(frame) == (True, [])
+
+
 async def test_cadastro_real_cheio_e_vazio_com_os_mesmos_dtypes(monkeypatch):
     install_anttpedagio_source(monkeypatch, {}, plazas=oficial.load("pracas.csv"))
     cheio = await api.pracas_pedagio()
