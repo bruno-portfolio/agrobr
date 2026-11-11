@@ -3,9 +3,11 @@
 Movimentação portuária de cargas — ANTAQ.
 
 !!! warning "Fonte indisponivel desde 23/06/2026"
-    A ANTAQ tirou o Estatistico Aquaviario do ar ([aviso oficial](https://www.gov.br/antaq/pt-br/central-de-conteudos/publicacoes-da-antaq/publicacoes-off/painel-estatistico-aquaviario-indisponivel)).
-    O host `estatistica.antaq.gov.br` não serve mais os arquivos: responde `403` (Cloudflare
-    challenge) ou redireciona para o aviso de indisponibilidade, conforme o cliente.
+    A ANTAQ tirou do ar o host `estatistica.antaq.gov.br`, que servia os arquivos do Estatístico Aquaviário:
+    ele responde `403` (Cloudflare challenge) ou redireciona para um aviso de indisponibilidade no gov.br,
+    conforme o cliente; em 11/11/2026, a página desse aviso passou a responder `404`. O painel está em
+    `aquarela.antaq.gov.br` ([página de Estatística da ANTAQ](https://www.gov.br/antaq/pt-br/assuntos/estatistica)),
+    e os arquivos em lote que o agrobr lê (`/ea/txt/*.zip`) não estão nesse host.
     Chamadas a `antaq.movimentacao()` levantam `SourceUnavailableError`. Não ha fonte
     alternativa com cobertura equivalente — a Base dos Dados cobre apenas 2014-2020.
     Última verificacao: 31/08/2026.

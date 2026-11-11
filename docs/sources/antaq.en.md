@@ -4,12 +4,14 @@
 > Classification: `livre`
 
 !!! warning "Source unavailable since 2026-06-23"
-    ANTAQ took the Estatistico Aquaviario offline ([official notice](https://www.gov.br/antaq/pt-br/central-de-conteudos/publicacoes-da-antaq/publicacoes-off/painel-estatistico-aquaviario-indisponivel)).
-    The `estatistica.antaq.gov.br` host no longer serves the files: it returns `403`
-    (Cloudflare challenge) or redirects to the unavailability notice, depending on the client.
+    ANTAQ took offline the `estatistica.antaq.gov.br` host, which served the Estatístico Aquaviário files:
+    it returns `403` (Cloudflare challenge) or redirects to an unavailability notice on gov.br, depending on
+    the client; on 2026-11-11, that notice page started returning `404`. The dashboard is at
+    `aquarela.antaq.gov.br` ([ANTAQ Statistics page](https://www.gov.br/antaq/pt-br/assuntos/estatistica)),
+    and the bulk files agrobr reads (`/ea/txt/*.zip`) are not on that host.
     Calls to `antaq.movimentacao()` raise `SourceUnavailableError`. No alternative source
     offers equivalent coverage — Base dos Dados only covers 2014-2020.
-    Last checked: 2026-08-31.
+    Last checked: 2026-11-11.
 
 National Waterway Transport Agency. Port cargo movement data
 (solid bulk, liquid, general, container) since 2010.
