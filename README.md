@@ -21,7 +21,7 @@ Python infrastructure for Brazilian agricultural data with a semantic layer over
 
 Brazil is one of the world's largest agricultural producers, but its public data is scattered across dozens of government portals, each with its own format, encoding and quirks. agrobr turns all of that into clean, validated DataFrames.
 
-**v2.0.0** — 55 datasets | 90 versioned contracts | validation evidence scoped to each increment | parameter validation before network calls | per-source golden tests
+**v2.0.1** — 55 datasets | 90 versioned contracts | validation evidence scoped to each increment | parameter validation before network calls | per-source golden tests
 
 ## Demo
 ![Animation](https://github.com/user-attachments/assets/40e1341e-f47b-4eb5-b18e-55b49c63ee97)

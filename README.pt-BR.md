@@ -21,7 +21,7 @@ Infraestrutura Python para dados agrícolas brasileiros com camada semântica so
 
 O Brasil é um dos maiores produtores agrícolas do mundo, mas os dados públicos estão espalhados por dezenas de portais do governo, cada um com seu formato, codificação e peculiaridades. O agrobr transforma tudo isso em DataFrames limpos e validados.
 
-**v2.0.0** — 55 datasets | 90 contratos versionados | evidências de validação por incremento | validação de parâmetros antes da rede | golden tests por fonte
+**v2.0.1** — 55 datasets | 90 contratos versionados | evidências de validação por incremento | validação de parâmetros antes da rede | golden tests por fonte
 
 ## Demo
 ![Animation](https://github.com/user-attachments/assets/40e1341e-f47b-4eb5-b18e-55b49c63ee97)

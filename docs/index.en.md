@@ -15,7 +15,7 @@
 
 Python infrastructure for Brazilian agricultural data with a **semantic layer** over 41 public sources.
 
-**v2.0.0** — 55 datasets | 90 versioned contracts | parameter validation before network calls | per-source golden tests
+**v2.0.1** — 55 datasets | 90 versioned contracts | parameter validation before network calls | per-source golden tests
 
 - **CEPEA/ESALQ**: 22 price indicators (soybean, corn, live cattle, arabica coffee, robusta coffee, cotton, wheat, rice, sugar, ethanol, poultry, hog, milk, orange)
 - **CONAB**: Crop surveys, supply/demand balance, production costs, historical series, weekly planting/harvest progress, and wholesale produce prices (CEASA/PROHORT)

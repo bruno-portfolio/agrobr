@@ -7,6 +7,8 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 
 ## [Unreleased]
 
+## [2.0.1] - 2026-11-11
+
 ### Added
 
 - **ZARC, tomate industrial** — `zarc.culturas()` passa a ter 108 culturas, com `tomate_industrial`, publicado pela Portaria 378, de 23/10/2026, na tábua perene, olerícola e sem safra (irrigado, 27 UFs). Antes, a cultura aparecia em `culturas_observadas`, mas ficava fora do catálogo (#132).
@@ -2044,7 +2046,8 @@ Catálogo desta versão: **55 datasets e 90 contratos registrados**. Mudanças i
 - Type hints completos
 - Logging estruturado com structlog
 
-[Unreleased]: https://github.com/bruno-portfolio/agrobr/compare/v2.0.0...HEAD
+[Unreleased]: https://github.com/bruno-portfolio/agrobr/compare/v2.0.1...HEAD
+[2.0.1]: https://github.com/bruno-portfolio/agrobr/compare/v2.0.0...v2.0.1
 [2.0.0]: https://github.com/bruno-portfolio/agrobr/compare/v1.1.0...v2.0.0
 [1.1.0]: https://github.com/bruno-portfolio/agrobr/compare/1.0.5...v1.1.0
 [1.0.5]: https://github.com/bruno-portfolio/agrobr/compare/v1.0.4...1.0.5
