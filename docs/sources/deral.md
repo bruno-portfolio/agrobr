@@ -97,6 +97,10 @@ produz registros ou zeros. O nome `18-12-2017` contém referência publicada de
 datada (`dd-mm-aa` ou `dd-mm-aaaa`, com dia e mês de um ou dois dígitos) difere da data da célula, como nesse caso e em
 `19-09-2021`, com 20/09/2021, a leitura segue a célula e avisa em `validation_warnings`
 e em `UserWarning`.
+Há uma exceção: o DERAL às vezes deixa numa aba a data copiada da aba de outro ano. Quando a data da
+célula é também a de outra aba, vale a data do nome da aba, com aviso próprio nos mesmos canais; no
+PC.xls de 09/11/2026, a aba `9-11-2015` (safra 2015/16) trazia 09/11/2020, a data da aba `09-11-2020`.
+Duas abas que ainda assim fiquem com a mesma data levantam `ParseError`.
 
 O parser 2 exige os cabeçalhos Ruim, Média, Boa, Plantada e Colhida nas tabelas
 com várias culturas. Se faltar um deles, a fonte levanta `ParseError` e o dataset

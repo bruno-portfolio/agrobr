@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import re
 import warnings
+from collections import Counter
 from datetime import date, datetime
 from typing import Any, cast
 
@@ -18,6 +19,7 @@ from .models import normalize_produto
 logger = _log.get_logger(__name__)
 
 PARSER_VERSION = 2
+_MEDIDAS = ("pct", "plantio_pct", "colheita_pct")
 
 
 def parse_pc_xls(data: bytes) -> pd.DataFrame:
@@ -40,8 +42,7 @@ def parse_pc_xls_with_engine(data: bytes) -> tuple[pd.DataFrame, str]:
 
 
 def _parse_pc_workbook(xls: pd.ExcelFile) -> pd.DataFrame:
-    all_records: list[dict[str, Any]] = []
-    avisos: list[str] = []
+    quadros: list[tuple[str, str, list[dict[str, Any]]]] = []
 
     for sheet_name in xls.sheet_names:
         try:
@@ -55,16 +56,14 @@ def _parse_pc_workbook(xls: pd.ExcelFile) -> pd.DataFrame:
             ) from exc
 
         if _is_multi_produto_sheet(df):
-            records = _extract_multi_produto_sheet(df, str(sheet_name))
-            all_records.extend(records)
-            aviso = _aviso_de_aba_divergente(
-                str(sheet_name), _find_data_referencia(df, str(sheet_name))
+            aba = str(sheet_name)
+            quadros.append(
+                (aba, _find_data_referencia(df, aba), _extract_multi_produto_sheet(df, aba))
             )
-            if aviso:
-                avisos.append(aviso)
         else:
             logger.debug("deral_skip_sheet", sheet=sheet_name)
 
+    all_records, avisos = _datar_quadros(quadros)
     if not all_records:
         raise ParseError(
             source="deral",
@@ -81,6 +80,46 @@ def _parse_pc_workbook(xls: pd.ExcelFile) -> pd.DataFrame:
 
     logger.info("deral_parse_ok", records=len(result))
     return result
+
+
+def _datar_quadros(
+    quadros: list[tuple[str, str, list[dict[str, Any]]]],
+) -> tuple[list[dict[str, Any]], list[str]]:
+    """Fixa a data de cada quadro (aba, data da célula, registros) e devolve os registros e os avisos.
+
+    Vale a data da célula de referência da aba. O DERAL monta a aba de um ano sobre a de outro e às
+    vezes deixa a data copiada: quando a data da célula é também a de outra aba e o nome da aba diz
+    outra data, vale a do nome. Duas abas que ainda assim fiquem com a mesma data levantam
+    ``ParseError``. A aba sem registros (feriado sem observações) não entra na conta.
+    """
+    all_records: list[dict[str, Any]] = []
+    avisos: list[str] = []
+    quadros = [quadro for quadro in quadros if quadro[2]]
+    vezes = Counter(data_ref for _, data_ref, _ in quadros)
+    abas_da_data: dict[str, list[str]] = {}
+    for aba, data_ref, records in quadros:
+        data_do_nome = _data_do_nome_da_aba(aba)
+        if data_do_nome is not None and data_do_nome != data_ref and vezes[data_ref] > 1:
+            avisos.append(
+                f"deral: a aba {aba!r} publica na planilha a data {data_ref}, que é a de outra "
+                f"aba; o quadro usa a data do nome da aba, {data_do_nome}."
+            )
+            data_ref = data_do_nome
+            for record in records:
+                record["data"] = data_ref
+        elif aviso := _aviso_de_aba_divergente(aba, data_ref):
+            avisos.append(aviso)
+        abas_da_data.setdefault(data_ref, []).append(aba)
+        all_records.extend(records)
+
+    for data_ref, abas in abas_da_data.items():
+        if len(abas) > 1:
+            raise ParseError(
+                source="deral",
+                parser_version=PARSER_VERSION,
+                reason=f"As abas {abas} publicam a mesma data de referência, {data_ref}",
+            )
+    return all_records, avisos
 
 
 def _is_multi_produto_sheet(df: pd.DataFrame) -> bool:
@@ -170,6 +209,8 @@ def _extract_multi_produto_sheet(
                 }
             )
 
+    if all(record[medida] is None for record in records for medida in _MEDIDAS):
+        return []
     return records
 
 
@@ -226,13 +267,21 @@ def _find_data_referencia(df: pd.DataFrame, sheet_name: str) -> str:
     )
 
 
-def _aviso_de_aba_divergente(sheet_name: str, data_ref: str) -> str | None:
+def _data_do_nome_da_aba(sheet_name: str) -> str | None:
     match = re.fullmatch(r"(\d{1,2})-(\d{1,2})-(\d{4}|\d{2})", sheet_name.strip())
     if match is None:
         return None
     dia, mes, ano = match.groups()
-    ano_completo = ano if len(ano) == 4 else f"20{ano}"
-    if data_ref == f"{int(dia):02d}/{int(mes):02d}/{ano_completo}":
+    try:
+        return date(int(ano) if len(ano) == 4 else 2000 + int(ano), int(mes), int(dia)).strftime(
+            "%d/%m/%Y"
+        )
+    except ValueError:
+        return None
+
+
+def _aviso_de_aba_divergente(sheet_name: str, data_ref: str) -> str | None:
+    if _data_do_nome_da_aba(sheet_name) in (None, data_ref):
         return None
     return (
         f"deral: a aba {sheet_name!r} publica a data {data_ref} na planilha; "

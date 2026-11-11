@@ -96,6 +96,10 @@ or zeros. The sheet named `18-12-2017` publishes 08/01/2018 as its reference;
 the date comes from the cell, as published. When a dated sheet name (`dd-mm-yy` or
 `dd-mm-yyyy`, with a one- or two-digit day and month) differs from the cell date, as here and in `19-09-2021`, with 20/09/2021,
 parsing follows the cell and warns in `validation_warnings` and `UserWarning`.
+There is one exception: DERAL sometimes leaves in a sheet the date copied from another year's sheet. When
+the cell date is also the date of another sheet, the date in the sheet name is used, with its own warning in
+the same channels; in the PC.xls of 09/11/2026, sheet `9-11-2015` (2015/16 season) carried 09/11/2020, the
+date of sheet `09-11-2020`. Two sheets that still end up with the same date raise `ParseError`.
 
 Parser 2 requires the Ruim, Média, Boa, Plantada and Colhida headers in tables
 containing several crops. A missing header raises `ParseError` in the source,
