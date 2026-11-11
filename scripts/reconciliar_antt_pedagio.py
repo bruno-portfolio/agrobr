@@ -17,6 +17,8 @@ from typing import Any, cast
 import httpx
 import pandas as pd
 
+from agrobr.exceptions import SourceUnavailableError
+
 CATALOG = "https://dados.antt.gov.br/api/3/action/package_show?id={}"
 TRAFFIC = "volume-trafego-praca-pedagio"
 PLAZAS = "praca-de-pedagio"
@@ -78,7 +80,14 @@ def catalogs(http: httpx.Client, directory: Path, receipts: dict[str, Any]) -> d
     for slug in (TRAFFIC, PLAZAS):
         name = f"ckan_{slug}.json"
         receipts[name] = fetch(http, CATALOG.format(slug), directory / name)
-        packages[slug] = json.loads((directory / name).read_bytes())["result"]
+        try:
+            packages[slug] = json.loads((directory / name).read_bytes())["result"]
+        except ValueError as erro:
+            raise SourceUnavailableError(
+                source="antt_pedagio",
+                url=CATALOG.format(slug),
+                last_error="o catálogo CKAN respondeu sem JSON (provável WAF ou manutenção)",
+            ) from erro
     plazas = [item for item in packages[PLAZAS]["resources"] if item["format"].upper() == "CSV"]
     receipts["links_pracas"] = [item["url"] for item in plazas]
     if len(plazas) == 1:
@@ -236,13 +245,17 @@ def plaza_rows(body: bytes) -> list[dict[str, Any]]:
         row.setdefault("municipio", row.get("municipal"))
         row["km_m"] = float(Decimal(row["km_m"])) if row["km_m"] else None
         row["ano_do_pnv_snv"] = int(row["ano_do_pnv_snv"]) if row["ano_do_pnv_snv"] else None
-        row["data_da_inativacao"] = (
-            datetime.strptime(row["data_da_inativacao"], "%d/%m/%Y")
-            if row["data_da_inativacao"]
-            else None
-        )
+        row["data_da_inativacao"] = inactivation(row["data_da_inativacao"])
         rows.append(row)
     return rows
+
+
+def inactivation(text: str) -> datetime | None:
+    if not text:
+        return None
+    if "T" in text:
+        return datetime.fromisoformat(text).replace(tzinfo=None)
+    return datetime.strptime(text, "%d/%m/%Y")
 
 
 def compare_plazas(frame: pd.DataFrame, expected: list[dict[str, Any]]) -> dict[str, Any]:
