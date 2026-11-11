@@ -3,6 +3,13 @@
 !!! info "Licença livre"
     Os dados públicos SIGEF, SNCI e assentamentos do Acervo Fundiário/INCRA são classificados como livre pela LAI, pelo Decreto 8.777/2016 e pela política institucional do INCRA, após busca sem restrição comercial específica localizada. A alegação anterior de veto comercial não tinha cláusula comprovada. A indicação histórica de CC BY não foi recapturada e não sustenta versão numérica. Citar INCRA, família, UF/abrangência, arquivo, edição e transformações, preservando direitos de terceiros expressos. O PDA 2021–2023 prova política e origem, não atualidade de todo serviço em 2026.
 
+!!! warning "Fonte indisponível em novembro de 2026"
+    Em 11/11/2026, o host `certificacao.incra.gov.br` não resolvia no DNS (NXDOMAIN), também a partir do
+    Brasil; nos runners do GitHub Actions, pelo menos desde 01/11/2026. A
+    [página do serviço no gov.br](https://www.gov.br/pt-br/servicos/obter-coordenadas-e-baixar-os-arquivos-dos-imoveis-ruras-certificados)
+    continuava apontando para esse endereço, sem aviso de mudança. Enquanto o INCRA não restabelecer o host,
+    toda consulta desta fonte levanta `SourceUnavailableError`.
+
 !!! note "Nao acessivel de fora do Brasil nos ambientes testados"
     O host `certificacao.incra.gov.br` respondeu normalmente do Brasil, mas não respondeu
     (connection timeout) a partir dos runners do GitHub Actions nem de nenhum dos 8 nos

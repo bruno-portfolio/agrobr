@@ -3,6 +3,13 @@
 !!! info "License: livre"
     Public SIGEF, SNCI and settlement data from INCRA's Land Collection are classified as livre under the access law, Decree 8,777/2016 and INCRA's institutional policy, after a search finding no specific commercial restriction. The earlier claim of a commercial prohibition lacked a substantiated clause. The historical CC BY indication was not recaptured and does not establish a numbered version. Credit INCRA, family, state/scope, file, edition and transformations, preserving express third-party rights. The 2021–2023 plan establishes policy and provenance, not the 2026 status of every service.
 
+!!! warning "Source unavailable in November 2026"
+    On 2026-11-11, the `certificacao.incra.gov.br` host did not resolve in DNS (NXDOMAIN), from Brazil as
+    well; from GitHub Actions runners, since at least 2026-11-01. The
+    [service page on gov.br](https://www.gov.br/pt-br/servicos/obter-coordenadas-e-baixar-os-arquivos-dos-imoveis-ruras-certificados)
+    still pointed to that address, with no notice of a change. Until INCRA restores the host, every query
+    to this source raises `SourceUnavailableError`.
+
 !!! note "Not reachable from outside Brazil in the environments tested"
     The `certificacao.incra.gov.br` host answered normally from Brazil, but did not answer
     (connection timeout) from GitHub Actions runners nor from any of the 8 international
