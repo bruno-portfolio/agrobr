@@ -7,6 +7,10 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 
 ## [Unreleased]
 
+### Changed
+
+- **ci** — no teste semanal, `unidades_conservacao_federais` sai como indisponibilidade conhecida quando o geoserver da INDE (`geoservicos.inde.gov.br`), que serve os limites do ICMBio, derruba a conexão (`httpx.ReadError`), como faz desde 20 de novembro de 2026 em qualquer versão de TLS; antes, o dataset contava como falha a cada execução. Outro erro, como timeout ou HTTP 5xx, continua reprovando.
+
 ## [2.0.1] - 2026-11-11
 
 ### Added

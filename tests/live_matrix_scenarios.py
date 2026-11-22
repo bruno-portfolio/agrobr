@@ -7,6 +7,7 @@ from types import SimpleNamespace
 from typing import Any
 from unittest.mock import AsyncMock
 
+import httpx
 import pandas as pd
 import pytest
 import pytest_socket
@@ -16,10 +17,13 @@ from agrobr import datasets
 from agrobr.antaq import client as antaq_client
 from agrobr.conab.ceasa import client as ceasa_client
 from agrobr.exceptions import ParseError, SourceUnavailableError
+from agrobr.icmbio import client as icmbio_client
+from agrobr.icmbio import models as icmbio_models
 from tests import helpers
 from tests.integration import live_policy
 
 CEASA_VERIFY_CODES = {"ceasa_outro_host": 62, "ceasa_vencido": 10}
+ICMBIO_CAUSES = {"icmbio_conexao_derrubada": httpx.ReadError, "icmbio_timeout": httpx.ReadTimeout}
 
 
 @pytest.hookimpl(trylast=True)
@@ -71,6 +75,8 @@ def synthetic_live_sources(monkeypatch: pytest.MonkeyPatch) -> Iterator[None]:
             return original_dataset(name)
         if name == "preco_atacado" and scenario in CEASA_VERIFY_CODES:
             return original_dataset(name)
+        if name == "unidades_conservacao_federais" and scenario in ICMBIO_CAUSES:
+            return original_dataset(name)
         return SimpleNamespace(fetch=synthetic_fetch)
 
     def response(url: str, **_kwargs: Any) -> requests.Response:
@@ -97,6 +103,13 @@ def synthetic_live_sources(monkeypatch: pytest.MonkeyPatch) -> Iterator[None]:
             "conab_ceasa", CEASA_VERIFY_CODES[scenario], live_policy.CONAB_CEASA_HOST
         )
         monkeypatch.setattr(ceasa_client, "fetch_precos", AsyncMock(side_effect=outage))
+    if scenario in ICMBIO_CAUSES:
+        cause = ICMBIO_CAUSES[scenario]("", request=httpx.Request("GET", icmbio_models.WFS_BASE))
+        outage = SourceUnavailableError(
+            "icmbio", last_error=f"{type(cause).__name__}: after 3 attempts"
+        )
+        outage.__cause__ = cause
+        monkeypatch.setattr(icmbio_client, "fetch_ucs_count", AsyncMock(side_effect=outage))
     yield
     if scenario == "teardown_error":
         raise RuntimeError("Synthetic teardown bug")
