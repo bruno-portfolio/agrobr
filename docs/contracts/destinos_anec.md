@@ -22,7 +22,7 @@ Requer `pip install agrobr[pdf]`. Consulte a [documentação da fonte](../source
 | `mes_fim` | Int64, nullable | Último mês do período acumulado (1–12) |
 | `ano_relatorio` | int | Ano da edição selecionada |
 | `semana_relatorio` | int | Semana da edição (1–53) |
-| `edicao_id` | str | Identificador `cuid` do artigo ANEC |
+| `edicao_id` | str | Identificador da edição: slug da página do boletim na biblioteca da ANEC (até novembro de 2026, o `cuid` do artigo) |
 | `publicado_em` | datetime UTC | `created_at` do artigo |
 | `revisado_em` | datetime UTC | `media_updated_at` do arquivo na origem |
 
@@ -63,7 +63,7 @@ async def destinos_anec(
 ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]: ...
 ```
 
-Todos os argumentos são nomeados. `ano` é obrigatório e seleciona o **ano da edição do boletim**, de 2026 ao ano corrente. Categorias anuais são descobertas no catálogo oficial; ano explícito sem publicação gera `SourceUnavailableError`, sem recuar para outra edição anual. `semana=None` seleciona o boletim mais recente disponível nesse catálogo. `produto=None` retorna todos os produtos disponíveis; aliases como `soja` e `milho` são aceitos.
+Todos os argumentos são nomeados. `ano` é obrigatório e seleciona o **ano da edição do boletim**, de 2026 ao ano corrente. Os boletins são descobertos no sitemap da biblioteca da ANEC, que desde novembro de 2026 publica só a edição mais recente; ano explícito sem publicação gera `SourceUnavailableError`, sem recuar para outra edição anual. `semana=None` seleciona o boletim mais recente disponível nesse catálogo. `produto=None` retorna todos os produtos disponíveis; aliases como `soja` e `milho` são aceitos.
 
 ## Exemplo
 

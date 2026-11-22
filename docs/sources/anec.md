@@ -9,7 +9,7 @@ A Associação Nacional dos Exportadores de Cereais publica boletins PDF com emb
 
 ## Cobertura e seleção da edição
 
-- **Catálogo:** edições de **2026 ao ano corrente**, com descoberta de categorias anuais no catálogo oficial. Em 6 de setembro de 2026, o catálogo público de 2026 tinha 34 PDFs; o mais recente era W34, criado em 2 de setembro de 2026. Publicação e compatibilidade de layout em anos seguintes não são garantidas.
+- **Catálogo:** edições de **2026 ao ano corrente**, lidas no sitemap da biblioteca do site da ANEC. Em novembro de 2026 a ANEC migrou o site e passou a publicar só o boletim semanal mais recente (em 21 de novembro de 2026, o W45); as edições anteriores saíram do site e não podem mais ser baixadas. A biblioteca também traz um compilado das semanas 32 a 41/2026, que o agrobr não lê. Publicação e compatibilidade de layout em anos seguintes não são garantidas.
 - **`ano`:** ano da edição, obrigatório e nomeado. Uma edição pode conter dados de outro ano; o parâmetro não consulta um ano histórico independentemente do boletim.
 - **`semana`:** semana do boletim, de 1 a 53; `None` seleciona a edição mais recente disponível no catálogo escolhido. O número da semana não é a data de publicação.
 - **Produtos:** soja, farelo de soja, milho, DDGS, sorgo e trigo, conforme a tabela selecionada. A comparação anual pode incluir `total_products`. Até a W2/2026, os quadros semanal e mensal publicam só soja, farelo, milho e trigo; DDGS e sorgo entram na W3/2026.
@@ -94,7 +94,7 @@ As três tabelas de fonte (mensal/destinos 1.1; comparação anual 1.2) e os nov
 |---|---|
 | `ano_relatorio` | Ano da edição |
 | `semana_relatorio` | Semana da edição |
-| `edicao_id` | `cuid` do artigo ANEC |
+| `edicao_id` | slug da página do boletim na biblioteca da ANEC (até novembro de 2026, o `cuid` do artigo) |
 | `publicado_em` | `created_at` do artigo, datetime UTC |
 | `revisado_em` | `media_updated_at` do arquivo, datetime UTC |
 
@@ -142,7 +142,7 @@ remoto avança.
 
 O cache do relatório interpretado também identifica a revisão por artigo,
 `media_updated_at`, URL e SHA-256 dos bytes recebidos. Uma revisão atualiza
-os dados e a URL de proveniência, mesmo mantendo o mesmo `cuid`.
+os dados e a URL de proveniência, mesmo mantendo o mesmo `edicao_id`.
 
 Listagem JSON é cacheada em memória por 5 minutos (configurável via
 `AGROBR_ANEC_LIST_TTL`). Cache de PDF disk pode ser desabilitado via
@@ -170,9 +170,9 @@ Layouts PDF e produtos publicados variam entre edições. A ANEC revisa valores 
 
 Os quadros mensal e de comparação anual não são intercambiáveis: em W13/2026, por exemplo, trigo em janeiro aparece com 279.699 t no quadro mensal e 279.499 t no comparativo. O agrobr preserva os valores publicados em cada quadro, sem reconciliação automática. O total impresso na linha de janeiro do quadro mensal (7.727.420 t) fecha com os valores do comparativo (trigo 279.499 t e DDGS 80.057 t), não com os do próprio quadro mensal (279.699 t e 80.141 t), que somam 284 t a mais (W35 e W37/2026).
 
-PDFs oficiais citados nesta página: [W13/2026](https://www.anec.com.br/uploads/cmnrsz3eu00004htx396a7you.pdf) e [W34/2026](https://www.anec.com.br/uploads/cmtkhj4p50000y9tx5nnn6hhi.pdf). Fonte: [ANEC](https://www.anec.com.br/).
+PDFs oficiais citados nesta página: W13/2026 e W34/2026, que saíram do site da ANEC na migração de novembro de 2026. Fonte: [ANEC](https://anec.com.br/).
 
-Categorias anuais ausentes do mapa configurado são descobertas no catálogo oficial. Anos explícitos são exclusivos: ausência de publicação não recua para ano anterior. Anos vazios usam o TTL da listagem (padrão 300 segundos; `AGROBR_ANEC_LIST_TTL=0` desativa). Edições suportadas vão de 2026 ao ano corrente; descobrir a categoria não garante por si só um layout PDF compatível.
+Os boletins de cada ano são descobertos no sitemap da biblioteca da ANEC. Anos explícitos são exclusivos: ausência de publicação não recua para ano anterior. Anos vazios usam o TTL da listagem (padrão 300 segundos; `AGROBR_ANEC_LIST_TTL=0` desativa). Edições suportadas vão de 2026 ao ano corrente; encontrar o boletim não garante por si só um layout PDF compatível.
 
 ## Leitura dos boletins
 
@@ -191,7 +191,7 @@ semanal é conferida com a linha TOTAL do boletim: divergência acima do
 arredondamento (0,5 t por porto) sai em aviso (`UserWarning` e
 `meta.validation_warnings`), com os valores por porto repassados sem ajuste. O
 pdfplumber às vezes parte um número em 2 palavras coladas (`3` e `72.958`, na linha
-TOTAL da [W36/2026](https://www.anec.com.br/uploads/cmu47h0m500016vtxg76q4eeb.pdf)) e, na fonte pequena de 2025, funde o BELÉM com o RIO da linha de
+TOTAL da W36/2026) e, na fonte pequena de 2025, funde o BELÉM com o RIO da linha de
 baixo. O parser junta 2 palavras numéricas vizinhas quando formam um número com
 separador de milhar e lê as palavras com tolerância vertical de 1 pt. Em 89
 edições (W1/2025 a W37/2026, menos a W14/2026), as 16.112 células do quadro

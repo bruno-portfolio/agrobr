@@ -162,7 +162,7 @@ ANECArticle(
 )
 ```
 
-The `week_year` property extracts the `(week, year)` tuple from the title.
+The `week_year` property extracts the `(week, year)` tuple from the title. Since the ANEC website migration (November 2026), `cuid` and `slug_en` hold the bulletin page slug, and `title_en` the title as published in Portuguese.
 
 ## Examples
 
@@ -188,7 +188,7 @@ df = anec.embarques(ano=2026, produto="soja")
 
 The three aggregate tables also include `ano_relatorio`, `semana_relatorio`, `edicao_id`, `publicado_em` and `revisado_em`. Monthly/destination source schemas remain 1.1; the annual comparison is 1.2. Their dataset contracts remain 1.0.
 
-Annual categories are discovered in the official catalogue when absent from the configured map. An explicit year without publication raises `SourceUnavailableError`, without returning a previous edition. `fetch_latest_pdf(year=None)` may search previous supported years. Empty catalogue results are cached by year for `AGROBR_ANEC_LIST_TTL` seconds (default 300); zero disables this cache. Parsing or network failures are not cached as an unpublished year.
+Each year's bulletins are discovered in the ANEC library sitemap. An explicit year without publication raises `SourceUnavailableError`, without returning a previous edition. `fetch_latest_pdf(year=None)` may search previous supported years. Empty catalogue results are cached by year for `AGROBR_ANEC_LIST_TTL` seconds (default 300); zero disables this cache. Parsing or network failures are not cached as an unpublished year.
 
 ## PDF extraction integrity
 

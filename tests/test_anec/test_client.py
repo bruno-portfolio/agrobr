@@ -17,6 +17,16 @@ from tests.helpers import (
     make_mock_async_client,
     make_mock_response,
 )
+from tests.test_anec.conftest import (
+    BOLETIM_45_LASTMOD,
+    BOLETIM_45_PDF,
+    BOLETIM_45_URL,
+    SITEMAP_URL,
+    boletim_html,
+    site_anec,
+    sitemap_xml,
+    urls_pedidas,
+)
 
 
 def _make_article(
@@ -25,7 +35,7 @@ def _make_article(
     week: int = 5,
     year: int = 2026,
     media_updated: str = "2026-02-05T10:00:00Z",
-    pdf_url: str = "https://www.anec.com.br/uploads/test.pdf",
+    pdf_url: str = "https://anec.com.br/redeilpf_content/test.pdf",
 ) -> ANECArticle:
     return ANECArticle(
         id=id_,
@@ -38,59 +48,6 @@ def _make_article(
     )
 
 
-class TestExtractNextData:
-    def test_no_next_data_raises_parse_error(self, no_next_data_html):
-        with pytest.raises(ParseError, match="__NEXT_DATA__"):
-            client._extract_next_data(no_next_data_html)
-
-    def test_malformed_json_raises_parse_error(self, malformed_json_html):
-        with pytest.raises(ParseError, match="decodificando"):
-            client._extract_next_data(malformed_json_html)
-
-
-class TestPickPdfAttachment:
-    def test_correct_attachment_accepted(self):
-        art = {
-            "articleMediaFiles": [
-                {
-                    "type": "ATTACHMENT",
-                    "mediaFile": {"url": "/uploads/y.pdf", "updatedAt": "2026-01-01T00:00:00Z"},
-                }
-            ]
-        }
-        result = client._pick_pdf_attachment(art)
-        assert result is not None
-
-    def test_non_pdf_extension_skipped(self):
-        art = {
-            "articleMediaFiles": [
-                {
-                    "type": "ATTTACHMENT",
-                    "mediaFile": {"url": "/uploads/x.png", "updatedAt": "2026-01-01T00:00:00Z"},
-                }
-            ]
-        }
-        assert client._pick_pdf_attachment(art) is None
-
-    def test_missing_updated_at_skipped(self):
-        art = {
-            "articleMediaFiles": [{"type": "ATTTACHMENT", "mediaFile": {"url": "/uploads/x.pdf"}}]
-        }
-        assert client._pick_pdf_attachment(art) is None
-
-
-class TestResolvePdfUrl:
-    def test_absolute_url_unchanged(self):
-        url = "https://www.anec.com.br/uploads/test.pdf"
-        assert client._resolve_pdf_url(url) == url
-
-    def test_relative_without_slash(self):
-        assert (
-            client._resolve_pdf_url("uploads/test.pdf")
-            == "https://www.anec.com.br/uploads/test.pdf"
-        )
-
-
 class TestParseIso:
     def test_naive_assumes_utc(self):
         dt = client._parse_iso("2026-04-29T19:16:31")
@@ -100,15 +57,130 @@ class TestParseIso:
 class TestListArticles:
     @pytest.mark.asyncio
     async def test_404_raises_source_unavailable(self):
-        resp = make_mock_response(404, text="not found")
-        mock_client = make_mock_async_client()
-        mock_client.get = AsyncMock(return_value=resp)
-
         with (
-            patch("agrobr.anec.client.httpx.AsyncClient", return_value=mock_client),
+            patch("agrobr.anec.client.httpx.AsyncClient", return_value=site_anec({})),
             pytest.raises(SourceUnavailableError, match="HTTP 404"),
         ):
             await client.list_articles(2026)
+
+    @pytest.mark.asyncio
+    async def test_boletim_semanal_do_sitemap_oficial(self, site_oficial):
+        mock_client = site_anec(site_oficial)
+        with patch("agrobr.anec.client.httpx.AsyncClient", return_value=mock_client):
+            artigos = await client.list_articles(2026)
+
+        publicado = datetime(2026, 11, 19, 19, 31, 55, tzinfo=UTC)
+        assert [artigo.model_dump() for artigo in artigos] == [
+            {
+                "id": 1046,
+                "cuid": "estatisticas-semana-45-2026",
+                "title_en": "Estatísticas \u2013 Semana 45 \u2013 2026",
+                "slug_en": "estatisticas-semana-45-2026",
+                "created_at": publicado,
+                "pdf_url": BOLETIM_45_PDF,
+                "media_updated_at": publicado,
+            }
+        ]
+        assert artigos[0].week_year == (45, 2026)
+        assert urls_pedidas(mock_client) == [SITEMAP_URL, BOLETIM_45_URL]
+
+    @pytest.mark.asyncio
+    async def test_sitemap_sem_boletim_semanal_do_ano_devolve_vazio(self):
+        mock_client = site_anec(
+            {
+                SITEMAP_URL: sitemap_xml(
+                    ("https://anec.com.br/biblioteca/soybeans-soja-2009/", BOLETIM_45_LASTMOD),
+                    (
+                        "https://anec.com.br/biblioteca/"
+                        "anec-estatisticas-de-2026-compilado-semana-32-a-41/",
+                        BOLETIM_45_LASTMOD,
+                    ),
+                )
+            }
+        )
+        with patch("agrobr.anec.client.httpx.AsyncClient", return_value=mock_client):
+            assert await client.list_articles(2026) == []
+        assert urls_pedidas(mock_client) == [SITEMAP_URL]
+
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize(
+        ("paginas", "mensagem"),
+        [
+            ({SITEMAP_URL: b"<html>em manutencao</html"}, "não é XML válido"),
+            ({SITEMAP_URL: sitemap_xml()}, "sem entradas"),
+            (
+                {
+                    SITEMAP_URL: b'<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'
+                    b"<url><loc>https://anec.com.br/biblioteca/x/</loc></url></urlset>"
+                },
+                "sem loc ou lastmod",
+            ),
+            (
+                {
+                    SITEMAP_URL: sitemap_xml((BOLETIM_45_URL, BOLETIM_45_LASTMOD)),
+                    BOLETIM_45_URL: b"<html><head><title>Boletim</title></head></html>",
+                },
+                "sem shortlink",
+            ),
+            (
+                {
+                    SITEMAP_URL: sitemap_xml((BOLETIM_45_URL, BOLETIM_45_LASTMOD)),
+                    BOLETIM_45_URL: boletim_html(
+                        post_id=1046,
+                        titulo="Estatísticas \u2013 Semana 45 \u2013 2026",
+                        pdfs=(BOLETIM_45_PDF, "https://anec.com.br/redeilpf_content/outro.pdf"),
+                    ),
+                },
+                "2 PDFs distintos",
+            ),
+        ],
+        ids=["sitemap_nao_xml", "sitemap_vazio", "sem_lastmod", "sem_shortlink", "dois_pdfs"],
+    )
+    async def test_layout_inesperado_e_parse_error(self, paginas, mensagem):
+        with (
+            patch("agrobr.anec.client.httpx.AsyncClient", return_value=site_anec(paginas)),
+            levanta_exatamente(ParseError, mensagem),
+        ):
+            await client.list_articles(2026)
+
+    @pytest.mark.asyncio
+    async def test_boletim_sem_pdf_fica_fora(self):
+        mock_client = site_anec(
+            {
+                SITEMAP_URL: sitemap_xml((BOLETIM_45_URL, BOLETIM_45_LASTMOD)),
+                BOLETIM_45_URL: boletim_html(
+                    post_id=1046, titulo="Estatísticas \u2013 Semana 45 \u2013 2026"
+                ),
+            }
+        )
+        with patch("agrobr.anec.client.httpx.AsyncClient", return_value=mock_client):
+            assert await client.list_articles(2026) == []
+
+    @pytest.mark.asyncio
+    async def test_titulo_de_outro_ano_fica_fora(self):
+        mock_client = site_anec(
+            {
+                SITEMAP_URL: sitemap_xml((BOLETIM_45_URL, BOLETIM_45_LASTMOD)),
+                BOLETIM_45_URL: boletim_html(
+                    post_id=1046,
+                    titulo="Estatísticas \u2013 Semana 45 \u2013 2025",
+                    pdfs=(BOLETIM_45_PDF,),
+                ),
+            }
+        )
+        with patch("agrobr.anec.client.httpx.AsyncClient", return_value=mock_client):
+            assert await client.list_articles(2026) == []
+
+    @pytest.mark.asyncio
+    async def test_pagina_fora_da_origem_recusada_antes_do_pedido(self):
+        alheia = "https://anec.com.br.exemplo.net/biblioteca/estatisticas-semana-45-2026/"
+        mock_client = site_anec({SITEMAP_URL: sitemap_xml((alheia, BOLETIM_45_LASTMOD))})
+        with (
+            patch("agrobr.anec.client.httpx.AsyncClient", return_value=mock_client),
+            levanta_exatamente(SourceUnavailableError, "fora da origem HTTPS oficial da fonte"),
+        ):
+            await client.list_articles(2026)
+        assert urls_pedidas(mock_client) == [SITEMAP_URL]
 
 
 @pytest.mark.usefixtures("isolated_cache")
@@ -189,8 +261,8 @@ class TestFetchPdfBytes:
         "pdf_url",
         [
             "http://10.0.0.5/interno.pdf",
-            "http://www.anec.com.br/uploads/test.pdf",
-            "https://www.anec.com.br.exemplo.net/uploads/test.pdf",
+            "http://anec.com.br/redeilpf_content/test.pdf",
+            "https://anec.com.br.exemplo.net/redeilpf_content/test.pdf",
         ],
     )
     async def test_url_fora_da_origem_https_recusada_antes_do_pedido(self, pdf_url):
@@ -292,23 +364,15 @@ class TestSha256Mismatch:
 
 class TestListMemCache:
     @pytest.mark.asyncio
-    async def test_second_call_uses_cache(self, category_2026_p1_payload, html_factory):
-        from copy import deepcopy
-
-        payload = deepcopy(category_2026_p1_payload)
-        articles_in = payload["props"]["pageProps"]["paginatedArticles"]["articles"]
-        payload["props"]["pageProps"]["paginatedArticles"]["total"] = len(articles_in)
-        html = html_factory(payload)
-        resp = make_mock_response(200, text=html)
-        mock_client = make_mock_async_client()
-        mock_client.get = AsyncMock(return_value=resp)
+    async def test_second_call_uses_cache(self, site_oficial):
+        mock_client = site_anec(site_oficial)
 
         with patch("agrobr.anec.client.httpx.AsyncClient", return_value=mock_client):
             articles_a = await client.list_articles(2026)
             articles_b = await client.list_articles(2026)
 
-        assert len(articles_a) == len(articles_b)
-        assert mock_client.get.call_count == 1
+        assert articles_a == articles_b
+        assert urls_pedidas(mock_client) == [SITEMAP_URL, BOLETIM_45_URL]
 
     @pytest.mark.parametrize("bruto", ["garbage", "-5", "nan", "inf", "-inf"])
     def test_ttl_invalido_avisa_uma_vez_e_usa_o_padrao(self, monkeypatch, bruto):
@@ -333,16 +397,8 @@ class TestListMemCache:
             assert client._list_ttl_seconds() == esperado
 
     @pytest.mark.asyncio
-    async def test_cache_returns_defensive_copy(self, category_2026_p1_payload, html_factory):
-        from copy import deepcopy
-
-        payload = deepcopy(category_2026_p1_payload)
-        articles_in = payload["props"]["pageProps"]["paginatedArticles"]["articles"]
-        payload["props"]["pageProps"]["paginatedArticles"]["total"] = len(articles_in)
-        html = html_factory(payload)
-        resp = make_mock_response(200, text=html)
-        mock_client = make_mock_async_client()
-        mock_client.get = AsyncMock(return_value=resp)
+    async def test_cache_returns_defensive_copy(self, site_oficial):
+        mock_client = site_anec(site_oficial)
 
         with patch("agrobr.anec.client.httpx.AsyncClient", return_value=mock_client):
             first = await client.list_articles(2026)
@@ -351,22 +407,12 @@ class TestListMemCache:
             second.clear()
             third = await client.list_articles(2026)
 
-        assert len(third) == len(articles_in)
-        assert mock_client.get.call_count == 1
+        assert [article.cuid for article in third] == ["estatisticas-semana-45-2026"]
+        assert mock_client.get.await_count == 2
 
     @pytest.mark.asyncio
-    async def test_artigo_alterado_pelo_usuario_nao_muda_o_cache(
-        self, category_2026_p1_payload, html_factory
-    ):
-        from copy import deepcopy
-
-        payload = deepcopy(category_2026_p1_payload)
-        articles_in = payload["props"]["pageProps"]["paginatedArticles"]["articles"]
-        payload["props"]["pageProps"]["paginatedArticles"]["total"] = len(articles_in)
-        mock_client = make_mock_async_client()
-        mock_client.get = AsyncMock(
-            return_value=make_mock_response(200, text=html_factory(payload))
-        )
+    async def test_artigo_alterado_pelo_usuario_nao_muda_o_cache(self, site_oficial):
+        mock_client = site_anec(site_oficial)
 
         with patch("agrobr.anec.client.httpx.AsyncClient", return_value=mock_client):
             primeiro = await client.list_articles(2026)
@@ -377,89 +423,7 @@ class TestListMemCache:
             terceiro = await client.list_articles(2026)
 
         assert terceiro[0].slug_en == original
-        assert mock_client.get.call_count == 1
-
-
-class TestPaginaSemArtigos:
-    @pytest.mark.asyncio
-    @pytest.mark.parametrize(
-        "payload",
-        [{}, {"props": {"pageProps": {}}}, {"props": {"pageProps": {"paginatedArticles": {}}}}],
-    )
-    async def test_pagina_sem_lista_de_artigos_e_layout(self, payload, html_factory):
-        mock_client = make_mock_async_client()
-        mock_client.get = AsyncMock(
-            return_value=make_mock_response(200, text=html_factory(payload))
-        )
-
-        with (
-            patch("agrobr.anec.client.httpx.AsyncClient", return_value=mock_client),
-            pytest.raises(ParseError, match="sem paginatedArticles.articles"),
-        ):
-            await client.list_articles(2026)
-
-    @pytest.mark.asyncio
-    async def test_lista_de_artigos_vazia_continua_vazia(self, html_factory):
-        payload = {"props": {"pageProps": {"paginatedArticles": {"articles": [], "total": 0}}}}
-        mock_client = make_mock_async_client()
-        mock_client.get = AsyncMock(
-            return_value=make_mock_response(200, text=html_factory(payload))
-        )
-
-        with patch("agrobr.anec.client.httpx.AsyncClient", return_value=mock_client):
-            assert await client.list_articles(2026) == []
-
-
-class TestBuscaRedirecionadaParaArtigo:
-    @staticmethod
-    def _pagina_de_artigo(artigo, cuid):
-        return {"props": {"pageProps": {"article": {**artigo, "category": {"cuid": cuid}}}}}
-
-    @pytest.mark.asyncio
-    @pytest.mark.parametrize("na_listagem", [0, 9])
-    async def test_artigo_unico_da_ultima_pagina_fecha_a_listagem(
-        self, category_2026_p1_payload, html_factory, na_listagem
-    ):
-        artigos = category_2026_p1_payload["props"]["pageProps"]["paginatedArticles"]["articles"]
-        cuid = client.CATEGORIES_BY_YEAR[2026]
-        listagem = {
-            "props": {
-                "pageProps": {
-                    "paginatedArticles": {
-                        "total": na_listagem + 1,
-                        "articles": artigos[:na_listagem],
-                    }
-                }
-            }
-        }
-        paginas = [listagem] if na_listagem else []
-        paginas.append(self._pagina_de_artigo(artigos[na_listagem], cuid))
-        mock_client = make_mock_async_client()
-        mock_client.get = AsyncMock(
-            side_effect=[make_mock_response(200, text=html_factory(p)) for p in paginas]
-        )
-
-        with patch("agrobr.anec.client.httpx.AsyncClient", return_value=mock_client):
-            lidos = await client.list_articles(2026)
-
-        assert [a.cuid for a in lidos] == [a["cuid"] for a in artigos[: na_listagem + 1]]
-        assert mock_client.get.call_count == len(paginas)
-
-    @pytest.mark.asyncio
-    async def test_artigo_de_outra_categoria_e_layout(self, category_2026_p1_payload, html_factory):
-        artigo = category_2026_p1_payload["props"]["pageProps"]["paginatedArticles"]["articles"][0]
-        mock_client = make_mock_async_client()
-        mock_client.get = AsyncMock(
-            return_value=make_mock_response(
-                200, text=html_factory(self._pagina_de_artigo(artigo, "outra-categoria"))
-            )
-        )
-
-        with (
-            patch("agrobr.anec.client.httpx.AsyncClient", return_value=mock_client),
-            pytest.raises(ParseError, match="artigo de outra categoria"),
-        ):
-            await client.list_articles(2026)
+        assert mock_client.get.await_count == 2
 
 
 class TestAnoDeBrasilia:
@@ -528,25 +492,16 @@ class TestConcurrentFetch:
 
 class TestArticleDedup:
     @pytest.mark.asyncio
-    async def test_duplicate_articles_deduped(self, category_2026_p1_payload, html_factory):
-        from copy import deepcopy
-
-        payload = deepcopy(category_2026_p1_payload)
-        articles_in = payload["props"]["pageProps"]["paginatedArticles"]["articles"]
-        duplicated = articles_in + deepcopy(articles_in[:3])
-        payload["props"]["pageProps"]["paginatedArticles"]["articles"] = duplicated
-        payload["props"]["pageProps"]["paginatedArticles"]["total"] = len(duplicated)
-
-        html = html_factory(payload)
-        resp = make_mock_response(200, text=html)
-        mock_client = make_mock_async_client()
-        mock_client.get = AsyncMock(return_value=resp)
+    async def test_duplicate_articles_deduped(self, site_oficial):
+        site_oficial[SITEMAP_URL] = sitemap_xml(
+            (BOLETIM_45_URL, BOLETIM_45_LASTMOD), (BOLETIM_45_URL, BOLETIM_45_LASTMOD)
+        )
+        mock_client = site_anec(site_oficial)
 
         with patch("agrobr.anec.client.httpx.AsyncClient", return_value=mock_client):
             articles = await client.list_articles(2026)
 
-        cuids = [a.cuid for a in articles]
-        assert len(cuids) == len(set(cuids))
+        assert [a.cuid for a in articles] == ["estatisticas-semana-45-2026"]
 
 
 @pytest.mark.usefixtures("isolated_cache")

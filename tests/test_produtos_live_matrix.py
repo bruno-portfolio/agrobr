@@ -117,9 +117,7 @@ async def test_matriz_usa_fetcher_dos_recortes(name: str, monkeypatch: pytest.Mo
     monkeypatch.setattr(type(datasets.get_dataset(name)), "fetch", fetcher)
     monkeypatch.setattr(helpers.asyncio, "sleep", AsyncMock())
     await matrix.test_produto_live(name, "soybean", lambda *_: None, lambda *_: None)
-    fetcher.assert_awaited_once_with(
-        "soybean", ano=2026, semana=13, use_cache=False, return_meta=True
-    )
+    fetcher.assert_awaited_once_with("soybean", ano=2026, use_cache=False, return_meta=True)
 
 
 def test_arquivos_particionam_matriz_sem_perder_casos():

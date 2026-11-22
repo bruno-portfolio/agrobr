@@ -1,44 +1,61 @@
 from __future__ import annotations
 
-import json
 from datetime import UTC, datetime
 from pathlib import Path
-from typing import Any
+from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 
 from agrobr.utils import time as time_utils
+from tests.helpers import make_mock_async_client, make_mock_response
 
-FIXTURES_DIR = Path(__file__).parent / "fixtures"
-
-
-@pytest.fixture
-def category_2026_p1_payload() -> dict[str, Any]:
-    return json.loads((FIXTURES_DIR / "json" / "category_2026_p1.json").read_text(encoding="utf-8"))
-
-
-@pytest.fixture
-def no_next_data_html() -> str:
-    return (FIXTURES_DIR / "html" / "no_next_data.html").read_text(encoding="utf-8")
+GOLDEN_WORDPRESS = Path(__file__).parents[1] / "golden_data/anec/wordpress_20261121"
+SITEMAP_URL = "https://anec.com.br/wp-sitemap-posts-cpt_biblioteca-1.xml"
+BOLETIM_45_URL = "https://anec.com.br/biblioteca/estatisticas-semana-45-2026/"
+BOLETIM_45_LASTMOD = "2026-11-19T19:31:55+00:00"
+BOLETIM_45_PDF = "https://anec.com.br/redeilpf_content/Shipment-Flow-ANEC-Week-45-2026.pdf"
 
 
-@pytest.fixture
-def malformed_json_html() -> str:
-    return (FIXTURES_DIR / "html" / "malformed_json.html").read_text(encoding="utf-8")
-
-
-def make_html(payload: dict[str, Any]) -> str:
-    return (
-        "<html><body>"
-        '<script id="__NEXT_DATA__" type="application/json">'
-        + json.dumps(payload)
-        + "</script></body></html>"
+def sitemap_xml(*entradas: tuple[str, str]) -> bytes:
+    urls = "".join(
+        f"<url><loc>{loc}</loc><lastmod>{lastmod}</lastmod></url>" for loc, lastmod in entradas
     )
+    return (
+        '<?xml version="1.0" encoding="UTF-8"?>'
+        f'<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">{urls}</urlset>'
+    ).encode()
+
+
+def boletim_html(*, post_id: int, titulo: str, pdfs: tuple[str, ...] = ()) -> bytes:
+    links = "".join(f'<a href="{pdf}">Baixar PDF</a>' for pdf in pdfs)
+    return (
+        f'<html><head><meta charset="UTF-8"><title>{titulo} – Anec</title>'
+        f"<link rel='shortlink' href='https://anec.com.br/?p={post_id}' /></head>"
+        f"<body>{links}</body></html>"
+    ).encode()
+
+
+def site_anec(paginas: dict[str, bytes]) -> MagicMock:
+    async def get(url: str, *_args: object, **_kwargs: object) -> MagicMock:
+        if url not in paginas:
+            return make_mock_response(404, content=b"not found", url=url)
+        return make_mock_response(200, content=paginas[url], url=url)
+
+    mock_client = make_mock_async_client()
+    mock_client.get = AsyncMock(side_effect=get)
+    return mock_client
+
+
+def urls_pedidas(mock_client: MagicMock) -> list[str]:
+    return [chamada.args[0] for chamada in mock_client.get.await_args_list]
 
 
 @pytest.fixture
-def html_factory():
-    return make_html
+def site_oficial() -> dict[str, bytes]:
+    return {
+        SITEMAP_URL: (GOLDEN_WORDPRESS / "sitemap_cpt_biblioteca.xml").read_bytes(),
+        BOLETIM_45_URL: (GOLDEN_WORDPRESS / "estatisticas-semana-45-2026.html").read_bytes(),
+    }
 
 
 @pytest.fixture

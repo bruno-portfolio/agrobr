@@ -1,10 +1,9 @@
 """Live tests contra ANEC — rodam com `pytest -m integration`.
 
 Detectam quebras upstream:
-- cuid 2026 invalidado pelo CMS
+- Sitemap da biblioteca ou página do boletim semanal mudou
 - Layout do PDF mudou (fingerprint diverge do baseline conhecido)
 - Site fora do ar
-- Estrutura `__NEXT_DATA__` mudou
 
 Não rodam em CI default (deselected via `addopts = "-m 'not benchmark and not slow'"`).
 Rode manualmente: `pytest tests/test_anec/test_live.py -m integration -v`.
@@ -38,20 +37,10 @@ async def _get_latest_report() -> tuple[bytes, Any, parser.ParsedReport]:
 @pytest.mark.asyncio
 async def test_live_list_2026_articles_minimum():
     articles = await client.list_articles(2026)
-    assert len(articles) >= 4, (
-        f"Esperado >=4 artigos em 2026, recebido {len(articles)}. "
-        "Possível: cuid mudou, CMS reorganizado, ou site fora."
+    assert articles, (
+        "Nenhum boletim semanal de 2026 no sitemap da biblioteca ANEC. "
+        "Possível: slug do boletim mudou, site reorganizado, ou site fora."
     )
-
-
-@pytest.mark.integration
-@pytest.mark.asyncio
-async def test_live_categories_cuid_unchanged():
-    from agrobr.anec.models import CATEGORIES_BY_YEAR
-
-    cuid = CATEGORIES_BY_YEAR[2026]
-    articles = await client.list_articles(2026)
-    assert articles, f"cuid {cuid!r} de 2026 retornou lista vazia"
 
 
 @pytest.mark.integration

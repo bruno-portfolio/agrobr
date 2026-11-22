@@ -34,7 +34,7 @@ def _artigo(url: str) -> ANECArticle:
 DOWNLOADS: dict[str, tuple[str, bytes, Callable[[str], Awaitable[Any]]]] = {
     "anda": ("https://anda.org.br/wp-content/uploads/entregas.pdf", PDF, anda_client.download_file),
     "anec": (
-        "https://www.anec.com.br/uploads/test.pdf",
+        "https://anec.com.br/redeilpf_content/test.pdf",
         PDF,
         lambda url: anec_client.fetch_pdf_bytes(_artigo(url), use_cache=False),
     ),

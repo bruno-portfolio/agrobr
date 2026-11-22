@@ -20,11 +20,13 @@ ARTIGO = models.ANECArticle.model_validate_json(
 )
 PDF = (GOLDEN / "response.pdf").read_bytes()
 SEMANA, ANO = ARTIGO.week_year
+ORIGEM_ANTERIOR = "https://www.anec.com.br"
 
 
 @pytest.fixture
 def anec_servido(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> list[str]:
     monkeypatch.setenv("AGROBR_CACHE_CACHE_DIR", str(tmp_path))
+    monkeypatch.setattr(client, "_BASE_URL", ORIGEM_ANTERIOR)
     monkeypatch.setattr(client, "list_articles", AsyncMock(return_value=[ARTIGO]))
     monkeypatch.setattr(api, "_PARSE_CACHE", {})
     pedidos: list[str] = []
