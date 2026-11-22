@@ -12,7 +12,7 @@ Instaladas com `pip install agrobr`:
 | `httpcore` | Mínimo de segurança do transporte HTTP | `>=1.0.9` |
 | `certifi` | Autoridades certificadoras do TLS | `>=2026.7.22` |
 | `beautifulsoup4` | HTML parsing | `>=4.12.0` |
-| `soupsieve` | Seletores CSS do BeautifulSoup | `>=2.9.0` |
+| `soupsieve` | Seletores CSS do BeautifulSoup | `>=4.0.0` |
 | `lxml` | Parser HTML/XML | `>=6.1.0` |
 | `pandas` | DataFrames | `>=2.2.2` |
 | `pydantic` | Validação de modelos | `>=2.5.0` |
@@ -83,7 +83,7 @@ O perfil mínimo da CI fixa as dependências core e os extras PDF, geo e Polars 
 
 `httpcore` já é instalado transitivamente pelo HTTPX. Seu limite explícito não adiciona um componente novo de runtime: a versão 1.0.9 exige h11 0.16 ou superior e impede resolver a série antiga vulnerável. Os limites de lxml e requests também excluem avisos de segurança publicados, sem afirmar que essas vulnerabilidades foram exploradas pelo agrobr.
 
-`soupsieve` também já vem com o BeautifulSoup. O limite explícito existe por 2 motivos. O BeautifulSoup 4.12.0 aceita `soupsieve>1.2`, e do 1.2.1 ao 1.6 ele não importa em Python 3.10 ou superior: o BeautifulSoup então desliga os seletores CSS (`select`/`select_one`), que a CONAB usa. E o piso anterior, 1.6.1, aceitava versões com 4 falhas de segurança de 2026 no parser de seletor (ReDoS e memória); no agrobr o seletor é sempre literal, sem caminho para elas, e o piso 2.9.0 é higiene. Com o 2.9, as famílias que usam seletor CSS (CONAB, IBGE, RNC e ZARC) dão o mesmo resultado no BeautifulSoup 4.12.0 e no 4.15.0.
+`soupsieve` também já vem com o BeautifulSoup. O limite explícito existe por 2 motivos. O BeautifulSoup 4.12.0 aceita `soupsieve>1.2`, e do 1.2.1 ao 1.6 ele não importa em Python 3.10 ou superior: o BeautifulSoup então desliga os seletores CSS (`select`/`select_one`), que a CONAB usa. E o piso anterior, 1.6.1, aceitava versões com 4 falhas de segurança de 2026 no parser de seletor (ReDoS e memória); no agrobr o seletor é sempre literal, sem caminho para elas. O piso 4.0.0 vem de outras 4 falhas, de novembro de 2026: duas também dependem do seletor, mas as outras duas aparecem com HTML não confiável, e uma delas está no combinador de descendente (`article.entry a`), que a CONAB usa. Com o 4.0, as famílias que usam seletor CSS (CONAB, IBGE, RNC e ZARC) dão o mesmo resultado no BeautifulSoup 4.12.0 e no 4.15.0.
 
 No extra geo, GeoPandas 1.1.4 inclui as correções e o endurecimento de `to_postgis` descritos no [changelog da dependência](https://geopandas.org/en/stable/docs/changelog.html#version-1-1-4-june-26-2026). O agrobr não executa essa operação, mas não permite versões anteriores do extra. O CI atualiza pip, setuptools e wheel separadamente: ferramentas de instalação não são dependências de runtime da library.
 
