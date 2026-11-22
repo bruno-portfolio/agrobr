@@ -66,6 +66,9 @@ def _build_registry() -> dict[Fonte, SourceHealthConfig]:
             ),
             "body_error_markers": ('"error"',),
         },
+        Fonte.ANEC: {
+            "url": URLS[Fonte.ANEC]["sitemap"],
+        },
         Fonte.ANP_DIESEL: {
             "url": URLS[Fonte.ANP_DIESEL]["vendas_diesel_csv"],
         },

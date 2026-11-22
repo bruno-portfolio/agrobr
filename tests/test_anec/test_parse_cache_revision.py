@@ -22,14 +22,14 @@ async def test_same_article_revision_updates_parse_and_provenance(revision):
         title_en="ANEC - 04.2026",
         slug_en="week04",
         created_at=datetime(2026, 1, 22, tzinfo=UTC),
-        pdf_url="https://www.anec.com.br/uploads/original.pdf",
+        pdf_url="https://anec.com.br/redeilpf_content/original.pdf",
         media_updated_at=datetime(2026, 1, 23, tzinfo=UTC),
     )
     updates = {}
     if revision == "timestamp":
         updates["media_updated_at"] = datetime(2026, 1, 24, tzinfo=UTC)
     if revision == "url":
-        updates["pdf_url"] = "https://www.anec.com.br/uploads/revised.pdf"
+        updates["pdf_url"] = "https://anec.com.br/redeilpf_content/revised.pdf"
     revised = original.model_copy(update=updates)
     reports = [
         parser.ParsedReport(
@@ -90,7 +90,7 @@ async def test_same_article_revision_updates_parse_and_provenance(revision):
     ("remover", "atual", "usa_cache"),
     [
         ((), {}, True),
-        ((), {"pdf_url": "https://www.anec.com.br/uploads/revised.pdf"}, False),
+        ((), {"pdf_url": "https://anec.com.br/redeilpf_content/revised.pdf"}, False),
         ((), {"cuid": "outro-artigo"}, False),
         (("pdf_url", "cuid"), {}, False),
     ],
@@ -104,7 +104,7 @@ async def test_cache_em_disco_so_serve_ao_mesmo_artigo_e_url(remover, atual, usa
         title_en="ANEC - 04.2026",
         slug_en="week04",
         created_at=data,
-        pdf_url="https://www.anec.com.br/uploads/original.pdf",
+        pdf_url="https://anec.com.br/redeilpf_content/original.pdf",
         media_updated_at=data,
     )
     antigo = b"%PDF-antigo" + b"a" * 20_000

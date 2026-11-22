@@ -9,7 +9,7 @@ ANEC (Associação Nacional dos Exportadores de Cereais) publishes PDF reports w
 
 ## Coverage and report selection
 
-- **Catalog:** editions from **2026 through the current year**, with annual categories discovered in the official catalogue. On 6 September 2026, the 2026 public catalogue contained 34 PDFs; the latest was W34, created on 2 September 2026. Publication and layout compatibility in later years are not guaranteed.
+- **Catalog:** editions from **2026 through the current year**, read from the library sitemap of the ANEC website. In November 2026 ANEC migrated its website and now publishes only the latest weekly bulletin (W45 on 21 November 2026); earlier editions left the website and can no longer be downloaded. The library also has a compilation of weeks 32 to 41/2026, which agrobr does not read. Publication and layout compatibility in later years are not guaranteed.
 - **`ano`:** required, keyword-only report edition year. An edition can include data from another year; this parameter does not request a historical year independently of the edition.
 - **`semana`:** report week, from 1 to 53; `None` selects the latest available edition in the selected catalog. A report's week number is not its publication date.
 - **Products:** soybean, soybean meal, maize, DDGS, sorghum and wheat, according to the selected table. Annual comparisons may also include `total_products`. Up to W2/2026, the weekly and monthly tables publish only soybean, soybean meal, maize and wheat; DDGS and sorghum start in W3/2026.
@@ -94,7 +94,7 @@ All three source tables (monthly/destinations 1.1; annual comparison 1.2) and ne
 |---|---|
 | `ano_relatorio` | Report edition year |
 | `semana_relatorio` | Report edition week |
-| `edicao_id` | ANEC article `cuid` |
+| `edicao_id` | bulletin page slug in the ANEC library (until November 2026, the article `cuid`) |
 | `publicado_em` | Article `created_at`, UTC datetime |
 | `revisado_em` | File `media_updated_at`, UTC datetime |
 
@@ -142,7 +142,7 @@ retroactively: an old cache invalidates automatically when the remote
 
 The parsed report cache also identifies revisions by article, `media_updated_at`,
 URL and SHA-256 of the received bytes. A revision refreshes both the data and
-the provenance URL, even when the article keeps the same `cuid`.
+the provenance URL, even when the edition keeps the same `edicao_id`.
 
 The JSON listing is cached in memory for 5 minutes (configurable via
 `AGROBR_ANEC_LIST_TTL`). The PDF disk cache can be disabled via
@@ -170,9 +170,9 @@ PDF layouts and published product sets vary between editions. ANEC revises figur
 
 The monthly and annual-comparison tables are not interchangeable: in W13/2026, for example, January wheat is 279,699 t in the monthly table and 279,499 t in the comparison. agrobr preserves the values published in each table without automatic reconciliation. The total printed on the January row of the monthly table (7,727,420 t) matches the comparison values (wheat 279,499 t and DDGS 80,057 t), not the monthly table's own values (279,699 t and 80,141 t), which add up to 284 t more (W35 and W37/2026).
 
-Official PDFs cited on this page: [W13/2026](https://www.anec.com.br/uploads/cmnrsz3eu00004htx396a7you.pdf) and [W34/2026](https://www.anec.com.br/uploads/cmtkhj4p50000y9tx5nnn6hhi.pdf). Source: [ANEC](https://www.anec.com.br/).
+Official PDFs cited on this page: W13/2026 and W34/2026, which left the ANEC website in the November 2026 migration. Source: [ANEC](https://anec.com.br/).
 
-Annual categories not in the configured map are discovered from the official catalogue. Explicit years are exclusive: missing publication does not fall back to a previous year. Empty year results share the listing TTL (default 300 seconds, `AGROBR_ANEC_LIST_TTL=0` disables caching). Supported edition years run from 2026 through the current year; catalogue discovery does not itself guarantee a compatible PDF layout.
+Each year's bulletins are discovered in the ANEC library sitemap. Explicit years are exclusive: missing publication does not fall back to a previous year. Empty year results share the listing TTL (default 300 seconds, `AGROBR_ANEC_LIST_TTL=0` disables caching). Supported edition years run from 2026 through the current year; finding a bulletin does not itself guarantee a compatible PDF layout.
 
 ## Reading the bulletins
 
@@ -191,7 +191,7 @@ each weekly column is checked against the bulletin's TOTAL row: a difference abo
 rounding (0.5 t per port) becomes a warning (`UserWarning` and
 `meta.validation_warnings`), and the per-port values are passed on unchanged.
 pdfplumber sometimes splits a number into 2 adjacent words (`3` and `72.958`, in the
-TOTAL row of [W36/2026](https://www.anec.com.br/uploads/cmu47h0m500016vtxg76q4eeb.pdf)) and, in the small 2025 font, merges BELÉM with the RIO of the
+TOTAL row of W36/2026) and, in the small 2025 font, merges BELÉM with the RIO of the
 row below. The parser joins 2 neighbouring numeric words when they form a number
 with a thousands separator and reads words with a 1 pt vertical tolerance. In 89
 editions (W1/2025 to W37/2026, except W14/2026), all 16,112 cells of the weekly

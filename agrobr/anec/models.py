@@ -12,10 +12,6 @@ from agrobr.utils import time as time_utils
 
 MIN_YEAR = 2026
 
-CATEGORIES_BY_YEAR: dict[int, str] = {
-    2026: "cmke9w2wu8873b4txfa547lki",
-}
-
 TIPO_EFETIVADO = "efetivado"
 TIPO_PROGRAMADO = "programado"
 
@@ -70,14 +66,6 @@ def validate_year(ano: int) -> None:
         )
 
 
-class ANECCategory(pydantic.BaseModel):
-    cuid: str = pydantic.Field(min_length=1, pattern=r"^[a-zA-Z0-9_-]+$")
-    nameEN: str = ""
-    nameBR: str = ""
-    public: bool = True
-    children: list[ANECCategory] = pydantic.Field(default_factory=list)
-
-
 def validate_filters(
     ano: int,
     semana: int | None,
@@ -109,7 +97,10 @@ def validate_filters(
     return canonical
 
 
-_TITLE_WEEK_RE = re.compile(r"ANEC\s*-\s*(\d{1,2})\.(\d{4})", re.IGNORECASE)
+_TITLE_WEEK_RES = (
+    re.compile(r"ANEC\s*-\s*(\d{1,2})\.(\d{4})", re.IGNORECASE),
+    re.compile(r"Semana\s+(\d{1,2})\s*[–-]\s*(\d{4})", re.IGNORECASE),
+)
 
 
 class ANECArticle(pydantic.BaseModel):
@@ -132,7 +123,7 @@ class ANECArticle(pydantic.BaseModel):
 
     @property
     def week_year(self) -> tuple[int, int]:
-        m = _TITLE_WEEK_RE.search(self.title_en)
+        m = next((m for regex in _TITLE_WEEK_RES if (m := regex.search(self.title_en))), None)
         if not m:
             raise ValueError(f"Não foi possível extrair semana/ano de: {self.title_en!r}")
         week = int(m.group(1))

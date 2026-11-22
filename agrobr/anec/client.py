@@ -10,14 +10,17 @@ import threading
 import time
 from datetime import UTC, datetime
 from pathlib import Path
-from typing import Any, NamedTuple, cast
+from typing import NamedTuple
+from urllib.parse import urljoin, urlsplit
 from weakref import WeakValueDictionary
 
 import httpx
+from bs4 import BeautifulSoup
+from lxml import etree
 
 from agrobr import _log
 from agrobr.anec import models
-from agrobr.anec.models import CATEGORIES_BY_YEAR, MIN_YEAR, ANECArticle
+from agrobr.anec.models import MIN_YEAR, ANECArticle
 from agrobr.constants import MIN_PDF_SIZE, URLS, CacheSettings, Fonte, env_flag
 from agrobr.exceptions import ParseError, SourceUnavailableError
 from agrobr.http import responses
@@ -44,43 +47,20 @@ def _warn_license() -> None:
 
 
 _BASE_URL = URLS[Fonte.ANEC]["base"]
-_SEARCH_URL = URLS[Fonte.ANEC]["search"]
+_SITEMAP_URL = URLS[Fonte.ANEC]["sitemap"]
 
 TIMEOUT = get_timeout(read=60.0)
 
-_HTML_PARSER_VERSION = 1
+_HTML_PARSER_VERSION = 2
 
-_NEXT_DATA_RE = re.compile(
-    r'<script id="__NEXT_DATA__" type="application/json">(.+?)</script>',
-    re.DOTALL,
-)
-
-
-def _extract_next_data(html: str) -> dict[str, Any]:
-    m = _NEXT_DATA_RE.search(html)
-    if not m:
-        raise ParseError(
-            source="anec",
-            parser_version=_HTML_PARSER_VERSION,
-            reason="__NEXT_DATA__ script não encontrado no HTML",
-            html_snippet=html[:500],
-        )
-    try:
-        return cast(dict[str, Any], json.loads(m.group(1)))
-    except json.JSONDecodeError as exc:
-        raise ParseError(
-            source="anec",
-            parser_version=_HTML_PARSER_VERSION,
-            reason=f"Erro decodificando __NEXT_DATA__: {exc}",
-        ) from exc
+_SITEMAP_NS = {"s": "http://www.sitemaps.org/schemas/sitemap/0.9"}
+_BOLETIM_URL_RE = re.compile(r"/biblioteca/estatisticas-semana-(\d{1,2})-(\d{4})(?:-\d+)?/?$")
+_SHORTLINK_POST_RE = re.compile(r"[?&]p=(\d+)$")
+_SUFIXO_DO_TITULO = " – Anec"
 
 
-def _resolve_pdf_url(rel_or_abs: str) -> str:
-    if rel_or_abs.startswith("http"):
-        return rel_or_abs
-    if not rel_or_abs.startswith("/"):
-        rel_or_abs = "/" + rel_or_abs
-    return f"{_BASE_URL}{rel_or_abs}"
+def _erro_de_layout(reason: str) -> ParseError:
+    return ParseError(source="anec", parser_version=_HTML_PARSER_VERSION, reason=reason)
 
 
 def _parse_iso(s: str) -> datetime:
@@ -90,111 +70,62 @@ def _parse_iso(s: str) -> datetime:
     return dt
 
 
-_ATTACHMENT_TYPES = {"ATTACHMENT", "ATTTACHMENT"}
-"""ANEC backend retorna o type "ATTTACHMENT" (3 T's) em alguns artigos — typo conhecido."""
-
-
-def _pick_pdf_attachment(article_json: dict[str, Any]) -> tuple[str, datetime] | None:
-    media_files = article_json.get("articleMediaFiles") or []
-    for mf in media_files:
-        if mf.get("type") not in _ATTACHMENT_TYPES:
-            continue
-        media = mf.get("mediaFile") or {}
-        url = media.get("url")
-        if not url or not url.lower().endswith(".pdf"):
-            continue
-        updated_at_raw = media.get("updatedAt") or mf.get("updatedAt")
-        if not updated_at_raw:
-            continue
-        return _resolve_pdf_url(url), _parse_iso(updated_at_raw)
-    return None
-
-
-def _parse_articles(payload: dict[str, Any]) -> list[ANECArticle]:
-    pp = payload.get("props", {}).get("pageProps", {})
-    pa = pp.get("paginatedArticles") or {}
-    articles_raw = pa.get("articles") or []
-
-    articles: list[ANECArticle] = []
-    for art in articles_raw:
-        pdf = _pick_pdf_attachment(art)
-        if pdf is None:
-            logger.debug("anec_article_sem_pdf", id=art.get("id"))
-            continue
-        pdf_url, media_updated_at = pdf
-        try:
-            articles.append(
-                ANECArticle(
-                    id=int(art["id"]),
-                    cuid=str(art["cuid"]),
-                    title_en=str(art.get("titleEN") or art.get("titleBR") or ""),
-                    slug_en=str(art.get("slugEN") or art.get("slugBR") or ""),
-                    created_at=_parse_iso(str(art["createdAt"])),
-                    pdf_url=pdf_url,
-                    media_updated_at=media_updated_at,
-                )
-            )
-        except (KeyError, ValueError) as exc:
-            logger.warning("anec_article_invalid", id=art.get("id"), error=str(exc))
-            continue
-    return articles
-
-
-def _exigir_paginacao(payload: dict[str, Any]) -> None:
+def _parse_sitemap(xml: bytes) -> list[tuple[str, datetime]]:
+    leitor = etree.XMLParser(resolve_entities=False, load_dtd=False, no_network=True)
     try:
-        artigos = payload["props"]["pageProps"]["paginatedArticles"]["articles"]
-    except (KeyError, TypeError):
-        artigos = None
-    if not isinstance(artigos, list):
-        raise ParseError(
-            source="anec",
-            parser_version=_HTML_PARSER_VERSION,
-            reason="Página de artigos ANEC sem paginatedArticles.articles",
+        raiz = etree.fromstring(xml, parser=leitor)
+    except etree.XMLSyntaxError as exc:
+        raise _erro_de_layout("Sitemap da biblioteca ANEC não é XML válido") from exc
+    entradas: list[tuple[str, datetime]] = []
+    for url in raiz.iterfind("s:url", _SITEMAP_NS):
+        loc = url.findtext("s:loc", namespaces=_SITEMAP_NS)
+        lastmod = url.findtext("s:lastmod", namespaces=_SITEMAP_NS)
+        if not loc or not lastmod:
+            raise _erro_de_layout("Entrada do sitemap da biblioteca ANEC sem loc ou lastmod")
+        entradas.append((loc.strip(), _parse_iso(lastmod.strip())))
+    if not entradas:
+        raise _erro_de_layout("Sitemap da biblioteca ANEC sem entradas")
+    return entradas
+
+
+def _parse_boletim(html: bytes, *, url: str, lastmod: datetime) -> ANECArticle | None:
+    soup = BeautifulSoup(html, "lxml")
+    titulo = soup.title.get_text(strip=True) if soup.title else ""
+    shortlink = soup.find("link", rel="shortlink", href=True)
+    post = _SHORTLINK_POST_RE.search(str(shortlink["href"])) if shortlink else None
+    if not titulo or post is None:
+        raise _erro_de_layout("Página de boletim ANEC sem título ou sem shortlink ?p=<id>")
+    pdfs = list(
+        dict.fromkeys(
+            urljoin(url, str(link["href"]))
+            for link in soup.find_all("a", href=True)
+            if str(link["href"]).lower().endswith(".pdf")
         )
+    )
+    if not pdfs:
+        logger.debug("anec_article_sem_pdf", url=url)
+        return None
+    if len(pdfs) > 1:
+        raise _erro_de_layout(f"Página de boletim ANEC com {len(pdfs)} PDFs distintos")
+    slug = urlsplit(url).path.rstrip("/").rsplit("/", 1)[-1]
+    return ANECArticle(
+        id=int(post[1]),
+        cuid=slug,
+        title_en=titulo.removesuffix(_SUFIXO_DO_TITULO),
+        slug_en=slug,
+        created_at=lastmod,
+        pdf_url=pdfs[0],
+        media_updated_at=lastmod,
+    )
 
 
-def _pagina_redirecionada(payload: dict[str, Any], cuid: str, lidos: int) -> dict[str, Any]:
-    """Converte o redirect da busca para um artigo em página de listagem com esse artigo.
-
-    A busca da ANEC responde 302 para ``/article/<slug>`` quando a página pedida tem um único
-    artigo (ex.: 41 boletins, página 5); esse artigo fecha a listagem da categoria.
-    """
-    artigo = payload.get("props", {}).get("pageProps", {}).get("article")
-    if not isinstance(artigo, dict):
-        return payload
-    categoria = artigo.get("category")
-    if not isinstance(categoria, dict) or categoria.get("cuid") != cuid:
-        raise ParseError(
-            source="anec",
-            parser_version=_HTML_PARSER_VERSION,
-            reason="Busca ANEC redirecionou para artigo de outra categoria",
-        )
-    return {
-        "props": {"pageProps": {"paginatedArticles": {"total": lidos + 1, "articles": [artigo]}}}
-    }
-
-
-def _articles_total(payload: dict[str, Any]) -> int:
-    pp = payload.get("props", {}).get("pageProps", {})
-    pa = pp.get("paginatedArticles") or {}
-    return int(pa.get("total") or 0)
-
-
-def _raw_article_count(payload: dict[str, Any]) -> int:
-    pp = payload.get("props", {}).get("pageProps", {})
-    pa = pp.get("paginatedArticles") or {}
-    return len(pa.get("articles") or [])
-
-
-async def _fetch_html(client: httpx.AsyncClient, url: str) -> str:
+async def _fetch_body(client: httpx.AsyncClient, url: str) -> bytes:
     response = await retry_on_status(lambda: client.get(url), source="anec")
     if response.status_code == 404:
         raise SourceUnavailableError(source="anec", url=url, last_error="HTTP 404")
     responses.raise_for_status(response, source="anec")
-    return response.text
+    return response.content
 
-
-_MAX_PAGES = 20
 
 _LIST_CACHE: dict[int, tuple[float, list[ANECArticle]]] = {}
 
@@ -229,7 +160,8 @@ def _boletim_semanal(article: ANECArticle) -> bool:
     except ValueError:
         warn_once(
             f"anec_artigo_fora_do_padrao:{article.cuid}",
-            f"ANEC: artigo '{article.title_en}' fora do padrão 'ANEC - NN.AAAA' ignorado na listagem.",
+            f"ANEC: artigo '{article.title_en}' fora do padrão de boletim semanal ignorado na "
+            "listagem.",
         )
         return False
 
@@ -245,47 +177,6 @@ def _dedupe_articles(articles: list[ANECArticle]) -> list[ANECArticle]:
     return out
 
 
-def _parse_categories(payload: dict[str, Any]) -> dict[int, str]:
-    try:
-        raw = payload["props"]["pageProps"]["homeLayoutData"]["navbarCategories"]
-        categories = [models.ANECCategory.model_validate(item) for item in raw]
-    except (KeyError, TypeError, ValueError) as exc:
-        raise ParseError(
-            source="anec",
-            parser_version=_HTML_PARSER_VERSION,
-            reason="Catálogo de categorias ANEC inválido",
-        ) from exc
-    annual: dict[int, str] = {}
-    for category in categories:
-        if not category.public or category.nameEN.strip().casefold() != "statistics":
-            continue
-        for child in category.children:
-            if not child.public:
-                continue
-            match = re.fullmatch(r"(20\d{2})\s+all\s+products", child.nameEN.strip(), re.I)
-            if match is None:
-                match = re.fullmatch(
-                    r"(20\d{2})\s+todos\s+os\s+produtos", child.nameBR.strip(), re.I
-                )
-            if match is None:
-                continue
-            year = int(match[1])
-            if year in annual and annual[year] != child.cuid:
-                raise ParseError(
-                    source="anec",
-                    parser_version=_HTML_PARSER_VERSION,
-                    reason=f"Categorias anuais ambíguas para {year}",
-                )
-            annual[year] = child.cuid
-    if not annual:
-        raise ParseError(
-            source="anec",
-            parser_version=_HTML_PARSER_VERSION,
-            reason="Categorias anuais ausentes no catálogo ANEC",
-        )
-    return annual
-
-
 async def list_articles(year: int) -> list[ANECArticle]:
     _warn_license()
     models.validate_year(year)
@@ -299,38 +190,20 @@ async def list_articles(year: int) -> list[ANECArticle]:
             return [article.model_copy() for article in cached_articles]
 
     all_articles: list[ANECArticle] = []
-    page = 1
-    total: int | None = None
-
     async with httpx.AsyncClient(
         timeout=TIMEOUT,
         headers=UserAgentRotator.get_headers(source=Fonte.ANEC),
         follow_redirects=True,
     ) as client:
-        cuid = CATEGORIES_BY_YEAR.get(year)
-        if cuid is None:
-            catalog = _parse_categories(_extract_next_data(await _fetch_html(client, _SEARCH_URL)))
-            cuid = catalog.get(year)
-            if cuid is None:
-                if ttl > 0:
-                    _LIST_CACHE[year] = (time.monotonic(), [])
-                return []
-        while page <= _MAX_PAGES:
-            url = f"{_SEARCH_URL}?category={cuid}&page={page}"
-            logger.debug("anec_list_page", year=year, page=page, url=url)
-            html = await _fetch_html(client, url)
-            payload = _pagina_redirecionada(_extract_next_data(html), cuid, len(all_articles))
-            _exigir_paginacao(payload)
-            articles = _parse_articles(payload)
-            raw_count = _raw_article_count(payload)
-            if total is None:
-                total = _articles_total(payload)
-            all_articles.extend(articles)
-            if raw_count == 0 or len(all_articles) >= total:
-                break
-            page += 1
-        else:
-            logger.warning("anec_list_max_pages", year=year, max_pages=_MAX_PAGES)
+        for url, lastmod in _parse_sitemap(await _fetch_body(client, _SITEMAP_URL)):
+            boletim = _BOLETIM_URL_RE.search(url)
+            if boletim is None or int(boletim[2]) != year:
+                continue
+            io_utils.validate_download_url(url, base_url=_BASE_URL, source="anec")
+            logger.debug("anec_list_boletim", year=year, url=url)
+            article = _parse_boletim(await _fetch_body(client, url), url=url, lastmod=lastmod)
+            if article is not None:
+                all_articles.append(article)
 
     deduped = _dedupe_articles(all_articles)
     if len(deduped) != len(all_articles):
@@ -341,9 +214,11 @@ async def list_articles(year: int) -> list[ANECArticle]:
             duplicates=len(all_articles) - len(deduped),
         )
 
-    semanais = [article for article in deduped if _boletim_semanal(article)]
-    logger.info("anec_list_done", year=year, count=len(semanais), total=total)
-    if _list_ttl_seconds() > 0:
+    semanais = [
+        article for article in deduped if _boletim_semanal(article) and article.week_year[1] == year
+    ]
+    logger.info("anec_list_done", year=year, count=len(semanais))
+    if ttl > 0:
         _LIST_CACHE[year] = (time.monotonic(), semanais)
     return [article.model_copy() for article in semanais]
 
@@ -470,7 +345,7 @@ async def _acquire_latest(year: int | None, *, use_cache: bool) -> tuple[Aquisic
     if not articles:
         raise SourceUnavailableError(
             source="anec",
-            url=_SEARCH_URL,
+            url=_SITEMAP_URL,
             last_error=f"Nenhum artigo disponível para ano {year}",
         )
 

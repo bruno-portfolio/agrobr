@@ -179,9 +179,8 @@ URLS = {
         "estatisticas": "https://anda.org.br/recursos/",
     },
     Fonte.ANEC: {
-        "base": "https://www.anec.com.br",
-        "search": "https://www.anec.com.br/search",
-        "article": "https://www.anec.com.br/article",
+        "base": "https://anec.com.br",
+        "sitemap": "https://anec.com.br/wp-sitemap-posts-cpt_biblioteca-1.xml",
     },
     Fonte.ANP_DIESEL: {
         "precos_catalogo": "https://www.gov.br/anp/pt-br/assuntos/precos-e-defesa-da-concorrencia/precos/precos-revenda-e-de-distribuicao-combustiveis/serie-historica-do-levantamento-de-precos",

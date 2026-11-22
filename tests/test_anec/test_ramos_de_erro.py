@@ -6,7 +6,7 @@ from types import SimpleNamespace
 
 import pytest
 
-from agrobr.anec import client, parser
+from agrobr.anec import parser
 from agrobr.exceptions import ParseError
 from tests import helpers
 from tests.test_anec.test_parser import _weekly_header, _word
@@ -106,26 +106,3 @@ def test_mensal_faixa_invertida_recusada(monkeypatch):
     _pdf(monkeypatch, [_semanal(), mensal])
     with helpers.levanta_exatamente(ParseError, match="Faixa mensal inválida: 200-100"):
         parser.parse_anec_pdf(b"pdf externo")
-
-
-def test_artigo_invalido_avisa(category_2026_p1_payload):
-    artigos = category_2026_p1_payload["props"]["pageProps"]["paginatedArticles"]["articles"]
-    artigos[0]["id"] = "não inteiro"
-    with helpers.capturar_logs() as logs:
-        client._parse_articles(category_2026_p1_payload)
-    assert any(item["event"] == "anec_article_invalid" for item in logs)
-
-
-@pytest.mark.parametrize(
-    ("payload", "mensagem"),
-    [
-        ({}, "Catálogo de categorias ANEC inválido"),
-        (
-            {"props": {"pageProps": {"homeLayoutData": {"navbarCategories": []}}}},
-            "Categorias anuais ausentes",
-        ),
-    ],
-)
-def test_catalogo_sem_categorias_recusado(payload, mensagem):
-    with helpers.levanta_exatamente(ParseError, match=mensagem):
-        client._parse_categories(payload)

@@ -162,7 +162,7 @@ ANECArticle(
 )
 ```
 
-A propriedade `week_year` extrai a tupla `(semana, ano)` do título.
+A propriedade `week_year` extrai a tupla `(semana, ano)` do título. Desde a migração do site da ANEC (novembro de 2026), `cuid` e `slug_en` trazem o slug da página do boletim, e `title_en`, o título publicado em português.
 
 ## Exemplos
 
@@ -188,7 +188,7 @@ df = anec.embarques(ano=2026, produto="soja")
 
 As três tabelas agregadas também incluem `ano_relatorio`, `semana_relatorio`, `edicao_id`, `publicado_em` e `revisado_em`. Schemas de fonte mensal/destinos permanecem 1.1; comparação anual é 1.2. Os contratos dos datasets continuam em 1.0.
 
-Categorias anuais ausentes do mapa configurado são descobertas no catálogo oficial. Ano explícito sem publicação gera `SourceUnavailableError`, sem retornar edição anterior. `fetch_latest_pdf(year=None)` pode procurar anos anteriores suportados. Resultados vazios do catálogo são cacheados por ano durante `AGROBR_ANEC_LIST_TTL` segundos (padrão 300); zero desativa esse cache. Falhas de parsing ou rede não são cacheadas como ano sem publicação.
+Os boletins de cada ano são descobertos no sitemap da biblioteca da ANEC. Ano explícito sem publicação gera `SourceUnavailableError`, sem retornar edição anterior. `fetch_latest_pdf(year=None)` pode procurar anos anteriores suportados. Resultados vazios do catálogo são cacheados por ano durante `AGROBR_ANEC_LIST_TTL` segundos (padrão 300); zero desativa esse cache. Falhas de parsing ou rede não são cacheadas como ano sem publicação.
 
 ## Integridade da leitura do PDF
 

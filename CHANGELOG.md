@@ -7,6 +7,10 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 
 ## [Unreleased]
 
+### Fixed
+
+- **ANEC, site novo** — em novembro de 2026 a ANEC migrou o site para WordPress, e a listagem dos boletins (busca por categoria anual no `__NEXT_DATA__`) passou a responder 404, o que derrubava `embarques_anec`, `embarques_mensais_anec`, `comparacao_anual_anec` e `destinos_anec`. O agrobr agora encontra os boletins no sitemap da biblioteca da ANEC e lê o PDF na página de cada boletim; o parser do PDF não mudou. O site novo publica só o boletim semanal mais recente: pedir uma semana que saiu do site (ex.: `semana=34`) gera `SourceUnavailableError`, e `edicao_id` passa a trazer o slug da página do boletim, no lugar do `cuid` do artigo. O health check da ANEC passa a testar o sitemap, e não a home, que seguia no ar enquanto a listagem estava quebrada (#141).
+
 ## [2.0.1] - 2026-11-11
 
 ### Added

@@ -126,6 +126,7 @@ tests/golden_data/anec/semanas_20260925/** -text
 tests/golden_data/anec/rotulos_20260926/** -text
 tests/golden_data/anec/quatro_produtos_20260926/** -text
 tests/golden_data/anec/linha_total_20260926/** -text
+tests/golden_data/anec/wordpress_20261121/** -text
 tests/golden_data/cepea/trigo_duas_pracas_20260925/** -text
 tests/golden_data/imea/duplicatas_20260926/** -text
 tests/golden_data/usda/psd_gateway_20260926/** -text

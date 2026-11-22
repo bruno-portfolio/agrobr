@@ -23,7 +23,7 @@ Requires `pip install agrobr[pdf]`. See the [source documentation](../sources/an
 | `eh_estimativa` | bool | Estimate flag applying to `ano_comparacao` |
 | `ano_relatorio` | int | Selected report edition year |
 | `semana_relatorio` | int | Report edition week (1–53) |
-| `edicao_id` | str | ANEC article `cuid` |
+| `edicao_id` | str | Edition identifier: bulletin page slug in the ANEC library (until November 2026, the article `cuid`) |
 | `publicado_em` | datetime UTC | Article `created_at` |
 | `revisado_em` | datetime UTC | Source file `media_updated_at` |
 
@@ -63,7 +63,7 @@ async def comparacao_anual_anec(
 ) -> pd.DataFrame | tuple[pd.DataFrame, MetaInfo]: ...
 ```
 
-All arguments are keyword-only. `ano` is required and selects the **report edition year**, from 2026 through the current year. Annual categories are discovered in the official catalogue; an explicit year without publication raises `SourceUnavailableError` without returning another year's edition. `semana=None` selects the latest available report in that catalogue. `produto=None` returns all available products; aliases such as `soja` and `milho` are accepted. `produto="total_products"` selects the published aggregate when present.
+All arguments are keyword-only. `ano` is required and selects the **report edition year**, from 2026 through the current year. Bulletins are discovered in the ANEC library sitemap, which since November 2026 publishes only the latest edition; an explicit year without publication raises `SourceUnavailableError` without returning another year's edition. `semana=None` selects the latest available report in that catalogue. `produto=None` returns all available products; aliases such as `soja` and `milho` are accepted. `produto="total_products"` selects the published aggregate when present.
 
 ## Example
 

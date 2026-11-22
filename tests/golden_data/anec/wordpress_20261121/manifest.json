@@ -1,0 +1,24 @@
+{
+ "fonte": "anec",
+ "descricao": "Site da ANEC após a migração para WordPress (nov/2026): sitemap da biblioteca e página do boletim semanal 45/2026.",
+ "files": [
+  {
+   "file": "sitemap_cpt_biblioteca.xml",
+   "url": "https://anec.com.br/wp-sitemap-posts-cpt_biblioteca-1.xml",
+   "final_url": "https://anec.com.br/wp-sitemap-posts-cpt_biblioteca-1.xml",
+   "content_type": "application/xml; charset=UTF-8",
+   "sha256": "ea62287a9a127f3db9e1e07cf09c8672a4409a99baf280a17a84444754e00929",
+   "bytes": 14721,
+   "captured_at": "2026-11-21T16:05:53-03:00"
+  },
+  {
+   "file": "estatisticas-semana-45-2026.html",
+   "url": "https://anec.com.br/biblioteca/estatisticas-semana-45-2026/",
+   "final_url": "https://anec.com.br/biblioteca/estatisticas-semana-45-2026/",
+   "content_type": "text/html; charset=UTF-8",
+   "sha256": "14f79e1edbc8ebb3d3e4f42295ca4abb50ac1aa927c45e3ff46f301e6c237154",
+   "bytes": 38024,
+   "captured_at": "2026-11-21T16:05:53-03:00"
+  }
+ ]
+}

@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import copy
 import warnings
 from datetime import UTC, datetime
 from unittest.mock import AsyncMock, patch
@@ -14,7 +13,8 @@ from agrobr.anec.models import ANECArticle
 from agrobr.exceptions import InvalidParameterError, SourceUnavailableError
 from agrobr.utils import result
 from agrobr.utils.warnings import warn_once_reset
-from tests.helpers import collect_failures, make_mock_async_client, make_mock_response
+from tests.helpers import collect_failures
+from tests.test_anec.conftest import SITEMAP_URL, boletim_html, site_anec, sitemap_xml
 
 ARTICLE = ANECArticle(
     id=999,
@@ -85,39 +85,53 @@ async def test_filtros_do_semanal_recusados_antes_da_rede(monkeypatch):
                 source.assert_not_awaited()
 
 
-async def test_artigo_fora_do_padrao_nao_derruba_a_listagem(
-    monkeypatch, category_2026_p1_payload, html_factory
-):
+async def test_artigo_fora_do_padrao_nao_derruba_a_listagem(monkeypatch):
     monkeypatch.setenv("AGROBR_ANEC_LIST_TTL", "0")
-    payload = copy.deepcopy(category_2026_p1_payload)
-    artigos = payload["props"]["pageProps"]["paginatedArticles"]["articles"]
-    esperados = [artigo["titleEN"] for artigo in artigos]
-    del esperados[1]
-    artigos[1]["titleEN"] = "ANEC - Annual Report 2026"
-    payload["props"]["pageProps"]["paginatedArticles"]["total"] = len(artigos)
-    mock_client = make_mock_async_client()
-    mock_client.get = AsyncMock(return_value=make_mock_response(200, text=html_factory(payload)))
+    titulos = {
+        14: "Estatísticas \u2013 Semana 14 \u2013 2026",
+        15: "Relatório anual 2026",
+        16: "Estatísticas \u2013 Semana 16 \u2013 2026",
+    }
+    paginas = {
+        SITEMAP_URL: sitemap_xml(
+            *(
+                (
+                    f"https://anec.com.br/biblioteca/estatisticas-semana-{semana}-2026/",
+                    "2026-04-20T12:00:00+00:00",
+                )
+                for semana in titulos
+            )
+        )
+    }
+    for semana, titulo in titulos.items():
+        paginas[f"https://anec.com.br/biblioteca/estatisticas-semana-{semana}-2026/"] = (
+            boletim_html(
+                post_id=semana,
+                titulo=titulo,
+                pdfs=(f"https://anec.com.br/redeilpf_content/w{semana}.pdf",),
+            )
+        )
     with (
-        patch("agrobr.anec.client.httpx.AsyncClient", return_value=mock_client),
+        patch("agrobr.anec.client.httpx.AsyncClient", return_value=site_anec(paginas)),
         warnings.catch_warnings(record=True) as captured,
     ):
         warnings.simplefilter("always")
         listados = await api.client.list_articles(2026)
-        assert [artigo.title_en for artigo in listados] == esperados
+        assert [artigo.title_en for artigo in listados] == [titulos[14], titulos[16]]
         disponiveis = await api.articles_disponiveis(2026)
         with (
             patch.object(
                 api.client,
                 "_acquire_pdf",
                 new_callable=AsyncMock,
-                return_value=_aquisicao("https://www.anec.com.br/uploads/w14.pdf"),
+                return_value=_aquisicao("https://anec.com.br/redeilpf_content/w14.pdf"),
             ) as download,
             patch.object(api.parser, "parse_anec_pdf", return_value=_report()),
         ):
             await api.embarques(ano=2026, semana=14)
-    assert [item["week"] for item in disponiveis] == [16, 14, 13, 12, 11, 10, 9, 8, 7]
+    assert [item["week"] for item in disponiveis] == [14, 16]
     assert download.await_args.args[0].week_year == (14, 2026)
-    assert any("ANEC - Annual Report 2026" in str(aviso.message) for aviso in captured)
+    assert any("Relatório anual 2026" in str(aviso.message) for aviso in captured)
 
 
 async def test_semana_indisponivel():

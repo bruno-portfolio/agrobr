@@ -68,11 +68,13 @@ async def test_condicao_lavouras_produtos_observados(
 async def test_destinos_anec_produto_publicado(
     produto: str, record_property: RecordProperty, apply_live_policy: LivePolicy
 ):
-    kwargs = {"produto": produto, "ano": 2026, "semana": 13, "use_cache": False}
+    kwargs = {"produto": produto, "ano": 2026, "use_cache": False}
     apply_live_policy("destinos_anec", kwargs)
     frame = await datasets.destinos_anec(**kwargs)
     record_property("records_count", len(frame))
-    assert len(frame) > 0, f"Destinos ANEC sem dados para {produto!r} em W13/2026"
+    assert len(frame) > 0, (
+        f"Destinos ANEC sem dados para {produto!r} na edição mais recente de 2026"
+    )
 
 
 async def _culturas_zarc_observadas(

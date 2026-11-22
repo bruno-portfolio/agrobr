@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-import copy
-import json
 from datetime import UTC, datetime
 from pathlib import Path
 from unittest.mock import AsyncMock, Mock
@@ -12,53 +10,40 @@ import pytest
 from agrobr import anec
 from agrobr.anec import client, models, parser
 from agrobr.datasets.comparacao_anual_anec import ComparacaoAnualANECDataset
-from agrobr.exceptions import ParseError, SourceUnavailableError
+from agrobr.exceptions import SourceUnavailableError
 from tests.helpers import collect_failures
+from tests.test_anec.conftest import (
+    BOLETIM_45_LASTMOD,
+    BOLETIM_45_URL,
+    SITEMAP_URL,
+    boletim_html,
+    sitemap_xml,
+)
 
-FIXTURE = Path(__file__).parent / "fixtures/json/annual_categories.json"
+GOLDEN_W34 = Path(__file__).parents[1] / "golden_data/anec/weekly_w34_2026"
 
-
-def test_official_category_projection():
-    payload = json.loads(FIXTURE.read_text(encoding="utf-8"))
-    categorias = payload["props"]["pageProps"]["homeLayoutData"]["navbarCategories"]
-    categorias[0]["children"] += [
-        {"cuid": "hidden-2028", "nameEN": "2028 All products", "public": False},
-        {"cuid": "br-2029", "nameEN": "", "nameBR": "2029 Todos os produtos"},
-    ]
-    categorias.append(
-        {
-            "cuid": "news",
-            "nameEN": "News",
-            "children": [{"cuid": "news-2027", "nameEN": "2027 All products"}],
-        }
-    )
-    assert client._parse_categories(payload) == {
-        2021: "ckjlwb2hw2763049mtx4pgd003i",
-        2022: "ckjlwaoon2762899mtxbzopsplz",
-        2023: "cld0gqflr65339ibtx0nr26ztx",
-        2024: "clr7rie04736497vatxx9dx29xo",
-        2025: "cm5pn0s37134558patx544qm9vc",
-        2026: models.CATEGORIES_BY_YEAR[2026],
-        2029: "br-2029",
-    }
+BOLETIM_2027 = "https://anec.com.br/biblioteca/estatisticas-semana-02-2027/"
 
 
-def _catalogo_sem_2027(monkeypatch, category_2026_p1_payload):
+def _site_sem_2027(monkeypatch):
     monkeypatch.setattr(
         models.time_utils, "utcnow_aware", lambda: datetime(2027, 2, 1, 12, tzinfo=UTC)
     )
-    payload = json.loads(FIXTURE.read_text(encoding="utf-8"))
-    articles = copy.deepcopy(category_2026_p1_payload)
-    articles["props"]["pageProps"]["paginatedArticles"]["total"] = 1
+    entradas = [(BOLETIM_45_URL, BOLETIM_45_LASTMOD)]
+    boletim = boletim_html(
+        post_id=2000,
+        titulo="Estatísticas \u2013 Semana 2 \u2013 2027",
+        pdfs=("https://anec.com.br/redeilpf_content/Shipment-Flow-ANEC-Week-02-2027.pdf",),
+    )
     requests = []
 
     def handler(request):
-        requests.append(request)
-        data = payload if "category" not in request.url.params else articles
-        html = (
-            '<script id="__NEXT_DATA__" type="application/json">' + json.dumps(data) + "</script>"
-        )
-        return httpx.Response(200, text=html)
+        url = str(request.url)
+        requests.append(url)
+        if url == SITEMAP_URL:
+            return httpx.Response(200, content=sitemap_xml(*entradas))
+        assert url == BOLETIM_2027, url
+        return httpx.Response(200, content=boletim)
 
     factory = httpx.AsyncClient
     monkeypatch.setattr(
@@ -66,39 +51,37 @@ def _catalogo_sem_2027(monkeypatch, category_2026_p1_payload):
         "AsyncClient",
         lambda **kwargs: factory(**kwargs, transport=httpx.MockTransport(handler)),
     )
-    filhos = payload["props"]["pageProps"]["homeLayoutData"]["navbarCategories"][0]["children"]
-    return filhos, requests
+    return entradas, requests
 
 
-async def test_ano_sem_categoria_usa_cache_negativo_e_expira(monkeypatch, category_2026_p1_payload):
+async def test_ano_sem_boletim_usa_cache_negativo_e_expira(monkeypatch):
     monkeypatch.setenv("AGROBR_ANEC_LIST_TTL", "60")
     now = [0.0]
     monkeypatch.setattr(client, "time", Mock(wraps=client.time, monotonic=lambda: now[0]))
-    filhos, requests = _catalogo_sem_2027(monkeypatch, category_2026_p1_payload)
+    entradas, requests = _site_sem_2027(monkeypatch)
     assert await client.list_articles(2027) == []
     assert await client.list_articles(2027) == []
-    assert len(requests) == 1
-    filhos.append({"cuid": "published-2027", "nameEN": "2027 All products"})
+    assert requests == [SITEMAP_URL]
+    entradas.append((BOLETIM_2027, "2027-01-15T12:00:00+00:00"))
     now[0] = 61.0
-    assert await client.list_articles(2027)
-    assert len(requests) == 3
-    assert requests[-1].url.params["category"] == "published-2027"
+    assert [artigo.week_year for artigo in await client.list_articles(2027)] == [(2, 2027)]
+    assert requests == [SITEMAP_URL, SITEMAP_URL, BOLETIM_2027]
 
 
-async def test_ttl_zero_nao_grava_cache_negativo(monkeypatch, category_2026_p1_payload):
+async def test_ttl_zero_nao_grava_cache_negativo(monkeypatch):
     monkeypatch.setenv("AGROBR_ANEC_LIST_TTL", "0")
-    filhos, requests = _catalogo_sem_2027(monkeypatch, category_2026_p1_payload)
+    entradas, requests = _site_sem_2027(monkeypatch)
     assert await client.list_articles(2027) == []
-    filhos.append({"cuid": "published-2027", "nameEN": "2027 All products"})
+    entradas.append((BOLETIM_2027, "2027-01-15T12:00:00+00:00"))
     monkeypatch.setenv("AGROBR_ANEC_LIST_TTL", "60")
     assert await client.list_articles(2027)
-    assert requests[-1].url.params["category"] == "published-2027"
+    assert requests[-1] == BOLETIM_2027
 
 
-async def test_latest_without_year_falls_back_when_new_year_has_no_publication(
-    monkeypatch, category_2026_p1_payload
-):
-    article = client._parse_articles(category_2026_p1_payload)[0]
+async def test_latest_without_year_falls_back_when_new_year_has_no_publication(monkeypatch):
+    article = models.ANECArticle.model_validate_json(
+        (GOLDEN_W34 / "article.json").read_text(encoding="utf-8")
+    )
     monkeypatch.setattr(
         models.time_utils, "utcnow_aware", lambda: datetime(2027, 1, 5, 12, tzinfo=UTC)
     )
@@ -120,9 +103,8 @@ async def test_explicit_year_without_publication_never_returns_previous_edition(
     monkeypatch.setattr(
         models.time_utils, "utcnow_aware", lambda: datetime(2027, 1, 5, 12, tzinfo=UTC)
     )
-    golden = Path(__file__).parents[1] / "golden_data/anec/weekly_w34_2026"
     article = models.ANECArticle.model_validate_json(
-        (golden / "article.json").read_text(encoding="utf-8")
+        (GOLDEN_W34 / "article.json").read_text(encoding="utf-8")
     )
     listing = AsyncMock(side_effect=[[], [article]])
     download = AsyncMock()
@@ -132,14 +114,6 @@ async def test_explicit_year_without_publication_never_returns_previous_edition(
         await anec.comparacao_anual(ano=2027, use_cache=False)
     listing.assert_awaited_once_with(2027)
     download.assert_not_awaited()
-
-
-def test_conflicting_annual_categories_fail():
-    payload = json.loads(FIXTURE.read_text(encoding="utf-8"))
-    children = payload["props"]["pageProps"]["homeLayoutData"]["navbarCategories"][0]["children"]
-    children.append({"cuid": "duplicate", "nameEN": "2026 All products"})
-    with pytest.raises(ParseError, match="ambíguas"):
-        client._parse_categories(payload)
 
 
 def test_comparison_next_year_keeps_values_under_the_correct_year():

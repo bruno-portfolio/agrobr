@@ -3,13 +3,14 @@ from __future__ import annotations
 import json
 from pathlib import Path
 from typing import Any
+from unittest.mock import AsyncMock
 
 import httpx
 import pandas as pd
 import pytest
 
 from agrobr import anec, datasets, exceptions
-from agrobr.anec import parser
+from agrobr.anec import client, parser
 from tests.helpers import collect_failures
 
 GOLDEN = Path(__file__).parents[1] / "golden_data/reconciliacao_boletins_anec_anda_deral_20260918"
@@ -47,6 +48,7 @@ WEEKLY_SELECTORS = [
     ("porto inexistente", None, "soybean", "soybean", "efetivado", "last_week"),
 ]
 REAL_CLIENT = httpx.AsyncClient
+ORIGEM_ANTERIOR = "https://www.anec.com.br"
 
 
 def _case(week: int) -> dict[str, Any]:
@@ -148,21 +150,30 @@ def _assert_frame(frame: pd.DataFrame, expected: pd.DataFrame, table: str) -> No
 
 @pytest.fixture
 def transport(monkeypatch: pytest.MonkeyPatch) -> set[str]:
-    monkeypatch.setenv("AGROBR_ANEC_LIST_TTL", "0")
-    responses = {
-        receipt["url"]: ((GOLDEN / receipt["file"]).read_bytes(), "text/html; charset=utf-8")
-        for receipt in MANIFEST["catalog"]
-    }
-    for case in CASES:
-        responses[case["url"]] = (GOLDEN / case["file"]).read_bytes(), "application/pdf"
+    artigos = [
+        anec.ANECArticle(
+            id=case["article"]["id"],
+            cuid=case["article"]["cuid"],
+            title_en=case["article"]["title_en"],
+            slug_en="",
+            created_at=case["article"]["created_at"],
+            pdf_url=case["article"]["pdf_url"],
+            media_updated_at=case["article"]["media_updated_at"],
+        )
+        for case in CASES
+    ]
+    monkeypatch.setattr(client, "list_articles", AsyncMock(side_effect=lambda _ano: artigos))
+    monkeypatch.setattr(client, "_BASE_URL", ORIGEM_ANTERIOR)
+    responses = {case["url"]: (GOLDEN / case["file"]).read_bytes() for case in CASES}
     seen: set[str] = set()
 
     def handle(request: httpx.Request) -> httpx.Response:
         url = str(request.url)
         assert url in responses, url
         seen.add(url)
-        content, content_type = responses[url]
-        return httpx.Response(200, content=content, headers={"content-type": content_type})
+        return httpx.Response(
+            200, content=responses[url], headers={"content-type": "application/pdf"}
+        )
 
     class Client(REAL_CLIENT):
         def __init__(self, *args: Any, **kwargs: Any) -> None:
@@ -239,8 +250,7 @@ async def test_fonte_e_dataset_preservam_celulas_edicao_e_seletores(target, tran
                 frame, _expected(latest, "monthly_shipments", target), "monthly_shipments"
             )
         with check("downloads"):
-            catalog = {receipt["url"] for receipt in MANIFEST["catalog"]}
-            assert transport == catalog | {
+            assert transport == {
                 edition["url"],
                 without_destinations["url"],
                 latest["url"],
