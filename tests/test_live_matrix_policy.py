@@ -12,6 +12,8 @@ from agrobr import datasets
 from agrobr.antaq import client as antaq_client
 from agrobr.conab.ceasa import client as ceasa_client
 from agrobr.exceptions import SourceUnavailableError
+from agrobr.icmbio import client as icmbio_client
+from agrobr.icmbio import models as icmbio_models
 from tests import helpers
 from tests.integration import live_policy
 
@@ -20,6 +22,7 @@ DATASET_COUNT = len(datasets.list_datasets())
 KNOWN_REASONS = {
     "movimentacao_portuaria": live_policy.ANTAQ_2024_522,
     "preco_atacado": live_policy.CONAB_CEASA_OUTRO_HOST,
+    "unidades_conservacao_federais": live_policy.ICMBIO_CONEXAO_DERRUBADA,
 }
 
 
@@ -69,6 +72,50 @@ def test_conab_ceasa_skip_requires_certificate_error(cause):
     error = SourceUnavailableError("conab_ceasa", last_error="HTTP 503 after 3 attempts")
     error.__cause__ = cause
     assert not live_policy.known_conab_ceasa_outage(error)
+
+
+async def test_conexao_derrubada_no_inde_reconhecida_pela_politica(monkeypatch):
+    pedido = httpx.Request("GET", icmbio_models.WFS_BASE)
+    monkeypatch.setattr(
+        httpx.AsyncClient, "get", AsyncMock(side_effect=httpx.ReadError("", request=pedido))
+    )
+    monkeypatch.setattr(helpers.RETRY_SLEEP, AsyncMock())
+    with pytest.raises(SourceUnavailableError) as caught:
+        await icmbio_client.fetch_ucs_count(uf="MT")
+    assert live_policy.known_icmbio_outage(caught.value)
+
+
+def _pedido(url: str) -> httpx.Request:
+    return httpx.Request("GET", url)
+
+
+@pytest.mark.parametrize(
+    ("source", "cause", "errors", "known"),
+    [
+        ("icmbio", httpx.ReadError("", request=_pedido(icmbio_models.WFS_BASE)), None, True),
+        (
+            "icmbio",
+            httpx.ReadError("", request=_pedido("https://cmr.funai.gov.br/geoserver/ows")),
+            None,
+            False,
+        ),
+        ("icmbio", httpx.ReadError(""), None, False),
+        ("icmbio", httpx.ReadTimeout("", request=_pedido(icmbio_models.WFS_BASE)), None, False),
+        ("icmbio", None, None, False),
+        ("funai", httpx.ReadError("", request=_pedido(icmbio_models.WFS_BASE)), None, False),
+        (
+            "icmbio",
+            httpx.ReadError("", request=_pedido(icmbio_models.WFS_BASE)),
+            [("icmbio", "unavailable", "ReadError")],
+            False,
+        ),
+    ],
+    ids=["inde", "outro_host", "sem_pedido", "timeout", "sem_causa", "outra_fonte", "agregado"],
+)
+def test_icmbio_skip_requires_read_error_on_inde_host(source, cause, errors, known):
+    error = SourceUnavailableError(source, last_error="ReadError: after 3 attempts", errors=errors)
+    error.__cause__ = cause
+    assert live_policy.known_icmbio_outage(error) is known
 
 
 @pytest.mark.parametrize(
@@ -152,6 +199,8 @@ def test_antaq_skip_requires_exact_request_and_typed_status(source, url, year, c
         ("antaq_aggregated_text", "movimentacao_portuaria", 1, 1, 0, 0, 0, 1, 0),
         ("ceasa_outro_host", "preco_atacado", 1, 1, 0, 1, 0, 0, 0),
         ("ceasa_vencido", "preco_atacado", 1, 1, 0, 0, 0, 1, 0),
+        ("icmbio_conexao_derrubada", "unidades_conservacao_federais", 1, 1, 0, 1, 0, 0, 0),
+        ("icmbio_timeout", "unidades_conservacao_federais", 1, 1, 0, 0, 0, 1, 0),
         ("fixture_error", "producao_anual", 1, 1, 0, 0, 0, 0, 1),
         ("fixture_skip", "producao_anual", 1, 1, 0, 0, 0, 0, 0),
         ("bad_metadata", "producao_anual", 1, 1, 0, 0, 0, 1, 0),

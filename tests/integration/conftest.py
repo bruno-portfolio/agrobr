@@ -13,6 +13,7 @@ import pytest
 from agrobr.antaq import client as antaq_client
 from agrobr.conab.ceasa import client as ceasa_client
 from agrobr.exceptions import SourceUnavailableError
+from agrobr.icmbio import client as icmbio_client
 from tests.integration import live_policy
 
 
@@ -174,6 +175,17 @@ def apply_live_policy(
         record_property("live_matrix_reason", reason)
         pytest.skip(reason)
 
+    def observed_icmbio(original: Callable[..., Any]) -> Callable[..., Any]:
+        async def observed(**query: Any) -> Any:
+            try:
+                return await original(**query)
+            except SourceUnavailableError as exc:
+                if live_policy.known_icmbio_outage(exc):
+                    skip_known(live_policy.ICMBIO_CONEXAO_DERRUBADA)
+                raise
+
+        return observed
+
     def apply(dataset_name: str, kwargs: dict[str, Any]) -> None:
         if live_policy.missing_usda_key(dataset_name, kwargs):
             skip_known(live_policy.USDA_MISSING_KEY, "not_verified")
@@ -189,6 +201,11 @@ def apply_live_policy(
                     raise
 
             monkeypatch.setattr(ceasa_client, "fetch_precos", observed_precos)
+        if dataset_name == "unidades_conservacao_federais":
+            for name in ("fetch_ucs_count", "fetch_ucs"):
+                monkeypatch.setattr(
+                    icmbio_client, name, observed_icmbio(getattr(icmbio_client, name))
+                )
         if dataset_name != "movimentacao_portuaria" or kwargs.get("ano") != 2024:
             return
         original = antaq_client.fetch_ano_zip

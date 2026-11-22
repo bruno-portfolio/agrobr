@@ -5,11 +5,13 @@ import ssl
 from typing import Any
 from urllib.parse import urlsplit
 
+import httpx
 import requests
 
 from agrobr.antaq import client as antaq_client
 from agrobr.conab.ceasa import models as ceasa_models
 from agrobr.exceptions import SourceUnavailableError
+from agrobr.icmbio import models as icmbio_models
 
 ANTAQ_2024_URL = "https://estatistica.antaq.gov.br/ea/txt/2024.zip"
 USDA_MISSING_KEY = "USDA: AGROBR_USDA_API_KEY/api_key ausente; consulta não executada"
@@ -17,6 +19,8 @@ ANTAQ_2024_522 = f"ANTAQ: HTTP 522 confirmado no download de {ANTAQ_2024_URL}"
 CONAB_CEASA_HOST = str(urlsplit(ceasa_models.PENTAHO_BASE).hostname)
 CONAB_CEASA_OUTRO_HOST = f"CONAB CEASA: {CONAB_CEASA_HOST} responde com o certificado de outro host"
 X509_V_ERR_HOSTNAME_MISMATCH = 62
+ICMBIO_HOST = str(urlsplit(icmbio_models.WFS_BASE).hostname)
+ICMBIO_CONEXAO_DERRUBADA = f"ICMBio: {ICMBIO_HOST} derruba a conexão (ReadError)"
 
 
 def missing_usda_key(dataset_name: str, kwargs: dict[str, Any]) -> bool:
@@ -53,3 +57,22 @@ def known_conab_ceasa_outage(error: SourceUnavailableError) -> bool:
         and cause.verify_code == X509_V_ERR_HOSTNAME_MISMATCH
         and CONAB_CEASA_HOST in cause.verify_message
     )
+
+
+def known_icmbio_outage(error: SourceUnavailableError) -> bool:
+    cause = error.__cause__
+    while cause is not None and not isinstance(cause, httpx.ReadError):
+        cause = cause.__cause__ or cause.__context__
+    return (
+        error.source == "icmbio"
+        and not error.errors
+        and isinstance(cause, httpx.ReadError)
+        and _host_do_pedido(cause) == ICMBIO_HOST
+    )
+
+
+def _host_do_pedido(error: httpx.RequestError) -> str | None:
+    try:
+        return error.request.url.host
+    except RuntimeError:
+        return None
